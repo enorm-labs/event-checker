@@ -77,6 +77,15 @@ Start applications via IntelliJ or via Gradle like this:
 This will also start the services (database) defined in the [compose.yaml](./compose.yaml) file via
 Spring's [Docker Compose Support](https://docs.spring.io/spring-boot/reference/features/dev-services.html#features.dev-services.docker-compose).
 
+### Swagger UI (OpenAPI)
+
+When running an application locally, Swagger UI is available at:
+
+* **events-bff**: http://localhost:8080/webjars/swagger-ui/index.html
+* **events-importer**: http://localhost:8081/webjars/swagger-ui/index.html
+
+The OpenAPI spec (JSON) is served at `/v3/api-docs` on the respective port.
+
 ### Check for dependency updates
 
 ```
