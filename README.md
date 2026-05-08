@@ -24,11 +24,11 @@ A simple app/website for checking and finding music events in Berlin (scope migh
 8. Deploy to Cloud Platform
 9. Choose a License
 10. Create Template Repository from this project in my Enterprise Repository and my private Repository on GitHub.
-     * with `.github` directory and workflows, instructions, skills, prompts,and agents
-     * with README, CONTRIBUTING, LICENSE, etc. (see GitHub docs and best practices)
-     * check if there are any good existing templates already
-     * see also OTR service template
-     * add scaffolding?
+    * with `.github` directory and workflows, instructions, skills, prompts,and agents
+    * with README, CONTRIBUTING, LICENSE, etc. (see GitHub docs and best practices)
+    * check if there are any good existing templates already
+    * see also OTR service template
+    * add scaffolding?
 
 ## Vision / Idea
 

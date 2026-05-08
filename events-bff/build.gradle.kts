@@ -10,7 +10,7 @@ version = "0.0.1-SNAPSHOT"
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(25)
+        languageVersion = JavaLanguageVersion.of(property("java.version").toString().toInt())
     }
 }
 
@@ -18,9 +18,19 @@ repositories {
     mavenCentral()
 }
 
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.modulith:spring-modulith-bom:${property("spring-modulith.version")}")
+    }
+}
+
 dependencies {
     // Shared domain model and utilities from the events-core library module
     implementation(project(":events-core"))
+
+    // Spring Modulith
+    implementation("org.springframework.modulith:spring-modulith-starter-core")
+    testImplementation("org.springframework.modulith:spring-modulith-starter-test")
 
     // Spring Actuator
     implementation("org.springframework.boot:spring-boot-starter-actuator")
