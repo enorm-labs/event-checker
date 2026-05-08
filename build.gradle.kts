@@ -19,5 +19,7 @@ subprojects {
 
     // see https://github.com/jlleitschuh/ktlint-gradle?tab=readme-ov-file#configuration
     configure<KtlintExtension> {
+        // The actual ktlint version, see https://github.com/pinterest/ktlint/releases
+        version = "1.8.0"
     }
 }
