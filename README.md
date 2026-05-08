@@ -33,7 +33,7 @@ A simple app/website for checking and finding music events in Berlin (scope migh
 ## Vision / Idea
 
 * Like Resident Advisor for Berlin events, but better
-* Focus on all music events (concerts, club nights, festivals etc. - not only Techno/Electronic music) in venues (clubs, convert halls etc.) of Berlin (maybe
+* Focus on all music events (concerts, club nights, festivals etc. - not only Techno/Electronic music) in venues (clubs, concert halls etc.) of Berlin (maybe
   later also other cities)
 * Takeover more ideas from here: https://docs.google.com/document/d/1UkxdJECxvB6noW-n8dzX-r0du18M9-ggp6iWeapHpvI/edit?tab=t.0#heading=h.32gy0wklnx78
 
