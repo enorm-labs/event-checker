@@ -12,7 +12,7 @@ version = "0.0.1-SNAPSHOT"
 // compiled library bytecode is compatible with its consumers.
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(25)
+        languageVersion = JavaLanguageVersion.of(property("java.version").toString().toInt())
     }
     withSourcesJar()
 }
@@ -29,7 +29,7 @@ kotlin {
     compilerOptions {
         freeCompilerArgs.addAll("-Xjsr305=strict")
     }
-    jvmToolchain(25)
+    jvmToolchain(property("java.version").toString().toInt())
 }
 
 tasks.test {
