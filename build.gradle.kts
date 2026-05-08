@@ -15,6 +15,9 @@ plugins {
 }
 
 subprojects {
+    group = "de.norm"
+    version = "0.0.1-SNAPSHOT"
+
     apply(plugin = "org.jlleitschuh.gradle.ktlint") // Version should be inherited from parent
 
     repositories {
