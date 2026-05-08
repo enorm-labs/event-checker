@@ -5,9 +5,6 @@ plugins {
     id("io.spring.dependency-management")
 }
 
-group = "de.norm"
-version = "0.0.1-SNAPSHOT"
-
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(property("java.version").toString().toInt())

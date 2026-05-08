@@ -7,9 +7,6 @@ plugins {
     `java-test-fixtures`
 }
 
-group = "de.norm"
-version = "0.0.1-SNAPSHOT"
-
 // Use the same Java toolchain as events-bff and events-importer so the
 // compiled library bytecode is compatible with its consumers.
 java {
