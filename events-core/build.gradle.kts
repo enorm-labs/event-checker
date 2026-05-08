@@ -1,5 +1,7 @@
 plugins {
     kotlin("jvm")
+    kotlin("plugin.spring")
+    id("io.spring.dependency-management")
     `java-library`
     `maven-publish`
     `java-test-fixtures`
@@ -21,7 +23,17 @@ repositories {
     mavenCentral()
 }
 
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.modulith:spring-modulith-bom:${property("spring-modulith.version")}")
+    }
+}
+
 dependencies {
+    // Spring Modulith
+    api("org.springframework.modulith:spring-modulith-starter-core")
+    testImplementation("org.springframework.modulith:spring-modulith-starter-test")
+
     testImplementation(kotlin("test"))
 }
 
