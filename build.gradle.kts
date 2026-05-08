@@ -1,5 +1,9 @@
 import org.jlleitschuh.gradle.ktlint.KtlintExtension
 
+// Centralized dependency versions – change here to update all subprojects at once.
+extra["java.version"] = 25
+extra["spring-modulith.version"] = "2.0.6"
+
 // Plugins are applied in the subprojects, so that they are only applied to the relevant modules
 plugins {
     kotlin("jvm") apply false
