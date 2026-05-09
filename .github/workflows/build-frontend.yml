@@ -1,0 +1,52 @@
+name: Build & Test Frontend
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'events-frontend/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'events-frontend/**'
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: events-frontend
+
+jobs:
+  build:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24' # should match the version specified in .nvmrc
+          cache: 'npm'
+          cache-dependency-path: events-frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - name: Run unit tests
+        run: npm run test:unit
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Run e2e tests
+        run: npm run test:e2e
