@@ -3,23 +3,33 @@
 ## Project Overview
 
 Event Checker is a multi-module Kotlin/Spring Boot application for discovering music events in Berlin. It uses a **Gradle multi-project build** with three
-subprojects sharing a root `settings.gradle.kts`:
+subprojects sharing a root `settings.gradle.kts`, plus a standalone frontend project:
 
-- **`events-core`** – Shared domain model library (no Boot app); consumed via `project(":events-core")` dependency. Publishes `java-test-fixtures` for shared
-  test utilities.
+- **`events-core`** – Shared domain model library (no Boot app); consumed via `project(":events-core")` dependency. Has `java-test-fixtures` plugin applied
+  for shared test utilities (add fixtures under `src/testFixtures/`). Contains domain data classes organized by feature: `artist/`, `event/`, `promoter/`,
+  `venue/`. Also defines enums (`EventType`, `EventStatus`, `ArtistRole`) and the `EventArtist` join entity in `event/Event.kt`.
 - **`events-bff`** – Backend-for-Frontend REST API (Spring Boot 4 + WebFlux + R2DBC). Runs on default port `8080`.
 - **`events-importer`** – Imports events from external sources into the database (Spring Boot 4 + WebFlux + R2DBC + Flyway). Runs on port `8081`.
-- **`events-frontend`** – Vue 3 SPA (Vite 8, TypeScript 6, Pinia, Vue Router). Uses oxlint/oxfmt for linting/formatting.
+  Owns all Flyway migrations under `src/main/resources/db/migration/`.
+- **`events-frontend`** – Vue 3 SPA (Vite 8, TypeScript 6, Pinia, Vue Router). Uses oxlint/oxfmt for linting/formatting. Not a Gradle subproject — managed
+  separately via npm. Requires Node `^20.19.0 || >=22.12.0` (see `engines` in `package.json`).
 
 ## Architecture Decisions
 
 - **Reactive stack throughout**: WebFlux + R2DBC + Kotlin coroutines. Do NOT use blocking APIs (`spring-web`, JDBC) in request paths.
+- **Domain model** lives in `events-core` as plain Kotlin data classes (no Spring Data annotations). Tables: `venue`, `artist`, `promoter`, `event`,
+  `event_artist` (join), `event_promoter` (join). Events reference venues via FK; artists and promoters link to events through join tables.
+  `Event.sourceId` enables idempotent imports (upsert semantics).
 - **Spring Modulith** enforces module boundaries: each direct sub-package under `de.norm.events` is an application module. Run `ModularityTests` (present in all
   three modules) to verify structure.
-- **Database migrations** live in `events-importer` only (Flyway). The BFF does not run migrations.
+- **Database schema**: All tables live in a dedicated `events` schema (not `public`). Both apps configure this via `spring.r2dbc.properties.schema: events`;
+  importer also sets `spring.flyway.schemas: events`. The migration `V001__create_initial_schema.sql` creates the schema with
+  `CREATE SCHEMA IF NOT EXISTS events`.
+- **Database migrations** live in `events-importer` only (Flyway). The BFF does not run migrations. Migration naming: `V001__description.sql`.
 - **Docker Compose dev services**: `bootRun` auto-starts PostgreSQL via Spring Docker Compose support (`compose.yaml` at root).
 - **SpringDoc OpenAPI** enabled in both BFF and importer — Swagger UI available at `/swagger-ui.html` by default.
 - **Jackson 3.x** (`tools.jackson.module:jackson-module-kotlin`) is used for JSON serialization.
+- **Spring Boot Actuator** is included in both BFF and importer for health checks and monitoring.
 
 ## Build & Dev Commands
 
@@ -43,7 +53,7 @@ npm run lint       # oxlint + eslint (auto-fix)
 npm run format     # oxfmt formatter
 ```
 
-Java version is managed via SDKMAN (run `sdk env` to activate). Toolchain target: **Java 25**.
+Java version is managed via SDKMAN (`.sdkmanrc` pins `java=25.0.2-tem`; run `sdk env` to activate). Toolchain target: **Java 25**.
 
 ## Code Conventions
 
@@ -54,6 +64,8 @@ Java version is managed via SDKMAN (run `sdk env` to activate). Toolchain target
   in `settings.gradle.kts` `pluginManagement`.
 - Use `val` for injected dependencies; constructor injection only (no field injection).
 - Application config files use **`.yaml`** extension (not `.yml`).
+- Kotlin compiler flags: `-Xjsr305=strict` (all modules) and `-Xannotation-default-target=param-property` (BFF + importer) are set in `compilerOptions`.
+- **Kover** (`org.jetbrains.kotlinx.kover`) is available for code coverage reports.
 
 ## Testing Patterns
 
@@ -67,15 +79,17 @@ Java version is managed via SDKMAN (run `sdk env` to activate). Toolchain target
 
 ## Key Files
 
-| Purpose                             | Path                                                                  |
-|-------------------------------------|-----------------------------------------------------------------------|
-| Root build config & shared versions | `build.gradle.kts`                                                    |
-| Plugin versions & module includes   | `settings.gradle.kts`                                                 |
-| Dev database (Postgres)             | `compose.yaml`                                                        |
-| Shared domain module marker         | `events-core/src/.../EventsCoreModule.kt`                             |
-| Testcontainers setup (BFF)          | `events-bff/src/test/.../PostgresTestcontainersConfiguration.kt`      |
-| Testcontainers setup (importer)     | `events-importer/src/test/.../PostgresTestcontainersConfiguration.kt` |
-| Modularity verification (BFF)       | `events-bff/src/test/.../ModularityTests.kt`                          |
-| Modularity verification (importer)  | `events-importer/src/test/.../ModularityTests.kt`                     |
-| Modularity verification (core)      | `events-core/src/test/.../ModularityTests.kt`                         |
-| Frontend entry point                | `events-frontend/src/main.ts`                                         |
+| Purpose                             | Path                                                                              |
+|-------------------------------------|-----------------------------------------------------------------------------------|
+| Root build config & shared versions | `build.gradle.kts`                                                                |
+| Plugin versions & module includes   | `settings.gradle.kts`                                                             |
+| Dev database (Postgres)             | `compose.yaml`                                                                    |
+| Shared domain module marker         | `events-core/src/.../EventsCoreModule.kt`                                         |
+| Domain data classes                 | `events-core/src/.../artist/`, `event/`, `promoter/`, `venue/`                    |
+| Initial DB migration                | `events-importer/src/main/resources/db/migration/V001__create_initial_schema.sql` |
+| Testcontainers setup (BFF)          | `events-bff/src/test/.../PostgresTestcontainersConfiguration.kt`                  |
+| Testcontainers setup (importer)     | `events-importer/src/test/.../PostgresTestcontainersConfiguration.kt`             |
+| Modularity verification (BFF)       | `events-bff/src/test/.../ModularityTests.kt`                                      |
+| Modularity verification (importer)  | `events-importer/src/test/.../ModularityTests.kt`                                 |
+| Modularity verification (core)      | `events-core/src/test/.../ModularityTests.kt`                                     |
+| Frontend entry point                | `events-frontend/src/main.ts`                                                     |
