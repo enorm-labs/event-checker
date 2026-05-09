@@ -17,18 +17,18 @@
 5. Configure GitHub project
     * Code Quality (Static Code Analysis) enabled https://github.com/enorm-labs/event-checker/settings/code-quality
     * Code/Security/License Scanning
-      * Only available for free for public repositories: https://github.com/enorm-labs/event-checker/settings/security_analysis
-      * GitHub action for Dependency Review: https://github.com/actions/dependency-review-action
+        * Only available for free for public repositories: https://github.com/enorm-labs/event-checker/settings/security_analysis
+        * GitHub action for Dependency Review: https://github.com/actions/dependency-review-action
 6. Choose a Cloud Platform / Runtime environment
 7. Deploy to Cloud Platform
 8. Choose a License (Open Source)
 9. Make repository public and enable Advanced Security Analysis
 10. Create Template Repository from this project in my Enterprise Repository and my private Repository on GitHub.
-     * with `.github` directory and workflows, instructions, skills, prompts,and agents
-     * with README, CONTRIBUTING, LICENSE, etc. (see GitHub docs and best practices)
-     * check if there are any good existing templates already
-     * see also OTR service template
-     * add scaffolding?
+    * with `.github` directory and workflows, instructions, skills, prompts,and agents
+    * with README, CONTRIBUTING, LICENSE, etc. (see GitHub docs and best practices)
+    * check if there are any good existing templates already
+    * see also OTR service template
+    * add scaffolding?
 11. Create a Roadmap
 
 ### Technical TODOs
