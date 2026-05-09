@@ -9,5 +9,6 @@ import org.springframework.context.annotation.Import
 class EventsImporterApplicationTests {
     @Test
     fun contextLoads() {
+        // Intentionally empty – verifies the Spring application context starts successfully.
     }
 }

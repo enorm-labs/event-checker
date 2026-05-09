@@ -1,0 +1,70 @@
+### ============================================================
+### Admin: Venues — CRUD lifecycle
+### ============================================================
+
+### List all venues
+GET {{importer-host}}/api/admin/venues
+Accept: application/json
+
+### List venues — page 0, 10 per page, sorted by name ascending
+GET {{importer-host}}/api/admin/venues?page=0&size=10&sort=name,asc
+Accept: application/json
+
+### Get venue by ID
+GET {{importer-host}}/api/admin/venues/1
+Accept: application/json
+
+### Create venue — Astra Kulturhaus
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Astra Kulturhaus",
+    "address": "Revaler Str. 99",
+    "city": "Berlin",
+    "postalCode": "10245",
+    "latitude": 52.507242,
+    "longitude": 13.451803,
+    "websiteUrl": "https://www.astra-berlin.de"
+}
+
+> {%
+    client.global.set("venue_id", response.body.id);
+    client.test("status is 201", function () {
+        client.assert(response.status === 201, "Expected 201 Created");
+    });
+%}
+
+### Create venue — SO36
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "SO36",
+    "address": "Oranienstraße 190",
+    "city": "Berlin",
+    "postalCode": "10999",
+    "websiteUrl": "https://so36.com"
+}
+
+### Update venue
+PUT {{importer-host}}/api/admin/venues/{{venue_id}}
+Content-Type: application/json
+
+{
+    "name": "Astra Kulturhaus",
+    "address": "Revaler Str. 99",
+    "city": "Berlin",
+    "postalCode": "10245",
+    "latitude": 52.507242,
+    "longitude": 13.451803,
+    "websiteUrl": "https://www.astra-berlin.de",
+    "imageUrl": "https://example.com/astra-logo.jpg"
+}
+
+### Delete venue
+DELETE {{importer-host}}/api/admin/venues/{{venue_id}}
+
+### Get non-existent venue (expect 404)
+GET {{importer-host}}/api/admin/venues/999999
+Accept: application/json

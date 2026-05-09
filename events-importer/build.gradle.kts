@@ -24,6 +24,7 @@ dependencyManagement {
 dependencies {
     // Shared domain model and utilities from the events-core library module
     implementation(project(":events-core"))
+    testImplementation(testFixtures(project(":events-core")))
 
     // Spring Modulith – enforces modular application structure and provides
     // event publication registry, observability, and documentation support.
@@ -44,6 +45,9 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql")
     runtimeOnly("org.postgresql:r2dbc-postgresql")
 
+    // Validation – Bean Validation API for request body validation (@Valid, @NotBlank, etc.)
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+
     // Web
     implementation("org.springframework.boot:spring-boot-starter-webclient")
     testImplementation("org.springframework.boot:spring-boot-starter-webclient-test")
@@ -61,6 +65,14 @@ dependencies {
     implementation("tools.jackson.module:jackson-module-kotlin")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
 
+    // Kotlin Logging – idiomatic Kotlin wrapper around SLF4J
+    // See: https://github.com/oshai/kotlin-logging
+    implementation("io.github.oshai:kotlin-logging-jvm:${property("kotlin-logging.version")}")
+
+    // Slugify – generates URL-friendly slugs from arbitrary strings, with locale support
+    // See: https://github.com/slugify/slugify
+    implementation("com.github.slugify:slugify:${property("slugify.version")}")
+
     // Dev Tools
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")
@@ -68,6 +80,10 @@ dependencies {
     // Testing
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+    // Kotest assertions – expressive matchers for readable test assertions
+    // See: https://kotest.io/docs/assertions/assertions.html
+    testImplementation("io.kotest:kotest-assertions-core:${property("kotest.version")}")
 
     // Testcontainers
     testImplementation("org.springframework.boot:spring-boot-testcontainers")

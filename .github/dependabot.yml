@@ -6,3 +6,47 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    groups:
+      kotlin:
+        patterns:
+          - "org.jetbrains.kotlin*"
+          - "org.jetbrains.kotlinx*"
+      spring-boot:
+        patterns:
+          - "org.springframework.boot*"
+          - "org.springframework:*"
+          - "io.spring.dependency-management*"
+      spring-modulith:
+        patterns:
+          - "org.springframework.modulith*"
+      jackson:
+        patterns:
+          - "tools.jackson*"
+      springdoc:
+        patterns:
+          - "org.springdoc*"
+      testcontainers:
+        patterns:
+          - "org.testcontainers*"
+      kotest:
+        patterns:
+          - "io.kotest*"
+      postgresql:
+        patterns:
+          - "org.postgresql*"
+      flyway:
+        patterns:
+          - "org.flywaydb*"
+      reactor:
+        patterns:
+          - "io.projectreactor*"
+      detekt:
+        patterns:
+          - "dev.detekt*"
+      gradle-plugins:
+        patterns:
+          - "com.github.ben-manes*"
+          - "org.jlleitschuh.gradle*"
+      owasp:
+        patterns:
+          - "org.owasp*"

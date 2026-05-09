@@ -6,4 +6,8 @@ services:
       - 'POSTGRES_PASSWORD=admin'
       - 'POSTGRES_USER=admin'
     ports:
-      - '5432'
+      # Fixed host port for convenient manual DB access (psql, IntelliJ Database panel).
+      # Spring Boot Docker Compose support auto-discovers the mapped port regardless.
+      # Override via environment variable if the default port conflicts:
+      #   POSTGRES_HOST_PORT=5555 ./gradlew :events-importer:bootRun
+      - '${POSTGRES_HOST_PORT:-56298}:5432'

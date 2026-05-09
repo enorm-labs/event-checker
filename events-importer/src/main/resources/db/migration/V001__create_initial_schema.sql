@@ -25,7 +25,7 @@ CREATE TABLE venue
     updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE INDEX idx_venue_slug ON venue (slug);
+-- No explicit slug index needed — the UNIQUE constraint already creates an implicit index.
 
 -- ============================================================
 -- ARTISTS
@@ -46,7 +46,7 @@ CREATE TABLE artist
     updated_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE INDEX idx_artist_slug ON artist (slug);
+-- No explicit slug index needed — the UNIQUE constraint already creates an implicit index.
 
 -- ============================================================
 -- PROMOTERS
@@ -63,7 +63,7 @@ CREATE TABLE promoter
     updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE INDEX idx_promoter_slug ON promoter (slug);
+-- No explicit slug index needed — the UNIQUE constraint already creates an implicit index.
 
 -- ============================================================
 -- EVENTS
@@ -80,7 +80,7 @@ CREATE TABLE event
     description        TEXT,
     event_type         TEXT        NOT NULL DEFAULT 'CONCERT',
     status             TEXT        NOT NULL DEFAULT 'SCHEDULED',
-    slug               TEXT        NOT NULL,
+    slug               TEXT        NOT NULL UNIQUE,
     event_date         DATE        NOT NULL,
     doors_time         TIME,
     start_time         TIME,
@@ -101,8 +101,7 @@ CREATE TABLE event
 
 CREATE INDEX idx_event_venue_id ON event (venue_id);
 CREATE INDEX idx_event_event_date ON event (event_date);
-CREATE INDEX idx_event_source_id ON event (source_id);
-CREATE INDEX idx_event_slug ON event (slug);
+-- No explicit slug index needed — the UNIQUE constraint already creates an implicit index.
 
 -- ============================================================
 -- EVENT_ARTIST (join table)
@@ -127,9 +126,48 @@ CREATE INDEX idx_event_artist_artist_id ON event_artist (artist_id);
 -- ============================================================
 CREATE TABLE event_promoter
 (
+    id          BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     event_id    BIGINT NOT NULL REFERENCES event (id) ON DELETE CASCADE,
     promoter_id BIGINT NOT NULL REFERENCES promoter (id) ON DELETE CASCADE,
-    PRIMARY KEY (event_id, promoter_id)
+    UNIQUE (event_id, promoter_id)
 );
 
 CREATE INDEX idx_event_promoter_promoter_id ON event_promoter (promoter_id);
+
+-- ============================================================
+-- TRIGGER: auto-update updated_at on row modification
+-- A database-level trigger is more reliable than application-level
+-- auditing since it catches all update paths (including raw SQL).
+-- ============================================================
+CREATE OR REPLACE FUNCTION set_updated_at()
+    RETURNS TRIGGER AS
+$$
+BEGIN
+    NEW.updated_at = now();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_venue_updated_at
+    BEFORE UPDATE
+    ON venue
+    FOR EACH ROW
+EXECUTE FUNCTION set_updated_at();
+
+CREATE TRIGGER trg_artist_updated_at
+    BEFORE UPDATE
+    ON artist
+    FOR EACH ROW
+EXECUTE FUNCTION set_updated_at();
+
+CREATE TRIGGER trg_promoter_updated_at
+    BEFORE UPDATE
+    ON promoter
+    FOR EACH ROW
+EXECUTE FUNCTION set_updated_at();
+
+CREATE TRIGGER trg_event_updated_at
+    BEFORE UPDATE
+    ON event
+    FOR EACH ROW
+EXECUTE FUNCTION set_updated_at();

@@ -1,0 +1,241 @@
+### ============================================================
+### Full CRUD Lifecycle — end-to-end scripted scenario
+###
+### Run all requests in this file sequentially (▶▶ "Run All")
+### to seed venues, artists, promoters, and then create, read,
+### update, and delete an event with all associations.
+### ============================================================
+
+### --- Step 1: Create venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Astra Kulturhaus",
+    "address": "Revaler Str. 99",
+    "city": "Berlin",
+    "postalCode": "10245",
+    "latitude": 52.507242,
+    "longitude": 13.451803,
+    "websiteUrl": "https://www.astra-berlin.de"
+}
+
+> {%
+    client.test("Venue created", function () {
+        client.assert(response.status === 201, "Expected 201, got " + response.status);
+    });
+    client.global.set("venue_id", response.body.id);
+    client.log("Created venue id=" + response.body.id + " slug=" + response.body.slug);
+%}
+
+### --- Step 2: Create headliner artist ---
+POST {{importer-host}}/api/admin/artists
+Content-Type: application/json
+
+{
+    "name": "The Adicts",
+    "description": "Legendary punk band from Ipswich, England.",
+    "websiteUrl": "https://theadicts.net/"
+}
+
+> {%
+    client.test("Headliner artist created", function () {
+        client.assert(response.status === 201, "Expected 201, got " + response.status);
+    });
+    client.global.set("artist_id", response.body.id);
+    client.log("Created artist id=" + response.body.id);
+%}
+
+### --- Step 3: Create support artist ---
+POST {{importer-host}}/api/admin/artists
+Content-Type: application/json
+
+{
+    "name": "Maid of Ace",
+    "description": "All-female punk band from Hastings, UK."
+}
+
+> {%
+    client.test("Support artist created", function () {
+        client.assert(response.status === 201, "Expected 201, got " + response.status);
+    });
+    client.global.set("support_artist_id", response.body.id);
+    client.log("Created support artist id=" + response.body.id);
+%}
+
+### --- Step 4: Create promoter ---
+POST {{importer-host}}/api/admin/promoters
+Content-Type: application/json
+
+{
+    "name": "36 Concerts",
+    "websiteUrl": "https://www.facebook.com/36Concerts/"
+}
+
+> {%
+    client.test("Promoter created", function () {
+        client.assert(response.status === 201, "Expected 201, got " + response.status);
+    });
+    client.global.set("promoter_id", response.body.id);
+    client.log("Created promoter id=" + response.body.id);
+%}
+
+### --- Step 5: Create event with all associations ---
+POST {{importer-host}}/api/admin/events
+Content-Type: application/json
+
+{
+    "venueId": {{venue_id}},
+    "title": "THE ADICTS",
+    "subtitle": "Adios Amigos Tour 2026 + Support: MAID OF ACE",
+    "eventType": "CONCERT",
+    "status": "SCHEDULED",
+    "eventDate": "2026-06-12",
+    "doorsTime": "19:00",
+    "startTime": "20:00",
+    "sourceId": "astra:2026-06-12-the-adicts",
+    "sourceUrl": "https://www.astra-berlin.de/events/2026-06-12-the-adicts",
+    "genre": "Punk",
+    "pricePresale": 38.00,
+    "priceBoxOffice": 45.00,
+    "priceCurrency": "EUR",
+    "soldOut": false,
+    "artists": [
+        {
+            "artistId": {{artist_id}},
+            "role": "HEADLINER",
+            "billingOrder": 0
+        },
+        {
+            "artistId": {{support_artist_id}},
+            "role": "SUPPORT",
+            "billingOrder": 1
+        }
+    ],
+    "promoterIds": [
+        {{promoter_id}}
+    ]
+}
+
+> {%
+    client.test("Event created", function () {
+        client.assert(response.status === 201, "Expected 201, got " + response.status);
+    });
+    client.global.set("event_id", response.body.id);
+    client.log("Created event id=" + response.body.id);
+%}
+
+### --- Step 6: Verify — list all events ---
+GET {{importer-host}}/api/admin/events
+Accept: application/json
+
+> {%
+    client.test("Events list is not empty", function () {
+        client.assert(response.body.length >= 1, "Expected at least 1 event");
+    });
+%}
+
+### --- Step 7: Verify — get event by ID ---
+GET {{importer-host}}/api/admin/events/{{event_id}}
+Accept: application/json
+
+> {%
+    client.test("Event retrieved", function () {
+        client.assert(response.status === 200, "Expected 200, got " + response.status);
+        client.assert(response.body.title === "THE ADICTS", "Unexpected title: " + response.body.title);
+    });
+%}
+
+### --- Step 8: Update event — mark as sold out ---
+PUT {{importer-host}}/api/admin/events/{{event_id}}
+Content-Type: application/json
+
+{
+    "venueId": {{venue_id}},
+    "title": "THE ADICTS",
+    "subtitle": "Adios Amigos Tour 2026 + Support: MAID OF ACE",
+    "eventType": "CONCERT",
+    "status": "SCHEDULED",
+    "eventDate": "2026-06-12",
+    "doorsTime": "19:00",
+    "startTime": "20:00",
+    "sourceId": "astra:2026-06-12-the-adicts",
+    "genre": "Punk",
+    "pricePresale": 38.00,
+    "priceBoxOffice": 45.00,
+    "priceCurrency": "EUR",
+    "soldOut": true,
+    "artists": [
+        {
+            "artistId": {{artist_id}},
+            "role": "HEADLINER",
+            "billingOrder": 0
+        }
+    ],
+    "promoterIds": [
+        {{promoter_id}}
+    ]
+}
+
+> {%
+    client.test("Event updated", function () {
+        client.assert(response.status === 200, "Expected 200, got " + response.status);
+        client.assert(response.body.soldOut === true, "Expected soldOut=true");
+    });
+%}
+
+### --- Step 9: Delete event ---
+DELETE {{importer-host}}/api/admin/events/{{event_id}}
+
+> {%
+    client.test("Event deleted", function () {
+        client.assert(response.status === 204, "Expected 204, got " + response.status);
+    });
+%}
+
+### --- Step 10: Verify deletion (expect 404) ---
+GET {{importer-host}}/api/admin/events/{{event_id}}
+Accept: application/json
+
+> {%
+    client.test("Event not found after deletion", function () {
+        client.assert(response.status === 404, "Expected 404, got " + response.status);
+    });
+%}
+
+### --- Cleanup: Delete promoter ---
+DELETE {{importer-host}}/api/admin/promoters/{{promoter_id}}
+
+> {%
+    client.test("Promoter deleted", function () {
+        client.assert(response.status === 204, "Expected 204, got " + response.status);
+    });
+%}
+
+### --- Cleanup: Delete support artist ---
+DELETE {{importer-host}}/api/admin/artists/{{support_artist_id}}
+
+> {%
+    client.test("Support artist deleted", function () {
+        client.assert(response.status === 204, "Expected 204, got " + response.status);
+    });
+%}
+
+### --- Cleanup: Delete headliner artist ---
+DELETE {{importer-host}}/api/admin/artists/{{artist_id}}
+
+> {%
+    client.test("Headliner artist deleted", function () {
+        client.assert(response.status === 204, "Expected 204, got " + response.status);
+    });
+%}
+
+### --- Cleanup: Delete venue ---
+DELETE {{importer-host}}/api/admin/venues/{{venue_id}}
+
+> {%
+    client.test("Venue deleted", function () {
+        client.assert(response.status === 204, "Expected 204, got " + response.status);
+    });
+    client.log("✅ Full lifecycle complete — all entities created, verified, and cleaned up.");
+%}

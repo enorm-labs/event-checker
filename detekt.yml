@@ -1,0 +1,7 @@
+# Detekt configuration – overrides for the default rule set.
+# See https://detekt.dev/docs/rules/style/#maxlinelength
+
+style:
+  MaxLineLength:
+    # Aligned with .editorconfig max_line_length = 160
+    maxLineLength: 160
