@@ -18,6 +18,11 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write
+  # Required for uploading SARIF to GitHub Code Scanning
+  security-events: write
+  # Required for workflows in private repositories
+  actions: read
 
 jobs:
   build:
@@ -40,8 +45,118 @@ jobs:
       - name: Lint with ktlint
         run: ./gradlew ktlintCheck
 
+      - name: Static analysis with detekt
+        run: ./gradlew detekt
+
+      - name: Post detekt report to Job Summary
+        if: success() || failure()
+        run: |
+          echo "## 🔍 Detekt Static Analysis" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          for report in */build/reports/detekt/detekt.md; do
+            module=$(echo "$report" | cut -d'/' -f1)
+            # Replace the generic "# detekt" heading with a module-specific one
+            sed "s/^# detekt$/# detekt — ${module}/" "$report" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "---" >> $GITHUB_STEP_SUMMARY
+          done
+
+      # Upload each module's SARIF report separately with a unique category.
+      # GitHub Code Scanning supports multiple SARIF uploads per commit when each
+      # has a distinct category. See: https://docs.github.com/en/code-security/code-scanning/integrating-with-code-scanning/uploading-a-sarif-file-to-github
+      - name: Upload detekt SARIF (events-core)
+        if: success() || failure()
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: events-core/build/reports/detekt/detekt.sarif
+          category: detekt-events-core
+      - name: Upload detekt SARIF (events-bff)
+        if: success() || failure()
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: events-bff/build/reports/detekt/detekt.sarif
+          category: detekt-events-bff
+      - name: Upload detekt SARIF (events-importer)
+        if: success() || failure()
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: events-importer/build/reports/detekt/detekt.sarif
+          category: detekt-events-importer
+
       - name: Build all modules
         run: ./gradlew build -x test
 
       - name: Run tests
         run: ./gradlew test
+
+      - name: Generate Kover coverage reports
+        run: ./gradlew koverXmlReport koverLog
+
+      - name: Post coverage to Job Summary
+        run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 📊 Test Coverage (Kover)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat build/kover/coverage.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Post coverage to Pull Request
+        if: github.event_name == 'pull_request'
+        uses: mi-kas/kover-report@v1
+        with:
+          path: build/reports/kover/report.xml
+          title: Code Coverage
+          update-comment: true
+          min-coverage-overall: 60
+          min-coverage-changed-files: 80
+
+  # OWASP Dependency-Check runs as a separate job in parallel with the build to avoid
+  # slowing down the main feedback loop. The NVD database download can take several minutes.
+  dependency-check:
+    name: OWASP Dependency-Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Java 25 (Temurin)
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Run OWASP Dependency-Check
+        run: ./gradlew dependencyCheckAggregate
+        env:
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+
+      - name: Post report to Job Summary
+        if: success() || failure()
+        run: |
+          echo "## 🛡️ OWASP Dependency-Check" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f build/reports/dependency-check-report.html ]; then
+            echo "Dependency-Check report generated. See artifacts for full HTML report." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No report generated." >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Upload SARIF to GitHub Code Scanning
+        if: success() || failure()
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: build/reports/dependency-check-report.sarif
+          category: owasp-dependency-check
+
+      - name: Upload HTML report as artifact
+        if: success() || failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-check-report
+          path: build/reports/dependency-check-report.html
+

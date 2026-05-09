@@ -1,0 +1,27 @@
+# Scans pull requests for newly introduced dependency vulnerabilities and license issues.
+# Complements OWASP Dependency-Check (which scans the full tree) by diffing only the
+# changes between the PR head and base, giving fast, targeted feedback at review time.
+# Requires the dependency graph to be populated (see dependency-submission.yml).
+# source: https://github.com/actions/dependency-review-action
+name: Dependency Review
+
+on: [ pull_request ]
+
+permissions:
+  contents: read
+
+jobs:
+  dependency-review:
+    name: Dependency Review
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v5
+        with:
+          # Fail on high+ severity to match the OWASP Dependency-Check threshold (CVSS ≥ 7)
+          fail-on-severity: high
+

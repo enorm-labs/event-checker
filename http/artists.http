@@ -1,0 +1,70 @@
+### ============================================================
+### Admin: Artists — CRUD lifecycle
+### ============================================================
+
+### List all artists
+GET {{importer-host}}/api/admin/artists
+Accept: application/json
+
+### List artists — page 0, 10 per page, sorted by name ascending
+GET {{importer-host}}/api/admin/artists?page=0&size=10&sort=name,asc
+Accept: application/json
+
+### Get artist by ID
+GET {{importer-host}}/api/admin/artists/1
+Accept: application/json
+
+### Create artist — The Adicts
+POST {{importer-host}}/api/admin/artists
+Content-Type: application/json
+
+{
+    "name": "The Adicts",
+    "description": "Formed in Ipswich in the late 1970s, The Adicts are known for their theatrical punk rock performances.",
+    "websiteUrl": "https://theadicts.net/",
+    "facebookUrl": "https://www.facebook.com/theadicts",
+    "instagramUrl": "https://www.instagram.com/theadictsofficial/",
+    "youtubeUrl": "https://www.youtube.com/@theadictsofficial"
+}
+
+> {%
+    client.global.set("artist_id", response.body.id);
+    client.test("status is 201", function () {
+        client.assert(response.status === 201, "Expected 201 Created");
+    });
+%}
+
+### Create artist — Maid of Ace
+POST {{importer-host}}/api/admin/artists
+Content-Type: application/json
+
+{
+    "name": "Maid of Ace",
+    "description": "All-female punk band from Hastings, UK.",
+    "websiteUrl": "https://maidoface.co.uk/"
+}
+
+> {%
+    client.global.set("support_artist_id", response.body.id);
+%}
+
+### Update artist
+PUT {{importer-host}}/api/admin/artists/{{artist_id}}
+Content-Type: application/json
+
+{
+    "name": "The Adicts",
+    "description": "Legendary punk band from Ipswich, England — known for their Clockwork Orange-inspired look.",
+    "websiteUrl": "https://theadicts.net/",
+    "facebookUrl": "https://www.facebook.com/theadicts",
+    "instagramUrl": "https://www.instagram.com/theadictsofficial/",
+    "youtubeUrl": "https://www.youtube.com/@theadictsofficial",
+    "imageUrl": "https://example.com/adicts.jpg"
+}
+
+### Delete artist
+DELETE {{importer-host}}/api/admin/artists/{{artist_id}}
+
+### Get non-existent artist (expect 404)
+GET {{importer-host}}/api/admin/artists/999999
+Accept: application/json

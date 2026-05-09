@@ -1,5 +1,6 @@
 package de.norm.events.event
 
+import de.norm.events.artist.Artist
 import de.norm.events.promoter.Promoter
 import de.norm.events.venue.Venue
 import java.math.BigDecimal
@@ -56,7 +57,7 @@ data class Event(
     /** The venue where this event takes place. Example: Astra Kulturhaus */
     val venue: Venue,
     /** Artists performing at this event, with their roles and billing order. */
-    val artists: List<EventArtist>,
+    val lineup: List<LineupEntry>,
     /** Promoters or presenters responsible for this event. Example: 36 Concerts */
     val promoters: List<Promoter>,
     /** Main headline or name of the event. Example: `"THE ADICTS"` */
@@ -106,16 +107,16 @@ data class Event(
 )
 
 /**
- * Represents the relationship between an event and an artist,
- * including the artist's role and billing order on the lineup.
+ * A single entry in an event's lineup, linking an [Artist] to an [Event]
+ * with their role and billing position.
+ *
+ * Uses the full [Artist] object rather than a foreign key,
+ * consistent with how [Event] references [Venue] and [Promoter].
+ * The persistence layer (`EventArtistEntity`) handles the FK mapping.
  */
-data class EventArtist(
-    /** Database primary key, `null` before persistence. Example: `12` */
-    val id: Long? = null,
-    /** Foreign key referencing the associated [Event]. Example: `101` */
-    val eventId: Long,
-    /** Foreign key referencing the associated [Artist][de.norm.events.artist.Artist]. Example: `7` */
-    val artistId: Long,
+data class LineupEntry(
+    /** The artist performing at the event. */
+    val artist: Artist,
     /** The artist's role in the event lineup. Example: [ArtistRole.SUPPORT] */
     val role: ArtistRole = ArtistRole.HEADLINER,
     /** Position in the lineup, lower numbers appear first. Example: `0` for headliner, `1` for first support */

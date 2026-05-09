@@ -1,0 +1,153 @@
+package de.norm.events.venue
+
+import de.norm.events.BaseControllerTest
+import io.kotest.matchers.collections.shouldContain
+import io.kotest.matchers.ints.shouldBeGreaterThanOrEqual
+import io.kotest.matchers.shouldBe
+import org.junit.jupiter.api.Test
+import org.springframework.test.web.reactive.server.expectBody
+
+class VenueControllerTest : BaseControllerTest() {
+    /** Creates a venue via the API and returns the persisted [VenueResponse]. */
+    private fun createVenue(request: VenueRequest = VenueRequestFixtures.astra()): VenueResponse =
+        webTestClient
+            .post()
+            .uri("/api/admin/venues")
+            .bodyValue(request)
+            .exchange()
+            .expectStatus()
+            .isCreated
+            .expectBody<VenueResponse>()
+            .returnResult()
+            .responseBody!!
+
+    /** Deletes a venue via the API. */
+    private fun deleteVenue(id: Long) {
+        webTestClient
+            .delete()
+            .uri("/api/admin/venues/$id")
+            .exchange()
+            .expectStatus()
+            .isNoContent
+    }
+
+    @Test
+    fun `POST, GET, PUT, DELETE venue lifecycle`() {
+        // Create
+        val created = createVenue()
+
+        created.name shouldBe "Astra Kulturhaus"
+        created.slug shouldBe "astra-kulturhaus"
+
+        val id = created.id
+
+        // Read
+        webTestClient
+            .get()
+            .uri("/api/admin/venues/$id")
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody<VenueResponse>()
+            .consumeWith { result ->
+                result.responseBody!!.name shouldBe "Astra Kulturhaus"
+            }
+
+        // Update
+        webTestClient
+            .put()
+            .uri("/api/admin/venues/$id")
+            .bodyValue(VenueRequestFixtures.astra(name = "Astra Berlin"))
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody<VenueResponse>()
+            .consumeWith { result ->
+                val venue = result.responseBody!!
+                venue.name shouldBe "Astra Berlin"
+                venue.slug shouldBe "astra-berlin"
+            }
+
+        // Delete
+        deleteVenue(id)
+
+        // Verify deleted
+        webTestClient
+            .get()
+            .uri("/api/admin/venues/$id")
+            .exchange()
+            .expectStatus()
+            .isNotFound
+    }
+
+    @Test
+    fun `GET venue by non-existent ID returns 404`() {
+        webTestClient
+            .get()
+            .uri("/api/admin/venues/99999")
+            .exchange()
+            .expectStatus()
+            .isNotFound
+    }
+
+    @Test
+    fun `GET all venues returns list`() {
+        val created = createVenue(VenueRequestFixtures.create(name = "Cassiopeia"))
+
+        val venues =
+            webTestClient
+                .get()
+                .uri("/api/admin/venues")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<List<VenueResponse>>()
+                .returnResult()
+                .responseBody!!
+
+        venues.size shouldBeGreaterThanOrEqual 1
+        venues.map { it.id } shouldContain created.id
+    }
+
+    @Test
+    fun `POST venue with blank name returns 400 with structured field errors`() {
+        webTestClient
+            .post()
+            .uri("/api/admin/venues")
+            .bodyValue(VenueRequestFixtures.create(name = ""))
+            .exchange()
+            .expectStatus()
+            .isBadRequest
+            .expectBody()
+            .jsonPath("$.detail")
+            .isEqualTo("Validation failed")
+            .jsonPath("$.errors")
+            .isArray
+            .jsonPath("$.errors[?(@.field == 'name')]")
+            .exists()
+    }
+
+    @Test
+    fun `POST venue with whitespace-only name returns 400`() {
+        webTestClient
+            .post()
+            .uri("/api/admin/venues")
+            .bodyValue(VenueRequestFixtures.create(name = "   "))
+            .exchange()
+            .expectStatus()
+            .isBadRequest
+    }
+
+    @Test
+    fun `PUT venue with blank name returns 400`() {
+        val created = createVenue()
+
+        webTestClient
+            .put()
+            .uri("/api/admin/venues/${created.id}")
+            .bodyValue(VenueRequestFixtures.create(name = ""))
+            .exchange()
+            .expectStatus()
+            .isBadRequest
+    }
+}

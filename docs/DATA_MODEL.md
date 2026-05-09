@@ -78,8 +78,7 @@ classDiagram
         Instant updatedAt
     }
 
-    class EventArtist {
-        Long id
+    class LineupEntry {
         ArtistRole role
         int billingOrder
     }
@@ -111,12 +110,12 @@ classDiagram
     }
 
     Venue "1" <-- "*" Event: venue
-    Event "1" --> "*" EventArtist: artists
-    EventArtist "*" --> "1" Artist: artist
+    Event "1" --> "*" LineupEntry: lineup
+    LineupEntry "*" --> "1" Artist: artist
     Event "*" --> "*" Promoter: promoters
     Event --> EventType: eventType
     Event --> EventStatus: status
-    EventArtist --> ArtistRole: role
+    LineupEntry --> ArtistRole: role
 ```
 
 Domain classes are organized by feature in `events-core`:
@@ -126,7 +125,7 @@ de.norm.events
 ├── artist/
 │   └── Artist.kt
 ├── event/
-│   └── Event.kt          (Event, EventType, EventStatus, EventArtist, ArtistRole)
+│   └── Event.kt          (Event, EventType, EventStatus, LineupEntry, ArtistRole)
 ├── promoter/
 │   └── Promoter.kt
 └── venue/
@@ -217,9 +216,11 @@ Represents an event promoter or presenter. Shared across events and venues.
 | `created_at`  | `TIMESTAMPTZ` | No       | Record creation timestamp   |                                        |
 | `updated_at`  | `TIMESTAMPTZ` | No       | Last modification timestamp |                                        |
 
-### EventArtist (Join Table)
+### event_artist (Join Table / LineupEntry)
 
 Links events to artists with role and billing order to model the lineup.
+In the domain model this is represented by the `LineupEntry` class which holds a full `Artist` object;
+the persistence layer (`EventArtistEntity`) maps to this join table using foreign keys.
 
 | Field           | Type        | Nullable | Description                         | Example     |
 |-----------------|-------------|----------|-------------------------------------|-------------|
@@ -256,7 +257,7 @@ The Kotlin domain classes in `events-core` use embedded object references (e.g. 
 foreign key IDs. This makes the domain model expressive and self-documenting. The persistence layer in `events-importer`
 and `events-bff` maps between these domain objects and the flat relational schema.
 
-### Separate `EventArtist` Join Entity
+### Separate `LineupEntry` / `event_artist` Join Entity
 
 A dedicated join entity (rather than just a list of artist IDs on the event) captures:
 
@@ -264,6 +265,10 @@ A dedicated join entity (rather than just a list of artist IDs on the event) cap
 - **Billing order** — the position in the lineup (lower = higher on the bill)
 
 This information is displayed prominently on venue websites and is important for the UI.
+
+In the domain model, `LineupEntry` holds a full `Artist` reference (consistent with how `Event`
+references `Venue` and `Promoter`). The persistence layer uses `EventArtistEntity` with foreign key
+IDs to map to the `event_artist` database table.
 
 ### Inline Price Fields Instead of Separate Table
 

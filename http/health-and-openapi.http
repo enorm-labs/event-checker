@@ -1,0 +1,30 @@
+### ============================================================
+### Health & OpenAPI — events-importer (port 8081)
+### ============================================================
+
+### Health check (Actuator)
+GET {{importer-host}}/actuator/health
+Accept: application/json
+
+### OpenAPI spec (JSON)
+GET {{importer-host}}/v3/api-docs
+Accept: application/json
+
+### Swagger UI (open in browser)
+GET {{importer-host}}/webjars/swagger-ui/index.html
+
+### ============================================================
+### Health & OpenAPI — events-bff (port 8080)
+### ============================================================
+
+### Health check (Actuator)
+GET {{bff-host}}/actuator/health
+Accept: application/json
+
+### OpenAPI spec (JSON)
+GET {{bff-host}}/v3/api-docs
+Accept: application/json
+
+### Hello endpoint
+GET {{bff-host}}/hello
+Accept: text/plain

@@ -1,0 +1,118 @@
+### ============================================================
+### Admin: Events — CRUD lifecycle
+###
+### NOTE: Events depend on venues, artists, and promoters.
+###       Run the create requests in venues.http, artists.http,
+###       and promoters.http first to seed the referenced IDs,
+###       or use the IDs stored in response handler variables.
+### ============================================================
+
+### List all events
+GET {{importer-host}}/api/admin/events
+Accept: application/json
+
+### List events — page 0, 10 per page, sorted by event date descending
+GET {{importer-host}}/api/admin/events?page=0&size=10&sort=eventDate,desc
+Accept: application/json
+
+### Get event by ID
+GET {{importer-host}}/api/admin/events/1
+Accept: application/json
+
+### Create event — The Adicts at Astra Kulturhaus
+# Requires: venue ({{venue_id}}), artist ({{artist_id}}), promoter ({{promoter_id}})
+# Run the corresponding create requests in other .http files first.
+POST {{importer-host}}/api/admin/events
+Content-Type: application/json
+
+{
+    "venueId": {{venue_id}},
+    "title": "THE ADICTS",
+    "subtitle": "Adios Amigos Tour 2026 + Support: MAID OF ACE",
+    "eventType": "CONCERT",
+    "status": "SCHEDULED",
+    "eventDate": "2026-06-12",
+    "doorsTime": "19:00",
+    "startTime": "20:00",
+    "sourceId": "astra:2026-06-12-the-adicts",
+    "sourceUrl": "https://www.astra-berlin.de/events/2026-06-12-the-adicts",
+    "ticketUrl": "https://www.eventim.de/event/the-adicts",
+    "genre": "Punk",
+    "pricePresale": 38.00,
+    "priceBoxOffice": 45.00,
+    "priceCurrency": "EUR",
+    "soldOut": false,
+    "artists": [
+        {
+            "artistId": {{artist_id}},
+            "role": "HEADLINER",
+            "billingOrder": 0
+        },
+        {
+            "artistId": {{support_artist_id}},
+            "role": "SUPPORT",
+            "billingOrder": 1
+        }
+    ],
+    "promoterIds": [
+        {{promoter_id}}
+    ]
+}
+
+> {%
+    client.global.set("event_id", response.body.id);
+    client.test("status is 201", function () {
+        client.assert(response.status === 201, "Expected 201 Created");
+    });
+%}
+
+### Create event — minimal example (only required fields)
+POST {{importer-host}}/api/admin/events
+Content-Type: application/json
+
+{
+    "venueId": {{venue_id}},
+    "title": "Punk Night",
+    "eventDate": "2026-07-04",
+    "sourceId": "manual:2026-07-04-punk-night"
+}
+
+### Update event
+PUT {{importer-host}}/api/admin/events/{{event_id}}
+Content-Type: application/json
+
+{
+    "venueId": {{venue_id}},
+    "title": "THE ADICTS",
+    "subtitle": "Adios Amigos Tour 2026 + Support: MAID OF ACE",
+    "eventType": "CONCERT",
+    "status": "SCHEDULED",
+    "eventDate": "2026-06-12",
+    "doorsTime": "19:00",
+    "startTime": "20:00",
+    "sourceId": "astra:2026-06-12-the-adicts",
+    "sourceUrl": "https://www.astra-berlin.de/events/2026-06-12-the-adicts",
+    "ticketUrl": "https://www.eventim.de/event/the-adicts",
+    "genre": "Punk",
+    "pricePresale": 38.00,
+    "priceBoxOffice": 45.00,
+    "priceCurrency": "EUR",
+    "soldOut": true,
+    "artists": [
+        {
+            "artistId": {{artist_id}},
+            "role": "HEADLINER",
+            "billingOrder": 0
+        }
+    ],
+    "promoterIds": [
+        {{promoter_id}}
+    ]
+}
+
+### Delete event
+DELETE {{importer-host}}/api/admin/events/{{event_id}}
+
+### Get non-existent event (expect 404)
+GET {{importer-host}}/api/admin/events/999999
+Accept: application/json

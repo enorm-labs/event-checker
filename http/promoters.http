@@ -1,0 +1,58 @@
+### ============================================================
+### Admin: Promoters — CRUD lifecycle
+### ============================================================
+
+### List all promoters
+GET {{importer-host}}/api/admin/promoters
+Accept: application/json
+
+### List promoters — page 0, 10 per page, sorted by name ascending
+GET {{importer-host}}/api/admin/promoters?page=0&size=10&sort=name,asc
+Accept: application/json
+
+### Get promoter by ID
+GET {{importer-host}}/api/admin/promoters/1
+Accept: application/json
+
+### Create promoter — 36 Concerts
+POST {{importer-host}}/api/admin/promoters
+Content-Type: application/json
+
+{
+    "name": "36 Concerts",
+    "websiteUrl": "https://www.facebook.com/36Concerts/"
+}
+
+> {%
+    client.global.set("promoter_id", response.body.id);
+    client.test("status is 201", function () {
+        client.assert(response.status === 201, "Expected 201 Created");
+    });
+%}
+
+### Create promoter — Puschen Concerts
+POST {{importer-host}}/api/admin/promoters
+Content-Type: application/json
+
+{
+    "name": "Puschen Concerts",
+    "websiteUrl": "https://puschen.net/",
+    "imageUrl": "https://example.com/puschen-logo.jpg"
+}
+
+### Update promoter
+PUT {{importer-host}}/api/admin/promoters/{{promoter_id}}
+Content-Type: application/json
+
+{
+    "name": "36 Concerts",
+    "websiteUrl": "https://www.facebook.com/36Concerts/",
+    "imageUrl": "https://example.com/36-concerts-logo.jpg"
+}
+
+### Delete promoter
+DELETE {{importer-host}}/api/admin/promoters/{{promoter_id}}
+
+### Get non-existent promoter (expect 404)
+GET {{importer-host}}/api/admin/promoters/999999
+Accept: application/json
