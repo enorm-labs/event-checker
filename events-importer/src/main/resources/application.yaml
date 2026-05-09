@@ -4,3 +4,8 @@ server:
 spring:
   application:
     name: events-importer
+  flyway:
+    schemas: events
+  r2dbc:
+    properties:
+      schema: events

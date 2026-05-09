@@ -16,8 +16,8 @@
     * Disable/Enable Import Job
 5. Configure GitHub project
     * CI/CD workflows
-    * Static Code Analysis
-    * Code/Security Scanning
+    * Code Quality (Static Code Analysis) enabled https://github.com/enorm-labs/event-checker/settings/code-quality
+    * Code/Security Scanning  https://github.com/enorm-labs/event-checker/settings/security_analysis
     * FOSS Scanner / licenses checker / license compatibility checker
     * Copilot?
     * Settings
@@ -47,3 +47,5 @@
     * DSGVO?
     * Accessibility?
     * Link to GitHub repository
+    * Is it legal to scrape events from websites and display them on my website?
+* Infrastructure and Tooling Update Checker (can dependabot also do this? Or use something like Renovate?)
