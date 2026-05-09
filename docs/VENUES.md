@@ -27,7 +27,7 @@ Arcanoa https://www.ssi-media.com/arcanoa/
 Junction Bar https://www.junction-bar.de/
 Supamolly https://www.supamolly.de/
 Monarch https://www.kottimonarch.de/
-Sisyfass 
+Sisyfass
 Bar Bobu https://barbobu.de/
 Urban Spree https://www.urbanspree.com/
 Lido https://www.lido-berlin.de/
