@@ -1,5 +1,6 @@
 package de.norm.events.event
 
+import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.data.domain.Pageable
@@ -34,22 +35,26 @@ class EventController(
      * to avoid N+1 queries (3 queries per page regardless of event count).
      */
     @GetMapping
+    @Operation(summary = "List all events with pagination")
     suspend fun findAll(
         @PageableDefault(size = 20, sort = ["eventDate"]) pageable: Pageable
     ): List<EventResponse> = eventService.findAll(pageable)
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get a single event by ID")
     suspend fun findById(
         @PathVariable id: Long
     ): EventResponse = eventService.findById(id)
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Create a new event")
     suspend fun create(
         @Valid @RequestBody request: EventRequest
     ): EventResponse = eventService.create(request)
 
     @PutMapping("/{id}")
+    @Operation(summary = "Update an existing event")
     suspend fun update(
         @PathVariable id: Long,
         @Valid @RequestBody request: EventRequest
@@ -57,7 +62,10 @@ class EventController(
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Delete an event by ID")
     suspend fun delete(
         @PathVariable id: Long
-    ) = eventService.delete(id)
+    ) {
+        eventService.delete(id)
+    }
 }

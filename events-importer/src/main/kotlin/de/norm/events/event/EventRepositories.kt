@@ -3,15 +3,39 @@ package de.norm.events.event
 import kotlinx.coroutines.flow.Flow
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.kotlin.CoroutineCrudRepository
+import java.time.LocalDate
 
 /**
  * Reactive repository for [EventEntity] persistence via R2DBC.
  */
 interface EventRepository : CoroutineCrudRepository<EventEntity, Long> {
-    suspend fun findBySourceId(sourceId: String): EventEntity?
+    /** Batch-fetches events by their source IDs to avoid N+1 queries during upsert. */
+    fun findBySourceIdIn(sourceIds: Collection<String>): Flow<EventEntity>
 
     /** Finds all events with pagination and sorting applied via [pageable]. */
     fun findAllBy(pageable: Pageable): Flow<EventEntity>
+
+    /**
+     * Finds events imported by a specific event source whose date falls within a given range.
+     *
+     * Used to detect stale events that were previously imported but are no longer listed
+     * on the source website. The [eventSourceId] FK directly identifies the source,
+     * and the date range limits the scope to events we actually scraped (avoiding deletion
+     * of events on pages we didn't fetch).
+     */
+    fun findByEventSourceIdAndEventDateBetween(
+        eventSourceId: Long,
+        fromDate: LocalDate,
+        toDate: LocalDate
+    ): Flow<EventEntity>
+
+    /**
+     * Bulk-deletes events by their IDs (used for stale event cleanup).
+     *
+     * Associated join table rows (`event_artist`, `event_promoter`) are cleaned up
+     * automatically via `ON DELETE CASCADE` in the schema.
+     */
+    suspend fun deleteByIdIn(ids: Collection<Long>)
 }
 
 /**

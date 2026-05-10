@@ -31,6 +31,10 @@ dependencies {
     api("org.springframework.modulith:spring-modulith-starter-core")
     testImplementation("org.springframework.modulith:spring-modulith-starter-test")
 
+    // Kotlin Logging — idiomatic SLF4J wrapper for Kotlin
+    // See: https://github.com/oshai/kotlin-logging
+    implementation("io.github.oshai:kotlin-logging-jvm:${property("kotlin-logging.version")}")
+
     testImplementation(kotlin("test"))
 }
 

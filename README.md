@@ -3,12 +3,19 @@
 [![Build & Test Backend](https://github.com/enorm-labs/event-checker/actions/workflows/build-backend.yml/badge.svg)](https://github.com/enorm-labs/event-checker/actions/workflows/build-backend.yml)
 [![Build & Test Frontend](https://github.com/enorm-labs/event-checker/actions/workflows/build-frontend.yml/badge.svg)](https://github.com/enorm-labs/event-checker/actions/workflows/build-frontend.yml)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE)
+[![Status](https://img.shields.io/badge/Status-In%20Development-orange.svg)](#project-status)
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.3.21-7F52FF.svg?logo=kotlin&logoColor=white)](https://kotlinlang.org)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.0.6-6DB33F.svg?logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
 [![Java](https://img.shields.io/badge/Java-25-ED8B00.svg?logo=openjdk&logoColor=white)](https://openjdk.org)
 [![Vue.js](https://img.shields.io/badge/Vue.js-3-4FC08D.svg?logo=vuedotjs&logoColor=white)](https://vuejs.org)
 
 A simple app/website for checking and finding music events in Berlin (scope might be extended in the future).
+
+## Project Status
+
+🚧 **In Development** — This project is not yet live or deployed to any production environment.
+The database schema is still evolving and may change without migration compatibility between versions.
+All schema changes are consolidated into a single initial migration (`V001`) until the first production release.
 
 ## TODO
 

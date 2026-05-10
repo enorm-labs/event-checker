@@ -1,6 +1,8 @@
 package de.norm.events.event
 
+import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
+import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.relational.core.mapping.Table
 import java.math.BigDecimal
 import java.time.Instant
@@ -10,13 +12,16 @@ import java.time.LocalTime
 /**
  * R2DBC entity mapped to the `event` table.
  *
- * Stores only the event's own columns (including `venue_id` as a FK).
- * Artist and promoter associations are managed through separate join-table entities.
+ * Stores only the event's own columns (including `venue_id` and optional
+ * `event_source_id` as FKs). Artist and promoter associations are managed
+ * through separate join-table entities.
  */
-@Table("event", schema = "events")
+@Table("event")
 data class EventEntity(
     @Id val id: Long? = null,
     val venueId: Long,
+    /** FK to [de.norm.events.scraper.EventSourceEntity] that imported this event, or null for manually created events. */
+    val eventSourceId: Long? = null,
     val title: String,
     val subtitle: String? = null,
     val description: String? = null,
@@ -37,14 +42,18 @@ data class EventEntity(
     val priceCurrency: String = "EUR",
     val priceNote: String? = null,
     val soldOut: Boolean = false,
-    val createdAt: Instant? = null,
-    val updatedAt: Instant? = null
+    @CreatedDate val createdAt: Instant? = null,
+    @LastModifiedDate val updatedAt: Instant? = null
 )
 
 /**
  * R2DBC entity mapped to the `event_artist` join table.
+ *
+ * Uses a surrogate auto-generated `id` column so that Spring Data R2DBC
+ * correctly detects new entities (id = null → INSERT). A unique constraint
+ * on (event_id, artist_id) preserves the logical composite key.
  */
-@Table("event_artist", schema = "events")
+@Table("event_artist")
 data class EventArtistEntity(
     @Id val id: Long? = null,
     val eventId: Long,
@@ -60,7 +69,7 @@ data class EventArtistEntity(
  * correctly detects new entities (id = null → INSERT). A unique constraint
  * on (event_id, promoter_id) preserves the logical composite key.
  */
-@Table("event_promoter", schema = "events")
+@Table("event_promoter")
 data class EventPromoterEntity(
     @Id val id: Long? = null,
     val eventId: Long,

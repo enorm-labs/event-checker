@@ -3,8 +3,10 @@ import org.jlleitschuh.gradle.ktlint.KtlintExtension
 
 // Centralized dependency versions – change here to update all subprojects at once.
 extra["java.version"] = 25
+extra["jsoup.version"] = "1.22.2"
 extra["kotest.version"] = "6.1.11"
-extra["kotlin-logging.version"] = "7.0.7"
+extra["kotlin-logging.version"] = "7.0.14"
+extra["mockk.version"] = "1.14.9"
 extra["slugify.version"] = "4.0.0"
 extra["spring-modulith.version"] = "2.0.6"
 extra["springdoc.version"] = "3.0.3"

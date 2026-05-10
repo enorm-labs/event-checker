@@ -15,9 +15,9 @@ All application tables live in a **dedicated `events` schema** (not `public`).
 
 This is configured in three places:
 
-1. **Flyway** (importer only): `spring.flyway.schemas: events` — migrations target the `events` schema.
-   The initial migration `V001__create_initial_schema.sql` creates the schema with
-   `CREATE SCHEMA IF NOT EXISTS events`.
+1. **Flyway** (importer only): `spring.flyway.schemas: events` — Flyway automatically creates the schema
+   if it doesn't exist and sets `search_path` before running migrations. Migration SQL uses unqualified
+   table names so the target schema remains configurable via `application.yaml`.
 2. **R2DBC** (both BFF and importer): `spring.r2dbc.properties.schema: events` — sets the default schema
    for all R2DBC operations. Entity `@Table` annotations also specify `schema = "events"` for explicitness.
 3. **Custom `@Query` SQL**: Must use the schema prefix (e.g. `events.event_artist`) because raw queries

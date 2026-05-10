@@ -1,0 +1,74 @@
+package de.norm.events.scraper
+
+import io.swagger.v3.oas.annotations.media.Schema
+import java.time.Instant
+
+/**
+ * Response DTO for event source status information.
+ */
+@Schema(description = "Event source configuration and status")
+data class EventSourceResponse(
+    @Schema(description = "Database ID of the event source", example = "1")
+    val id: Long,
+    @Schema(description = "Database ID of the associated venue", example = "42")
+    val venueId: Long,
+    @Schema(description = "Human-readable name of the event source", example = "Privatclub Website")
+    val name: String,
+    @Schema(description = "URL-friendly unique key", example = "privatclub")
+    val slug: String,
+    @Schema(description = "The event listing page URL being scraped", example = "https://privatclub-berlin.de/")
+    val url: String,
+    @Schema(description = "EventSource enum value identifying the importer", example = "CASSIOPEIA")
+    val sourceType: String,
+    @Schema(description = "Whether this source is actively scraped", example = "true")
+    val enabled: Boolean,
+    @Schema(description = "Import interval in minutes (1440 = daily)", example = "1440")
+    val importIntervalMinutes: Int,
+    @Schema(description = "Current import status", example = "SUCCESS")
+    val status: String,
+    @Schema(description = "Timestamp of the last completed import")
+    val lastImportAt: Instant?,
+    @Schema(description = "Number of events imported in the last successful run", example = "12")
+    val lastEventCount: Int?,
+    @Schema(description = "Error message from the last failed import")
+    val lastError: String?,
+    @Schema(description = "Number of consecutive failures", example = "0")
+    val retryCount: Int,
+    @Schema(description = "Maximum retry attempts before giving up", example = "3")
+    val maxRetries: Int
+) {
+    companion object {
+        fun fromEntity(entity: EventSourceEntity): EventSourceResponse =
+            EventSourceResponse(
+                id = requireNotNull(entity.id) { "Persisted entity must have an ID" },
+                venueId = entity.venueId,
+                name = entity.name,
+                slug = entity.slug,
+                url = entity.url,
+                sourceType = entity.sourceType,
+                enabled = entity.enabled,
+                importIntervalMinutes = entity.importIntervalMinutes,
+                status = entity.status,
+                lastImportAt = entity.lastImportAt,
+                lastEventCount = entity.lastEventCount,
+                lastError = entity.lastError,
+                retryCount = entity.retryCount,
+                maxRetries = entity.maxRetries
+            )
+    }
+}
+
+/**
+ * Response DTO for an import run result.
+ */
+@Schema(description = "Result of an import run for a single source")
+data class ImportResultResponse(
+    @Schema(description = "Slug of the event source", example = "privatclub")
+    val sourceSlug: String,
+    @Schema(description = "Whether the import was executed (false if page was not modified)", example = "true")
+    val imported: Boolean,
+    @Schema(description = "Number of events imported or updated", example = "12")
+    val eventCount: Int,
+    @Schema(description = "Error message if the import failed")
+    val error: String? = null
+)

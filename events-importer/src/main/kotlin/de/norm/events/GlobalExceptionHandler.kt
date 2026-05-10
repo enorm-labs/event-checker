@@ -3,6 +3,9 @@ package de.norm.events
 import de.norm.events.artist.ArtistNotFoundException
 import de.norm.events.event.EventNotFoundException
 import de.norm.events.promoter.PromoterNotFoundException
+import de.norm.events.scraper.EventSourceNotFoundException
+import de.norm.events.scraper.InvalidSourceTypeException
+import de.norm.events.scraper.ReservedSlugException
 import de.norm.events.venue.VenueNotFoundException
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.dao.DataIntegrityViolationException
@@ -24,7 +27,8 @@ class GlobalExceptionHandler {
         VenueNotFoundException::class,
         ArtistNotFoundException::class,
         PromoterNotFoundException::class,
-        EventNotFoundException::class
+        EventNotFoundException::class,
+        EventSourceNotFoundException::class
     )
     fun handleNotFound(ex: RuntimeException): ProblemDetail {
         logger.debug { "Entity not found: ${ex.message}" }
@@ -79,8 +83,28 @@ class GlobalExceptionHandler {
     }
 
     /**
+     * Handles reserved slug violations — the source name generates a slug that conflicts
+     * with a reserved API path segment (e.g. "import", "retry"). This is a client input error.
+     */
+    @ExceptionHandler(ReservedSlugException::class)
+    fun handleReservedSlug(ex: ReservedSlugException): ProblemDetail {
+        logger.debug { "Reserved slug violation: ${ex.message}" }
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.message ?: "Reserved slug")
+    }
+
+    /**
+     * Handles invalid source type values — the client provided a `sourceType` that doesn't
+     * match any known [de.norm.events.scraper.EventSource] enum constant.
+     */
+    @ExceptionHandler(InvalidSourceTypeException::class)
+    fun handleInvalidSourceType(ex: InvalidSourceTypeException): ProblemDetail {
+        logger.debug { "Invalid source type: ${ex.message}" }
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.message ?: "Invalid source type")
+    }
+
+    /**
      * Handles [IllegalArgumentException] thrown when the database contains an enum value
-     * that doesn't match any Kotlin enum constant (e.g. an unknown [ArtistRole] or [EventType]
+     * that doesn't match any Kotlin enum constant (e.g. an unknown [de.norm.events.event.ArtistRole] or [de.norm.events.event.EventType]
      * from a manual DB edit or future migration).
      */
     @ExceptionHandler(IllegalArgumentException::class)

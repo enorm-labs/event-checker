@@ -73,6 +73,11 @@ dependencies {
     // See: https://github.com/slugify/slugify
     implementation("com.github.slugify:slugify:${property("slugify.version")}")
 
+    // Jsoup – robust HTML parser and CSS-selector-based scraper for importing
+    // event data from venue websites. Used for parsing only (HTTP fetching goes
+    // through Spring WebClient). See: https://jsoup.org/
+    implementation("org.jsoup:jsoup:${property("jsoup.version")}")
+
     // Dev Tools
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")
@@ -84,6 +89,10 @@ dependencies {
     // Kotest assertions – expressive matchers for readable test assertions
     // See: https://kotest.io/docs/assertions/assertions.html
     testImplementation("io.kotest:kotest-assertions-core:${property("kotest.version")}")
+
+    // MockK – idiomatic Kotlin mocking library, preferred over Mockito for Kotlin tests
+    // See: https://mockk.io/
+    testImplementation("io.mockk:mockk:${property("mockk.version")}")
 
     // Testcontainers
     testImplementation("org.springframework.boot:spring-boot-testcontainers")

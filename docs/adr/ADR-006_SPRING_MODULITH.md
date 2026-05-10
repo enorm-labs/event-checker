@@ -46,6 +46,24 @@ class ModularityTests {
 
 This test fails the build if any module accesses another module's internals or uses an undeclared dependency.
 
+### Flat Package Structure (no parent grouping)
+
+The decision to keep all modules as **direct sub-packages** of `de.norm.events` (flat structure) is
+deliberate. Grouping domain modules under `de.norm.events.domain.*` and infrastructure modules under
+`de.norm.events.infrastructure.*` was considered and rejected:
+
+- **Spring Modulith module detection depends on it.** Modulith treats each direct sub-package of the
+  base package as a module. Nesting `artist` under `domain.artist` would make `domain` the module,
+  collapsing `artist`, `event`, `promoter`, and `venue` into a single module and losing all
+  inter-module boundary enforcement.
+- **Workarounds add complexity without value.** Using `@ApplicationModule(type = Type.OPEN)` or
+  `@NamedInterface` to restore sub-module detection is verbose and fragile.
+- **Flat is the Spring Modulith convention.** The official documentation recommends direct
+  sub-packages as modules.
+- **At 6 packages, grouping adds no discoverability benefit.** The distinction between domain
+  (`artist`, `event`, `promoter`, `venue`) and infrastructure (`slug`, `scraper`) is already obvious
+  from context. Revisit if the project grows beyond ~15 modules.
+
 ## Consequences
 
 - **Positive**: Module boundaries are enforced at build time, not just by convention; violations are caught

@@ -1,5 +1,21 @@
 # AGENTS.md
 
+## Agent Instructions
+
+- **Git non-interactive mode**: Always run git commands with the pager disabled to prevent the agent from hanging
+  on interactive output. Use `git --no-pager <command>` or set the environment variable `GIT_PAGER=cat`.
+  This applies to all git commands that may produce paged output (`log`, `diff`, `show`, `branch`, etc.).
+  See [git docs](https://git-scm.com/docs/git#Documentation/git.txt---no-pager).
+- **ktlint auto-format first**: When ktlint reports formatting issues, always run `./gradlew ktlintFormat` first
+  to auto-correct them. Only edit files manually for issues that ktlint cannot auto-fix.
+- **Build verification**: Always run `./gradlew clean build` after finishing an implementation to verify that all modules
+  compile, tests pass, ktlint and detekt checks succeed, and Kover coverage thresholds are met.
+- **No unsolicited git commits/pushes**: Never run `git commit`, `git push`, or `git rebase` (squash) unless explicitly asked to by the user.
+- **GitHub CLI (`gh`)**: The `gh` CLI is installed (Homebrew) and authenticated for GitHub.com and enterprise instances.
+  Use it for GitHub interactions such as creating/viewing PRs, managing issues, checking CI status, and browsing repositories.
+  See [GitHub CLI quickstart](https://docs.github.com/en/github-cli/github-cli/quickstart) and
+  [CLI reference](https://docs.github.com/en/github-cli/github-cli/github-cli-reference).
+
 ## Project Overview
 
 Event Checker is a multi-module Kotlin/Spring Boot application for discovering music events in Berlin. It uses a **Gradle multi-project build** with three
@@ -25,14 +41,24 @@ subprojects sharing a root `settings.gradle.kts`, plus a standalone frontend pro
   prefix (e.g. `events.event_artist`) because raw queries bypass the `@Table(schema = ...)` metadata.
   See [Spring Data R2DBC query methods reference](https://docs.spring.io/spring-data/relational/reference/r2dbc/query-methods.html).
 - **Domain model** lives in `events-core` as plain Kotlin data classes (no Spring Data annotations). Tables: `venue`, `artist`, `promoter`, `event`,
-  `event_artist` (join), `event_promoter` (join). Events reference venues via FK; artists and promoters link to events through join tables.
-  `Event.sourceId` enables idempotent imports (upsert semantics).
+  `event_artist` (join), `event_promoter` (join), `event_source` (import metadata). Events reference venues via FK; artists and promoters link to events
+  through join tables.
+  `Event.sourceId` enables idempotent imports (upsert semantics). `event_source` tracks per-venue import configuration and conditional-request headers (ETag,
+  Last-Modified).
 - **Spring Modulith** enforces module boundaries: each direct sub-package under `de.norm.events` is an application module. Run `ModularityTests` (present in all
   three modules) to verify structure.
 - **Database schema**: All tables live in a dedicated `events` schema (not `public`). Both apps configure this via `spring.r2dbc.properties.schema: events`;
-  importer also sets `spring.flyway.schemas: events`. The migration `V001__create_initial_schema.sql` creates the schema with
-  `CREATE SCHEMA IF NOT EXISTS events`.
+  importer also sets `spring.flyway.schemas: events`, which tells Flyway to auto-create the schema and set `search_path` before running migrations.
+  A custom `NamingStrategy` bean in `R2dbcConfiguration` reads the schema from `spring.r2dbc.properties.schema` and applies it
+  globally to all derived query methods (`findBy*`, `save`, `delete`, etc.), so `@Table` annotations don't need to repeat
+  `schema = "events"`. Without this `NamingStrategy`, Spring Data R2DBC generates unqualified table references
+  (e.g. `INSERT INTO "venue"`) that fail because the tables don't exist in the `public` schema. Raw `@Query` SQL must
+  still include the schema prefix manually (e.g. `events.event_source`) since custom queries bypass both `@Table` and
+  `NamingStrategy` metadata.
 - **Database migrations** live in `events-importer` only (Flyway). The BFF does not run migrations. Migration naming: `V001__description.sql`.
+  While the project is in development (not yet deployed to production), all schema changes are consolidated into a single
+  `V001__create_initial_schema.sql` migration. Incremental migrations (`V002`, `V003`, …) will be introduced once the first
+  production deployment establishes a baseline.
 - **Docker Compose dev services**: `bootRun` auto-starts PostgreSQL via Spring Docker Compose support (`compose.yaml` at root).
 - **SpringDoc OpenAPI** enabled in both BFF and importer — Swagger UI available at `/webjars/swagger-ui/index.html`;
   OpenAPI spec (JSON) at `/v3/api-docs`. Controllers are annotated with `@Tag(name = "Admin: <Entity>")` to group endpoints by entity type
@@ -62,7 +88,8 @@ subprojects sharing a root `settings.gradle.kts`, plus a standalone frontend pro
   (artists, promoters) that are resolved at the entity level rather than round-tripping through the domain model.
   The request → response flow is: `*Request` → Service (builds domain object → persists via `*Entity`) → `*Response.fromDomain()` → Controller.
   The event module uses plural filenames (`EventEntities.kt`, `EventRepositories.kt`, `EventRequests.kt`, `EventResponses.kt`) when a file
-  contains multiple related classes; other modules use singular names (`VenueRequest.kt`, `VenueResponse.kt`, etc.).
+  contains multiple related classes; the scraper module also uses `EventSourceResponses.kt` for the same reason. Other modules use singular names
+  (`VenueRequest.kt`, `VenueResponse.kt`, etc.).
 - **Pagination, sorting & limiting**: All list endpoints accept `Pageable` parameters via query string (`?page=0&size=20&sort=name,asc`).
   Controllers use `@PageableDefault` to declare sensible defaults (20 items per page; venues/artists/promoters sort by `name`,
   events sort by `eventDate`). Repositories expose `findAllBy(pageable: Pageable): Flow<Entity>` for Spring Data to apply
@@ -81,6 +108,50 @@ subprojects sharing a root `settings.gradle.kts`, plus a standalone frontend pro
   Slugs are not accepted in request DTOs — they are a server-side concern computed by the service layer.
   The slug logic is encapsulated in a dedicated `slug` Spring Modulith module (`de.norm.events.slug`) with a `SlugGenerator`
   object singleton (see `SlugGenerator.kt`, `SlugModule.kt`). All feature modules declare `"slug"` in their `allowedDependencies`.
+- **Price normalization**: All monetary `BigDecimal` fields (presale, box office) are normalized to scale 2 (`setScale(2, HALF_UP)`)
+  at the mapping boundaries where prices enter `EventEntity` — scraper (`ScrapedEvent.toEventEntity()`) and admin API (`EventService`).
+  The `BigDecimal.normalizeMoneyScale()` extension function lives in `events-core` (`MoneyExtensions.kt`) as a domain-level concern.
+  This ensures consistent storage and prevents false positives in the scraper's `contentEquals` change detection, because
+  `BigDecimal.equals()` is scale-sensitive (e.g. `BigDecimal("10.0") != BigDecimal("10.00")`).
+- **Web scraping**: The importer uses a `scraper` Spring Modulith module (`de.norm.events.scraper`) for importing event data
+  from venue websites. See ADR-007. Key design:
+    - **Jsoup** (`org.jsoup:jsoup`) for HTML parsing — robust handling of real-world HTML with CSS selector API.
+    - **Spring WebClient** for reactive HTTP fetching with ETag/Last-Modified conditional requests.
+    - **`PerHostThrottlingFilter`** — WebClient `ExchangeFilterFunction` enforcing a configurable
+      politeness delay (`app.scraper.polite-delay-millis`, default: 200ms) between consecutive requests
+      to the same host. Transparent to scrapers — all `HtmlFetcher` requests are throttled automatically.
+      Requests to different hosts proceed concurrently. See ADR-007 "Per-Host Politeness Throttling".
+    - **`EventSource` enum** — compile-time safe registry of known import sources (e.g. `CASSIOPEIA`).
+    - **`EventImporter` interface** — each venue-specific importer implements this, dispatched by `eventSource` property.
+    - **`event_source` table** — tracks per-venue import configuration, conditional-request headers, and import status/metrics.
+      Event sources are created via `POST /api/admin/event-sources` (not Flyway — Flyway is reserved for DDL-only migrations).
+      Operational config (enable/disable, interval, retries) is managed via `PATCH` and sources can be removed via `DELETE`.
+    - **`EventImportService`** — orchestrates the import pipeline: resolves the correct importer, delegates persistence
+      to `EventUpsertService`, and manages event source status transitions (RUNNING → SUCCESS/FAILED/MISCONFIGURED).
+      Imports multiple sources concurrently using coroutine `async` with a `Semaphore`-based concurrency limit
+      (`app.import.max-concurrency`, default: 4). This is safe because the artist cache is local to each import call,
+      concurrent artist creation is handled via `DataIntegrityViolationException` fallback, and per-host HTTP politeness
+      is enforced by `PerHostThrottlingFilter`.
+    - **`EventUpsertService`** — handles the persistence pipeline: deduplication, change detection (skips unchanged events
+      to avoid unnecessary writes and inflated `updated_at` timestamps), event upsert, artist resolution/auto-creation,
+      diff-based artist association syncing, and stale event cleanup. Called within a transactional boundary by `EventImportService`.
+    - **`EventSourceService`** — CRUD service for managing event source configuration.
+    - **`ScrapingExtensions.kt`** — framework-level Kotlin extension functions shared across all venue scrapers.
+      Provides reusable utilities for common extraction patterns: `Element.textAt()`, `Element.imgSrcAt()`,
+      `Element.hrefAt()`, `Element.hasVisibleWebflowFlag()`, `parseTime()`, `mapGermanCategory()`.
+      New venue scrapers should use these extensions instead of reimplementing the same null-safe chains.
+    - **Venue-specific subdirectories** — each venue importer lives in its own sub-package under `scraper/` (e.g. `scraper/cassiopeia/`).
+      Each contains a `*WebsiteImporter.kt` implementing `EventImporter`, plus `*OverviewPageScraper.kt` and `*DetailPageScraper.kt`
+      for pure HTML parsing (no I/O). Use existing implementations as templates when adding new venue importers.
+- **Scheduled imports**: The importer uses Spring `@Scheduled` with the `event_source` table for periodic event imports. See ADR-008. Key design:
+    - A single `@Scheduled(fixedDelay = 60s)` tick in `ScheduledImportService` queries for due sources.
+    - Due sources are imported concurrently via `EventImportService.importConcurrently()`, bounded by the
+      configured concurrency limit (`app.import.max-concurrency`, default: 4).
+    - Each source has its own `import_interval_minutes` (default: 1440 = daily).
+    - Failed imports are retried with exponential backoff up to `max_retries` times.
+    - Sources stuck in RUNNING for >30 min are automatically reset to FAILED (staleness guard).
+    - Scheduling is enabled by default but disabled in tests via `app.scheduling.enabled: false`.
+    - `@EnableScheduling` is applied on `EventsImporterApplication`.
 - **OWASP Dependency-Check** (`org.owasp.dependencycheck`) scans all project dependencies against the National Vulnerability
   Database (NVD) for known CVEs. Configured at the root level with `dependencyCheckAggregate` to produce a single report.
   Fails the build on CVSS ≥ 7 (HIGH). False positives can be suppressed via `owasp-suppressions.xml`. SARIF output is
@@ -124,8 +195,9 @@ Java version is managed via SDKMAN (`.sdkmanrc` pins `java=25.0.2-tem`; run `sdk
 - **detekt 2.0** (`dev.detekt` plugin, migrated from `io.gitlab.arturbosch.detekt`) applied project-wide. Builds upon default config with overrides in
   root `detekt.yml` (currently only `MaxLineLength: 160`). Run `./gradlew detekt` to analyze all modules.
 - **Max line length**: 160 characters (enforced by both `.editorconfig` and `detekt.yml`).
-- Centralized versions in root `build.gradle.kts` (`extra["java.version"]`, `extra["kotest.version"]`, `extra["kotlin-logging.version"]`,
-  `extra["slugify.version"]`, `extra["spring-modulith.version"]`, `extra["springdoc.version"]`); plugin versions in `settings.gradle.kts` `pluginManagement`.
+- Centralized versions in root `build.gradle.kts` (`extra["java.version"]`, `extra["jsoup.version"]`, `extra["kotest.version"]`,
+  `extra["kotlin-logging.version"]`, `extra["mockk.version"]`, `extra["slugify.version"]`, `extra["spring-modulith.version"]`,
+  `extra["springdoc.version"]`); plugin versions in `settings.gradle.kts` `pluginManagement`.
 - Use `val` for injected dependencies; constructor injection only (no field injection).
 - Application config files use **`.yaml`** extension (not `.yml`).
 - Kotlin compiler flags: `-Xjsr305=strict` (all modules) and `-Xannotation-default-target=param-property` (BFF + importer) are set in `compilerOptions`.
@@ -153,6 +225,7 @@ Java version is managed via SDKMAN (`.sdkmanrc` pins `java=25.0.2-tem`; run `sdk
 - **BaseControllerTest** (importer only): Abstract base class for integration tests that extends Testcontainers setup, provides a `WebTestClient`,
   and truncates all domain tables via `@BeforeEach` so each test starts with a clean database. Extend this instead of repeating boilerplate.
 - **Kotest assertions**: The importer uses `io.kotest:kotest-assertions-core` for expressive test matchers (e.g. `shouldBe`, `shouldContain`).
+- **MockK**: The importer uses `io.mockk:mockk` for mocking in Kotlin tests (preferred over Mockito). Used for unit-testing services with injected dependencies.
 - **Test fixture factories**: Each importer feature module has a `*RequestFixtures` object singleton with factory methods that provide sensible defaults,
   so tests only override properties relevant to the scenario (e.g. `VenueRequestFixtures.astra()`, `VenueRequestFixtures.create(name = "Privatclub")`).
 - **Full lifecycle integration test**: `FullLifecycleIntegrationTest` exercises the complete CRUD flow across all entity types in a single sequential scenario
@@ -198,9 +271,11 @@ Java version is managed via SDKMAN (`.sdkmanrc` pins `java=25.0.2-tem`; run `sdk
 | Code review prompt                    | `.github/prompts/code-review.prompt.md`                                           |
 | Shared domain module marker           | `events-core/src/.../EventsCoreModule.kt`                                         |
 | Domain data classes                   | `events-core/src/.../artist/`, `event/`, `promoter/`, `venue/`                    |
+| Price normalization utility           | `events-core/src/.../event/MoneyExtensions.kt`                                    |
 | Initial DB migration                  | `events-importer/src/main/resources/db/migration/V001__create_initial_schema.sql` |
 | Global exception handler              | `events-importer/src/.../GlobalExceptionHandler.kt`                               |
 | Slug generator utility                | `events-importer/src/.../slug/SlugGenerator.kt`                                   |
+| Shared scraping utilities             | `events-importer/src/.../scraper/ScrapingExtensions.kt`                           |
 | WebFlux Pageable resolver config      | `events-importer/src/.../WebFluxConfiguration.kt`                                 |
 | Base integration test class           | `events-importer/src/test/.../BaseControllerTest.kt`                              |
 | Full lifecycle integration test       | `events-importer/src/test/.../event/FullLifecycleIntegrationTest.kt`              |
@@ -215,5 +290,7 @@ Java version is managed via SDKMAN (`.sdkmanrc` pins `java=25.0.2-tem`; run `sdk
 | ADR: Dedicated database schema        | `docs/adr/ADR-004_DEDICATED_DATABASE_SCHEMA.md`                                   |
 | ADR: Migrations owned by importer     | `docs/adr/ADR-005_MIGRATIONS_OWNED_BY_IMPORTER.md`                                |
 | ADR: Spring Modulith                  | `docs/adr/ADR-006_SPRING_MODULITH.md`                                             |
+| ADR: Web scraping strategy            | `docs/adr/ADR-007_WEB_SCRAPING_STRATEGY.md`                                       |
+| ADR: Import job scheduling            | `docs/adr/ADR-008_IMPORT_JOB_SCHEDULING.md`                                       |
 | Frontend entry point                  | `events-frontend/src/main.ts`                                                     |
 | IntelliJ HTTP Client requests         | `http/` (per-entity `.http` files + `http-client.env.json` for environments)      |

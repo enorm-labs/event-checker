@@ -8,7 +8,7 @@ The **Import** column tracks whether an automated importer has been implemented 
 |-----------------------------|---------------------------------------------|--------------|:----------:|:------:|-----------------------------------|
 | Astra Kulturhaus            | https://www.astra-berlin.de/                | Concert Hall |     ✅      |        |                                   |
 | Badehaus                    | https://badehaus-berlin.com/                | Club         |     ✅      |        |                                   |
-| Cassiopeia                  | https://cassiopeia-berlin.de/               | Club         |     ✅      |        |                                   |
+| Cassiopeia                  | https://cassiopeia-berlin.de/               | Club         |     ✅      |   ✅    |                                   |
 | Privatclub                  | https://privatclub-berlin.de/               | Club         |     ✅      |        |                                   |
 | Bi Nuu                      | https://binuu.de/                           | Club         |     ✅      |        |                                   |
 | Frannz Club                 | https://frannz.eu/                          | Club         |     ✅      |        |                                   |

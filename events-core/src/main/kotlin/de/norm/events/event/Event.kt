@@ -3,10 +3,13 @@ package de.norm.events.event
 import de.norm.events.artist.Artist
 import de.norm.events.promoter.Promoter
 import de.norm.events.venue.Venue
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.math.BigDecimal
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
+
+private val logger = KotlinLogging.logger {}
 
 /**
  * Categorizes events by their type/kind as observed on venue websites.
@@ -22,7 +25,14 @@ enum class EventType {
     QUIZ,
     CLUB_NIGHT,
     SHOW,
-    OTHER
+    OTHER;
+
+    companion object {
+        /** Safely parses [value] to an [EventType], falling back to [OTHER] for unrecognized values. Case-insensitive, trims whitespace. */
+        fun parseOrDefault(value: String): EventType =
+            entries.find { it.name.equals(value.trim(), ignoreCase = true) }
+                ?: OTHER.also { logger.warn { "Unknown EventType '$value', defaulting to OTHER" } }
+    }
 }
 
 /**
@@ -42,7 +52,14 @@ enum class EventStatus {
     CANCELLED,
 
     /** Event has been postponed to an unannounced future date. */
-    POSTPONED
+    POSTPONED;
+
+    companion object {
+        /** Safely parses [value] to an [EventStatus], falling back to [SCHEDULED] for unrecognized values. Case-insensitive, trims whitespace. */
+        fun parseOrDefault(value: String): EventStatus =
+            entries.find { it.name.equals(value.trim(), ignoreCase = true) }
+                ?: SCHEDULED.also { logger.warn { "Unknown EventStatus '$value', defaulting to SCHEDULED" } }
+    }
 }
 
 /**
@@ -134,5 +151,12 @@ enum class ArtistRole {
     SUPPORT,
 
     /** DJ set, typically at aftershow parties or festivals */
-    DJ
+    DJ;
+
+    companion object {
+        /** Safely parses [value] to an [ArtistRole], falling back to [HEADLINER] for unrecognized values. Case-insensitive, trims whitespace. */
+        fun parseOrDefault(value: String): ArtistRole =
+            entries.find { it.name.equals(value.trim(), ignoreCase = true) }
+                ?: HEADLINER.also { logger.warn { "Unknown ArtistRole '$value', defaulting to HEADLINER" } }
+    }
 }

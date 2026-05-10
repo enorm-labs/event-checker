@@ -1,7 +1,9 @@
 package de.norm.events.venue
 
 import de.norm.events.venue.VenueEntity.Companion.fromDomain
+import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
+import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.relational.core.mapping.Table
 import java.math.BigDecimal
 import java.time.Instant
@@ -13,7 +15,7 @@ import java.time.Instant
  * free of Spring Data annotations. Conversion functions [toDomain] and [fromDomain]
  * bridge the two representations.
  */
-@Table("venue", schema = "events")
+@Table("venue")
 data class VenueEntity(
     @Id val id: Long? = null,
     val name: String,
@@ -25,8 +27,8 @@ data class VenueEntity(
     val longitude: BigDecimal? = null,
     val websiteUrl: String? = null,
     val imageUrl: String? = null,
-    val createdAt: Instant? = null,
-    val updatedAt: Instant? = null
+    @CreatedDate val createdAt: Instant? = null,
+    @LastModifiedDate val updatedAt: Instant? = null
 ) {
     /** Converts this persistence entity to the shared domain model. */
     fun toDomain(): Venue =

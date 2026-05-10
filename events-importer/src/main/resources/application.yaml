@@ -4,8 +4,24 @@ server:
 spring:
   application:
     name: events-importer
+  http:
+    codecs:
+      # Max response body size buffered in memory (guards against OOM from huge pages during scraping)
+      max-in-memory-size: 2MB
   flyway:
     schemas: events
   r2dbc:
     properties:
       schema: events
+
+# Application configuration for import pipeline, scraping, and scheduling
+app:
+  import:
+    # Maximum number of event sources imported concurrently (bounded by coroutine Semaphore)
+    max-concurrency: 4
+  scraper:
+    response-timeout: 30s
+    polite-delay-millis: 200
+  scheduling:
+    # Reset sources stuck in RUNNING longer than this to FAILED (Duration format, e.g. 30m, 1h)
+    staleness-timeout: 30m
