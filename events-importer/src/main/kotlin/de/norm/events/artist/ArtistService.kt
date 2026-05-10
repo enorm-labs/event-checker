@@ -96,6 +96,7 @@ class ArtistService(
      */
     suspend fun delete(id: Long) {
         if (!artistRepository.existsById(id)) throw ArtistNotFoundException(id)
+        // Join table rows (event_artist) are cascade-deleted by the database FK constraint (ON DELETE CASCADE).
         artistRepository.deleteById(id)
         logger.info { "Deleted artist with id $id" }
     }

@@ -1,0 +1,11 @@
+# Disable scheduled imports during tests to avoid interference with integration tests
+app:
+  scheduling:
+    enabled: false
+
+spring:
+  flyway:
+    schemas: events
+  r2dbc:
+    properties:
+      schema: events

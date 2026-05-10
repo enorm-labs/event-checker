@@ -109,8 +109,8 @@ class EventService(
                 ticketUrl = request.ticketUrl,
                 facebookEventUrl = request.facebookEventUrl,
                 genre = request.genre,
-                pricePresale = request.pricePresale,
-                priceBoxOffice = request.priceBoxOffice,
+                pricePresale = request.pricePresale?.normalizeMoneyScale(),
+                priceBoxOffice = request.priceBoxOffice?.normalizeMoneyScale(),
                 priceCurrency = request.priceCurrency,
                 priceNote = request.priceNote,
                 soldOut = request.soldOut
@@ -163,8 +163,8 @@ class EventService(
                 ticketUrl = request.ticketUrl,
                 facebookEventUrl = request.facebookEventUrl,
                 genre = request.genre,
-                pricePresale = request.pricePresale,
-                priceBoxOffice = request.priceBoxOffice,
+                pricePresale = request.pricePresale?.normalizeMoneyScale(),
+                priceBoxOffice = request.priceBoxOffice?.normalizeMoneyScale(),
                 priceCurrency = request.priceCurrency,
                 priceNote = request.priceNote,
                 soldOut = request.soldOut

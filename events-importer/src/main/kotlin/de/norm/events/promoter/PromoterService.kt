@@ -89,6 +89,7 @@ class PromoterService(
      */
     suspend fun delete(id: Long) {
         if (!promoterRepository.existsById(id)) throw PromoterNotFoundException(id)
+        // Join table rows (event_promoter) are cascade-deleted by the database FK constraint (ON DELETE CASCADE).
         promoterRepository.deleteById(id)
         logger.info { "Deleted promoter with id $id" }
     }

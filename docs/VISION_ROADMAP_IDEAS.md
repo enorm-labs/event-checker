@@ -9,6 +9,9 @@
 * Tickets -> GitHub issues
 * Takeover more ideas from here: https://docs.google.com/document/d/1UkxdJECxvB6noW-n8dzX-r0du18M9-ggp6iWeapHpvI/edit?tab=t.0#heading=h.32gy0wklnx78
 * Later:
+    * Calendar View
+    * iCal support
+    * Export/Import events or complete calendar to Google Calendar or file (iCal)
     * Login / Profile
         * Favorite Venues
         * Favorite Artists

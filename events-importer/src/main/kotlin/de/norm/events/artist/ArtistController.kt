@@ -1,5 +1,6 @@
 package de.norm.events.artist
 
+import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import kotlinx.coroutines.flow.Flow
@@ -26,22 +27,26 @@ class ArtistController(
     private val artistService: ArtistService
 ) {
     @GetMapping
+    @Operation(summary = "List all artists with pagination")
     fun findAll(
         @PageableDefault(size = 20, sort = ["name"]) pageable: Pageable
     ): Flow<ArtistResponse> = artistService.findAll(pageable)
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get a single artist by ID")
     suspend fun findById(
         @PathVariable id: Long
     ): ArtistResponse = artistService.findById(id)
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Create a new artist")
     suspend fun create(
         @Valid @RequestBody request: ArtistRequest
     ): ArtistResponse = artistService.create(request)
 
     @PutMapping("/{id}")
+    @Operation(summary = "Update an existing artist")
     suspend fun update(
         @PathVariable id: Long,
         @Valid @RequestBody request: ArtistRequest
@@ -49,7 +54,10 @@ class ArtistController(
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Delete an artist by ID")
     suspend fun delete(
         @PathVariable id: Long
-    ) = artistService.delete(id)
+    ) {
+        artistService.delete(id)
+    }
 }

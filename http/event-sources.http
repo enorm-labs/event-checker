@@ -1,0 +1,155 @@
+### List all event sources
+GET {{importer-host}}/api/admin/event-sources
+Accept: application/json
+
+> {%
+    client.test("should return 200", function () {
+        client.assert(response.status === 200, "Expected 200 but got " + response.status);
+    });
+%}
+
+### Create a new event source
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+Accept: application/json
+
+{
+    "venueId": 1,
+    "name": "Privatclub Website",
+    "url": "https://privatclub-berlin.de/",
+    "sourceType": "PRIVATCLUB",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("should return 201", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### Get a single event source by slug
+GET {{importer-host}}/api/admin/event-sources/{{source_slug}}
+Accept: application/json
+
+> {%
+    client.test("should return 200", function () {
+        client.assert(response.status === 200, "Expected 200 but got " + response.status);
+    });
+%}
+
+### Trigger import for all enabled event sources
+POST {{importer-host}}/api/admin/event-sources/import
+Accept: application/json
+
+> {%
+    client.test("should return 200", function () {
+        client.assert(response.status === 200, "Expected 200 but got " + response.status);
+    });
+%}
+
+### Trigger import for a single event source by slug
+POST {{importer-host}}/api/admin/event-sources/{{source_slug}}/import
+Accept: application/json
+
+> {%
+    client.test("should return 200", function () {
+        client.assert(response.status === 200, "Expected 200 but got " + response.status);
+    });
+%}
+
+### Update event source configuration (enable/disable, interval, retries)
+PATCH {{importer-host}}/api/admin/event-sources/{{source_slug}}
+Content-Type: application/json
+Accept: application/json
+
+{
+    "enabled": true,
+    "importIntervalMinutes": 720,
+    "maxRetries": 5
+}
+
+> {%
+    client.test("should return 200", function () {
+        client.assert(response.status === 200, "Expected 200 but got " + response.status);
+    });
+%}
+
+### Disable an event source
+PATCH {{importer-host}}/api/admin/event-sources/{{source_slug}}
+Content-Type: application/json
+Accept: application/json
+
+{
+    "enabled": false
+}
+
+> {%
+    client.test("should return 200", function () {
+        client.assert(response.status === 200, "Expected 200 but got " + response.status);
+    });
+%}
+
+### Retry a single failed event source
+POST {{importer-host}}/api/admin/event-sources/{{source_slug}}/retry
+Accept: application/json
+
+> {%
+    client.test("should return 200", function () {
+        client.assert(response.status === 200, "Expected 200 but got " + response.status);
+    });
+%}
+
+### Retry all failed event sources
+POST {{importer-host}}/api/admin/event-sources/retry
+Accept: application/json
+
+> {%
+    client.test("should return 200", function () {
+        client.assert(response.status === 200, "Expected 200 but got " + response.status);
+    });
+%}
+
+### Create Cassiopeia event source
+# Requires a venue with the given ID to already exist in the database.
+# The sourceType "CASSIOPEIA" matches EventSource.CASSIOPEIA.
+# The URL points to the /club page where events are listed.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+Accept: application/json
+
+{
+    "venueId": 1,
+    "name": "Cassiopeia",
+    "url": "https://cassiopeia-berlin.de/club",
+    "sourceType": "CASSIOPEIA",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("should return 201", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### Trigger Cassiopeia import
+POST {{importer-host}}/api/admin/event-sources/cassiopeia/import
+Accept: application/json
+
+> {%
+    client.test("should return 200", function () {
+        client.assert(response.status === 200, "Expected 200 but got " + response.status);
+    });
+%}
+
+### Delete an event source
+DELETE {{importer-host}}/api/admin/event-sources/{{source_slug}}
+
+> {%
+    client.test("should return 204", function () {
+        client.assert(response.status === 204, "Expected 204 but got " + response.status);
+    });
+%}

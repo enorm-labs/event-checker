@@ -1,9 +1,10 @@
 -- V1: Initial data model for event-checker
 -- Designed to capture music event data from Berlin venue websites
 -- (e.g. Astra Kulturhaus, Badehaus Berlin, Cassiopeia, Privatclub).
-
--- Create a dedicated schema to isolate application tables from the default public schema.
-CREATE SCHEMA IF NOT EXISTS events;
+--
+-- Schema creation and search_path are managed by Flyway via spring.flyway.schemas
+-- (configured in application.yaml). Tables are intentionally unqualified so the
+-- target schema remains configurable without hardcoding it in migration SQL.
 
 -- ============================================================
 -- VENUES
@@ -66,15 +67,59 @@ CREATE TABLE promoter
 -- No explicit slug index needed — the UNIQUE constraint already creates an implicit index.
 
 -- ============================================================
+-- EVENT_SOURCE
+-- Tracks per-venue import configuration and metadata for the
+-- web scraping infrastructure (see ADR-007, ADR-008).
+-- Stores the URL to scrape, conditional-request headers
+-- (ETag, Last-Modified), scheduling interval, retry state,
+-- import status, and result metrics.
+-- Defined before EVENT because events reference event_source via FK.
+-- ============================================================
+CREATE TABLE event_source
+(
+    id                      BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    venue_id                BIGINT      NOT NULL REFERENCES venue (id),
+    name                    TEXT        NOT NULL,
+    slug                    TEXT        NOT NULL UNIQUE,
+    url                     TEXT        NOT NULL,
+    source_type             TEXT        NOT NULL,
+    enabled                 BOOLEAN     NOT NULL DEFAULT TRUE,
+    import_interval_minutes INT         NOT NULL DEFAULT 1440,
+    retry_count             INT         NOT NULL DEFAULT 0,
+    max_retries             INT         NOT NULL DEFAULT 3,
+    etag                    TEXT,
+    last_modified           TEXT,
+    last_import_at          TIMESTAMPTZ,
+    last_event_count        INT,
+    last_error              TEXT,
+    status                  TEXT        NOT NULL DEFAULT 'IDLE',
+    version                 BIGINT      NOT NULL DEFAULT 0,
+    created_at              TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at              TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_event_source_venue_id ON event_source (venue_id);
+-- Covers findDueForImport and findStuckSources query patterns
+CREATE INDEX idx_event_source_scheduling ON event_source (enabled, status, last_import_at);
+
+-- ============================================================
 -- EVENTS
 -- Core entity: a single event at a venue on a specific date.
 -- source_id uniquely identifies the event from its import source
 -- to enable idempotent imports (upsert).
+-- event_source_id links to the event_source that imported this
+-- event (nullable — manually created events have no source).
+-- ON DELETE SET NULL: deleting an event source orphans its events
+-- rather than cascading the delete, preserving event history.
+-- Orphaned events (event_source_id = NULL) are no longer cleaned
+-- up by any source's stale-event removal and effectively become
+-- manually created events.
 -- ============================================================
 CREATE TABLE event
 (
     id                 BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     venue_id           BIGINT      NOT NULL REFERENCES venue (id),
+    event_source_id    BIGINT      REFERENCES event_source (id) ON DELETE SET NULL,
     title              TEXT        NOT NULL,
     subtitle           TEXT,
     description        TEXT,
@@ -100,6 +145,7 @@ CREATE TABLE event
 );
 
 CREATE INDEX idx_event_venue_id ON event (venue_id);
+CREATE INDEX idx_event_event_source_id ON event (event_source_id);
 CREATE INDEX idx_event_event_date ON event (event_date);
 -- No explicit slug index needed — the UNIQUE constraint already creates an implicit index.
 
@@ -169,5 +215,12 @@ EXECUTE FUNCTION set_updated_at();
 CREATE TRIGGER trg_event_updated_at
     BEFORE UPDATE
     ON event
+    FOR EACH ROW
+EXECUTE FUNCTION set_updated_at();
+
+
+CREATE TRIGGER trg_event_source_updated_at
+    BEFORE UPDATE
+    ON event_source
     FOR EACH ROW
 EXECUTE FUNCTION set_updated_at();

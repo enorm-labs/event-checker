@@ -1,5 +1,6 @@
 package de.norm.events.promoter
 
+import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import kotlinx.coroutines.flow.Flow
@@ -26,22 +27,26 @@ class PromoterController(
     private val promoterService: PromoterService
 ) {
     @GetMapping
+    @Operation(summary = "List all promoters with pagination")
     fun findAll(
         @PageableDefault(size = 20, sort = ["name"]) pageable: Pageable
     ): Flow<PromoterResponse> = promoterService.findAll(pageable)
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get a single promoter by ID")
     suspend fun findById(
         @PathVariable id: Long
     ): PromoterResponse = promoterService.findById(id)
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Create a new promoter")
     suspend fun create(
         @Valid @RequestBody request: PromoterRequest
     ): PromoterResponse = promoterService.create(request)
 
     @PutMapping("/{id}")
+    @Operation(summary = "Update an existing promoter")
     suspend fun update(
         @PathVariable id: Long,
         @Valid @RequestBody request: PromoterRequest
@@ -49,7 +54,10 @@ class PromoterController(
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Delete a promoter by ID")
     suspend fun delete(
         @PathVariable id: Long
-    ) = promoterService.delete(id)
+    ) {
+        promoterService.delete(id)
+    }
 }

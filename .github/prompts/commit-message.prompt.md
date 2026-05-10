@@ -3,12 +3,19 @@
 Generate a commit message following the [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/)
 specification.
 
+## Important
+
+Always run git commands with the pager disabled (`git --no-pager ...`) to prevent hanging on interactive output.
+
+**Deviation from common convention**: Body lines are NOT limited to 72 characters. Lines can be as long as needed — use line breaks/wraps where it feels natural
+for readability, not at a fixed column width.
+
 ## Context
 
 - **Use the conversation history** — consider the full chat context (discussion, reasoning, decisions made) to write a
   richer and more accurate commit message. The conversation often contains motivation, root cause analysis, and design
   trade-offs that the diff alone doesn't reveal.
-- Look at the staged diff (`git diff --staged`) to understand what changed.
+- Look at the staged diff (`git --no-pager diff --staged`) to understand what changed.
 - Infer the type and scope from the nature of the changes.
 - Keep the message useful for someone reading `git log` months later.
 
@@ -43,18 +50,18 @@ consumers of your library:
 
 1. **fix:** a commit of the _type_ `fix` patches a bug in your codebase (this correlates with [
    `PATCH`](http://semver.org/#summary) in Semantic Versioning).
-1. **feat:** a commit of the _type_ `feat` introduces a new feature to the codebase (this correlates with [
+2. **feat:** a commit of the _type_ `feat` introduces a new feature to the codebase (this correlates with [
    `MINOR`](http://semver.org/#summary) in Semantic Versioning).
-1. **BREAKING CHANGE:** a commit that has a footer `BREAKING CHANGE:`, or appends a `!` after the type/scope, introduces
+3. **BREAKING CHANGE:** a commit that has a footer `BREAKING CHANGE:`, or appends a `!` after the type/scope, introduces
    a breaking API change (correlating with [`MAJOR`](http://semver.org/#summary) in Semantic Versioning).
    A BREAKING CHANGE can be part of commits of any _type_.
-1. _types_ other than `fix:` and `feat:` are allowed, for
+4. _types_ other than `fix:` and `feat:` are allowed, for
    example [@commitlint/config-conventional](https://github.com/conventional-changelog/commitlint/tree/master/%40commitlint/config-conventional) (
    based on
    the [Angular convention](https://github.com/angular/angular/blob/22b96b9/CONTRIBUTING.md#-commit-message-guidelines))
    recommends `build:`, `chore:`,
    `ci:`, `docs:`, `style:`, `refactor:`, `perf:`, `test:`, and others.
-1. _footers_ other than `BREAKING CHANGE: <description>` may be provided and follow a convention similar to
+5. _footers_ other than `BREAKING CHANGE: <description>` may be provided and follow a convention similar to
    [git trailer format](https://git-scm.com/docs/git-interpret-trailers).
 
 Additional types are not mandated by the Conventional Commits specification, and have no implicit effect in Semantic

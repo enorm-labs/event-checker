@@ -1,21 +1,23 @@
 package de.norm.events.promoter
 
+import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
+import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.relational.core.mapping.Table
 import java.time.Instant
 
 /**
  * R2DBC entity mapped to the `promoter` table.
  */
-@Table("promoter", schema = "events")
+@Table("promoter")
 data class PromoterEntity(
     @Id val id: Long? = null,
     val name: String,
     val slug: String,
     val websiteUrl: String? = null,
     val imageUrl: String? = null,
-    val createdAt: Instant? = null,
-    val updatedAt: Instant? = null
+    @CreatedDate val createdAt: Instant? = null,
+    @LastModifiedDate val updatedAt: Instant? = null
 ) {
     fun toDomain(): Promoter =
         Promoter(

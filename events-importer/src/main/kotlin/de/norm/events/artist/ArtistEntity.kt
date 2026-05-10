@@ -1,6 +1,8 @@
 package de.norm.events.artist
 
+import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
+import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.relational.core.mapping.Table
 import java.time.Instant
 
@@ -10,7 +12,7 @@ import java.time.Instant
  * Kept separate from the core [Artist] domain class so that `events-core` remains
  * free of Spring Data annotations.
  */
-@Table("artist", schema = "events")
+@Table("artist")
 data class ArtistEntity(
     @Id val id: Long? = null,
     val name: String,
@@ -21,8 +23,8 @@ data class ArtistEntity(
     val facebookUrl: String? = null,
     val instagramUrl: String? = null,
     val youtubeUrl: String? = null,
-    val createdAt: Instant? = null,
-    val updatedAt: Instant? = null
+    @CreatedDate val createdAt: Instant? = null,
+    @LastModifiedDate val updatedAt: Instant? = null
 ) {
     fun toDomain(): Artist =
         Artist(

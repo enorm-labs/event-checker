@@ -1,0 +1,323 @@
+package de.norm.events.scraper.cassiopeia
+
+import de.norm.events.scraper.EventSource
+import de.norm.events.scraper.ScrapedArtist
+import de.norm.events.scraper.ScrapedEvent
+import de.norm.events.scraper.cassiopeia.CassiopeiaDetailPageScraper.Companion.DATE_FORMAT
+import de.norm.events.scraper.hasVisibleWebflowFlag
+import de.norm.events.scraper.hrefAt
+import de.norm.events.scraper.imgSrcAt
+import de.norm.events.scraper.isPlaceholderName
+import de.norm.events.scraper.mapGermanCategory
+import de.norm.events.scraper.parseTime
+import de.norm.events.scraper.textAt
+import io.github.oshai.kotlinlogging.KotlinLogging
+import org.jsoup.nodes.Document
+import org.jsoup.nodes.Element
+import java.net.URI
+import java.time.DateTimeException
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+
+/**
+ * Pure HTML parser for Cassiopeia event detail pages.
+ *
+ * The detail page is the **primary data source** for each event, providing
+ * richer and more structured information than the listing page (including
+ * description, ticket URL, and cleaner image URLs via `<img>` tags instead
+ * of CSS `background-image`). Data extracted from the listing page by
+ * [CassiopeiaOverviewPageScraper] serves as a **fallback** — merging of
+ * detail and overview data is handled by the [CassiopeiaWebsiteImporter]
+ * orchestrator, keeping this scraper focused on parsing only.
+ *
+ * This class performs **no I/O** — it operates solely on a pre-fetched
+ * Jsoup [Document], making it easy to test with static HTML fixtures.
+ * HTTP fetching is handled by the [CassiopeiaWebsiteImporter] orchestrator.
+ *
+ * All parsing is scoped to the `.modul-section.events` container, which
+ * holds all event-related content on the detail page. This excludes
+ * navigation, footer, scripts, and other page chrome from the parse tree,
+ * making selectors simpler and less prone to false matches.
+ *
+ * Detail page structure (Webflow CMS, inside `.modul-section.events`):
+ * - `h1.event-date.dark.event` — event title
+ * - `.date-wrapper .subheading.invert` — date (day, month, year)
+ * - `.date-wrapper` with "Einlass"/"Beginn" labels — doors/start times
+ * - `.subheading.invert.gap` — category (Konzert, Party, Sonstiges)
+ * - Next sibling of category — genre
+ * - `img.eventpage-image` — event image
+ * - `.paragraph-wrapper > .paragraph.events` — event description paragraphs
+ * - `a.faq-link-wrapper` with "Tickets" text — ticket shop link
+ * - `.flag-wrapper .event-detail.sold-out` — sold-out / cancelled flags
+ *
+ * **Artist extraction** (concerts only): For events categorized as "Konzert",
+ * the event title equals the headliner artist name. Support acts are listed
+ * as separate description paragraphs prefixed with "Support: " (e.g.
+ * `"Support: Aska"`). Non-concert events (parties, etc.) don't follow this
+ * pattern, so no artists are extracted for them.
+ */
+@Suppress("TooManyFunctions") // Cohesive scraper with private helpers for each parsed field
+class CassiopeiaDetailPageScraper {
+    private val logger = KotlinLogging.logger {}
+
+    /**
+     * Parses event data from a detail page document.
+     *
+     * Scopes all parsing to the `.modul-section.events` container, which
+     * holds all event content on the detail page. Returns `null` if the
+     * container is missing (unexpected page structure) or the page lacks
+     * a title.
+     *
+     * Returns a [ScrapedEvent] containing only the fields that could be
+     * extracted from this page. Fields that cannot be parsed are left at
+     * their default values. The caller (typically [CassiopeiaWebsiteImporter])
+     * is responsible for merging this with overview page data.
+     *
+     * The `sourceId` is derived from the [sourceUrl] path (e.g.
+     * `https://cassiopeia-berlin.de/event/some-slug` → `cassiopeia:some-slug`),
+     * matching the convention used by [CassiopeiaOverviewPageScraper].
+     *
+     * @param document the parsed Jsoup document of the event's detail page.
+     * @param sourceUrl the event's URL, used as [ScrapedEvent.sourceUrl]
+     *   and to derive the [ScrapedEvent.sourceId].
+     * @return the parsed event data, or `null` if the page lacks the expected
+     *   content container or a title (indicating an unexpected page structure).
+     */
+    @Suppress("ReturnCount") // Guard clauses for missing container and missing title are clearer than nesting
+    fun scrape(
+        document: Document,
+        sourceUrl: String
+    ): ScrapedEvent? {
+        // Scope to the main event content container — all event data lives here.
+        // This excludes navigation, footer, scripts, and other page chrome.
+        val content = document.selectFirst(CONTENT_CONTAINER)
+        if (content == null) {
+            logger.warn { "Detail page at $sourceUrl has no '$CONTENT_CONTAINER' container, skipping" }
+            return null
+        }
+
+        val title = content.textAt("h1.event-date.dark.event")
+        if (title == null) {
+            logger.warn { "Detail page at $sourceUrl has no title, skipping" }
+            return null
+        }
+
+        val eventSlug = extractEventSlug(sourceUrl)
+        val hasFlags = content.selectFirst(".flag-wrapper") != null
+        val eventType = mapGermanCategory(content.textAt(".subheading.invert.gap"))
+        val eventDate =
+            parseEventDate(content) ?: run {
+                logger.warn { "Detail page at $sourceUrl has no parseable date, skipping" }
+                return null
+            }
+
+        return ScrapedEvent(
+            title = title,
+            eventDate = eventDate,
+            doorsTime = parseTimeByLabel(content, DOORS_LABEL),
+            startTime = parseTimeByLabel(content, START_LABEL),
+            eventType = eventType,
+            genre = parseGenre(content),
+            imageUrl = content.imgSrcAt("img.eventpage-image"),
+            sourceUrl = sourceUrl,
+            sourceId = "${EventSource.CASSIOPEIA.sourceIdPrefix}$eventSlug",
+            soldOut = hasFlags && content.hasVisibleWebflowFlag(FLAG_SELECTOR, "Sold-Out"),
+            status =
+                when {
+                    hasFlags && content.hasVisibleWebflowFlag(FLAG_SELECTOR, "Cancelled") -> "CANCELLED"
+                    else -> "SCHEDULED"
+                },
+            description = parseDescription(content),
+            ticketUrl = parseTicketUrl(content),
+            artists = parseArtists(title, eventType, content)
+        )
+    }
+
+    /**
+     * Extracts the event slug from the detail page URL path.
+     *
+     * Example: `https://cassiopeia-berlin.de/event/super-tuesday-111639689`
+     * → `super-tuesday-111639689`
+     */
+    private fun extractEventSlug(sourceUrl: String): String {
+        val path = URI(sourceUrl).path
+        return path.removePrefix("/event/").trimEnd('/')
+    }
+
+    /**
+     * Parses the event date from the detail page's date wrapper.
+     *
+     * The desktop date layout renders as `"16 . 05 . 2026"` when read via
+     * [Element.text]. Stripping spaces yields `"16.05.2026"`, which we parse
+     * with [DATE_FORMAT]. Time wrappers (e.g. `"Einlass 19:00"`) won't match
+     * the format and are skipped automatically.
+     */
+    private fun parseEventDate(content: Element): LocalDate? =
+        content.select(".date-wrapper").firstNotNullOfOrNull { wrapper ->
+            try {
+                LocalDate.parse(wrapper.text().replace(" ", ""), DATE_FORMAT)
+            } catch (_: DateTimeException) {
+                null
+            }
+        }
+
+    /**
+     * Parses a time value by locating the label text within a `.date-wrapper`.
+     *
+     * The detail page structures times as label + value pairs inside
+     * `.date-wrapper` elements. When read via [Element.text], this renders
+     * as `"Einlass 19:00"` or `"Beginn 20:00"`. We check if the combined
+     * text starts with the [label] and parse the remainder as a time.
+     */
+    private fun parseTimeByLabel(
+        content: Element,
+        label: String
+    ): LocalTime? =
+        content.select(".date-wrapper").firstNotNullOfOrNull { wrapper ->
+            val text = wrapper.text().trim()
+            if (!text.startsWith(label, ignoreCase = true)) return@firstNotNullOfOrNull null
+            val timeText = text.removePrefix(label).trim()
+            parseTime(timeText)
+        }
+
+    /**
+     * Extracts the genre from the element adjacent to the category.
+     *
+     * On the detail page, category and genre are siblings:
+     * ```html
+     * <div class="subheading invert gap">Konzert</div>
+     * <div class="subheading invert event-mobile line-clamp">Noise</div>
+     * ```
+     */
+    private fun parseGenre(content: Element): String? {
+        val categoryEl = content.selectFirst(".subheading.invert.gap") ?: return null
+        return categoryEl
+            .nextElementSibling()
+            ?.text()
+            ?.trim()
+            ?.takeIf { it.isNotBlank() }
+    }
+
+    /**
+     * Extracts the event description from the detail page.
+     *
+     * The description is spread across multiple `.paragraph.events` divs
+     * inside `.paragraph-wrapper`. Paragraphs are joined with newlines.
+     */
+    private fun parseDescription(content: Element): String? {
+        val paragraphs =
+            content
+                .select(".paragraph-wrapper .paragraph.events")
+                .map { it.text().trim() }
+                .filter { it.isNotBlank() }
+        return paragraphs.joinToString("\n").takeIf { it.isNotBlank() }
+    }
+
+    /**
+     * Extracts the ticket shop URL from the detail page.
+     *
+     * Uses multiple strategies in order of reliability:
+     * 1. Look for an `a.faq-link-wrapper` containing "Tickets" text — this is the
+     *    semantic pattern used by the Webflow CMS template.
+     * 2. Fall back to any link pointing to Cassiopeia's Stager ticket shop domain.
+     * 3. Fall back to the original `a.faq-link-wrapper.margin-bottom` selector
+     *    for backwards compatibility.
+     *
+     * This layered approach avoids breaking when Webflow layout classes change
+     * (e.g. `margin-bottom` being removed/renamed) while still matching the
+     * correct element.
+     */
+    private fun parseTicketUrl(content: Element): String? {
+        // Primary: semantic match — link with "Tickets" text inside `.faq-link-wrapper`
+        val byText =
+            content
+                .select("a.faq-link-wrapper")
+                .firstOrNull { link -> link.text().contains("Tickets", ignoreCase = true) }
+                ?.attr("href")
+                ?.takeIf { it.isNotBlank() && it.startsWith("http") }
+
+        // Fallback: any link to the known ticket shop domain (stager.co)
+        val byDomain = content.hrefAt("a[href*=stager.co]")
+
+        // Last resort: original positional selector for backwards compatibility
+        val byPosition = content.hrefAt("a.faq-link-wrapper.margin-bottom")
+
+        return byText ?: byDomain ?: byPosition
+    }
+
+    /**
+     * Extracts artists from a concert event's description paragraphs.
+     *
+     * Support acts are identified by paragraphs prefixed with "Support: "
+     * (e.g. `"Support: Aska"`). The **presence** of any "Support:" line —
+     * even one with a placeholder name like "TBA" — confirms the event
+     * follows a "headliner + support" pattern where the [title] is the
+     * headliner artist name.
+     *
+     * When **no** "Support:" lines are found at all, the title could be
+     * either an artist name (e.g. "Döll") or a generic event name (e.g.
+     * "Grey City Fest Opener"). Since we can't reliably distinguish between
+     * the two, no artists are extracted to avoid creating false entries.
+     *
+     * Non-concert events (parties, etc.) never extract artists — their
+     * titles are always event names, not artist names.
+     *
+     * Placeholder names like "TBA" or "N.N." are filtered from the final
+     * artist list but still count as a signal for the headliner pattern.
+     */
+    private fun parseArtists(
+        title: String,
+        eventType: String,
+        content: Element
+    ): List<ScrapedArtist> {
+        // Extract all "Support: <name>" lines from description paragraphs.
+        // Only concert events use the "title = headliner" naming convention.
+        val supportNames =
+            if (eventType != "CONCERT") {
+                emptyList()
+            } else {
+                content
+                    .select(".paragraph-wrapper .paragraph.events")
+                    .map { it.text().trim() }
+                    .filter { it.startsWith(SUPPORT_PREFIX, ignoreCase = true) }
+                    .map { it.drop(SUPPORT_PREFIX.length).trim() }
+                    .filter { it.isNotBlank() }
+            }
+
+        // The presence of ANY "Support:" line confirms the headliner + support
+        // pattern — even if the support name is a placeholder like "TBA".
+        // Without this signal, we can't tell if the title is an artist or event name.
+        if (supportNames.isEmpty()) return emptyList()
+
+        // Build the artist list, filtering out placeholder names from the output
+        val headliner =
+            if (isPlaceholderName(title)) emptyList() else listOf(ScrapedArtist(name = title, role = "HEADLINER"))
+        val supportActs =
+            supportNames
+                .filterNot { isPlaceholderName(it) }
+                .map { ScrapedArtist(name = it, role = "SUPPORT") }
+
+        return headliner + supportActs
+    }
+
+    companion object {
+        /** CSS selector for the main event content container on the detail page. */
+        private const val CONTENT_CONTAINER = ".modul-section.events"
+
+        /** CSS selector for sold-out / cancelled flag elements (Webflow conditional visibility). */
+        private const val FLAG_SELECTOR = ".flag-wrapper .event-detail.sold-out"
+
+        /** German label for doors/entry time. */
+        private const val DOORS_LABEL = "Einlass"
+
+        /** German label for show start time. */
+        private const val START_LABEL = "Beginn"
+
+        /** Date format for the detail page date wrapper (e.g. "16.05.2026" after stripping spaces). */
+        private val DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy")
+
+        /** Prefix used in description paragraphs to identify support acts. */
+        private const val SUPPORT_PREFIX = "Support: "
+    }
+}

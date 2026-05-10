@@ -3,15 +3,22 @@
 Generate a single commit message for squashing all commits on the current feature branch, following the
 [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/) specification.
 
+## Important
+
+Always run git commands with the pager disabled (`git --no-pager ...`) to prevent hanging on interactive output.
+
+**Deviation from common convention**: Body lines are NOT limited to 72 characters. Lines can be as long as needed — use line breaks/wraps where it feels natural
+for readability, not at a fixed column width.
+
 ## Instructions
 
 1. **Identify the branch commits** — list all commits on the current branch that are not on `main`:
    ```bash
-   git log --oneline --no-merges main..HEAD
+   git --no-pager log --oneline --no-merges main..HEAD
    ```
    If `main..HEAD` produces no output, find the merge base first:
    ```bash
-   git log --oneline --no-merges $(git merge-base main HEAD)..HEAD
+   git --no-pager log --oneline --no-merges $(git merge-base main HEAD)..HEAD
    ```
 2. **Read every commit message** — use `git --no-pager log --format='%B' main..HEAD` (or equivalent) to get the full messages
    including bodies, not just the subject lines.

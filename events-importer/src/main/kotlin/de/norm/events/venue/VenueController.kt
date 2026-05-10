@@ -1,5 +1,6 @@
 package de.norm.events.venue
 
+import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import kotlinx.coroutines.flow.Flow
@@ -30,12 +31,14 @@ class VenueController(
 ) {
     /** Lists venues with pagination and sorting. */
     @GetMapping
+    @Operation(summary = "List all venues with pagination")
     fun findAll(
         @PageableDefault(size = 20, sort = ["name"]) pageable: Pageable
     ): Flow<VenueResponse> = venueService.findAll(pageable)
 
     /** Retrieves a single venue by its database ID. */
     @GetMapping("/{id}")
+    @Operation(summary = "Get a single venue by ID")
     suspend fun findById(
         @PathVariable id: Long
     ): VenueResponse = venueService.findById(id)
@@ -43,12 +46,14 @@ class VenueController(
     /** Creates a new venue and returns the persisted entity. */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Create a new venue")
     suspend fun create(
         @Valid @RequestBody request: VenueRequest
     ): VenueResponse = venueService.create(request)
 
     /** Replaces an existing venue identified by [id]. */
     @PutMapping("/{id}")
+    @Operation(summary = "Update an existing venue")
     suspend fun update(
         @PathVariable id: Long,
         @Valid @RequestBody request: VenueRequest
@@ -57,7 +62,10 @@ class VenueController(
     /** Deletes a venue by its database ID. */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Delete a venue by ID")
     suspend fun delete(
         @PathVariable id: Long
-    ) = venueService.delete(id)
+    ) {
+        venueService.delete(id)
+    }
 }
