@@ -37,8 +37,8 @@ abstract class BaseControllerTest {
         runBlocking {
             databaseClient
                 .sql(
-                    "TRUNCATE TABLE events.event_source, events.event_promoter, events.event_artist, events.event, " +
-                        "events.promoter, events.artist, events.venue CASCADE"
+                    "TRUNCATE TABLE events.event_source, events.event_genre_tag, events.event_promoter, events.event_artist, " +
+                        "events.event, events.genre_tag, events.promoter, events.artist, events.venue CASCADE"
                 ).await()
         }
 }

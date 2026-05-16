@@ -31,8 +31,8 @@ class EventController(
 ) {
     /**
      * Lists events with pagination. Returns a [List] instead of a `Flow` because
-     * batch loading artist/promoter associations requires all events in memory
-     * to avoid N+1 queries (3 queries per page regardless of event count).
+     * batch loading artist/promoter/genre tag associations requires all events in memory
+     * to avoid N+1 queries (4 queries per page regardless of event count).
      */
     @GetMapping
     @Operation(summary = "List all events with pagination")

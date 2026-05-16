@@ -46,8 +46,10 @@ data class EventResponse(
     val ticketUrl: String?,
     @Schema(description = "Direct link to the Facebook event page")
     val facebookEventUrl: String?,
-    @Schema(description = "Music genre or style tag", example = "Punk")
+    @Schema(description = "Music genre or style tag (raw text from source)", example = "Punk")
     val genre: String?,
+    @Schema(description = "Normalized genre tags for filtering", example = "[\"Punk\"]")
+    val genreTags: List<String>,
     @Schema(description = "Presale ticket price (Vorverkauf)", example = "38.00")
     val pricePresale: BigDecimal?,
     @Schema(description = "Box office ticket price (Abendkasse)", example = "45.00")
@@ -79,10 +81,11 @@ data class EventResponse(
         fun fromEntity(
             entity: EventEntity,
             artists: List<EventArtistResponse>,
-            promoterIds: List<Long>
+            promoterIds: List<Long>,
+            genreTagNames: List<String> = emptyList()
         ): EventResponse =
             EventResponse(
-                id = entity.id!!,
+                id = requireNotNull(entity.id) { "Event must be persisted before converting to response" },
                 venueId = entity.venueId,
                 title = entity.title,
                 subtitle = entity.subtitle,
@@ -99,6 +102,7 @@ data class EventResponse(
                 ticketUrl = entity.ticketUrl,
                 facebookEventUrl = entity.facebookEventUrl,
                 genre = entity.genre,
+                genreTags = genreTagNames,
                 pricePresale = entity.pricePresale,
                 priceBoxOffice = entity.priceBoxOffice,
                 priceCurrency = entity.priceCurrency,

@@ -118,9 +118,16 @@ classDiagram
         -upsertEvents(events, venueId, sourceId): List
         -deduplicateScrapedEvents(events): List
         -removeStaleEvents(events, sourceId)
+        -partitionByChanged(entities, existing): Pair
+    }
+
+    class AssociationSyncService {
+        +resolveAndSyncAssociations(saved, scraped)
         -resolveAllArtists(events): Map
         -syncArtistAssociations(saved, scraped, cache)
-        -resolveOrCreateArtist(name, cache): ArtistEntity
+        -resolveAllPromoters(events): Map
+        -syncPromoterAssociations(saved, scraped, cache)
+        -resolveOrCreate(name, cache, save, findBySlug): T
     }
 
     class EventSourceService {
@@ -163,6 +170,7 @@ classDiagram
     EventImportService --> EventImporterInterface: dispatches by EventSource
     EventImportService --> EventSourceEntity: reads config & updates status
     EventImportService --> EventUpsertService: delegates persistence
+    EventUpsertService --> AssociationSyncService: delegates associations
     EventSourceService --> EventSourceEntity: CRUD
     EventSourceController --> EventImportService: triggers imports
     EventSourceController --> EventSourceService: manages sources
@@ -173,6 +181,7 @@ classDiagram
     style ImportResult fill: #f9f, stroke: #333
     style EventImportService fill: #bbf, stroke: #333
     style EventUpsertService fill: #bbf, stroke: #333
+    style AssociationSyncService fill: #bbf, stroke: #333
     style ConcreteWebsiteImporter fill: #bfb, stroke: #333
     style ConcreteOverviewScraper fill: #bfb, stroke: #333
     style ConcreteDetailScraper fill: #bfb, stroke: #333
@@ -189,10 +198,13 @@ Key components:
   Each importer owns all HTTP fetching for its venue (overview + detail pages).
 - **`*OverviewPageScraper` / `*DetailPageScraper`** — pure HTML parsers (no I/O) that operate on
   pre-fetched Jsoup Documents. Separated from importers for testability.
-- **`ScrapingExtensions.kt`** — framework-level Kotlin extension functions and helpers shared across
-  all venue scrapers. Provides reusable utilities for common extraction patterns (see
-  [Shared Scraping Utilities](#shared-scraping-utilities) below). New venue scrapers should use these
-  extensions to avoid reinventing boilerplate and ensure consistent handling of blank/missing values.
+- **Shared scraper utilities** — three focused extension files in `de.norm.events.scraper`, shared
+  across all venue scrapers. `ScrapingExtensions.kt` provides Jsoup HTML element extraction helpers
+  and URL resolution. `DateParsingExtensions.kt` covers time/date parsing for standalone `HH:mm`
+  strings and ISO 8601 datetime strings from JSON-LD. `EventMappingExtensions.kt` handles domain-level
+  mapping of scraped text to model constants (German categories, placeholder detection, artist lists).
+  See [Shared Scraping Utilities](#shared-scraping-utilities) below. New venue scrapers should use
+  these utilities to avoid reinventing boilerplate and ensure consistent handling of blank/missing values.
 - **`HtmlFetcher`** — WebClient wrapper handling conditional requests (ETag / Last-Modified) and
   returning either the parsed HTML document or a "not modified" signal. Per-host politeness throttling
   is applied transparently via a `PerHostThrottlingFilter` registered as a WebClient
@@ -203,10 +215,13 @@ Key components:
 - **`EventImportService`** — orchestrator that loads event source configuration from the database,
   delegates to the correct `EventImporter` bean, wraps persistence in a transaction via
   `EventUpsertService`, and manages event source status transitions (RUNNING → SUCCESS/FAILED/MISCONFIGURED).
-- **`EventUpsertService`** — handles the persistence pipeline within a transactional boundary:
-  deduplicates scraped events, upserts events (insert new / update existing by `sourceId`),
-  resolves and auto-creates artists, syncs artist associations via a diff strategy, and removes
-  stale future events no longer listed on the source website.
+- **`EventUpsertService`** — handles the event persistence pipeline within a transactional boundary:
+  deduplicates scraped events, upserts events (insert new / update existing by `sourceId`), and removes
+  stale future events no longer listed on the source website. Delegates artist/promoter resolution and
+  association syncing to `AssociationSyncService`.
+- **`AssociationSyncService`** — resolves artists and promoters by slug (auto-creating unknown ones with
+  concurrent-safe fallback) and synchronizes many-to-many join-table associations via a diff strategy
+  (insert new, update changed role/billing order, delete stale).
 - **`EventSourceService`** — CRUD service for managing event source configuration.
 - **`event_source` table** — tracks per-venue import metadata: URL, ETag, Last-Modified,
   last import timestamp, event count, status, and error messages.
@@ -385,22 +400,37 @@ This minimizes unnecessary network traffic and database writes.
 
 ### Shared Scraping Utilities
 
-`ScrapingExtensions.kt` in the `de.norm.events.scraper` package provides framework-level Kotlin
-extension functions and helpers that eliminate boilerplate across venue-specific scrapers. These
-target the most common extraction patterns — selecting text, extracting URLs, parsing times, checking
-visibility flags, and mapping categories — so that individual scrapers can focus on venue-specific
-logic rather than re-implementing the same null-safe chains.
+Three focused extension files in the `de.norm.events.scraper` package provide reusable utilities
+shared across all venue scrapers. Each file has a single cohesive responsibility, keeping the codebase
+organized as the number of utilities grows with new venue scrapers.
 
-| Extension / Function                            | Purpose                                                                             |
-|-------------------------------------------------|-------------------------------------------------------------------------------------|
-| `Element.textAt(cssQuery)`                      | Select first match → `.text()` → trim → null if blank                               |
-| `Element.attrAt(cssQuery, attr)`                | Select first match → attribute value → null if blank                                |
-| `Element.imgSrcAt(cssQuery)`                    | Select `<img>` → `src` attribute → null if not an absolute HTTP URL                 |
-| `Element.hrefAt(cssQuery)`                      | Select `<a>` → `href` attribute → null if not an absolute HTTP URL                  |
-| `Element.hasVisibleWebflowFlag(cssQuery, text)` | Webflow `w-condition-invisible` visibility check + text content match               |
-| `parseTime(text, formatter = HH_MM_FORMATTER)`  | Null-safe `LocalTime` parsing — returns null instead of throwing                    |
-| `mapGermanCategory(category)`                   | Maps German category labels ("Konzert", "Party", "Sonstiges") to `EventType` values |
-| `HH_MM_FORMATTER`                               | Shared `DateTimeFormatter` for 24-hour time (`HH:mm`)                               |
+**`ScrapingExtensions.kt`** — Jsoup HTML element extraction helpers and URL resolution:
+
+| Extension / Function                            | Purpose                                                               |
+|-------------------------------------------------|-----------------------------------------------------------------------|
+| `Element.textAt(cssQuery)`                      | Select first match → `.text()` → trim → null if blank                 |
+| `Element.attrAt(cssQuery, attr)`                | Select first match → attribute value → null if blank                  |
+| `Element.imgSrcAt(cssQuery)`                    | Select `<img>` → `src` attribute → null if not an absolute HTTP URL   |
+| `Element.hrefAt(cssQuery)`                      | Select `<a>` → `href` attribute → null if not an absolute HTTP URL    |
+| `Element.hasVisibleWebflowFlag(cssQuery, text)` | Webflow `w-condition-invisible` visibility check + text content match |
+| `resolveUrl(baseUrl, href)`                     | Resolve relative URLs against a base URL, pass-through absolute URLs  |
+
+**`DateParsingExtensions.kt`** — date and time parsing for the two common formats on venue websites:
+
+| Extension / Function                           | Purpose                                                          |
+|------------------------------------------------|------------------------------------------------------------------|
+| `HH_MM_FORMATTER`                              | Shared `DateTimeFormatter` for 24-hour time (`HH:mm`)            |
+| `parseTime(text, formatter = HH_MM_FORMATTER)` | Null-safe `LocalTime` parsing — returns null instead of throwing |
+| `parseIsoDate(dateTimeStr)`                    | Extract date from ISO 8601 datetime (e.g. `"2026-05-16T20:00"`)  |
+| `parseIsoTime(dateTimeStr)`                    | Extract time from ISO 8601 datetime, delegates to `parseTime`    |
+
+**`EventMappingExtensions.kt`** — domain-level mapping of scraped text to model constants:
+
+| Extension / Function                   | Purpose                                                                             |
+|----------------------------------------|-------------------------------------------------------------------------------------|
+| `mapGermanCategory(category)`          | Maps German category labels ("Konzert", "Party", "Sonstiges") to `EventType` values |
+| `isPlaceholderName(name)`              | Detects placeholder artist names ("TBA", "N.N.") that should not be persisted       |
+| `buildArtistList(title, supportNames)` | Constructs headliner + support artist list from the common title/subtitle pattern   |
 
 **Design rationale**: A declarative selector-map approach (mapping field names to CSS selectors) was
 considered but rejected because each scraped field has different extraction logic — sibling traversal,
@@ -523,9 +553,10 @@ industry literature (see References).
 - **Positive**: Jsoup is mature, well-documented, and handles real-world HTML; WebClient integration
   keeps everything non-blocking; conditional requests reduce load on venue websites; first-page-only
   scraping keeps the pipeline simple while covering the most relevant upcoming events; the `EventImporter`
-  interface makes adding new scrapers a single-class addition; shared scraping utilities
-  (`ScrapingExtensions.kt`) reduce boilerplate when implementing new scrapers — common patterns like
-  text extraction, URL parsing, time parsing, and category mapping are available as extension functions;
+  `EventImporter` interface makes adding new scrapers a single-class addition; shared scraping utilities
+  (`ScrapingExtensions.kt`, `DateParsingExtensions.kt`, `EventMappingExtensions.kt`) reduce boilerplate
+  when implementing new scrapers — common patterns like text extraction, URL parsing, time/date parsing,
+  category mapping, and artist list construction are available as reusable functions;
   per-host politeness throttling via `PerHostThrottlingFilter` is transparent to scrapers — new
   importers get rate-limiting for free without any manual delay management;
   import metadata in the database enables future scheduling dashboards (TODO item #2); semantic selector

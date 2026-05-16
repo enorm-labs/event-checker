@@ -10,6 +10,8 @@
   to auto-correct them. Only edit files manually for issues that ktlint cannot auto-fix.
 - **Build verification**: Always run `./gradlew clean build` after finishing an implementation to verify that all modules
   compile, tests pass, ktlint and detekt checks succeed, and Kover coverage thresholds are met.
+  **Skip this step** when only Markdown documentation (`.md` files) or frontend files (`events-frontend/`) were changed —
+  the Gradle build covers the backend modules only.
 - **No unsolicited git commits/pushes**: Never run `git commit`, `git push`, or `git rebase` (squash) unless explicitly asked to by the user.
 - **GitHub CLI (`gh`)**: The `gh` CLI is installed (Homebrew) and authenticated for GitHub.com and enterprise instances.
   Use it for GitHub interactions such as creating/viewing PRs, managing issues, checking CI status, and browsing repositories.
@@ -41,8 +43,8 @@ subprojects sharing a root `settings.gradle.kts`, plus a standalone frontend pro
   prefix (e.g. `events.event_artist`) because raw queries bypass the `@Table(schema = ...)` metadata.
   See [Spring Data R2DBC query methods reference](https://docs.spring.io/spring-data/relational/reference/r2dbc/query-methods.html).
 - **Domain model** lives in `events-core` as plain Kotlin data classes (no Spring Data annotations). Tables: `venue`, `artist`, `promoter`, `event`,
-  `event_artist` (join), `event_promoter` (join), `event_source` (import metadata). Events reference venues via FK; artists and promoters link to events
-  through join tables.
+  `event_artist` (join), `event_promoter` (join), `genre_tag`, `event_genre_tag` (join), `event_source` (import metadata). Events reference venues via FK;
+  artists, promoters, and genre tags link to events through join tables.
   `Event.sourceId` enables idempotent imports (upsert semantics). `event_source` tracks per-venue import configuration and conditional-request headers (ETag,
   Last-Modified).
 - **Spring Modulith** enforces module boundaries: each direct sub-package under `de.norm.events` is an application module. Run `ModularityTests` (present in all
@@ -88,7 +90,8 @@ subprojects sharing a root `settings.gradle.kts`, plus a standalone frontend pro
   (artists, promoters) that are resolved at the entity level rather than round-tripping through the domain model.
   The request → response flow is: `*Request` → Service (builds domain object → persists via `*Entity`) → `*Response.fromDomain()` → Controller.
   The event module uses plural filenames (`EventEntities.kt`, `EventRepositories.kt`, `EventRequests.kt`, `EventResponses.kt`) when a file
-  contains multiple related classes; the scraper module also uses `EventSourceResponses.kt` for the same reason. Other modules use singular names
+  contains multiple related classes; the scraper module also uses `EventSourceResponses.kt` for the same reason; the genre tag module uses
+  `GenreTagEntities.kt` and `GenreTagRepositories.kt` for the same reason. Other modules use singular names
   (`VenueRequest.kt`, `VenueResponse.kt`, etc.).
 - **Pagination, sorting & limiting**: All list endpoints accept `Pageable` parameters via query string (`?page=0&size=20&sort=name,asc`).
   Controllers use `@PageableDefault` to declare sensible defaults (20 items per page; venues/artists/promoters sort by `name`,
@@ -96,11 +99,11 @@ subprojects sharing a root `settings.gradle.kts`, plus a standalone frontend pro
   `LIMIT`/`OFFSET`/`ORDER BY`. `WebFluxConfiguration` registers `ReactivePageableHandlerMethodArgumentResolver` so WebFlux
   can resolve `Pageable` from request parameters (not auto-configured unlike Spring MVC).
   The event list endpoint uses batch loading to avoid N+1 queries: it fetches the current page of events, then bulk-fetches
-  all artist and promoter associations for that page in 2 additional queries (3 queries total per page).
+  all artist, promoter, and genre tag associations for that page in 3 additional queries (4 queries total per page).
 - **API path convention**: All importer admin endpoints live under `/api/admin/<resource>` (e.g. `/api/admin/venues`, `/api/admin/events`).
 - **Module metadata**: Each feature package in the importer has a `*Module.kt` marker class annotated with
   `@ApplicationModule(allowedDependencies = [...])` to declare allowed inter-module dependencies for Spring Modulith verification.
-  Similarly, `events-core` has `*Module.kt` markers per feature package (`ArtistModule`, `EventModule`, `PromoterModule`, `VenueModule`)
+  Similarly, `events-core` has `*Module.kt` markers per feature package (`ArtistModule`, `EventModule`, `GenreTagModule`, `PromoterModule`, `VenueModule`)
   plus a root `EventsCoreModule.kt`.
 - **Importer feature module structure**: Each feature package follows a consistent file layout:
   `*Controller.kt`, `*Service.kt`, `*Repository.kt`, `*Entity.kt`, `*Request.kt`, `*Response.kt`, `*Module.kt`, `*NotFoundException.kt`.
@@ -113,6 +116,14 @@ subprojects sharing a root `settings.gradle.kts`, plus a standalone frontend pro
   The `BigDecimal.normalizeMoneyScale()` extension function lives in `events-core` (`MoneyExtensions.kt`) as a domain-level concern.
   This ensures consistent storage and prevents false positives in the scraper's `contentEquals` change detection, because
   `BigDecimal.equals()` is scale-sensitive (e.g. `BigDecimal("10.0") != BigDecimal("10.00")`).
+- **Genre tags**: The `genre` column on events stores raw free-text from venue websites for display. A separate `genre_tag`
+  table and `event_genre_tag` join table provide normalized many-to-many genre tags for structured filtering. Genre tags are
+  auto-created during event imports and admin API calls — there is no manual CRUD API. The `GenreNormalizer` utility in the
+  `genretag` module parses raw genre strings by splitting on common delimiters (`,`, `//`, ` & `, ` / `), stripping noise
+  suffixes ("Floor", "etc."), and mapping known synonyms to canonical names (e.g. "Hip-Hop"/"Rap" → "Hip Hop"). Unknown genres
+  are kept with title case and auto-created as new tags. The normalizer is shared between the admin API (`EventService`) and
+  the scraper pipeline (`AssociationSyncService`). The `GET /api/admin/genre-tags` endpoint provides the tag list for frontend
+  filter dropdowns.
 - **Web scraping**: The importer uses a `scraper` Spring Modulith module (`de.norm.events.scraper`) for importing event data
   from venue websites. See ADR-007. Key design:
     - **Jsoup** (`org.jsoup:jsoup`) for HTML parsing — robust handling of real-world HTML with CSS selector API.
@@ -130,16 +141,25 @@ subprojects sharing a root `settings.gradle.kts`, plus a standalone frontend pro
       to `EventUpsertService`, and manages event source status transitions (RUNNING → SUCCESS/FAILED/MISCONFIGURED).
       Imports multiple sources concurrently using coroutine `async` with a `Semaphore`-based concurrency limit
       (`app.import.max-concurrency`, default: 4). This is safe because the artist cache is local to each import call,
-      concurrent artist creation is handled via `DataIntegrityViolationException` fallback, and per-host HTTP politeness
-      is enforced by `PerHostThrottlingFilter`.
-    - **`EventUpsertService`** — handles the persistence pipeline: deduplication, change detection (skips unchanged events
-      to avoid unnecessary writes and inflated `updated_at` timestamps), event upsert, artist resolution/auto-creation,
-      diff-based artist association syncing, and stale event cleanup. Called within a transactional boundary by `EventImportService`.
+      concurrent artist creation is handled via `DataIntegrityViolationException` fallback in `AssociationSyncService`,
+      and per-host HTTP politeness is enforced by `PerHostThrottlingFilter`.
+    - **`EventUpsertService`** — handles the event persistence pipeline: deduplication, change detection (skips unchanged
+      events to avoid unnecessary writes and inflated `updated_at` timestamps), event upsert, and stale event cleanup.
+      Delegates artist/promoter resolution and association syncing to `AssociationSyncService`.
+      Called within a transactional boundary by `EventImportService`.
+    - **`AssociationSyncService`** — resolves artists and promoters by slug (auto-creating unknown ones via
+      `DataIntegrityViolationException` fallback for concurrent safety) and synchronizes many-to-many join-table
+      associations using a diff strategy (insert new, update changed, delete stale). Called by `EventUpsertService`.
     - **`EventSourceService`** — CRUD service for managing event source configuration.
-    - **`ScrapingExtensions.kt`** — framework-level Kotlin extension functions shared across all venue scrapers.
-      Provides reusable utilities for common extraction patterns: `Element.textAt()`, `Element.imgSrcAt()`,
-      `Element.hrefAt()`, `Element.hasVisibleWebflowFlag()`, `parseTime()`, `mapGermanCategory()`.
-      New venue scrapers should use these extensions instead of reimplementing the same null-safe chains.
+    - **Shared scraper utilities** — three focused extension files in the `scraper/` package, shared across all venue scrapers.
+      New venue scrapers should use these utilities instead of reimplementing the same patterns.
+        - **`ScrapingExtensions.kt`** — Jsoup HTML element extraction helpers (`Element.textAt()`, `Element.attrAt()`,
+          `Element.imgSrcAt()`, `Element.hrefAt()`, `Element.hasVisibleWebflowFlag()`) and URL resolution (`resolveUrl()`).
+        - **`DateParsingExtensions.kt`** — date/time parsing for the two common formats on venue websites: standalone
+          `HH:mm` strings from HTML (`parseTime()`) and ISO 8601 datetime strings from schema.org JSON-LD (`parseIsoDate()`, `parseIsoTime()`).
+        - **`EventMappingExtensions.kt`** — domain-level mapping of scraped text to model constants: German event category
+          classification (`mapGermanCategory()`), placeholder name detection (`isPlaceholderName()`), and artist list
+          construction from the headliner + support pattern (`buildArtistList()`).
     - **Venue-specific subdirectories** — each venue importer lives in its own sub-package under `scraper/` (e.g. `scraper/cassiopeia/`).
       Each contains a `*WebsiteImporter.kt` implementing `EventImporter`, plus `*OverviewPageScraper.kt` and `*DetailPageScraper.kt`
       for pure HTML parsing (no I/O). Use existing implementations as templates when adding new venue importers.
@@ -270,12 +290,15 @@ Java version is managed via SDKMAN (`.sdkmanrc` pins `java=25.0.2-tem`; run `sdk
 | Squash commit message prompt          | `.github/prompts/squash-commit-message.prompt.md`                                 |
 | Code review prompt                    | `.github/prompts/code-review.prompt.md`                                           |
 | Shared domain module marker           | `events-core/src/.../EventsCoreModule.kt`                                         |
-| Domain data classes                   | `events-core/src/.../artist/`, `event/`, `promoter/`, `venue/`                    |
+| Domain data classes                   | `events-core/src/.../artist/`, `event/`, `genretag/`, `promoter/`, `venue/`       |
 | Price normalization utility           | `events-core/src/.../event/MoneyExtensions.kt`                                    |
 | Initial DB migration                  | `events-importer/src/main/resources/db/migration/V001__create_initial_schema.sql` |
 | Global exception handler              | `events-importer/src/.../GlobalExceptionHandler.kt`                               |
 | Slug generator utility                | `events-importer/src/.../slug/SlugGenerator.kt`                                   |
+| Genre normalizer utility              | `events-importer/src/.../genretag/GenreNormalizer.kt`                             |
 | Shared scraping utilities             | `events-importer/src/.../scraper/ScrapingExtensions.kt`                           |
+| Shared date/time parsing              | `events-importer/src/.../scraper/DateParsingExtensions.kt`                        |
+| Shared event mapping utilities        | `events-importer/src/.../scraper/EventMappingExtensions.kt`                       |
 | WebFlux Pageable resolver config      | `events-importer/src/.../WebFluxConfiguration.kt`                                 |
 | Base integration test class           | `events-importer/src/test/.../BaseControllerTest.kt`                              |
 | Full lifecycle integration test       | `events-importer/src/test/.../event/FullLifecycleIntegrationTest.kt`              |

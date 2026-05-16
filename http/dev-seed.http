@@ -4,7 +4,15 @@
 ### Run all requests in this file sequentially (▶▶ "Run All")
 ### after starting the importer with a fresh database.
 ### Requests are idempotent-safe: duplicates will return 409.
+###
+### Sources:
+###   1. Cassiopeia  — https://cassiopeia-berlin.de/club
+###   2. Privatclub  — https://privatclub-berlin.de/
 ### ============================================================
+
+### ————————————————————————————————————————————————————————————
+### Cassiopeia (Revaler Str. 99, Berlin-Friedrichshain)
+### ————————————————————————————————————————————————————————————
 
 ### --- Step 1: Create Cassiopeia venue ---
 POST {{importer-host}}/api/admin/venues
@@ -55,6 +63,63 @@ Accept: application/json
 
 > {%
     client.test("Cassiopeia import triggered", function () {
+        client.assert(response.status === 200, "Expected 200 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Privatclub (Skalitzer Str. 85-86, Berlin-Kreuzberg)
+### ————————————————————————————————————————————————————————————
+
+### --- Step 4: Create Privatclub venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Privatclub",
+    "address": "Skalitzer Str. 85-86",
+    "city": "Berlin",
+    "postalCode": "10997",
+    "latitude": 52.49985,
+    "longitude": 13.43112,
+    "websiteUrl": "https://privatclub-berlin.de"
+}
+
+> {%
+    client.global.set("privatclub_venue_id", response.body.id);
+    client.test("Privatclub venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Step 5: Create Privatclub event source ---
+# Links the venue to the PrivatclubWebsiteImporter.
+# The sourceType "PRIVATCLUB" matches EventSource.PRIVATCLUB.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{privatclub_venue_id}},
+    "name": "Privatclub",
+    "url": "https://privatclub-berlin.de/",
+    "sourceType": "PRIVATCLUB",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Privatclub event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Step 6: Trigger initial Privatclub import ---
+POST {{importer-host}}/api/admin/event-sources/privatclub/import
+Accept: application/json
+
+> {%
+    client.test("Privatclub import triggered", function () {
         client.assert(response.status === 200, "Expected 200 but got " + response.status);
     });
 %}

@@ -1,0 +1,24 @@
+### ============================================================
+### Admin: Genre Tags — Read-only endpoints
+###
+### Genre tags are auto-created during event imports from the
+### raw genre text on events. There is no manual create/update/
+### delete — these endpoints are read-only for populating
+### frontend filter dropdowns.
+### ============================================================
+
+### List all genre tags (sorted by name)
+GET {{importer-host}}/api/admin/genre-tags
+Accept: application/json
+
+### List genre tags — page 0, 50 per page
+GET {{importer-host}}/api/admin/genre-tags?page=0&size=50&sort=name,asc
+Accept: application/json
+
+### Get genre tag by ID
+GET {{importer-host}}/api/admin/genre-tags/1
+Accept: application/json
+
+### Get non-existent genre tag (expect 404)
+GET {{importer-host}}/api/admin/genre-tags/999999
+Accept: application/json

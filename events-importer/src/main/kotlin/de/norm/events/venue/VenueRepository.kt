@@ -13,4 +13,7 @@ import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 interface VenueRepository : CoroutineCrudRepository<VenueEntity, Long> {
     /** Finds all venues with pagination and sorting applied via [pageable]. */
     fun findAllBy(pageable: Pageable): Flow<VenueEntity>
+
+    /** Finds a single venue by its unique slug, or null if not found. */
+    suspend fun findBySlug(slug: String): VenueEntity?
 }

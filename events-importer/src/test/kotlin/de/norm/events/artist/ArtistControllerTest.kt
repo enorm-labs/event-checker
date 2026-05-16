@@ -134,6 +134,45 @@ class ArtistControllerTest : BaseControllerTest() {
     }
 
     @Test
+    fun `POST artist with duplicate name returns 409 with descriptive message`() {
+        createArtist(ArtistRequestFixtures.adicts())
+
+        // Second artist with the same name should conflict on slug
+        webTestClient
+            .post()
+            .uri("/api/admin/artists")
+            .bodyValue(ArtistRequestFixtures.adicts())
+            .exchange()
+            .expectStatus()
+            .isEqualTo(409)
+            .expectBody()
+            .jsonPath("$.detail")
+            .isEqualTo("An artist with slug 'the-adicts' already exists (generated from name 'The Adicts')")
+    }
+
+    @Test
+    fun `PUT artist with name that collides with existing slug returns 409`() {
+        val first = createArtist(ArtistRequestFixtures.create(name = "Motörhead"))
+        val second = createArtist(ArtistRequestFixtures.create(name = "Unique Artist"))
+
+        // Renaming second artist to a name whose slug collides with the first
+        webTestClient
+            .put()
+            .uri("/api/admin/artists/${second.id}")
+            .bodyValue(ArtistRequestFixtures.create(name = "Motorhead"))
+            .exchange()
+            .expectStatus()
+            .isEqualTo(409)
+            .expectBody()
+            .jsonPath("$.detail")
+            .isEqualTo("An artist with slug 'motorhead' already exists (generated from name 'Motorhead')")
+
+        // Clean up
+        deleteArtist(first.id)
+        deleteArtist(second.id)
+    }
+
+    @Test
     fun `PUT artist with blank name returns 400`() {
         val created = createArtist()
 

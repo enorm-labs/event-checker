@@ -110,6 +110,45 @@ class VenueControllerTest : BaseControllerTest() {
     }
 
     @Test
+    fun `POST venue with duplicate name returns 409 with descriptive message`() {
+        createVenue(VenueRequestFixtures.astra())
+
+        // Second venue with the same name should conflict on slug
+        webTestClient
+            .post()
+            .uri("/api/admin/venues")
+            .bodyValue(VenueRequestFixtures.astra())
+            .exchange()
+            .expectStatus()
+            .isEqualTo(409)
+            .expectBody()
+            .jsonPath("$.detail")
+            .isEqualTo("A venue with slug 'astra-kulturhaus' already exists (generated from name 'Astra Kulturhaus')")
+    }
+
+    @Test
+    fun `PUT venue with name that collides with existing slug returns 409`() {
+        val first = createVenue(VenueRequestFixtures.create(name = "Über Club"))
+        val second = createVenue(VenueRequestFixtures.create(name = "Unique Venue"))
+
+        // Renaming second venue to a name whose slug collides with the first
+        webTestClient
+            .put()
+            .uri("/api/admin/venues/${second.id}")
+            .bodyValue(VenueRequestFixtures.create(name = "Uber Club"))
+            .exchange()
+            .expectStatus()
+            .isEqualTo(409)
+            .expectBody()
+            .jsonPath("$.detail")
+            .isEqualTo("A venue with slug 'uber-club' already exists (generated from name 'Uber Club')")
+
+        // Clean up
+        deleteVenue(first.id)
+        deleteVenue(second.id)
+    }
+
+    @Test
     fun `POST venue with blank name returns 400 with structured field errors`() {
         webTestClient
             .post()
