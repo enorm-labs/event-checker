@@ -37,15 +37,16 @@
 7. Use Stitch for UI design? Alternatives?
 8. Create dashboard for analysing the data (Apache Superset, Kibana, or Grafana? Or something else?)
 9. Choose a Cloud Platform / Runtime environment
-10. Deploy to Cloud Platform
-11. Make repository public and enable Advanced Security Analysis
-12. Create Template Repository from this project in my Enterprise Repository and my private Repository on GitHub.
+10. Choose a Domain Name (Brainstorming with AI)
+11. Deploy to Cloud Platform
+12. Make repository public and enable Advanced Security Analysis
+13. Create Template Repository from this project in my Enterprise Repository and my private Repository on GitHub.
     * with `.github` directory and workflows, instructions, skills, prompts,and agents
     * with README, CONTRIBUTING, LICENSE, etc. (see GitHub docs and best practices)
     * check if there are any good existing templates already
     * see also OTR service template
     * add scaffolding?
-13. Create a Roadmap
+14. Create a Roadmap
 
 ### Technical TODOs
 

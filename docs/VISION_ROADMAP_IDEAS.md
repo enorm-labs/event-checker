@@ -1,6 +1,8 @@
 # Vision / Roadmap / Ideas
 
+* Berlin Club Guide - register berlinclubguide.de or berlin-clubs.de? (berlin-events.de is not available)
 * Like Resident Advisor, Bandsintown, eventbrite, and songkick for Berlin events, but better
+  * There is something like this already: https://www.clubguideberlin.de/ and https://www.gaesteliste030.de/
 * Focus on all (and small) music events (concerts, club nights, festivals etc. - not only Techno/Electronic music) in venues (clubs, concert halls etc.) of
   Berlin (maybe
   later also other cities)
@@ -13,6 +15,8 @@
     * iCal support
     * Export/Import events or complete calendar to Google Calendar or file (iCal)
     * Login / Profile
+        * Save events to favorites (Merkliste)
+        * Reminders
         * Favorite Venues
         * Favorite Artists
         * Notifications
@@ -23,6 +27,7 @@
     * Social Network?
         * Connect with Friends
         * See which events your friends are interested in or going to
+    * Venues Page (Venues by Genre and Location)
     * Venue profile (with links)
     * Artist profile (with links)
     * Rank events by popularity (amount of RSVPs)
