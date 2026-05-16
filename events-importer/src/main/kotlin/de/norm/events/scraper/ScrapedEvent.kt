@@ -63,21 +63,30 @@ data class ScrapedEvent(
      * Each pair contains the artist name and their role (e.g. "HEADLINER", "SUPPORT", "DJ").
      * The service layer resolves these to database artist entities.
      */
-    val artists: List<ScrapedArtist> = emptyList()
+    val artists: List<ScrapedArtist> = emptyList(),
+    /**
+     * Raw promoter names extracted from the event listing.
+     * The service layer resolves these to database promoter entities (auto-creating if necessary)
+     * and creates event_promoter join table associations.
+     */
+    val promoters: List<String> = emptyList()
 ) {
     /**
      * Converts this scraped event into an [EventEntity] for persistence.
      *
      * This is a pure mapping function with no I/O — the caller is responsible for persisting
-     * the returned entity. The slug is always regenerated from the event date and title.
+     * the returned entity. The slug is always regenerated from the event date, venue slug,
+     * and title to ensure uniqueness across venues.
      * On updates, the [existing] entity's `id`, `sourceId`, and `createdAt` are preserved.
      *
      * @param venueId the database ID of the venue this event belongs to.
+     * @param venueSlug the URL-friendly slug of the venue, included in the event slug for cross-venue uniqueness.
      * @param eventSourceId the database ID of the event source that imported this event.
      * @param existing the previously persisted entity for updates, or null for new events.
      */
     fun toEventEntity(
         venueId: Long,
+        venueSlug: String,
         eventSourceId: Long,
         existing: EventEntity? = null
     ): EventEntity =
@@ -97,7 +106,7 @@ data class ScrapedEvent(
             description = description,
             eventType = EventType.parseOrDefault(eventType).name,
             status = EventStatus.parseOrDefault(status).name,
-            slug = SlugGenerator.slugify("$eventDate-$title"),
+            slug = SlugGenerator.slugify("$eventDate-$venueSlug-$title"),
             eventDate = eventDate,
             doorsTime = doorsTime,
             startTime = startTime,

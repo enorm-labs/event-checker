@@ -1,23 +1,12 @@
 ## TODO
 
 1. events-importer: Implement first event import job/controller to import events from one source and store them in the database.
-    * first check if website as been changed. if yes, import events. if no, do nothing.
-    * which website scraper to use? Can AI help us parsing websites?
     * check if more websites offer an RSS feed
-2. Which scheduling solution to use? Spring's `@Scheduled` or something like JobRunr, Spring Cloud Dataflow, or Quartz?
-    * Overview of all Import Jobs (Dashboard)
-    * When a source has been updated and imported last time?
-    * Was import successful?
-    * How many events have been imported?
-    * How many events have been updated?
-    * How many events have been deleted?
-    * Retry Import Job
-    * Disable/Enable Import Job
-3. Fix security issues https://github.com/enorm-labs/event-checker/security/dependabot
-4. Add multiple agents.md files (or at least one for backend and one for frontend)
+2. Fix security issues https://github.com/enorm-labs/event-checker/security/dependabot
+3. Add multiple agents.md files (or at least one for backend and one for frontend)
     * Create path-specific custom
       instructions https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/add-custom-instructions/add-repository-instructions#creating-path-specific-custom-instructions
-5. Create more prompts, skills, or agents, e.g. for planning/creating a new feature (interview, documentation, implementation) or adr
+4. Create more prompts, skills, or agents, e.g. for planning/creating a new feature (interview, documentation, implementation) or adr
     * How to add skills: https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/customize-cloud-agent/add-skills
     * Awesome Copilot: https://awesome-copilot.github.com/ --> Check what could be useful
     * Note: Personal/Global skills are currently a Copilot CLI feature. In IDE chat (JetBrains/VS Code), only project-level skills in .github/skills/ are
@@ -42,21 +31,21 @@
       encode them as optional prompt files you invoke explicitly when the task warrants it.
     * Try out Repomix https://repomix.com/
         * GH Actions: https://repomix.com/guide/github-actions
-6. Create test data set that can be used for tests (test fixtures) and for populating the local database
-7. Add Authentication and Authorization (depending on Cloud Platform? What's the best practice or standard for Spring apps? What about Keycloak (at least
+5. Create test data set that can be used for tests (test fixtures) and for populating the local database
+6. Add Authentication and Authorization (depending on Cloud Platform? What's the best practice or standard for Spring apps? What about Keycloak (at least
    locally for testing?)
-8. Use Stitch for UI design? Alternatives?
-9. Create dashboard for analysing the data (Apache Superset, Kibana, or Grafana? Or something else?)
-10. Choose a Cloud Platform / Runtime environment
-11. Deploy to Cloud Platform
-12. Make repository public and enable Advanced Security Analysis
-13. Create Template Repository from this project in my Enterprise Repository and my private Repository on GitHub.
+7. Use Stitch for UI design? Alternatives?
+8. Create dashboard for analysing the data (Apache Superset, Kibana, or Grafana? Or something else?)
+9. Choose a Cloud Platform / Runtime environment
+10. Deploy to Cloud Platform
+11. Make repository public and enable Advanced Security Analysis
+12. Create Template Repository from this project in my Enterprise Repository and my private Repository on GitHub.
     * with `.github` directory and workflows, instructions, skills, prompts,and agents
     * with README, CONTRIBUTING, LICENSE, etc. (see GitHub docs and best practices)
     * check if there are any good existing templates already
     * see also OTR service template
     * add scaffolding?
-14. Create a Roadmap
+13. Create a Roadmap
 
 ### Technical TODOs
 

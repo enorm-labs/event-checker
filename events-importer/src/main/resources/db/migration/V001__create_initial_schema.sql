@@ -150,6 +150,38 @@ CREATE INDEX idx_event_event_date ON event (event_date);
 -- No explicit slug index needed — the UNIQUE constraint already creates an implicit index.
 
 -- ============================================================
+-- GENRE_TAG
+-- Normalized genre labels for structured filtering.
+-- Raw genre text is preserved on the event for display;
+-- these tags enable frontend filtering and search.
+-- ============================================================
+CREATE TABLE genre_tag
+(
+    id         BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    name       TEXT        NOT NULL,
+    slug       TEXT        NOT NULL UNIQUE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- No explicit slug index needed — the UNIQUE constraint already creates an implicit index.
+
+-- ============================================================
+-- EVENT_GENRE_TAG (join table)
+-- Links events to their normalized genre tags (many-to-many).
+-- ============================================================
+CREATE TABLE event_genre_tag
+(
+    id           BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    event_id     BIGINT NOT NULL REFERENCES event (id) ON DELETE CASCADE,
+    genre_tag_id BIGINT NOT NULL REFERENCES genre_tag (id) ON DELETE CASCADE,
+    UNIQUE (event_id, genre_tag_id)
+);
+
+CREATE INDEX idx_event_genre_tag_event_id ON event_genre_tag (event_id);
+CREATE INDEX idx_event_genre_tag_genre_tag_id ON event_genre_tag (genre_tag_id);
+
+-- ============================================================
 -- EVENT_ARTIST (join table)
 -- Links events to artists with role and billing order.
 -- ============================================================
@@ -218,6 +250,12 @@ CREATE TRIGGER trg_event_updated_at
     FOR EACH ROW
 EXECUTE FUNCTION set_updated_at();
 
+
+CREATE TRIGGER trg_genre_tag_updated_at
+    BEFORE UPDATE
+    ON genre_tag
+    FOR EACH ROW
+EXECUTE FUNCTION set_updated_at();
 
 CREATE TRIGGER trg_event_source_updated_at
     BEFORE UPDATE

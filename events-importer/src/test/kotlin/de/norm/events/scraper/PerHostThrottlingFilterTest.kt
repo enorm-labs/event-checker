@@ -106,9 +106,10 @@ class PerHostThrottlingFilterTest {
         @Test
         fun `each host maintains its own throttle independently`() =
             runTest {
-                // Warm up both hosts
-                filter.filter(request("https://host-a.com/1"), mockExchange).block()
+                // Warm up host B first, then host A — order matters so that host A's
+                // throttle window hasn't elapsed by the time we measure the second request
                 filter.filter(request("https://host-b.com/1"), mockExchange).block()
+                filter.filter(request("https://host-a.com/1"), mockExchange).block()
 
                 // Second request to host A — should be delayed (same host)
                 val elapsedA =

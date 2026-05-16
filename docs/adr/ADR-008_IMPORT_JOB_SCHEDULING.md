@@ -97,7 +97,7 @@ Due sources within a tick are imported **concurrently**, bounded by a configurab
 
 Concurrent execution is safe because:
 
-- The **artist cache** in `EventUpsertService` is local to each `importFromSource` call (not shared
+- The **artist cache** in `AssociationSyncService` is local to each `importFromSource` call (not shared
   across sources).
 - **Concurrent artist creation** is handled via a `DataIntegrityViolationException` fallback — if two
   imports try to create the same artist simultaneously, the unique constraint on `artist.slug` catches

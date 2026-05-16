@@ -1,7 +1,5 @@
 package de.norm.events.scraper
 
-import de.norm.events.artist.ArtistRepository
-import de.norm.events.event.EventArtistRepository
 import de.norm.events.event.EventEntity
 import de.norm.events.event.EventRepository
 import io.kotest.matchers.shouldBe
@@ -28,8 +26,7 @@ import java.time.ZoneOffset
  */
 class EventUpsertServiceStaleCleanupTest {
     private val eventRepository: EventRepository = mockk(relaxed = true)
-    private val eventArtistRepository: EventArtistRepository = mockk(relaxed = true)
-    private val artistRepository: ArtistRepository = mockk(relaxed = true)
+    private val associationSyncService: AssociationSyncService = mockk(relaxed = true)
 
     /** Fixed "today" for all tests — 2026-06-15. */
     private val today = LocalDate.of(2026, 6, 15)
@@ -40,6 +37,9 @@ class EventUpsertServiceStaleCleanupTest {
 
     private val venueId = 10L
     private val eventSourceId = 1L
+
+    /** Venue slug used for event slug generation — value doesn't matter for stale cleanup tests. */
+    private val venueSlug = "test-venue"
 
     /** Creates a minimal [ScrapedEvent] for testing. */
     private fun scrapedEvent(
@@ -76,15 +76,13 @@ class EventUpsertServiceStaleCleanupTest {
         service =
             EventUpsertService(
                 eventRepository = eventRepository,
-                eventArtistRepository = eventArtistRepository,
-                artistRepository = artistRepository,
+                associationSyncService = associationSyncService,
                 clock = fixedClock
             )
 
         // Default stubs for the upsert pipeline (we're testing stale cleanup, not upsert)
         coEvery { eventRepository.findBySourceIdIn(any()) } returns emptyFlow()
         coEvery { eventRepository.deleteByIdIn(any()) } returns Unit
-        coEvery { eventArtistRepository.findByEventIdIn(any()) } returns emptyFlow()
         coEvery { eventRepository.saveAll(any<Iterable<EventEntity>>()) } answers {
             firstArg<Iterable<EventEntity>>()
                 .mapIndexed { index, entity -> entity.copy(id = entity.id ?: (100L + index)) }
@@ -118,7 +116,7 @@ class EventUpsertServiceStaleCleanupTest {
                     )
                 } returns listOf(tomorrowEvent).asFlow()
 
-                service.upsertAndCleanup(scrapedEvents, venueId, eventSourceId)
+                service.upsertAndCleanup(scrapedEvents, venueId, venueSlug, eventSourceId)
 
                 // Verify the query lower bound is tomorrow, not today
                 fromDateSlot.captured shouldBe tomorrow
@@ -153,7 +151,7 @@ class EventUpsertServiceStaleCleanupTest {
                     eventRepository.findByEventSourceIdAndEventDateBetween(any(), any(), any())
                 } returns listOf(staleEvent, activeEvent).asFlow()
 
-                service.upsertAndCleanup(scrapedEvents, venueId, eventSourceId)
+                service.upsertAndCleanup(scrapedEvents, venueId, venueSlug, eventSourceId)
 
                 // Tomorrow's stale event should be deleted
                 coVerify {
@@ -162,7 +160,7 @@ class EventUpsertServiceStaleCleanupTest {
             }
 
         @Test
-        fun `does not delete today's cancelled event — it expires naturally`() =
+        fun `does not delete today's cancelled event - it expires naturally`() =
             runTest {
                 // Scenario: Today's event was genuinely cancelled (removed from website).
                 // The scraper returns events starting from 3 days out.
@@ -181,7 +179,7 @@ class EventUpsertServiceStaleCleanupTest {
                     eventRepository.findByEventSourceIdAndEventDateBetween(any(), any(), any())
                 } returns emptyFlow()
 
-                service.upsertAndCleanup(scrapedEvents, venueId, eventSourceId)
+                service.upsertAndCleanup(scrapedEvents, venueId, venueSlug, eventSourceId)
 
                 // No deletions — today's cancelled event is outside the cleanup window
                 coVerify(exactly = 0) {
@@ -215,7 +213,7 @@ class EventUpsertServiceStaleCleanupTest {
                     )
                 } returns emptyFlow()
 
-                service.upsertAndCleanup(scrapedEvents, venueId, eventSourceId)
+                service.upsertAndCleanup(scrapedEvents, venueId, venueSlug, eventSourceId)
 
                 fromDateSlot.captured shouldBe tomorrow
                 toDateSlot.captured shouldBe latestDate
@@ -246,7 +244,7 @@ class EventUpsertServiceStaleCleanupTest {
                     )
                 } returns listOf(tomorrowEvent).asFlow()
 
-                service.upsertAndCleanup(scrapedEvents, venueId, eventSourceId)
+                service.upsertAndCleanup(scrapedEvents, venueId, venueSlug, eventSourceId)
 
                 // Upper bound should be the max scraped date (tomorrow), not far future
                 toDateSlot.captured shouldBe scrapedDate
@@ -280,7 +278,7 @@ class EventUpsertServiceStaleCleanupTest {
                     eventRepository.findByEventSourceIdAndEventDateBetween(any(), any(), any())
                 } returns (activeEvents + staleEvent).asFlow()
 
-                service.upsertAndCleanup(scrapedEvents, venueId, eventSourceId)
+                service.upsertAndCleanup(scrapedEvents, venueId, venueSlug, eventSourceId)
 
                 // Only the stale event should be deleted
                 coVerify {
@@ -312,7 +310,7 @@ class EventUpsertServiceStaleCleanupTest {
                     )
                 } returns emptyFlow()
 
-                service.upsertAndCleanup(scrapedEvents, venueId, eventSourceId)
+                service.upsertAndCleanup(scrapedEvents, venueId, venueSlug, eventSourceId)
 
                 // The window is tomorrow..today — the repository should handle this
                 // as an empty range and return no results

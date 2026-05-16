@@ -11,7 +11,8 @@ import org.springframework.modulith.ApplicationModule
  * - `venue` — to resolve venue references for scraped events
  * - `artist` — to resolve or auto-create artists found in scraped lineups
  * - `promoter` — to resolve or auto-create promoters found in scraped events
+ * - `genretag` — to resolve or auto-create genre tags from scraped genre strings
  * - `slug` — to generate URL-friendly slugs for auto-created entities
  */
-@ApplicationModule(allowedDependencies = ["event", "venue", "artist", "promoter", "slug"])
+@ApplicationModule(allowedDependencies = ["event", "venue", "artist", "promoter", "genretag", "slug"])
 class ScraperModule

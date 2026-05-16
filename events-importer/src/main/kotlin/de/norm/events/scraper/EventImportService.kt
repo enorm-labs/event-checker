@@ -1,5 +1,6 @@
 package de.norm.events.scraper
 
+import de.norm.events.venue.VenueRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -29,6 +30,7 @@ class EventImportService(
     private val eventSourceRepository: EventSourceRepository,
     private val eventUpsertService: EventUpsertService,
     private val eventImporters: List<EventImporter>,
+    private val venueRepository: VenueRepository,
     /** Programmatic transaction control — used instead of @Transactional to avoid self-invocation issues. */
     private val transactionalOperator: TransactionalOperator,
     /** Injected clock for deterministic time in tests. Defaults to system UTC clock in production. */
@@ -149,6 +151,11 @@ class EventImportService(
                 is ImportResult.Success -> {
                     logger.info { "Scraped ${result.events.size} event(s) from '${runningSource.slug}'" }
 
+                    // Look up the venue slug for inclusion in event slugs (ensures cross-venue uniqueness).
+                    val venue =
+                        venueRepository.findById(runningSource.venueId)
+                            ?: error("Venue with id ${runningSource.venueId} not found for source '${runningSource.slug}'")
+
                     // Wrap upserts and cleanup in a transaction so partial failures roll back cleanly.
                     // Uses TransactionalOperator instead of @Transactional to keep status updates
                     // (markRunning/markSuccess/markFailed) outside the transaction boundary —
@@ -156,7 +163,7 @@ class EventImportService(
                     val upsertedCount =
                         transactionalOperator.executeAndAwait {
                             val sourceId = requireNotNull(runningSource.id) { "Event source must be persisted before importing" }
-                            eventUpsertService.upsertAndCleanup(result.events, runningSource.venueId, sourceId)
+                            eventUpsertService.upsertAndCleanup(result.events, runningSource.venueId, venue.slug, sourceId)
                         }
 
                     markSuccess(runningSource, upsertedCount, result.etag, result.lastModified)

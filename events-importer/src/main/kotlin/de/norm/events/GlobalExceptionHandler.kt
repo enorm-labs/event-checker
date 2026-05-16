@@ -1,11 +1,15 @@
 package de.norm.events
 
 import de.norm.events.artist.ArtistNotFoundException
+import de.norm.events.artist.DuplicateArtistSlugException
 import de.norm.events.event.EventNotFoundException
+import de.norm.events.genretag.GenreTagNotFoundException
+import de.norm.events.promoter.DuplicatePromoterSlugException
 import de.norm.events.promoter.PromoterNotFoundException
 import de.norm.events.scraper.EventSourceNotFoundException
 import de.norm.events.scraper.InvalidSourceTypeException
 import de.norm.events.scraper.ReservedSlugException
+import de.norm.events.venue.DuplicateVenueSlugException
 import de.norm.events.venue.VenueNotFoundException
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.dao.DataIntegrityViolationException
@@ -28,7 +32,8 @@ class GlobalExceptionHandler {
         ArtistNotFoundException::class,
         PromoterNotFoundException::class,
         EventNotFoundException::class,
-        EventSourceNotFoundException::class
+        EventSourceNotFoundException::class,
+        GenreTagNotFoundException::class
     )
     fun handleNotFound(ex: RuntimeException): ProblemDetail {
         logger.debug { "Entity not found: ${ex.message}" }
@@ -40,6 +45,21 @@ class GlobalExceptionHandler {
         logger.warn { "Data integrity violation: ${ex.message}" }
         val detail = extractConstraintDetail(ex)
         return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, detail)
+    }
+
+    /**
+     * Handles duplicate slug violations from the service-layer pre-check — these provide
+     * a more descriptive error message than the generic DB constraint handler above,
+     * identifying the entity type, conflicting slug, and the name that produced it.
+     */
+    @ExceptionHandler(
+        DuplicateArtistSlugException::class,
+        DuplicateVenueSlugException::class,
+        DuplicatePromoterSlugException::class
+    )
+    fun handleDuplicateSlug(ex: RuntimeException): ProblemDetail {
+        logger.debug { "Duplicate slug: ${ex.message}" }
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.message ?: "A record with the same slug already exists.")
     }
 
     /**

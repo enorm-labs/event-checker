@@ -5,7 +5,13 @@ import de.norm.events.artist.ArtistRepository
 import de.norm.events.event.EventArtistEntity
 import de.norm.events.event.EventArtistRepository
 import de.norm.events.event.EventEntity
+import de.norm.events.event.EventPromoterRepository
 import de.norm.events.event.EventRepository
+import de.norm.events.genretag.EventGenreTagRepository
+import de.norm.events.genretag.GenreTagRepository
+import de.norm.events.promoter.PromoterRepository
+import de.norm.events.venue.VenueEntity
+import de.norm.events.venue.VenueRepository
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
@@ -27,13 +33,19 @@ import java.time.LocalDate
  *
  * Tests the import pipeline logic (upsert, deduplication, stale event cleanup,
  * artist auto-creation, error handling) in isolation with mocked dependencies.
- * Persistence is delegated to a real [EventUpsertService] backed by mocked repositories.
+ * Persistence is delegated to a real [EventUpsertService] backed by a real
+ * [AssociationSyncService] with mocked repositories.
  */
 class EventImportServiceTest {
     private val eventSourceRepository: EventSourceRepository = mockk(relaxed = true)
     private val eventRepository: EventRepository = mockk(relaxed = true)
     private val eventArtistRepository: EventArtistRepository = mockk(relaxed = true)
+    private val eventPromoterRepository: EventPromoterRepository = mockk(relaxed = true)
+    private val eventGenreTagRepository: EventGenreTagRepository = mockk(relaxed = true)
     private val artistRepository: ArtistRepository = mockk(relaxed = true)
+    private val promoterRepository: PromoterRepository = mockk(relaxed = true)
+    private val genreTagRepository: GenreTagRepository = mockk(relaxed = true)
+    private val venueRepository: VenueRepository = mockk(relaxed = true)
 
     // Create a mock importer for CASSIOPEIA
     private val cassiopeiaImporter: EventImporter =
@@ -52,7 +64,8 @@ class EventImportServiceTest {
             }
         }
 
-    /** Real upsert service backed by mocked repositories — tested indirectly through the import pipeline. */
+    /** Real services backed by mocked repositories — tested indirectly through the import pipeline. */
+    private lateinit var associationSyncService: AssociationSyncService
     private lateinit var eventUpsertService: EventUpsertService
     private lateinit var service: EventImportService
 
@@ -99,11 +112,20 @@ class EventImportServiceTest {
 
     @BeforeEach
     fun setUp() {
+        associationSyncService =
+            AssociationSyncService(
+                eventArtistRepository = eventArtistRepository,
+                eventPromoterRepository = eventPromoterRepository,
+                eventGenreTagRepository = eventGenreTagRepository,
+                artistRepository = artistRepository,
+                promoterRepository = promoterRepository,
+                genreTagRepository = genreTagRepository
+            )
+
         eventUpsertService =
             EventUpsertService(
                 eventRepository = eventRepository,
-                eventArtistRepository = eventArtistRepository,
-                artistRepository = artistRepository
+                associationSyncService = associationSyncService
             )
 
         service =
@@ -111,6 +133,7 @@ class EventImportServiceTest {
                 eventSourceRepository = eventSourceRepository,
                 eventUpsertService = eventUpsertService,
                 eventImporters = listOf(cassiopeiaImporter),
+                venueRepository = venueRepository,
                 transactionalOperator = transactionalOperator,
                 maxConcurrency = EventImportService.DEFAULT_MAX_CONCURRENCY
             )
@@ -122,6 +145,14 @@ class EventImportServiceTest {
         coEvery { eventRepository.deleteByIdIn(any()) } returns Unit
         coEvery { eventArtistRepository.findByEventIdIn(any()) } returns emptyFlow()
         coEvery { eventArtistRepository.deleteAllById(any()) } returns Unit
+
+        // Default venue stub — returns a venue with a known slug for event slug generation
+        coEvery { venueRepository.findById(any<Long>()) } returns
+            VenueEntity(
+                id = 10L,
+                name = "Test Venue",
+                slug = "test-venue"
+            )
 
         // saveAll() returns a flow of entities with assigned IDs
         coEvery { eventRepository.saveAll(any<Iterable<EventEntity>>()) } answers {
@@ -203,6 +234,7 @@ class EventImportServiceTest {
                         eventSourceRepository = eventSourceRepository,
                         eventUpsertService = eventUpsertService,
                         eventImporters = emptyList(),
+                        venueRepository = venueRepository,
                         transactionalOperator = transactionalOperator,
                         maxConcurrency = EventImportService.DEFAULT_MAX_CONCURRENCY
                     )
@@ -396,7 +428,7 @@ class EventImportServiceTest {
                         id = 42L,
                         venueId = 10L,
                         title = "Concert Night",
-                        slug = "2026-06-15-concert-night",
+                        slug = "2026-06-15-test-venue-concert-night",
                         eventDate = LocalDate.of(2026, 6, 15),
                         sourceId = "cassiopeia:show",
                         sourceUrl = "https://example.com/event/test",

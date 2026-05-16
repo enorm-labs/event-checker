@@ -42,12 +42,17 @@ class PromoterService(
      * (e.g. `"36 Concerts"` → `"36-concerts"`).
      */
     suspend fun create(request: PromoterRequest): PromoterResponse {
+        val slug = SlugGenerator.slugify(request.name)
+        // Pre-check for slug uniqueness to provide a clear error message instead of
+        // relying on the DB constraint, which would produce a generic 409 response.
+        ensureSlugAvailable(request.name, slug)
+
         // Route through the domain model to ensure any future business rules
         // (e.g. validation, normalization) are consistently applied (see ADR-003).
         val promoter =
             Promoter(
                 name = request.name,
-                slug = SlugGenerator.slugify(request.name),
+                slug = slug,
                 websiteUrl = request.websiteUrl,
                 imageUrl = request.imageUrl
             )
@@ -70,10 +75,17 @@ class PromoterService(
             promoterRepository.findById(id)
                 ?: throw PromoterNotFoundException(id)
 
+        val slug = SlugGenerator.slugify(request.name)
+        // Only check for conflicts if the slug actually changed — renaming to the same
+        // effective slug (e.g. fixing capitalization) should not trigger a false positive.
+        if (slug != existing.slug) {
+            ensureSlugAvailable(request.name, slug)
+        }
+
         val updated =
             existing.copy(
                 name = request.name,
-                slug = SlugGenerator.slugify(request.name),
+                slug = slug,
                 websiteUrl = request.websiteUrl,
                 imageUrl = request.imageUrl
             )
@@ -92,5 +104,19 @@ class PromoterService(
         // Join table rows (event_promoter) are cascade-deleted by the database FK constraint (ON DELETE CASCADE).
         promoterRepository.deleteById(id)
         logger.info { "Deleted promoter with id $id" }
+    }
+
+    /**
+     * Checks whether the given [slug] is already taken by another promoter and throws
+     * [DuplicatePromoterSlugException] if so. This provides a clear, domain-specific error
+     * message to the API consumer instead of relying on the DB's generic constraint violation.
+     */
+    private suspend fun ensureSlugAvailable(
+        name: String,
+        slug: String
+    ) {
+        if (promoterRepository.findBySlug(slug) != null) {
+            throw DuplicatePromoterSlugException(name, slug)
+        }
     }
 }

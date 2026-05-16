@@ -10,7 +10,10 @@ package de.norm.events.scraper
  */
 enum class EventSource {
     /** Cassiopeia Berlin – Webflow-based event listing at `/club`. */
-    CASSIOPEIA;
+    CASSIOPEIA,
+
+    /** Privatclub Berlin – WordPress-based single-page event listing. */
+    PRIVATCLUB;
 
     /**
      * Prefix for `sourceId` values, derived from the enum name in lowercase.

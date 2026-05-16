@@ -3,11 +3,11 @@ package de.norm.events.scraper.cassiopeia
 import de.norm.events.scraper.EventSource
 import de.norm.events.scraper.ScrapedArtist
 import de.norm.events.scraper.ScrapedEvent
+import de.norm.events.scraper.buildArtistList
 import de.norm.events.scraper.cassiopeia.CassiopeiaDetailPageScraper.Companion.DATE_FORMAT
 import de.norm.events.scraper.hasVisibleWebflowFlag
 import de.norm.events.scraper.hrefAt
 import de.norm.events.scraper.imgSrcAt
-import de.norm.events.scraper.isPlaceholderName
 import de.norm.events.scraper.mapGermanCategory
 import de.norm.events.scraper.parseTime
 import de.norm.events.scraper.textAt
@@ -288,17 +288,7 @@ class CassiopeiaDetailPageScraper {
         // The presence of ANY "Support:" line confirms the headliner + support
         // pattern — even if the support name is a placeholder like "TBA".
         // Without this signal, we can't tell if the title is an artist or event name.
-        if (supportNames.isEmpty()) return emptyList()
-
-        // Build the artist list, filtering out placeholder names from the output
-        val headliner =
-            if (isPlaceholderName(title)) emptyList() else listOf(ScrapedArtist(name = title, role = "HEADLINER"))
-        val supportActs =
-            supportNames
-                .filterNot { isPlaceholderName(it) }
-                .map { ScrapedArtist(name = it, role = "SUPPORT") }
-
-        return headliner + supportActs
+        return buildArtistList(title, supportNames)
     }
 
     companion object {

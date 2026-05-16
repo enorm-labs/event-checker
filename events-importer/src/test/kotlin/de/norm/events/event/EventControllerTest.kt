@@ -11,6 +11,7 @@ import de.norm.events.venue.VenueRequest
 import de.norm.events.venue.VenueRequestFixtures
 import de.norm.events.venue.VenueResponse
 import io.kotest.matchers.collections.shouldContain
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.ints.shouldBeGreaterThanOrEqual
 import io.kotest.matchers.shouldBe
@@ -95,8 +96,9 @@ class EventControllerTest : BaseControllerTest() {
 
         created.venueId shouldBe venue.id
         created.title shouldBe "THE ADICTS"
-        created.slug shouldBe "2026-06-12-the-adicts"
+        created.slug shouldBe "2026-06-12-astra-kulturhaus-the-adicts"
         created.genre shouldBe "Punk"
+        created.genreTags shouldContainExactlyInAnyOrder listOf("Punk")
         created.artists shouldHaveSize 1
         created.artists[0].artistId shouldBe artist.id
         created.artists[0].role shouldBe ArtistRole.HEADLINER

@@ -110,6 +110,45 @@ class PromoterControllerTest : BaseControllerTest() {
     }
 
     @Test
+    fun `POST promoter with duplicate name returns 409 with descriptive message`() {
+        createPromoter(PromoterRequestFixtures.concerts36())
+
+        // Second promoter with the same name should conflict on slug
+        webTestClient
+            .post()
+            .uri("/api/admin/promoters")
+            .bodyValue(PromoterRequestFixtures.concerts36())
+            .exchange()
+            .expectStatus()
+            .isEqualTo(409)
+            .expectBody()
+            .jsonPath("$.detail")
+            .isEqualTo("A promoter with slug '36-concerts' already exists (generated from name '36 Concerts')")
+    }
+
+    @Test
+    fun `PUT promoter with name that collides with existing slug returns 409`() {
+        val first = createPromoter(PromoterRequestFixtures.create(name = "Über Promoter"))
+        val second = createPromoter(PromoterRequestFixtures.create(name = "Unique Promoter"))
+
+        // Renaming second promoter to a name whose slug collides with the first
+        webTestClient
+            .put()
+            .uri("/api/admin/promoters/${second.id}")
+            .bodyValue(PromoterRequestFixtures.create(name = "Uber Promoter"))
+            .exchange()
+            .expectStatus()
+            .isEqualTo(409)
+            .expectBody()
+            .jsonPath("$.detail")
+            .isEqualTo("A promoter with slug 'uber-promoter' already exists (generated from name 'Uber Promoter')")
+
+        // Clean up
+        deletePromoter(first.id)
+        deletePromoter(second.id)
+    }
+
+    @Test
     fun `POST promoter with blank name returns 400`() {
         webTestClient
             .post()

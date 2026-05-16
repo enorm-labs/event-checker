@@ -78,6 +78,14 @@ classDiagram
         Instant updatedAt
     }
 
+    class GenreTag {
+        Long id
+        String name
+        String slug
+        Instant createdAt
+        Instant updatedAt
+    }
+
     class LineupEntry {
         ArtistRole role
         int billingOrder
@@ -113,6 +121,7 @@ classDiagram
     Event "1" --> "*" LineupEntry: lineup
     LineupEntry "*" --> "1" Artist: artist
     Event "*" --> "*" Promoter: promoters
+    Event "*" --> "*" GenreTag: genreTags
     Event --> EventType: eventType
     Event --> EventStatus: status
     LineupEntry --> ArtistRole: role
@@ -126,6 +135,8 @@ de.norm.events
 │   └── Artist.kt
 ├── event/
 │   └── Event.kt          (Event, EventType, EventStatus, LineupEntry, ArtistRole)
+├── genretag/
+│   └── GenreTag.kt
 ├── promoter/
 │   └── Promoter.kt
 └── venue/
@@ -175,7 +186,7 @@ Core entity representing a single music event at a venue on a specific date.
 | `source_id`          | `TEXT` (UQ)     | No       | Unique import key for idempotent upserts                        | `astra:2026-06-12-the-adicts`                              |
 | `ticket_url`         | `TEXT`          | Yes      | External ticket shop URL (eventim, dice, etc.)                  | `https://www.eventim.de/event/...`                         |
 | `facebook_event_url` | `TEXT`          | Yes      | Direct link to the Facebook event page                          | `https://fb.me/e/60JFqXAUr`                                |
-| `genre`              | `TEXT`          | Yes      | Music genre or style tag from the source venue                  | `Punk`                                                     |
+| `genre`              | `TEXT`          | Yes      | Raw music genre/style text from the source venue (display only) | `Punk`                                                     |
 | `price_presale`      | `DECIMAL(10,2)` | Yes      | Presale ticket price (Vorverkauf)                               | `38.00`                                                    |
 | `price_box_office`   | `DECIMAL(10,2)` | Yes      | Box office ticket price (Abendkasse)                            | `45.00`                                                    |
 | `price_currency`     | `TEXT`          | No       | ISO 4217 currency code (default EUR)                            | `EUR`                                                      |
@@ -243,6 +254,31 @@ Links events to their promoters/presenters.
 
 Composite primary key `(event_id, promoter_id)`.
 
+### GenreTag
+
+Represents a normalized music genre label used for structured filtering. Genre tags are auto-created during event
+imports from the raw genre text on events. The raw text is preserved for display; these tags enable frontend filtering.
+
+| Field        | Type          | Nullable | Description                 | Example   |
+|--------------|---------------|----------|-----------------------------|-----------|
+| `id`         | `BIGINT`      | No       | Auto-generated primary key  | `1`       |
+| `name`       | `TEXT`        | No       | Canonical display name      | `Hip Hop` |
+| `slug`       | `TEXT` (UQ)   | No       | URL-friendly identifier     | `hip-hop` |
+| `created_at` | `TIMESTAMPTZ` | No       | Record creation timestamp   |           |
+| `updated_at` | `TIMESTAMPTZ` | No       | Last modification timestamp |           |
+
+### EventGenreTag (Join Table)
+
+Links events to their normalized genre tags (many-to-many).
+
+| Field          | Type        | Nullable | Description                | Example |
+|----------------|-------------|----------|----------------------------|---------|
+| `id`           | `BIGINT`    | No       | Auto-generated primary key | `5`     |
+| `event_id`     | `BIGINT` FK | No       | References `event.id`      | `101`   |
+| `genre_tag_id` | `BIGINT` FK | No       | References `genre_tag.id`  | `1`     |
+
+Unique constraint on `(event_id, genre_tag_id)` prevents duplicate tag-event associations.
+
 ## Design Decisions
 
 ### Idempotent Imports via `source_id`
@@ -281,6 +317,19 @@ Pricing is embedded directly on the `event` table as `price_presale`, `price_box
 - Nullable `DECIMAL` columns cleanly express "no price information available"
 - Keeps queries simple — no joins needed to display event listings with prices
 
+### Genre Tags vs. Genre Enum
+
+The `genre` field on events is free-text scraped from venue websites. A separate `genre_tag` table with a many-to-many
+join table (`event_genre_tag`) provides normalized genre tags for structured filtering. This approach was chosen over
+an enum because:
+
+- Scraped genre data is messy and inconsistent across venues (e.g. "Hip-Hop", "Hip Hop", "Rap", "HipHop")
+- Events frequently have multiple genres (e.g. "Indie, Rock, Folk")
+- A fixed enum would require constant updates as new venues produce new genre labels
+- The `GenreNormalizer` maps known synonyms to canonical names while preserving unknown genres as-is
+- The raw genre text is kept on the event for display; normalized tags enable structured filtering
+- Genre tags are auto-created during imports — no manual curation required
+
 ### External Ticket URL
 
 The `ticket_url` field stores a link to the external ticket shop (eventim.de, ticketshop.live, vvk.link, dice.fm, etc.).
@@ -295,7 +344,7 @@ events without losing the original record.
 
 ### `slug` Fields on All Main Entities
 
-URL-friendly slugs are stored on venues, artists, promoters, and events. These are used for:
+URL-friendly slugs are stored on venues, artists, promoters, genre tags, and events. These are used for:
 
 - Clean REST API URLs (e.g. `/venues/astra-kulturhaus`)
 - Matching against source website URL patterns during import

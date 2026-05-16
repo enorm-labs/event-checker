@@ -2,6 +2,11 @@ package de.norm.events.event
 
 import de.norm.events.artist.ArtistNotFoundException
 import de.norm.events.artist.ArtistRepository
+import de.norm.events.genretag.EventGenreTagEntity
+import de.norm.events.genretag.EventGenreTagRepository
+import de.norm.events.genretag.GenreTagEntity
+import de.norm.events.genretag.GenreTagRepository
+import de.norm.events.genretag.normalizeGenre
 import de.norm.events.promoter.PromoterNotFoundException
 import de.norm.events.promoter.PromoterRepository
 import de.norm.events.slug.SlugGenerator
@@ -26,6 +31,8 @@ class EventService(
     private val eventRepository: EventRepository,
     private val eventArtistRepository: EventArtistRepository,
     private val eventPromoterRepository: EventPromoterRepository,
+    private val eventGenreTagRepository: EventGenreTagRepository,
+    private val genreTagRepository: GenreTagRepository,
     private val venueRepository: VenueRepository,
     private val artistRepository: ArtistRepository,
     private val promoterRepository: PromoterRepository
@@ -33,15 +40,15 @@ class EventService(
     private val logger = KotlinLogging.logger {}
 
     /**
-     * Lists events with their artist and promoter associations, applying pagination and sorting.
+     * Lists events with their artist, promoter, and genre tag associations, applying pagination and sorting.
      *
      * Pagination and sorting are controlled by the [pageable] parameter, which Spring
      * resolves from `page`, `size`, and `sort` query parameters
      * (e.g. `?page=0&size=20&sort=eventDate,desc`).
      *
      * Uses batch loading to avoid N+1 queries: fetches the current page of events first,
-     * then bulk-fetches all artist and promoter associations for that page in just
-     * 2 additional queries. This results in exactly 3 queries per page regardless
+     * then bulk-fetches all artist, promoter, and genre tag associations for that page in
+     * 3 additional queries. This results in exactly 4 queries per page regardless
      * of the number of events.
      */
     @Transactional(readOnly = true)
@@ -49,17 +56,32 @@ class EventService(
         val entities = eventRepository.findAllBy(pageable).toList()
         if (entities.isEmpty()) return emptyList()
 
-        val eventIds = entities.map { it.id!! }
+        val eventIds = entities.map { requireNotNull(it.id) { "Persisted event must have an ID" } }
 
-        // Batch-fetch all associations in 2 queries, grouped by event ID
+        // Batch-fetch all associations in 3 queries, grouped by event ID
         val artistsByEventId = eventArtistRepository.findByEventIdIn(eventIds).toList().groupBy { it.eventId }
         val promotersByEventId = eventPromoterRepository.findByEventIdIn(eventIds).toList().groupBy { it.eventId }
+        val genreTagsByEventId = eventGenreTagRepository.findByEventIdIn(eventIds).toList().groupBy { it.eventId }
+
+        // Resolve genre tag IDs to names in a single batch query
+        val allGenreTagIds =
+            genreTagsByEventId.values
+                .flatten()
+                .map { it.genreTagId }
+                .distinct()
+        val genreTagNamesById =
+            if (allGenreTagIds.isNotEmpty()) {
+                genreTagRepository.findAllById(allGenreTagIds).toList().associate { it.id!! to it.name }
+            } else {
+                emptyMap()
+            }
 
         return entities.map { entity ->
             val artists = artistsByEventId[entity.id]?.map { EventArtistResponse.fromEntity(it) } ?: emptyList()
             val promoters = promotersByEventId[entity.id]?.map { it.promoterId } ?: emptyList()
+            val genreTags = genreTagsByEventId[entity.id]?.mapNotNull { genreTagNamesById[it.genreTagId] } ?: emptyList()
 
-            toResponse(entity, artists, promoters)
+            toResponse(entity, artists, promoters, genreTags)
         }
     }
 
@@ -87,10 +109,12 @@ class EventService(
      */
     @Transactional
     suspend fun create(request: EventRequest): EventResponse {
-        // Validate that referenced venue exists (existsById avoids fetching all columns)
-        if (!venueRepository.existsById(request.venueId)) throw VenueNotFoundException(request.venueId)
+        // Validate that referenced venue exists and retrieve its slug for event slug generation
+        val venue = venueRepository.findById(request.venueId) ?: throw VenueNotFoundException(request.venueId)
 
-        val slug = SlugGenerator.slugify("${request.eventDate}-${request.title}")
+        // Include venue slug in event slug to ensure cross-venue uniqueness for events
+        // with the same title on the same date (e.g. "Open Decks" at two different venues).
+        val slug = SlugGenerator.slugify("${request.eventDate}-${venue.slug}-${request.title}")
         val entity =
             EventEntity(
                 venueId = request.venueId,
@@ -120,9 +144,10 @@ class EventService(
 
         val artistResponses = saveArtistAssociations(eventId, request.artists)
         val promoterIdResponses = savePromoterAssociations(eventId, request.promoterIds)
+        val genreTagNames = saveGenreTagAssociations(eventId, request.genre)
 
         logger.info { "Created event '${saved.title}' with id $eventId" }
-        return toResponse(saved, artistResponses, promoterIdResponses)
+        return toResponse(saved, artistResponses, promoterIdResponses, genreTagNames)
     }
 
     /**
@@ -142,9 +167,9 @@ class EventService(
         request: EventRequest
     ): EventResponse {
         val existing = eventRepository.findById(id) ?: throw EventNotFoundException(id)
-        if (!venueRepository.existsById(request.venueId)) throw VenueNotFoundException(request.venueId)
+        val venue = venueRepository.findById(request.venueId) ?: throw VenueNotFoundException(request.venueId)
 
-        val slug = SlugGenerator.slugify("${request.eventDate}-${request.title}")
+        val slug = SlugGenerator.slugify("${request.eventDate}-${venue.slug}-${request.title}")
         val updated =
             existing.copy(
                 venueId = request.venueId,
@@ -179,8 +204,12 @@ class EventService(
         eventPromoterRepository.deleteByEventId(id)
         val promoterIdResponses = savePromoterAssociations(id, request.promoterIds)
 
+        // Replace genre tag associations: delete existing, insert new
+        eventGenreTagRepository.deleteByEventId(id)
+        val genreTagNames = saveGenreTagAssociations(id, request.genre)
+
         logger.info { "Updated event '${saved.title}' (id=$id)" }
-        return toResponse(saved, artistResponses, promoterIdResponses)
+        return toResponse(saved, artistResponses, promoterIdResponses, genreTagNames)
     }
 
     /**
@@ -191,7 +220,7 @@ class EventService(
     @Transactional
     suspend fun delete(id: Long) {
         if (!eventRepository.existsById(id)) throw EventNotFoundException(id)
-        // Join table rows (event_artist, event_promoter) are cascade-deleted
+        // Join table rows (event_artist, event_promoter, event_genre_tag) are cascade-deleted
         // by the database FK constraints (ON DELETE CASCADE).
         eventRepository.deleteById(id)
         logger.info { "Deleted event with id $id" }
@@ -271,21 +300,69 @@ class EventService(
     }
 
     /**
-     * Resolves an [EventEntity]'s artist and promoter associations and delegates
+     * Normalizes the raw genre string into canonical genre tags, resolves or creates
+     * the tags in the database, and persists the join-table associations.
+     *
+     * Uses the same [normalizeGenre] function as the scraper pipeline to ensure
+     * consistent genre normalization between manual creation and imports.
+     *
+     * @return the list of canonical genre tag names for the response.
+     */
+    private suspend fun saveGenreTagAssociations(
+        eventId: Long,
+        rawGenre: String?
+    ): List<String> {
+        val genreNames = normalizeGenre(rawGenre)
+        if (genreNames.isEmpty()) return emptyList()
+
+        // Resolves each genre tag individually (N+1) — deliberately simpler than the batch-fetch
+        // + cache strategy in AssociationSyncService, since the admin API handles single-event
+        // operations with very few genre tags (typically 1–5).
+        val entities =
+            genreNames.map { name ->
+                val slug = SlugGenerator.slugify(name)
+                val tag =
+                    genreTagRepository.findBySlug(slug)
+                        ?: genreTagRepository.save(
+                            GenreTagEntity(name = name, slug = slug)
+                        )
+                EventGenreTagEntity(
+                    eventId = eventId,
+                    genreTagId = requireNotNull(tag.id) { "GenreTag must be persisted before creating association" }
+                )
+            }
+        eventGenreTagRepository.saveAll(entities).toList()
+
+        return genreNames
+    }
+
+    /**
+     * Resolves an [EventEntity]'s artist, promoter, and genre tag associations and delegates
      * to [EventResponse.fromEntity] for the actual mapping.
      *
-     * When [artistResponses] and [promoterIds] are provided (e.g. after create/update),
-     * they are used directly to avoid re-querying within the same transaction.
+     * When [artistResponses], [promoterIds], and [genreTagNames] are provided (e.g. after
+     * create/update), they are used directly to avoid re-querying within the same transaction.
      */
     private suspend fun toResponse(
         entity: EventEntity,
         artistResponses: List<EventArtistResponse>? = null,
-        promoterIds: List<Long>? = null
+        promoterIds: List<Long>? = null,
+        genreTagNames: List<String>? = null
     ): EventResponse {
         val artists =
             artistResponses ?: eventArtistRepository.findByEventId(entity.id!!).toList().map { EventArtistResponse.fromEntity(it) }
         val promoters = promoterIds ?: eventPromoterRepository.findByEventId(entity.id!!).toList().map { it.promoterId }
+        val genreTags =
+            genreTagNames ?: run {
+                val tagAssociations = eventGenreTagRepository.findByEventId(entity.id!!).toList()
+                if (tagAssociations.isEmpty()) {
+                    emptyList()
+                } else {
+                    val tagIds = tagAssociations.map { it.genreTagId }
+                    genreTagRepository.findAllById(tagIds).toList().map { it.name }
+                }
+            }
 
-        return EventResponse.fromEntity(entity, artists, promoters)
+        return EventResponse.fromEntity(entity, artists, promoters, genreTags)
     }
 }
