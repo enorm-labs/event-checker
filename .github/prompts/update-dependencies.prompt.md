@@ -116,6 +116,63 @@ If the build fails:
 3. Fix straightforward issues (import changes, minor API adaptations).
 4. For complex breaking changes, revert that specific update and flag it for the user.
 
+## Frontend Dependencies (`events-frontend/`)
+
+The frontend is a standalone npm project — not part of the Gradle build. Update it separately.
+
+### Step 7: Check for Outdated Frontend Dependencies
+
+```bash
+cd events-frontend
+npm outdated
+```
+
+This shows a table of all dependencies with their current, wanted, and latest versions.
+
+### Step 8: Update Versions in `package.json`
+
+Manually update the version strings in `events-frontend/package.json` to the latest stable versions reported by
+`npm outdated`. This project uses exact (pinned) versions — no `^` or `~` prefixes.
+
+**Rules:**
+
+- Only update to **stable releases** — skip versions containing `alpha`, `beta`, `rc`, `next`, `canary`, `dev`,
+  `snapshot`, `preview`.
+- **Major version bumps** (e.g., 3.x → 4.x): Check the migration guide and flag breaking changes for the user instead
+  of silently applying them.
+- Keep `oxlint` and `eslint-plugin-oxlint` versions in sync (they share the same release cadence).
+- Keep `vue`, `vue-router`, and `pinia` compatible with each other (check Vue ecosystem compatibility).
+
+### Step 9: Install Updated Dependencies
+
+After editing `package.json`, run:
+
+```bash
+npm update --save --save-exact
+```
+
+This installs the updated versions and updates `package-lock.json`.
+
+### Step 10: Verify the Frontend Build
+
+```bash
+npm run build
+```
+
+If the build fails:
+
+1. Read the error output carefully.
+2. Check if the failure is caused by the update (breaking API change, removed type, etc.).
+3. Fix straightforward issues (import changes, minor API adaptations).
+4. For complex breaking changes, revert that specific update and flag it for the user.
+
+Optionally run linting and unit tests:
+
+```bash
+npm run lint
+npm run test:unit
+```
+
 ## Output Summary
 
 After completing the update, provide a summary table:
@@ -123,6 +180,7 @@ After completing the update, provide a summary table:
 | Dependency | Previous Version | New Version | Location                                   |
 |------------|------------------|-------------|--------------------------------------------|
 | ...        | ...              | ...         | `build.gradle.kts` / `settings.gradle.kts` |
+| ...        | ...              | ...         | `events-frontend/package.json`             |
 
 Also note:
 
