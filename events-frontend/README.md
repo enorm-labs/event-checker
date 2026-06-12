@@ -53,6 +53,8 @@ npm install --save --save-exact
 # check for outdated dependencies and update package.json if necessary (exact/pinned versions are preferred for better reproducibility and security)
 npm outdated
 
+# Update versions in package.json
+
 # update dependencies to the latest version according to the version ranges specified in package.json
 npm update --save --save-exact
 ```
