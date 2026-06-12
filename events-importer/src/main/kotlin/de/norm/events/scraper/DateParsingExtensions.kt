@@ -13,12 +13,17 @@ import java.time.format.DateTimeParseException
 // 2. ISO 8601 datetime — embedded in schema.org MusicEvent JSON-LD
 //    startDate fields (e.g. "2026-05-16T20:00"). Split into date and
 //    time by [parseIsoDate] and [parseIsoTime].
+// 3. European short date DD/MM/YY — used by some WordPress-based venue
+//    sites (e.g. "21/09/26"). Parsed by [parseShortDate].
 //
 // All functions follow a null-safe convention: they return null for
 // unparseable, blank, or missing input rather than throwing exceptions.
 
 /** Standard 24-hour time format (HH:mm) used by most Berlin venue websites. */
 private val HH_MM_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+
+/** European short date format (d/M/yy); 2-digit year resolves to 2000–2099. */
+private val SHORT_DATE_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("d/M/yy")
 
 /**
  * Attempts to parse [text] as a [LocalTime] using the given [formatter].
@@ -89,4 +94,29 @@ fun parseIsoDate(dateTimeStr: String): LocalDate? =
 fun parseIsoTime(dateTimeStr: String): LocalTime? {
     val timePart = dateTimeStr.substringAfter("T", "")
     return parseTime(timePart)
+}
+
+/**
+ * Parses a European short date in `DD/MM/YY` format.
+ *
+ * Two-digit years are resolved to the 2000–2099 range (e.g. "26" → 2026).
+ * Single-digit day/month values are also accepted (e.g. "1/9/26").
+ *
+ * This format is used by some WordPress-based Berlin venue websites
+ * (e.g. Madame Claude) for event dates. Returns `null` for unparseable input.
+ *
+ * Example:
+ * ```kotlin
+ * parseShortDate("21/09/26")  // LocalDate.of(2026, 9, 21)
+ * parseShortDate("1/9/26")    // LocalDate.of(2026, 9, 1)
+ * parseShortDate("invalid")   // null
+ * ```
+ */
+fun parseShortDate(text: String?): LocalDate? {
+    if (text.isNullOrBlank()) return null
+    return try {
+        LocalDate.parse(text.trim(), SHORT_DATE_FORMATTER)
+    } catch (_: DateTimeParseException) {
+        null
+    }
 }

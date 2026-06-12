@@ -42,8 +42,28 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Run unit tests
-        run: npm run test:unit
+      - name: Run unit tests with coverage
+        run: npm run test:unit:coverage -- --reporter=default
+
+      - name: Post coverage to Job Summary
+        if: success() || failure()
+        run: |
+          echo "## 📊 Test Coverage (Vitest/V8)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f coverage/coverage-summary.json ]; then
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            node -e "
+              const r = require('./coverage/coverage-summary.json').total;
+              const fmt = (m) => m.pct + '%';
+              console.log('Lines:      ' + fmt(r.lines));
+              console.log('Statements: ' + fmt(r.statements));
+              console.log('Functions:  ' + fmt(r.functions));
+              console.log('Branches:   ' + fmt(r.branches));
+            " >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          else
+            echo "_No coverage report generated._" >> $GITHUB_STEP_SUMMARY
+          fi
 
       - name: Get Playwright version
         id: playwright-version

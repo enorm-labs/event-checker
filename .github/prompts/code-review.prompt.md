@@ -16,14 +16,22 @@ conventions.
 
 ## Review Checklist
 
-### Correctness
+> **Scope**: Apply the **Backend** checklist for changes in `events-core/`, `events-bff/`, or `events-importer/`.
+> Apply the **Frontend** checklist for changes in `events-frontend/`.
+> If a PR touches both, apply both.
+
+---
+
+### Backend
+
+#### Correctness
 
 - Does the code do what it claims to do?
 - Are there off-by-one errors, race conditions, or null pointer risks?
 - Are edge cases handled (empty collections, null/missing values, concurrent access)?
 - For reactive/coroutine code: are suspending functions used correctly? Are there accidental blocking calls?
 
-### Kotlin Conventions
+#### Kotlin Conventions
 
 - `val` preferred over `var`; no unnecessary mutability.
 - No `!!` operator unless absolutely justified (with a comment explaining why).
@@ -31,8 +39,15 @@ conventions.
 - Functional constructs (`map`, `filter`, `let`, `also`) used where they improve readability.
 - Sealed classes for restricted hierarchies.
 - Extension functions used appropriately.
+- Trailing commas at declaration sites (constructor params, function params, enum entries).
+- Expression bodies preferred for single-expression functions (`fun foo() = expr`).
+- Named arguments used when multiple parameters share a type or for Boolean params.
+- Immutable collection interfaces (`List`, `Set`, `Map`) in signatures; `listOf()`/`setOf()`/`mapOf()` for creation.
+- Expression form of `if`/`when`/`try` preferred over imperative `return` inside branches.
+- Higher-order functions (`filter`, `map`, `flatMap`) preferred over imperative loops.
+- Default parameter values preferred over function overloads.
 
-### Spring Boot Patterns
+#### Spring Boot Patterns
 
 - Constructor injection only (no `@Autowired` on fields, no `lateinit var`).
 - Dependencies declared as `private val`.
@@ -42,14 +57,14 @@ conventions.
 - Repositories use `CoroutineCrudRepository` (reactive stack — no blocking APIs).
 - Custom `@Query` SQL includes the schema prefix (e.g., `events.table_name`).
 
-### Error Handling
+#### Error Handling
 
 - Domain exceptions follow the `*NotFoundException` naming pattern.
 - `GlobalExceptionHandler` (`@RestControllerAdvice`) catches and translates exceptions to RFC 9457 Problem Details.
 - Appropriate HTTP status codes are returned (404, 409, 400, etc.).
 - No swallowed exceptions — errors are logged or propagated.
 
-### API Design
+#### API Design
 
 - Endpoints follow the project's path conventions (e.g., `/api/admin/<resource>` for importer admin endpoints).
 - Request DTOs use Bean Validation annotations (`@Valid`, `@NotNull`, etc.).
@@ -57,7 +72,7 @@ conventions.
 - Domain classes in `events-core` remain free of web/Swagger annotations.
 - Controllers are annotated with `@Tag(name = "Admin: <Entity>")` for Swagger grouping.
 
-### Testing
+#### Testing
 
 - New features and bug fixes include tests.
 - Integration tests use `WebTestClient` with Testcontainers (extend `BaseControllerTest` in the importer).
@@ -65,8 +80,11 @@ conventions.
 - MockK is used for mocking (not Mockito).
 - Kotest assertions (`shouldBe`, `shouldContain`) are preferred.
 - Test fixture factories provide sensible defaults; tests only override relevant properties.
+- **Test coverage of changed classes**: Run `./gradlew koverHtmlReport` and verify that classes modified or added
+  in the PR have adequate line coverage. Flag any changed `@Service`, `@RestController`, or scraper class that
+  lacks corresponding test updates. Coverage should not regress for touched files.
 
-### Code Organization
+#### Code Organization
 
 - Organized by feature/domain, not by layer.
 - Each feature module follows the consistent file layout:
@@ -74,23 +92,68 @@ conventions.
 - `@ApplicationModule(allowedDependencies = [...])` declarations are present and correct.
 - Imports are organized and unused imports removed.
 
-### Security
+#### Security
 
 - No secrets, API keys, or credentials in code or config files.
 - Parameterized queries only (no string concatenation in SQL).
 - Input validated before processing.
 
-### Documentation
+#### Documentation
 
 - Public API changes are reflected in `@Schema` annotations and OpenAPI docs.
 - Non-obvious design decisions have code comments explaining _why_, not _what_.
 - AGENTS.md is updated if new conventions or architectural patterns are introduced.
 
-### Build & Dependencies
+#### Build & Dependencies
 
 - New dependencies are necessary and justified.
 - Dependency versions are centralized (root `build.gradle.kts` or `settings.gradle.kts`).
 - `./gradlew build` passes (compilation, tests, ktlint, detekt).
+
+---
+
+### Frontend
+
+#### Vue & TypeScript Conventions
+
+- Composition API with `<script setup lang="ts">` only — no Options API.
+- All code fully typed; no `any` unless absolutely justified.
+- Props defined with `defineProps<T>()`; emits with `defineEmits<T>()`.
+- `ref` for primitives, `reactive` for objects; no destructuring reactive without `toRefs()`.
+- Computed properties used for derived state — no complex expressions in templates.
+- Reusable logic extracted into composables (`use*` functions in `src/composables/`).
+
+#### Component Design
+
+- Multi-word component names (prevents HTML element conflicts).
+- PascalCase filenames and template usage (`<MyComponent/>`).
+- `Base` prefix for presentational/wrapper components; `The` prefix for singletons.
+- Views in `src/views/` with `*View.vue` suffix; reusable components in `src/components/`.
+- Self-closing tags for content-less components.
+- Multi-attribute elements split across lines (one attribute per line).
+- Always `:key` with `v-for`; never `v-if` + `v-for` on the same element.
+- Directive shorthands used consistently (`:`, `@`, `#`).
+- Scoped styles (`<style scoped>`) on all non-root components.
+
+#### State & Routing
+
+- Pinia stores use Composition API (setup) syntax.
+- Stores are focused — one per domain concept.
+- Lazy-loaded routes for non-critical pages (dynamic `import()`).
+
+#### Testing (Frontend)
+
+- Unit tests colocated: `src/components/__tests__/*.spec.ts`.
+- Use `@vue/test-utils` + Vitest; `data-testid` attributes for selectors.
+- Composables tested in isolation (no component mount needed).
+- E2E tests in `e2e/` using Playwright.
+
+#### Build & Lint
+
+- `npm run build` passes (type-check + Vite build).
+- `npm run lint` passes (oxlint + eslint).
+- No Prettier — project uses oxfmt.
+- New dependencies justified and pinned in `package.json`.
 
 ## Review Output Format
 

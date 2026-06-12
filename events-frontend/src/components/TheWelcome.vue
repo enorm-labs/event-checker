@@ -12,7 +12,7 @@ const openReadmeInEditor = () => fetch('/__open-in-editor?file=README.md')
 <template>
   <WelcomeItem>
     <template #icon>
-      <DocumentationIcon/>
+      <DocumentationIcon />
     </template>
     <template #heading>Documentation</template>
 
@@ -23,7 +23,7 @@ const openReadmeInEditor = () => fetch('/__open-in-editor?file=README.md')
 
   <WelcomeItem>
     <template #icon>
-      <ToolingIcon/>
+      <ToolingIcon />
     </template>
     <template #heading>Tooling</template>
 
@@ -33,7 +33,7 @@ const openReadmeInEditor = () => fetch('/__open-in-editor?file=README.md')
     <a href="https://code.visualstudio.com/" rel="noopener" target="_blank">VSCode</a>
     +
     <a href="https://github.com/vuejs/language-tools" rel="noopener" target="_blank"
-    >Vue - Official</a
+      >Vue - Official</a
     >. If you need to test your components and web pages, check out
     <a href="https://vitest.dev/" rel="noopener" target="_blank">Vitest</a>
     and
@@ -41,7 +41,7 @@ const openReadmeInEditor = () => fetch('/__open-in-editor?file=README.md')
     /
     <a href="https://playwright.dev/" rel="noopener" target="_blank">Playwright</a>.
 
-    <br/>
+    <br />
 
     More instructions are available in
     <a href="javascript:void(0)" @click="openReadmeInEditor"><code>README.md</code></a
@@ -50,7 +50,7 @@ const openReadmeInEditor = () => fetch('/__open-in-editor?file=README.md')
 
   <WelcomeItem>
     <template #icon>
-      <EcosystemIcon/>
+      <EcosystemIcon />
     </template>
     <template #heading>Ecosystem</template>
 
@@ -66,7 +66,7 @@ const openReadmeInEditor = () => fetch('/__open-in-editor?file=README.md')
 
   <WelcomeItem>
     <template #icon>
-      <CommunityIcon/>
+      <CommunityIcon />
     </template>
     <template #heading>Community</template>
 
@@ -74,7 +74,7 @@ const openReadmeInEditor = () => fetch('/__open-in-editor?file=README.md')
     <a href="https://chat.vuejs.org" rel="noopener" target="_blank">Vue Land</a>
     (our official Discord server), or
     <a href="https://stackoverflow.com/questions/tagged/vue.js" rel="noopener" target="_blank"
-    >StackOverflow</a
+      >StackOverflow</a
     >. You should also follow the official
     <a href="https://bsky.app/profile/vuejs.org" rel="noopener" target="_blank">@vuejs.org</a>
     Bluesky account or the
@@ -84,7 +84,7 @@ const openReadmeInEditor = () => fetch('/__open-in-editor?file=README.md')
 
   <WelcomeItem>
     <template #icon>
-      <SupportIcon/>
+      <SupportIcon />
     </template>
     <template #heading>Support Vue</template>
 

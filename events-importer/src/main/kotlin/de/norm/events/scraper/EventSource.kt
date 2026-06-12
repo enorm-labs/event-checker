@@ -13,7 +13,10 @@ enum class EventSource {
     CASSIOPEIA,
 
     /** Privatclub Berlin – WordPress-based single-page event listing. */
-    PRIVATCLUB;
+    PRIVATCLUB,
+
+    /** Madame Claude Berlin – WordPress-based event listing with detail pages. */
+    MADAME_CLAUDE;
 
     /**
      * Prefix for `sourceId` values, derived from the enum name in lowercase.
