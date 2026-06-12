@@ -163,6 +163,12 @@ subprojects sharing a root `settings.gradle.kts`, plus a standalone frontend pro
     - **Venue-specific subdirectories** — each venue importer lives in its own sub-package under `scraper/` (e.g. `scraper/cassiopeia/`).
       Each contains a `*WebsiteImporter.kt` implementing `EventImporter`, plus `*OverviewPageScraper.kt` and `*DetailPageScraper.kt`
       for pure HTML parsing (no I/O). Use existing implementations as templates when adding new venue importers.
+    - **`AbstractTwoPageWebsiteImporter`** — base class for venues that use the overview → detail pattern (currently
+      Cassiopeia and Madame Claude). Owns the shared overview-fetch → per-event detail-fetch → gap-fill orchestration,
+      including `NotModified` handling and the "degrade to overview data if the detail page fails" fallback. Subclasses
+      implement only `scrapeOverview`, `scrapeDetail`, and `fillGapsFromOverview` (the venue-specific merge strategy).
+      Single-page venues (e.g. `PrivatclubWebsiteImporter`) implement `EventImporter` directly instead.
+      The two-layer strategy itself is the decision recorded in ADR-007; the abstract class is just the implementation vehicle.
 - **Scheduled imports**: The importer uses Spring `@Scheduled` with the `event_source` table for periodic event imports. See ADR-008. Key design:
     - A single `@Scheduled(fixedDelay = 60s)` tick in `ScheduledImportService` queries for due sources.
     - Due sources are imported concurrently via `EventImportService.importConcurrently()`, bounded by the
@@ -223,6 +229,16 @@ Java version is managed via SDKMAN (`.sdkmanrc` pins `java=25.0.2-tem`; run `sdk
 - Kotlin compiler flags: `-Xjsr305=strict` (all modules) and `-Xannotation-default-target=param-property` (BFF + importer) are set in `compilerOptions`.
 - **Kover** (`org.jetbrains.kotlinx.kover`) is configured for code coverage reports. Run `./gradlew koverLog` for a console summary
   or `./gradlew koverHtmlReport` for detailed HTML reports.
+- **Kotlin idioms** (per [official coding conventions](https://kotlinlang.org/docs/coding-conventions.html)):
+    - **Trailing commas** at declaration sites (constructor params, function params, enum entries, collection literals) — produces cleaner VCS diffs.
+    - **Expression bodies** — prefer `fun foo() = expr` over `fun foo() { return expr }` for single-expression functions.
+    - **Named arguments** — use when a function has multiple parameters of the same type or Boolean parameters whose meaning isn't obvious from context.
+    - **Immutable collection interfaces** — declare parameters and return types as `List`, `Set`, `Map` (not `MutableList` etc.) when the collection is not
+      mutated. Use `listOf()`, `setOf()`, `mapOf()` factory functions.
+    - **Expression form of control flow** — prefer `if`/`when`/`try` as expressions returning a value over imperative `return` inside branches.
+    - **Higher-order functions over loops** — prefer `filter`, `map`, `flatMap`, `associate` over imperative `for` loops where readability is equal or better.
+    - **Default parameter values** — prefer over function overloads.
+    - **Scope functions** — use `let`, `apply`, `also`, `run`, `with` appropriately; avoid deep nesting of scope functions.
 
 ## Testing Patterns
 

@@ -29,6 +29,7 @@ private val GENRE_SYNONYMS: Map<String, String> =
         "hip-hop" to "Hip Hop",
         "hiphop" to "Hip Hop",
         "rap" to "Hip Hop",
+        "deutschrap" to "Hip Hop",
         "urban" to "Hip Hop",
         "experimental hip-hop" to "Hip Hop",
         // Rock family
@@ -45,6 +46,7 @@ private val GENRE_SYNONYMS: Map<String, String> =
         "pop" to "Pop",
         "pop punk" to "Punk",
         "synthpop" to "Synthpop",
+        "synth" to "Synthpop",
         // Punk
         "punk" to "Punk",
         // Metal
@@ -60,6 +62,7 @@ private val GENRE_SYNONYMS: Map<String, String> =
         "postpunk" to "Post-Punk",
         "new wave" to "New Wave",
         "darkwave" to "Darkwave",
+        "dark wave" to "Darkwave",
         "ebm" to "EBM",
         "gothicrock" to "Gothic Rock",
         "gothic rock" to "Gothic Rock",
@@ -74,12 +77,19 @@ private val GENRE_SYNONYMS: Map<String, String> =
         "jazz-fusion" to "Jazz",
         // Folk
         "folk" to "Folk",
+        "americana" to "Americana",
+        "singer-songwriter" to "Singer-Songwriter",
+        "singer-songwriterin" to "Singer-Songwriter",
         // Reggae
         "reggae" to "Reggae",
         // Latin family
         "cumbia" to "Latin",
         "salsa" to "Latin",
+        "latin" to "Latin",
         "latin roots" to "Latin",
+        // Afrobeats
+        "afro" to "Afrobeats",
+        "afrobeats" to "Afrobeats",
         // World Music
         "world music" to "World Music",
         "indian" to "World Music",
@@ -92,6 +102,8 @@ private val GENRE_SYNONYMS: Map<String, String> =
         "80s" to "80s",
         "90s" to "90s",
         "2000s" to "2000s",
+        // Mod
+        "mod" to "Mod",
         // Oldschool / Newschool
         "oldschool" to "Old School",
         "newschool" to "New School"
@@ -114,8 +126,11 @@ private val GENRE_DELIMITERS = Regex("""[,]|//|\s[&/]\s""")
 /**
  * Suffixes commonly appended to genre names in venue listings that should
  * be stripped before normalization (e.g. "Hip Hop Floor", "Pop Disco Floor").
+ *
+ * Order matters: longer/more-specific suffixes must come first so
+ * "Pop Disco Floor" strips to "Pop", not "Pop Disco".
  */
-private val NOISE_SUFFIXES = listOf("floor", "disco floor")
+private val NOISE_SUFFIXES = listOf("disco floor", "floor")
 
 /**
  * Parses a raw genre string into a list of canonical genre tag names.

@@ -26,8 +26,8 @@ data class ScrapedEvent(
     val subtitle: String? = null,
     /** Longer description or artist biography. */
     val description: String? = null,
-    /** Kind of event as categorized by the source (e.g. "CONCERT", "PARTY"). */
-    val eventType: String = "CONCERT",
+    /** Kind of event as categorized by the source (e.g. "CONCERT", "PARTY"). Null means the source provided no category. */
+    val eventType: String? = null,
     /** Calendar date of the event. */
     val eventDate: LocalDate,
     /** Time when doors open to the public. */
@@ -104,7 +104,9 @@ data class ScrapedEvent(
             title = title,
             subtitle = subtitle,
             description = description,
-            eventType = EventType.parseOrDefault(eventType).name,
+            // Fall back to OTHER (not CONCERT) when the source provided no category,
+            // so unclassifiable events aren't silently labelled as concerts.
+            eventType = EventType.parseOrDefault(eventType ?: "OTHER").name,
             status = EventStatus.parseOrDefault(status).name,
             slug = SlugGenerator.slugify("$eventDate-$venueSlug-$title"),
             eventDate = eventDate,

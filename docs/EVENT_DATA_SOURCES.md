@@ -36,7 +36,7 @@ The **Import** column tracks whether an automated importer has been implemented 
 | Hole 44                     | https://hole-berlin.de/                     | Concert Hall |     ✅      |        |                                   |
 | SO36                        | https://www.so36.com/                       | Club         |     ✅      |        | Cookie wall blocks content        |
 | Artliners Berlin            | https://artliners-berlin.com/               | Club         |     ✅      |        | No structured events; flyers only |
-| Madame Claude               | https://madameclaude.de/                    | Bar          |     ✅      |        |                                   |
+| Madame Claude               | https://madameclaude.de/                    | Bar          |     ✅      |   ✅    |                                   |
 | Bar jeder Vernunft          | https://www.bar-jeder-vernunft.de/          | Bar          |     ✅      |        | Theater/cabaret; multi-day ranges |
 | Prachtwerk                  | https://www.prachtwerkberlin.com/           | Bar          |     ✅      |        | No event listings on website      |
 | Wiener Blut                 | https://www.wienerblut.org/                 | Bar          |     ✅      |        | Impressum only; no events         |

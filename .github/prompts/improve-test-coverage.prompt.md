@@ -1,12 +1,14 @@
 # Improve Test Coverage
 
-Analyze the current Kover code coverage report, identify under-tested areas, and add missing tests to improve coverage.
+Analyze test coverage reports, identify under-tested areas, and add missing tests to improve coverage.
 
 ## Important
 
 Always run git commands with the pager disabled (`git --no-pager ...`) to prevent hanging on interactive output.
 
-## Workflow
+---
+
+## Backend (Kotlin — Kover)
 
 ### 1. Generate the Coverage Report
 
@@ -117,11 +119,60 @@ Follow these patterns — they are established in the codebase and must be respe
 - Test files mirror the source structure: `src/test/kotlin/de/norm/events/<module>/<ClassNameTest>.kt`.
 - Integration tests sit alongside unit tests in the same package.
 
+---
+
+## Frontend (TypeScript/Vue — Vitest Coverage)
+
+### 1. Generate the Coverage Report
+
+Run unit tests with coverage enabled:
+
+```bash
+npm run test:unit:coverage
+```
+
+This prints a summary to the console and generates an HTML report in `coverage/index.html`.
+Uses `@vitest/coverage-v8` (V8's native code coverage — already installed as a dev dependency).
+
+### 2. Identify Coverage Gaps
+
+Prioritize:
+
+1. **Composables** (`src/composables/`) — reusable logic functions are easy to unit test.
+2. **Pinia stores** (`src/stores/`) — state management logic, actions, and getters.
+3. **Utility/helper functions** — pure functions with no component dependencies.
+4. **Components with complex logic** — computed properties, watchers, event handlers.
+
+Deprioritize:
+
+- Pure template/layout components with no logic.
+- Router configuration and app entry point (`main.ts`).
+- Third-party library wrappers with trivial pass-through.
+
+### 3. Add Missing Tests
+
+Follow the frontend testing conventions:
+
+- **Vitest** as the test framework with jsdom environment.
+- **`@vue/test-utils`** for component mounting and interaction.
+- Test files colocated: `src/components/__tests__/*.spec.ts` or alongside composables.
+- Use `data-testid` attributes for stable element selectors.
+- Test composables in isolation — call the function, assert on returned refs/computed values.
+- Test store actions and getters independently (no component mount needed).
+
+### 4. Verify
+
+```bash
+npm run build                # Type-check + build
+npm run test:unit -- --run   # Run tests (single run, no watch)
+npm run test:unit:coverage   # Confirm coverage improvement
+```
+
 ## Output
 
 After completing the changes, provide a summary of:
 
-1. **Before**: per-module coverage numbers from the initial `koverLog` run.
-2. **After**: per-module coverage numbers from the final `koverLog` run.
+1. **Before**: per-module coverage numbers from the initial run (backend: `koverLog`, frontend: `vitest --coverage`).
+2. **After**: per-module coverage numbers from the final run.
 3. **Tests added**: list of new test classes/methods and what they cover.
 4. **Remaining gaps**: any known low-coverage areas that were intentionally skipped (with reasons).

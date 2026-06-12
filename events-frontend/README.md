@@ -83,6 +83,15 @@ npm run build
 npm run test:unit
 ```
 
+### Run Unit Tests with Coverage
+
+```sh
+npm run test:unit:coverage
+```
+
+This prints a coverage summary to the console and generates a detailed HTML report in `coverage/index.html`.
+Uses V8's native code coverage via `@vitest/coverage-v8`.
+
 ### Run End-to-End Tests with [Playwright](https://playwright.dev)
 
 ```sh
