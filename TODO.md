@@ -8,6 +8,7 @@
       instructions https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/add-custom-instructions/add-repository-instructions#creating-path-specific-custom-instructions
 4. Create more prompts, skills, or agents, e.g. for planning/creating a new feature (interview, documentation, implementation) or adr
     * How to add skills: https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/customize-cloud-agent/add-skills
+    * How to add agents: https://docs.github.com/en/copilot/concepts/agents/cloud-agent/about-custom-agents
     * Awesome Copilot: https://awesome-copilot.github.com/ --> Check what could be useful
     * Note: Personal/Global skills are currently a Copilot CLI feature. In IDE chat (JetBrains/VS Code), only project-level skills in .github/skills/ are
       supported. Global ~/.copilot/skills/ works with Copilot CLI.
@@ -76,3 +77,4 @@
 * Repository best practices
 * See GitHub docs and best practices
 * Go-Live checklist (legal, security, SEO, monitoring, alerting, dashboards, backups, recovery, etc.)
+* Enable Agentic Workflows (Continuous refactoring and documentation etc.) https://github.github.com/gh-aw/
