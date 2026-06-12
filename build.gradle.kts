@@ -5,10 +5,10 @@ import org.jlleitschuh.gradle.ktlint.KtlintExtension
 extra["java.version"] = 25
 extra["jsoup.version"] = "1.22.2"
 extra["kotest.version"] = "6.1.11"
-extra["kotlin-logging.version"] = "7.0.14"
+extra["kotlin-logging.version"] = "8.0.4"
 extra["mockk.version"] = "1.14.9"
 extra["slugify.version"] = "4.0.0"
-extra["spring-modulith.version"] = "2.0.6"
+extra["spring-modulith.version"] = "2.1.0"
 extra["springdoc.version"] = "3.0.3"
 
 // Plugins are applied in the subprojects, so that they are only applied to the relevant modules
