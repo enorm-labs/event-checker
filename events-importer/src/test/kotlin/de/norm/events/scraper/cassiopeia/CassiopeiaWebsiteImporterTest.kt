@@ -136,6 +136,29 @@ class CassiopeiaWebsiteImporterTest {
         }
 
     @Test
+    fun `overview event type wins over a detail page classified as OTHER`() =
+        runTest {
+            // The detail page explicitly classifies Pharmakon as "Sonstiges" (OTHER), but the
+            // overview lists it as "Konzert". OTHER is a weak signal, so the more specific
+            // overview type must win rather than be overridden by the detail page's OTHER.
+            val pharmakonUrl = "https://cassiopeia-berlin.de/event/pharmakon-111623735"
+            val otherDetail =
+                """
+                <html><body><div class="modul-section events">
+                <h1 class="event-date dark event">Pharmakon</h1>
+                <div class="subheading invert gap">Sonstiges</div>
+                <div class="date-wrapper">16 . 05 . 2026</div>
+                </div></body></html>
+                """.trimIndent()
+            coEvery { htmlFetcher.fetchDocument(pharmakonUrl) } returns Jsoup.parse(otherDetail, pharmakonUrl)
+
+            val result = importer.importEvents(sourceUrl)
+            result.shouldBeInstanceOf<ImportResult.Success>()
+            val pharmakon = result.events.first { it.title == "Pharmakon" }
+            pharmakon.eventType shouldBe "CONCERT"
+        }
+
+    @Test
     fun `importEvents parses party event with genre and detail page description`() =
         runTest {
             val result = importer.importEvents(sourceUrl)

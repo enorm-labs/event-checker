@@ -55,10 +55,24 @@ abstract class AbstractTwoPageWebsiteImporter(
             is FetchResult.Success -> {
                 val overviewEvents = scrapeOverview(fetchResult.document, url)
                 logger.info { "Scraped ${overviewEvents.size} event(s) from ${eventSource.name} overview" }
-                val events = overviewEvents.map { parseDetailOrFallback(it) }
+                val events = overviewEvents.map { parseDetailOrFallback(it) }.let(::dropUnresolvedDates)
                 ImportResult.Success(events, fetchResult.etag, fetchResult.lastModified)
             }
         }
+
+    /**
+     * Drops events whose date is still the [UNRESOLVED_EVENT_DATE] sentinel after the merge —
+     * i.e. neither the overview nor the detail page supplied a real date (e.g. a dateless
+     * featured teaser whose detail page was unavailable). Persisting these would produce a
+     * garbage slug and date, so they are discarded with a warning rather than stored.
+     */
+    private fun dropUnresolvedDates(events: List<ScrapedEvent>): List<ScrapedEvent> {
+        val (resolved, unresolved) = events.partition { it.eventDate != UNRESOLVED_EVENT_DATE }
+        unresolved.forEach { event ->
+            logger.warn { "Dropping '${event.title}' (${event.sourceUrl}): no event date resolved from overview or detail page" }
+        }
+        return resolved
+    }
 
     @Suppress("TooGenericExceptionCaught") // Intentional: degrade to overview data if detail page is unavailable
     private suspend fun parseDetailOrFallback(overview: ScrapedEvent): ScrapedEvent =

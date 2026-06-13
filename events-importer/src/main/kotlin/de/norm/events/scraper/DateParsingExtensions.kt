@@ -19,6 +19,16 @@ import java.time.format.DateTimeParseException
 // All functions follow a null-safe convention: they return null for
 // unparseable, blank, or missing input rather than throwing exceptions.
 
+/**
+ * Sentinel for a [ScrapedEvent.eventDate] that could not be resolved on the
+ * page being parsed. Two-page importers use it on the overview/detail step that
+ * lacks a date (e.g. Astra's dateless featured teaser, or a Madame Claude detail
+ * page with no parseable date) and rely on the other page to supply the real
+ * value during merge. [AbstractTwoPageWebsiteImporter] drops any event still
+ * carrying this sentinel after the merge so it never reaches persistence.
+ */
+val UNRESOLVED_EVENT_DATE: LocalDate = LocalDate.MIN
+
 /** Standard 24-hour time format (HH:mm) used by most Berlin venue websites. */
 private val HH_MM_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 

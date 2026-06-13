@@ -1,8 +1,6 @@
 package de.norm.events.scraper
 
-import io.github.oshai.kotlinlogging.KotlinLogging
-
-private val logger = KotlinLogging.logger {}
+import de.norm.events.event.EventType
 
 // Domain-level mapping utilities for scraped event data.
 //
@@ -11,30 +9,77 @@ private val logger = KotlinLogging.logger {}
 // across all venue-specific scrapers to ensure consistent classification.
 
 /**
- * Maps common German event category names to [de.norm.events.event.EventType]
- * enum value strings.
+ * Base synonym table mapping common German/English event category labels to
+ * [EventType] names. Keys are lowercase; matching is case-insensitive.
  *
- * Berlin venue websites predominantly use German category labels ("Konzert",
- * "Party", "Sonstiges"). This shared mapping avoids duplicating the same
- * `when` expression in every venue-specific scraper.
+ * Venue-specific labels (e.g. Madame Claude's WordPress CSS class names) are
+ * passed as `extraSynonyms` to [mapEventType] rather than polluting this table.
+ */
+private val BASE_EVENT_TYPE_SYNONYMS: Map<String, String> =
+    mapOf(
+        "konzert" to EventType.CONCERT.name,
+        "concert" to EventType.CONCERT.name,
+        "festival" to EventType.FESTIVAL.name,
+        "party" to EventType.PARTY.name,
+        "quiz" to EventType.QUIZ.name,
+        "show" to EventType.SHOW.name,
+        "sonstiges" to EventType.OTHER.name,
+        "other" to EventType.OTHER.name
+    )
+
+/**
+ * Maps a raw venue category/kind label to an [EventType] name, or `null` when
+ * the label is missing or unrecognized.
  *
- * Returns `"OTHER"` for unknown or null categories.
+ * Returning `null` (rather than defaulting to `"OTHER"`) lets callers fall back
+ * to another data source via `?:`, and lets the persistence boundary
+ * ([ScrapedEvent.toEventEntity]) apply the `OTHER` default. This is the single
+ * shared mapper used by every venue scraper — venue-specific labels are supplied
+ * via [extraSynonyms], which take precedence over [BASE_EVENT_TYPE_SYNONYMS].
  *
  * Example:
  * ```kotlin
- * mapGermanCategory("Konzert")   // "CONCERT"
- * mapGermanCategory("party")     // "PARTY" (case-insensitive)
- * mapGermanCategory("Workshop")  // "OTHER"
+ * mapEventType("Konzert")                              // "CONCERT"
+ * mapEventType("Festival")                             // "FESTIVAL"
+ * mapEventType("Workshop")                             // null
+ * mapEventType("Live", mapOf("live" to "CONCERT"))     // "CONCERT" (venue-specific)
  * ```
  */
-fun mapGermanCategory(category: String?): String =
-    when (category?.trim()?.lowercase()) {
-        "konzert" -> "CONCERT"
-        "party" -> "PARTY"
-        "sonstiges" -> "OTHER"
-        null, "" -> "OTHER"
-        else -> "OTHER".also { logger.debug { "Unknown German category: '$category', defaulting to OTHER" } }
-    }
+fun mapEventType(
+    label: String?,
+    extraSynonyms: Map<String, String> = emptyMap()
+): String? {
+    val key = label?.trim()?.lowercase()?.takeIf { it.isNotBlank() } ?: return null
+    return extraSynonyms[key] ?: BASE_EVENT_TYPE_SYNONYMS[key]
+}
+
+/**
+ * Extracts support act names from a subtitle's `"… + Support: A & B"` pattern.
+ *
+ * Splits the captured names on `,`, `&`, and `+` so multiple support acts are
+ * returned individually. Returns an empty list when no support line is present.
+ * Shared across venue scrapers (e.g. Privatclub, Astra) whose subtitles follow
+ * this convention.
+ *
+ * Example:
+ * ```kotlin
+ * extractSupportFromSubtitle("Tour 2026 | Support: Luana")          // ["Luana"]
+ * extractSupportFromSubtitle("Tour + Support: High On Fire & Gnome") // ["High On Fire", "Gnome"]
+ * extractSupportFromSubtitle("Tour 2026")                            // []
+ * ```
+ */
+@Suppress("ReturnCount") // Guard clauses for blank subtitle and missing support line are clearer than nesting
+fun extractSupportFromSubtitle(subtitle: String?): List<String> {
+    if (subtitle.isNullOrBlank()) return emptyList()
+    val match = SUPPORT_PATTERN.find(subtitle) ?: return emptyList()
+    return match.groupValues[1]
+        .split(Regex("[,&+]"))
+        .map { it.trim() }
+        .filter { it.isNotBlank() }
+}
+
+/** Matches "Support: <names>" anywhere in a subtitle, capturing to end of line. */
+private val SUPPORT_PATTERN = Regex("""[Ss]upport:\s*(.+)""")
 
 /**
  * Common placeholder names used by venues when the artist has not been

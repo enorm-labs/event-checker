@@ -168,44 +168,6 @@ class ScrapingExtensionsTest {
     }
 
     @Nested
-    inner class MapGermanCategory {
-        @Test
-        fun `maps Konzert to CONCERT`() {
-            mapGermanCategory("Konzert") shouldBe "CONCERT"
-        }
-
-        @Test
-        fun `maps party to PARTY case-insensitively`() {
-            mapGermanCategory("party") shouldBe "PARTY"
-        }
-
-        @Test
-        fun `maps Sonstiges to OTHER`() {
-            mapGermanCategory("Sonstiges") shouldBe "OTHER"
-        }
-
-        @Test
-        fun `returns OTHER for null`() {
-            mapGermanCategory(null) shouldBe "OTHER"
-        }
-
-        @Test
-        fun `returns OTHER for empty string`() {
-            mapGermanCategory("") shouldBe "OTHER"
-        }
-
-        @Test
-        fun `returns OTHER for unknown category`() {
-            mapGermanCategory("Workshop") shouldBe "OTHER"
-        }
-
-        @Test
-        fun `trims whitespace before matching`() {
-            mapGermanCategory("  Konzert  ") shouldBe "CONCERT"
-        }
-    }
-
-    @Nested
     inner class IsPlaceholderName {
         @Test
         fun `TBA is a placeholder`() {

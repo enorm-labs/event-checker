@@ -3,7 +3,7 @@ package de.norm.events.scraper.cassiopeia
 import de.norm.events.scraper.EventSource
 import de.norm.events.scraper.ScrapedEvent
 import de.norm.events.scraper.hasVisibleWebflowFlag
-import de.norm.events.scraper.mapGermanCategory
+import de.norm.events.scraper.mapEventType
 import de.norm.events.scraper.parseTime
 import de.norm.events.scraper.resolveUrl
 import de.norm.events.scraper.textAt
@@ -165,7 +165,7 @@ class CassiopeiaOverviewPageScraper {
         val isSoldOut = item.hasVisibleWebflowFlag(FLAG_SELECTOR, "Sold-Out")
         val isCancelled = item.hasVisibleWebflowFlag(FLAG_SELECTOR, "Cancelled")
         val eventUrl = resolveUrl(sourceUrl, href)
-        val eventType = mapGermanCategory(category)
+        val eventType = mapEventType(category)
 
         return ScrapedEvent(
             title = title,

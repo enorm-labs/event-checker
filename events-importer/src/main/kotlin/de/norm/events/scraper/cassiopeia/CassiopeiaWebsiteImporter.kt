@@ -1,5 +1,6 @@
 package de.norm.events.scraper.cassiopeia
 
+import de.norm.events.event.EventType
 import de.norm.events.scraper.AbstractTwoPageWebsiteImporter
 import de.norm.events.scraper.EventSource
 import de.norm.events.scraper.HtmlFetcher
@@ -57,7 +58,9 @@ class CassiopeiaWebsiteImporter(
         primary.copy(
             doorsTime = primary.doorsTime ?: fallback.doorsTime,
             startTime = primary.startTime ?: fallback.startTime,
-            eventType = primary.eventType.takeIf { it != "OTHER" } ?: fallback.eventType,
+            // Treat the detail page's "OTHER" as a weak signal: a more specific overview
+            // type wins over it, but a specific detail type still takes precedence.
+            eventType = primary.eventType?.takeIf { it != EventType.OTHER.name } ?: fallback.eventType,
             genre = primary.genre ?: fallback.genre,
             imageUrl = primary.imageUrl ?: fallback.imageUrl,
             soldOut = primary.soldOut || fallback.soldOut,

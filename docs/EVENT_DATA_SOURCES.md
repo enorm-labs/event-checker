@@ -6,7 +6,7 @@ The **Import** column tracks whether an automated importer has been implemented 
 
 | Name                        | URL                                         | Type         | Data Model | Import | Comment                           |
 |-----------------------------|---------------------------------------------|--------------|:----------:|:------:|-----------------------------------|
-| Astra Kulturhaus            | https://www.astra-berlin.de/                | Concert Hall |     ✅      |        |                                   |
+| Astra Kulturhaus            | https://www.astra-berlin.de/                | Concert Hall |     ✅      |   ✅    |                                   |
 | Badehaus                    | https://badehaus-berlin.com/                | Club         |     ✅      |        |                                   |
 | Cassiopeia                  | https://cassiopeia-berlin.de/               | Club         |     ✅      |   ✅    |                                   |
 | Privatclub                  | https://privatclub-berlin.de/               | Club         |     ✅      |   ✅    |                                   |

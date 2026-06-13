@@ -1,8 +1,10 @@
 package de.norm.events.scraper.madameclaude
 
+import de.norm.events.event.EventType
 import de.norm.events.scraper.EventSource
 import de.norm.events.scraper.ScrapedEvent
 import de.norm.events.scraper.imgSrcAt
+import de.norm.events.scraper.mapEventType
 import de.norm.events.scraper.parseShortDate
 import de.norm.events.scraper.resolveUrl
 import de.norm.events.scraper.textAt
@@ -190,29 +192,34 @@ class MadameClaudeOverviewPageScraper(
  *
  * Categories are derived from CSS classes (e.g. "Live", "MusicQuiz", "Experimontag")
  * and/or the `p.day-name` text (e.g. "Experimontag / Concert").
+ *
+ * The "Concert" keyword in the day-name text takes precedence; otherwise the CSS
+ * class is resolved via the shared [mapEventType] with Madame Claude's
+ * venue-specific synonyms. Unknown categories return `null` so
+ * `fillGapsFromOverview` can fall back to the other page's value.
  */
-@Suppress("ReturnCount") // Null guard + keyword check + when-branch are all distinct return paths
+@Suppress("ReturnCount") // Null guard + keyword check + delegated lookup are distinct return paths
 internal fun mapMadameClaudeCategory(
     cssCategory: String?,
     dayNameText: String?
 ): String? {
     if (cssCategory == null && dayNameText == null) return null
-
-    // Check the day-name text for "Concert" keyword
-    val lowerDayName = dayNameText?.lowercase() ?: ""
-    if (lowerDayName.contains("concert")) return "CONCERT"
-
-    // Unknown CSS categories return null so fillGapsFromOverview can fall back
-    // to the other page's value via `?:`. Only return "OTHER" when the source
-    // explicitly classifies the event as such.
-    return when (cssCategory?.lowercase()) {
-        "live", "experimontag", "openmic", "loveoriginals", "jeudifoster" -> "CONCERT"
-        "musicquiz" -> "QUIZ"
-        "freakyfriday", "habemussamstag" -> "PARTY"
-        "other" -> "OTHER"
-        else -> null
-    }
+    if (dayNameText?.lowercase()?.contains("concert") == true) return EventType.CONCERT.name
+    return mapEventType(cssCategory, MADAME_CLAUDE_CATEGORY_SYNONYMS)
 }
+
+/** Madame Claude's WordPress CSS class names mapped to [EventType] values. */
+private val MADAME_CLAUDE_CATEGORY_SYNONYMS: Map<String, String> =
+    mapOf(
+        "live" to EventType.CONCERT.name,
+        "experimontag" to EventType.CONCERT.name,
+        "openmic" to EventType.CONCERT.name,
+        "loveoriginals" to EventType.CONCERT.name,
+        "jeudifoster" to EventType.CONCERT.name,
+        "musicquiz" to EventType.QUIZ.name,
+        "freakyfriday" to EventType.PARTY.name,
+        "habemussamstag" to EventType.PARTY.name
+    )
 
 /**
  * Extracts the event slug from a Madame Claude detail page URL.

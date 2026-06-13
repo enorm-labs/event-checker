@@ -4,9 +4,9 @@ import de.norm.events.scraper.AbstractTwoPageWebsiteImporter
 import de.norm.events.scraper.EventSource
 import de.norm.events.scraper.HtmlFetcher
 import de.norm.events.scraper.ScrapedEvent
+import de.norm.events.scraper.UNRESOLVED_EVENT_DATE
 import org.jsoup.nodes.Document
 import org.springframework.stereotype.Component
-import java.time.LocalDate
 
 /**
  * Website importer for Madame Claude Berlin's WordPress-based event listing.
@@ -56,8 +56,8 @@ class MadameClaudeWebsiteImporter(
         fallback: ScrapedEvent
     ): ScrapedEvent =
         primary.copy(
-            // Use overview date if detail page couldn't parse it (detail returns LocalDate.MIN as sentinel)
-            eventDate = primary.eventDate.takeIf { it != LocalDate.MIN } ?: fallback.eventDate,
+            // Use overview date if detail page couldn't parse it (detail returns the sentinel)
+            eventDate = primary.eventDate.takeIf { it != UNRESOLVED_EVENT_DATE } ?: fallback.eventDate,
             eventType = primary.eventType ?: fallback.eventType,
             imageUrl = primary.imageUrl ?: fallback.imageUrl,
             description = primary.description ?: fallback.description,
