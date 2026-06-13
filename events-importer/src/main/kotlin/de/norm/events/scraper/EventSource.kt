@@ -16,7 +16,10 @@ enum class EventSource {
     PRIVATCLUB,
 
     /** Madame Claude Berlin – WordPress-based event listing with detail pages. */
-    MADAME_CLAUDE;
+    MADAME_CLAUDE,
+
+    /** Astra Kulturhaus Berlin – Kulturhäuser-platform listing on the homepage with per-event detail pages. */
+    ASTRA;
 
     /**
      * Prefix for `sourceId` values, derived from the enum name in lowercase.

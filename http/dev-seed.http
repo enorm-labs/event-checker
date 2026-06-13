@@ -9,6 +9,7 @@
 ###   1. Cassiopeia    — https://cassiopeia-berlin.de/club
 ###   2. Privatclub    — https://privatclub-berlin.de/
 ###   3. Madame Claude — https://madameclaude.de/events/
+###   4. Astra         — https://www.astra-berlin.de/
 ### ============================================================
 
 ### ————————————————————————————————————————————————————————————
@@ -178,6 +179,64 @@ Accept: application/json
 
 > {%
     client.test("Madame Claude import triggered", function () {
+        client.assert(response.status === 200, "Expected 200 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Astra Kulturhaus (Revaler Str. 99, Berlin-Friedrichshain — RAW-Gelände)
+### ————————————————————————————————————————————————————————————
+
+### --- Step 10: Create Astra Kulturhaus venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Astra Kulturhaus",
+    "address": "Revaler Str. 99",
+    "city": "Berlin",
+    "postalCode": "10245",
+    "latitude": 52.50724,
+    "longitude": 13.45180,
+    "websiteUrl": "https://www.astra-berlin.de"
+}
+
+> {%
+    client.global.set("astra_venue_id", response.body.id);
+    client.test("Astra Kulturhaus venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Step 11: Create Astra Kulturhaus event source ---
+# Links the venue to the AstraWebsiteImporter.
+# The sourceType "ASTRA" matches EventSource.ASTRA.
+# NOTE: the URL is the homepage `/` (the program); `/events` is the past archive.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{astra_venue_id}},
+    "name": "Astra Kulturhaus",
+    "url": "https://www.astra-berlin.de/",
+    "sourceType": "ASTRA",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Astra Kulturhaus event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Step 12: Trigger initial Astra Kulturhaus import ---
+POST {{importer-host}}/api/admin/event-sources/astra-kulturhaus/import
+Accept: application/json
+
+> {%
+    client.test("Astra Kulturhaus import triggered", function () {
         client.assert(response.status === 200, "Expected 200 but got " + response.status);
     });
 %}

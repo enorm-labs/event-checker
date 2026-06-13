@@ -1,55 +1,63 @@
 package de.norm.events.scraper
 
 import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
 class EventMappingExtensionsTest {
-    // --- mapGermanCategory ---
+    // --- mapEventType ---
 
     @Test
-    fun `mapGermanCategory maps Konzert to CONCERT`() {
-        mapGermanCategory("Konzert") shouldBe "CONCERT"
+    fun `mapEventType maps base German and English labels`() {
+        mapEventType("Konzert") shouldBe "CONCERT"
+        mapEventType("Concert") shouldBe "CONCERT"
+        mapEventType("Festival") shouldBe "FESTIVAL"
+        mapEventType("Party") shouldBe "PARTY"
+        mapEventType("Sonstiges") shouldBe "OTHER"
     }
 
     @Test
-    fun `mapGermanCategory maps Party to PARTY`() {
-        mapGermanCategory("Party") shouldBe "PARTY"
+    fun `mapEventType is case-insensitive and trims whitespace`() {
+        mapEventType("KONZERT") shouldBe "CONCERT"
+        mapEventType("  Konzert  ") shouldBe "CONCERT"
     }
 
     @Test
-    fun `mapGermanCategory maps Sonstiges to OTHER`() {
-        mapGermanCategory("Sonstiges") shouldBe "OTHER"
+    fun `mapEventType returns null for null, blank and unknown labels`() {
+        mapEventType(null).shouldBeNull()
+        mapEventType("").shouldBeNull()
+        mapEventType("   ").shouldBeNull()
+        mapEventType("Workshop").shouldBeNull()
     }
 
     @Test
-    fun `mapGermanCategory is case-insensitive`() {
-        mapGermanCategory("KONZERT") shouldBe "CONCERT"
-        mapGermanCategory("party") shouldBe "PARTY"
-        mapGermanCategory("PARTY") shouldBe "PARTY"
+    fun `mapEventType prefers venue-specific synonyms over the base table`() {
+        mapEventType("Live", mapOf("live" to "CONCERT")) shouldBe "CONCERT"
+        // extra synonyms take precedence over the base mapping
+        mapEventType("Party", mapOf("party" to "CLUB_NIGHT")) shouldBe "CLUB_NIGHT"
+    }
+
+    // --- extractSupportFromSubtitle ---
+
+    @Test
+    fun `extractSupportFromSubtitle returns empty when no support line`() {
+        extractSupportFromSubtitle("Tour 2026").shouldBeEmpty()
+        extractSupportFromSubtitle(null).shouldBeEmpty()
+        extractSupportFromSubtitle("").shouldBeEmpty()
     }
 
     @Test
-    fun `mapGermanCategory trims whitespace`() {
-        mapGermanCategory("  Konzert  ") shouldBe "CONCERT"
+    fun `extractSupportFromSubtitle extracts a single support act`() {
+        extractSupportFromSubtitle("Tour 2026 | Support: Luana") shouldContainExactly listOf("Luana")
     }
 
     @Test
-    fun `mapGermanCategory returns OTHER for null`() {
-        mapGermanCategory(null) shouldBe "OTHER"
-    }
-
-    @Test
-    fun `mapGermanCategory returns OTHER for empty string`() {
-        mapGermanCategory("") shouldBe "OTHER"
-    }
-
-    @Test
-    fun `mapGermanCategory returns OTHER for unknown categories`() {
-        mapGermanCategory("Workshop") shouldBe "OTHER"
-        mapGermanCategory("Lesung") shouldBe "OTHER"
-        mapGermanCategory("Theater") shouldBe "OTHER"
+    fun `extractSupportFromSubtitle splits multiple acts on common delimiters`() {
+        extractSupportFromSubtitle("Tour + Support: High On Fire & Gnome, Aska") shouldContainExactly
+            listOf("High On Fire", "Gnome", "Aska")
     }
 
     // --- isPlaceholderName ---

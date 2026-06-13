@@ -8,7 +8,7 @@ import de.norm.events.scraper.cassiopeia.CassiopeiaDetailPageScraper.Companion.D
 import de.norm.events.scraper.hasVisibleWebflowFlag
 import de.norm.events.scraper.hrefAt
 import de.norm.events.scraper.imgSrcAt
-import de.norm.events.scraper.mapGermanCategory
+import de.norm.events.scraper.mapEventType
 import de.norm.events.scraper.parseTime
 import de.norm.events.scraper.textAt
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -105,7 +105,7 @@ class CassiopeiaDetailPageScraper {
 
         val eventSlug = extractEventSlug(sourceUrl)
         val hasFlags = content.selectFirst(".flag-wrapper") != null
-        val eventType = mapGermanCategory(content.textAt(".subheading.invert.gap"))
+        val eventType = mapEventType(content.textAt(".subheading.invert.gap"))
         val eventDate =
             parseEventDate(content) ?: run {
                 logger.warn { "Detail page at $sourceUrl has no parseable date, skipping" }
@@ -268,7 +268,7 @@ class CassiopeiaDetailPageScraper {
      */
     private fun parseArtists(
         title: String,
-        eventType: String,
+        eventType: String?,
         content: Element
     ): List<ScrapedArtist> {
         // Extract all "Support: <name>" lines from description paragraphs.

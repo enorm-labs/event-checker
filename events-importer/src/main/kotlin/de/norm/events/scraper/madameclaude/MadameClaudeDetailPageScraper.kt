@@ -3,12 +3,12 @@ package de.norm.events.scraper.madameclaude
 import de.norm.events.scraper.EventSource
 import de.norm.events.scraper.ScrapedArtist
 import de.norm.events.scraper.ScrapedEvent
+import de.norm.events.scraper.UNRESOLVED_EVENT_DATE
 import de.norm.events.scraper.parseShortDate
 import de.norm.events.scraper.parseTime
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
-import java.time.LocalDate
 import java.time.LocalTime
 
 /**
@@ -91,7 +91,7 @@ class MadameClaudeDetailPageScraper {
         return ScrapedEvent(
             title = title,
             eventType = eventType,
-            eventDate = eventDate ?: LocalDate.MIN, // Caller should fill from overview if null
+            eventDate = eventDate ?: UNRESOLVED_EVENT_DATE, // Caller should fill from overview if null
             doorsTime = doorsTime,
             startTime = startTime,
             sourceUrl = sourceUrl,

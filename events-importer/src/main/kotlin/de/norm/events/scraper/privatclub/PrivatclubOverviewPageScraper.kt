@@ -1,12 +1,14 @@
 package de.norm.events.scraper.privatclub
 
+import de.norm.events.event.EventType
 import de.norm.events.scraper.EventSource
 import de.norm.events.scraper.ScrapedArtist
 import de.norm.events.scraper.ScrapedEvent
 import de.norm.events.scraper.attrAt
 import de.norm.events.scraper.buildArtistList
+import de.norm.events.scraper.extractSupportFromSubtitle
 import de.norm.events.scraper.hrefAt
-import de.norm.events.scraper.mapGermanCategory
+import de.norm.events.scraper.mapEventType
 import de.norm.events.scraper.parseIsoDate
 import de.norm.events.scraper.parseIsoTime
 import de.norm.events.scraper.parseTime
@@ -143,7 +145,7 @@ class PrivatclubOverviewPageScraper(
 
         // Event type from the dedicated row (not the desktop genre line)
         val eventTypeText = header.textAt(".event_typ")
-        val eventType = mapGermanCategory(eventTypeText)
+        val eventType = mapEventType(eventTypeText)
 
         // Genre from the desktop "typ" div (shows genre in desktop, type in mobile)
         val genre = header.textAt(".typ.typdesktop")
@@ -503,37 +505,15 @@ class PrivatclubOverviewPageScraper(
     private fun parseArtists(
         title: String,
         subtitle: String?,
-        eventType: String
+        eventType: String?
     ): List<ScrapedArtist> {
         // Only extract artists from concert events
-        if (eventType != "CONCERT") return emptyList()
+        if (eventType != EventType.CONCERT.name) return emptyList()
 
         // Look for "Support: <name>" pattern in the subtitle
         val supportNames = extractSupportFromSubtitle(subtitle)
 
         return buildArtistList(title, supportNames)
-    }
-
-    /**
-     * Extracts support act names from the subtitle text.
-     *
-     * Handles patterns like:
-     * - "Tour Name | Support: Artist Name"
-     * - "Support: Artist1, Artist2"
-     * - "Subtitle + Support: Artist"
-     */
-    @Suppress("ReturnCount") // Guard clauses for null/blank subtitle and missing pattern
-    private fun extractSupportFromSubtitle(subtitle: String?): List<String> {
-        if (subtitle.isNullOrBlank()) return emptyList()
-
-        val match = SUPPORT_PATTERN.find(subtitle) ?: return emptyList()
-        val supportText = match.groupValues[1].trim()
-
-        // Split on common delimiters (", ", " + ", " & ") for multiple support acts
-        return supportText
-            .split(Regex("[,&+]"))
-            .map { it.trim() }
-            .filter { it.isNotBlank() }
     }
 
     /**
@@ -563,14 +543,6 @@ class PrivatclubOverviewPageScraper(
 
         /** Regex to extract the first price value (e.g. "25€", "25,50 €", "25.00€"). */
         private val PRICE_PATTERN = Regex("""(\d+(?:[.,]\d{1,2})?)\s*€""")
-
-        /**
-         * Regex to match "Support: <name>" pattern in subtitles.
-         * The `$` anchor assumes the support act name always appears at the end of the
-         * subtitle (e.g. "Tour Name | Support: Luana"). If a venue ever appends text
-         * after the support name, this would need to be revised.
-         */
-        private val SUPPORT_PATTERN = Regex("""[Ss]upport:\s*(.+)$""")
 
         /** Regex to extract the first offer URL from JSON-LD offers array. */
         private val OFFER_URL_PATTERN = Regex(""""url"\s*:\s*"(https?://[^"]+)"""")
