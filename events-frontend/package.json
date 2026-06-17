@@ -1,55 +1,55 @@
 {
-    "name": "event-checker",
-    "version": "0.0.0",
-    "private": true,
-    "type": "module",
-    "scripts": {
-        "dev": "vite",
-        "build": "run-p type-check \"build-only {@}\" --",
-        "preview": "vite preview",
-        "test:unit": "vitest",
-        "test:unit:coverage": "vitest run --coverage",
-        "test:e2e": "playwright test",
-        "build-only": "vite build",
-        "type-check": "vue-tsc --build",
-        "lint": "run-s lint:*",
-        "lint:oxlint": "oxlint --fix",
-        "lint:eslint": "eslint --fix --cache",
-        "format": "oxfmt src"
-    },
-    "dependencies": {
-        "pinia": "3.0.4",
-        "vue": "3.5.38",
-        "vue-router": "5.1.0"
-    },
-    "devDependencies": {
-        "@playwright/test": "1.60.0",
-        "@tsconfig/node24": "24.0.4",
-        "@types/jsdom": "28.0.3",
-        "@types/node": "25.9.3",
-        "@vitejs/plugin-vue": "6.0.7",
-        "@vitest/coverage-v8": "4.1.8",
-        "@vitest/eslint-plugin": "1.6.20",
-        "@vue/eslint-config-typescript": "14.8.0",
-        "@vue/test-utils": "2.4.11",
-        "@vue/tsconfig": "0.9.1",
-        "eslint": "10.4.1",
-        "eslint-config-prettier": "10.1.8",
-        "eslint-plugin-oxlint": "1.69.0",
-        "eslint-plugin-playwright": "2.10.4",
-        "eslint-plugin-vue": "10.9.2",
-        "jiti": "2.7.0",
-        "jsdom": "29.1.1",
-        "npm-run-all2": "8.0.4",
-        "oxfmt": "0.54.0",
-        "oxlint": "1.69.0",
-        "typescript": "6.0.3",
-        "vite": "8.0.16",
-        "vite-plugin-vue-devtools": "8.1.2",
-        "vitest": "4.1.8",
-        "vue-tsc": "3.3.4"
-    },
-    "engines": {
-        "node": "^20.19.0 || >=22.12.0"
-    }
+  "name": "event-checker",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "run-p type-check \"build-only {@}\" --",
+    "preview": "vite preview",
+    "test:unit": "vitest",
+    "test:unit:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "build-only": "vite build",
+    "type-check": "vue-tsc --build",
+    "lint": "run-s lint:*",
+    "lint:oxlint": "oxlint --fix",
+    "lint:eslint": "eslint --fix --cache",
+    "format": "oxfmt src"
+  },
+  "dependencies": {
+    "pinia": "3.0.4",
+    "vue": "3.5.38",
+    "vue-router": "5.1.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.60.0",
+    "@tsconfig/node24": "24.0.4",
+    "@types/jsdom": "28.0.3",
+    "@types/node": "25.9.3",
+    "@vitejs/plugin-vue": "6.0.7",
+    "@vitest/coverage-v8": "4.1.8",
+    "@vitest/eslint-plugin": "1.6.20",
+    "@vue/eslint-config-typescript": "14.8.0",
+    "@vue/test-utils": "2.4.11",
+    "@vue/tsconfig": "0.9.1",
+    "eslint": "10.4.1",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-oxlint": "1.69.0",
+    "eslint-plugin-playwright": "2.10.4",
+    "eslint-plugin-vue": "10.9.2",
+    "jiti": "2.7.0",
+    "jsdom": "29.1.1",
+    "npm-run-all2": "8.0.4",
+    "oxfmt": "0.54.0",
+    "oxlint": "1.69.0",
+    "typescript": "6.0.3",
+    "vite": "8.0.16",
+    "vite-plugin-vue-devtools": "8.1.2",
+    "vitest": "4.1.8",
+    "vue-tsc": "3.3.4"
+  },
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  }
 }

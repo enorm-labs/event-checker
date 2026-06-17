@@ -93,10 +93,10 @@ events-frontend/
 
 - **SFC structure order**: `<script setup>` → `<template>` → `<style scoped>`.
 - **Component naming**: PascalCase for filenames (`HelloWorld.vue`, `TheWelcome.vue`).
-    - Prefix `The` for singleton layout components (e.g. `TheNavbar.vue`, `TheFooter.vue`).
-    - Prefix `Base` for presentational/dumb components that wrap HTML elements (e.g. `BaseButton.vue`, `BaseInput.vue`).
-    - Views (page-level route components) go in `src/views/` with `*View.vue` suffix.
-    - Reusable components go in `src/components/`.
+  - Prefix `The` for singleton layout components (e.g. `TheNavbar.vue`, `TheFooter.vue`).
+  - Prefix `Base` for presentational/dumb components that wrap HTML elements (e.g. `BaseButton.vue`, `BaseInput.vue`).
+  - Views (page-level route components) go in `src/views/` with `*View.vue` suffix.
+  - Reusable components go in `src/components/`.
 - **Multi-word names** — component names must always be multi-word (`TodoItem`, not `Item`) to avoid conflicts with
   HTML elements. Only the root `App.vue` is exempt.
 - **Full words over abbreviations** — prefer `UserProfileOptions.vue` over `UProfOpts.vue`.
@@ -111,8 +111,8 @@ events-frontend/
 - **Self-closing components** — use `<MyComponent/>` not `<MyComponent></MyComponent>` (in SFCs).
 - **PascalCase in templates** — use `<MyComponent/>` not `<my-component/>` in SFC templates.
 - **Multi-attribute elements** — when an element has 2+ attributes, put each on its own line.
-- **Simple template expressions** — move complex logic into `computed()` properties; templates should describe *what*,
-  not *how*.
+- **Simple template expressions** — move complex logic into `computed()` properties; templates should describe _what_,
+  not _how_.
 - **Directive shorthands consistently** — always use `:` (not `v-bind:`), `@` (not `v-on:`), `#` (not `v-slot:`).
 - **Prop casing** — camelCase in declarations (`greetingText`), kebab-case when passed in templates (`greeting-text`).
 
@@ -200,7 +200,7 @@ Uses Node 24.
 ## Key Files
 
 | Purpose                | Path                        |
-|------------------------|-----------------------------|
+| ---------------------- | --------------------------- |
 | Package config         | `package.json`              |
 | Vite config            | `vite.config.ts`            |
 | Vitest config          | `vitest.config.ts`          |
@@ -216,4 +216,3 @@ Uses Node 24.
 | Components             | `src/components/`           |
 | Unit tests             | `src/components/__tests__/` |
 | E2E tests              | `e2e/`                      |
-
