@@ -32,7 +32,7 @@ The **Import** column tracks whether an automated importer has been implemented 
 | Sisyfass                    |                                             | Bar          |            |        |                                   |
 | Bar Bobu                    | https://barbobu.de/                         | Bar          |     ✅      |        | No event listings; weekly nights  |
 | Urban Spree                 | https://www.urbanspree.com/                 | Club         |     ✅      |        |                                   |
-| Lido                        | https://www.lido-berlin.de/                 | Concert Hall |     ✅      |        |                                   |
+| Lido                        | https://www.lido-berlin.de/                 | Concert Hall |     ✅      |   ✅    |                                   |
 | Hole 44                     | https://hole-berlin.de/                     | Concert Hall |     ✅      |        |                                   |
 | SO36                        | https://www.so36.com/                       | Club         |     ✅      |        | Cookie wall blocks content        |
 | Artliners Berlin            | https://artliners-berlin.com/               | Club         |     ✅      |        | No structured events; flyers only |

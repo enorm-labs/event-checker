@@ -19,7 +19,10 @@ enum class EventSource {
     MADAME_CLAUDE,
 
     /** Astra Kulturhaus Berlin – Kulturhäuser-platform listing on the homepage with per-event detail pages. */
-    ASTRA;
+    ASTRA,
+
+    /** Lido Berlin – same Kulturhäuser platform as Astra (different theme), homepage listing with detail pages. */
+    LIDO;
 
     /**
      * Prefix for `sourceId` values, derived from the enum name in lowercase.

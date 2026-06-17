@@ -2,21 +2,22 @@ package de.norm.events.scraper.astra
 
 import de.norm.events.event.EventType
 import de.norm.events.scraper.EventSource
-import de.norm.events.scraper.ScrapedArtist
 import de.norm.events.scraper.ScrapedEvent
 import de.norm.events.scraper.UNRESOLVED_EVENT_DATE
-import de.norm.events.scraper.buildArtistList
-import de.norm.events.scraper.extractSupportFromSubtitle
+import de.norm.events.scraper.buildArtistsForEventType
+import de.norm.events.scraper.extractEventSlug
 import de.norm.events.scraper.imgSrcAt
-import de.norm.events.scraper.isPlaceholderName
 import de.norm.events.scraper.mapEventType
+import de.norm.events.scraper.parseEventStatus
+import de.norm.events.scraper.parseRealDate
 import de.norm.events.scraper.parseTime
 import de.norm.events.scraper.resolveUrl
+import de.norm.events.scraper.supportSubtitleLine
 import de.norm.events.scraper.textAt
+import de.norm.events.scraper.textLinesAt
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
-import java.net.URI
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -90,7 +91,7 @@ class AstraOverviewPageScraper {
      * per day and sometimes wrong — one day can read "Concert" while its siblings
      * read "Festival". When at least one event with a given title is a confident
      * [FESTIVAL][EventType.FESTIVAL], the siblings tagged otherwise are corrected
-     * to `FESTIVAL`, and the title-as-headliner artist that [parseArtists] added
+     * to `FESTIVAL`, and the title-as-headliner artist that [buildArtistsForEventType] added
      * for the bogus `CONCERT` is dropped (real festival days carry no artists).
      *
      * Only acts when a correctly-labeled festival sibling exists on the same page,
@@ -136,57 +137,18 @@ class AstraOverviewPageScraper {
             startTime = block.startTime,
             imageUrl = block.imageUrl,
             sourceUrl = block.sourceUrl,
-            sourceId = "${EventSource.ASTRA.sourceIdPrefix}${extractAstraSlug(block.sourceUrl)}",
+            sourceId = "${EventSource.ASTRA.sourceIdPrefix}${extractEventSlug(block.sourceUrl)}",
             soldOut = block.soldOut,
             status = block.status,
-            artists = parseArtists(block.title, block.subtitle, block.eventType)
+            // Isolate the subtitle's "Support:" line so a note appended on a later
+            // <br> line (e.g. a cancellation notice) can't be mistaken for a support act.
+            artists =
+                buildArtistsForEventType(
+                    block.title,
+                    supportSubtitleLine(article.textLinesAt(".event__subtitle")),
+                    block.eventType
+                )
         )
-    }
-
-    /**
-     * Extracts artists from the title and subtitle.
-     *
-     * Astra exposes a clean `kind` field, so the strategy keys off it:
-     * - **Festivals / parties** — the title is an event name, not an artist; no
-     *   artists are extracted.
-     * - **Concerts** — the `kind` explicitly confirms the title is the headliner,
-     *   so it is always added (plus any support acts), even without a support line.
-     * - **Unknown kind** — fall back to the conservative [buildArtistList], which
-     *   only treats the title as an artist when a "Support:" line is present.
-     *
-     * Support acts come from the subtitle pattern `"… + Support: A & B"`.
-     */
-    private fun parseArtists(
-        title: String,
-        subtitle: String?,
-        eventType: String?
-    ): List<ScrapedArtist> {
-        if (eventType == EventType.FESTIVAL.name || eventType == EventType.PARTY.name) return emptyList()
-
-        val supportNames = extractSupportFromSubtitle(subtitle)
-        return if (eventType == EventType.CONCERT.name) {
-            buildConcertArtists(title, supportNames)
-        } else {
-            buildArtistList(title, supportNames)
-        }
-    }
-
-    /**
-     * Builds the artist list for an event already known to be a concert:
-     * the title is the headliner (unless it is a placeholder like "TBA"),
-     * followed by the support acts in listing order.
-     */
-    private fun buildConcertArtists(
-        title: String,
-        supportNames: List<String>
-    ): List<ScrapedArtist> {
-        val headliner =
-            if (isPlaceholderName(title)) emptyList() else listOf(ScrapedArtist(name = title, role = "HEADLINER"))
-        val support =
-            supportNames
-                .filterNot { isPlaceholderName(it) }
-                .map { ScrapedArtist(name = it, role = "SUPPORT") }
-        return headliner + support
     }
 }
 
@@ -235,40 +197,24 @@ internal fun parseAstraEventBlock(
         // Prefer the machine-readable `data-realdate` (full 4-digit year, no pivot
         // ambiguity); fall back to the human `DD.MM.YY` text where it is absent
         // (e.g. on detail pages, which carry no `data-realdate`).
-        eventDate = parseAstraRealDate(root.attr("data-realdate")) ?: parseAstraDate(root.textAt(".event__date--full")),
+        eventDate = parseRealDate(root.attr("data-realdate")) ?: parseAstraDate(root.textAt(".event__date--full")),
         doorsTime = parseTime(root.textAt(".event__time--doors .event__time-value")),
         startTime = parseTime(root.textAt(".event__time--start .event__time-value")),
         eventType = mapEventType(root.textAt(".event__kind .event__label")),
         subtitle = root.textAt(".event__subtitle"),
         imageUrl = root.imgSrcAt(".event__right-col img.image__src"),
         soldOut = statusText.contains("sold out") || statusText.contains("ausverkauft"),
-        status = parseAstraStatus(statusText)
+        status = parseEventStatus(statusText)
     )
-}
-
-/**
- * Parses the date from an overview article's `data-realdate` attribute
- * (e.g. "2026-07-08 19:00:00 +0200"), reading only the leading ISO date.
- *
- * Preferred over [parseAstraDate] because it carries a full four-digit year
- * and no two-digit-year pivot ambiguity. Returns `null` when the attribute is
- * absent (e.g. on detail pages) or unparseable, so the caller can fall back.
- */
-internal fun parseAstraRealDate(attr: String?): LocalDate? {
-    if (attr.isNullOrBlank()) return null
-    return try {
-        LocalDate.parse(attr.trim().substringBefore(' '))
-    } catch (_: DateTimeParseException) {
-        null
-    }
 }
 
 /**
  * Parses Astra's `DD.MM.YY` date format (e.g. "11.12.26"). Two-digit years
  * resolve to 2000–2099. Returns `null` for missing or unparseable input.
  *
- * Used as the fallback when no `data-realdate` attribute is present
- * (see [parseAstraRealDate]).
+ * Used as the fallback when no `data-realdate` attribute is present (see
+ * [parseRealDate][de.norm.events.scraper.parseRealDate]). This human format is
+ * Astra-theme-specific, so it stays local rather than in the shared helpers.
  */
 internal fun parseAstraDate(text: String?): LocalDate? {
     if (text.isNullOrBlank()) return null
@@ -278,28 +224,6 @@ internal fun parseAstraDate(text: String?): LocalDate? {
         null
     }
 }
-
-/**
- * Maps Astra's status badge text to an [de.norm.events.event.EventStatus] name.
- * "sold out" is intentionally **not** a status — it is captured separately as
- * the `soldOut` flag, leaving the status [SCHEDULED][de.norm.events.event.EventStatus.SCHEDULED].
- */
-internal fun parseAstraStatus(statusText: String): String =
-    when {
-        statusText.contains("abgesagt") || statusText.contains("cancel") -> "CANCELLED"
-        statusText.contains("verschoben") || statusText.contains("postpon") -> "POSTPONED"
-        statusText.contains("verlegt") || statusText.contains("reloc") -> "RELOCATED"
-        else -> "SCHEDULED"
-    }
-
-/**
- * Extracts the event slug from an Astra detail URL.
- *
- * Example: `https://www.astra-berlin.de/events/2026-05-18-green-lung` → `2026-05-18-green-lung`.
- * The slug is the stable URL identity even though its embedded date can be stale
- * (Astra keeps the original slug when an event is rescheduled).
- */
-internal fun extractAstraSlug(url: String): String = URI(url).path.removePrefix("/events/").trimEnd('/')
 
 /** Astra's `DD.MM.YY` date format; two-digit years resolve to 2000–2099. */
 private val ASTRA_DATE_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yy")

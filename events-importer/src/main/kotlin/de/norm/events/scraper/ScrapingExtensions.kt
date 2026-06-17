@@ -1,6 +1,7 @@
 package de.norm.events.scraper
 
 import org.jsoup.nodes.Element
+import org.jsoup.nodes.TextNode
 import java.net.URI
 
 /**
@@ -101,6 +102,47 @@ fun Element.hasVisibleWebflowFlag(
         .any { !it.hasClass("w-condition-invisible") && it.text().contains(text, ignoreCase = true) }
 
 /**
+ * Splits the text under the first element matching [cssQuery] into its
+ * `<br>`-delimited lines, each trimmed, with blank lines dropped.
+ *
+ * Reading a multi-line subtitle/blurb as discrete lines — rather than the
+ * whitespace-flattened `.text()` — lets callers target a specific line (e.g. the
+ * "Support:" line) without absorbing the others (e.g. a trailing cancellation
+ * note appended on a later line). Only direct-child `<br>` elements break a line;
+ * text inside nested inline elements is appended to the current line. Returns an
+ * empty list when no element matches.
+ *
+ * Example:
+ * ```kotlin
+ * // subtitle = "+ Support: Jeff Clarke<br><br>ABGESAGT. …note…"
+ * article.textLinesAt(".event__subtitle")  // ["+ Support: Jeff Clarke", "ABGESAGT. …note…"]
+ * ```
+ */
+fun Element.textLinesAt(cssQuery: String): List<String> {
+    val element = selectFirst(cssQuery) ?: return emptyList()
+    val lines = mutableListOf<String>()
+    val current = StringBuilder()
+    for (node in element.childNodes()) {
+        when {
+            node is Element && node.tagName().equals("br", ignoreCase = true) -> {
+                lines.add(current.toString())
+                current.clear()
+            }
+
+            node is TextNode -> {
+                current.append(node.text())
+            }
+
+            node is Element -> {
+                current.append(node.text())
+            }
+        }
+    }
+    lines.add(current.toString())
+    return lines.map { it.trim() }.filter { it.isNotBlank() }
+}
+
+/**
  * Resolves a potentially relative [href] against the [baseUrl].
  *
  * If the href is already absolute (starts with "http"), it is returned as-is.
@@ -122,3 +164,18 @@ fun resolveUrl(
     if (href.startsWith("http")) return href
     return URI(baseUrl).resolve(href).toString()
 }
+
+/**
+ * Extracts the event slug from a Kulturhäuser-platform detail URL by stripping
+ * the path [prefix] (default `/events/`) and any trailing slash.
+ *
+ * Example: `https://www.lido-berlin.de/events/2026-06-15-sorry` → `2026-06-15-sorry`.
+ *
+ * The slug is the stable URL identity even when its embedded date is stale (the
+ * platform keeps the original slug when an event is rescheduled), so it is used
+ * to build a stable `sourceId`. Shared by Astra and Lido.
+ */
+fun extractEventSlug(
+    url: String,
+    prefix: String = "/events/"
+): String = URI(url).path.removePrefix(prefix).trimEnd('/')
