@@ -9,8 +9,8 @@ The frontend is built with Vue and uses the [events-bff](../events-bff) as backe
 
 ### Setup Node.js
 
-* Install nvm to manage Node.js versions: https://github.com/nvm-sh/nvm
-* Use the Node.js version specified in [.nvmrc](.nvmrc)
+- Install nvm to manage Node.js versions: https://github.com/nvm-sh/nvm
+- Use the Node.js version specified in [.nvmrc](.nvmrc)
 
 ```
 # use the Node.js version specified in .nvmrc
@@ -29,11 +29,11 @@ npm -v
 ### Recommended Browser Setup
 
 - Chromium-based browsers (Chrome, Edge, Brave, etc.):
-    - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-    - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
+  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
+  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
 - Firefox:
-    - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-    - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
+  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
 
 ### Type Support for `.vue` Imports in TS
 
@@ -70,6 +70,10 @@ npm run dev
 ```sh
 npm run format
 ```
+
+Formatting is handled by [oxfmt](https://oxc.rs/). If you use IntelliJ IDEA, install the
+[oxc plugin](https://plugins.jetbrains.com/plugin/27061-oxc) so the IDE formats code
+identically to `npm run format` — without it, IntelliJ's built-in formatter disagrees with oxfmt.
 
 ### Type-Check, Compile and Minify for Production
 
