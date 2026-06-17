@@ -3,11 +3,12 @@ package de.norm.events.scraper.astra
 import de.norm.events.scraper.EventSource
 import de.norm.events.scraper.ScrapedEvent
 import de.norm.events.scraper.UNRESOLVED_EVENT_DATE
+import de.norm.events.scraper.extractEventSlug
 import de.norm.events.scraper.hrefAt
+import de.norm.events.scraper.parsePresaleAndBoxOfficePrices
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
-import java.math.BigDecimal
 
 /**
  * Pure HTML parser for Astra Kulturhaus event detail pages.
@@ -59,7 +60,7 @@ class AstraDetailPageScraper {
             return null
         }
 
-        val (pricePresale, priceBoxOffice) = parsePrices(content)
+        val (pricePresale, priceBoxOffice) = parsePresaleAndBoxOfficePrices(content.select(".prices .price"))
 
         return ScrapedEvent(
             title = block.title,
@@ -73,7 +74,7 @@ class AstraDetailPageScraper {
             startTime = block.startTime,
             imageUrl = block.imageUrl,
             sourceUrl = sourceUrl,
-            sourceId = "${EventSource.ASTRA.sourceIdPrefix}${extractAstraSlug(sourceUrl)}",
+            sourceId = "${EventSource.ASTRA.sourceIdPrefix}${extractEventSlug(sourceUrl)}",
             ticketUrl = content.hrefAt(".purchase-option__button"),
             pricePresale = pricePresale,
             priceBoxOffice = priceBoxOffice,
@@ -108,62 +109,4 @@ class AstraDetailPageScraper {
             .distinct()
             .joinToString("\n")
             .takeIf { it.isNotBlank() }
-
-    /**
-     * Parses presale and box-office prices from the `.prices` section.
-     *
-     * Each `.price` carries a `.price__value` (e.g. "39,90€" or "35.20€") and a
-     * `.price__label`. Labels containing "Abendkasse" or the standalone "AK" token
-     * map to the box-office price; everything else (Vorverkauf / "VVK …") maps to
-     * presale. The first value seen for each category wins, so the duplicate price
-     * blocks the markup renders for mobile/desktop collapse to a single value.
-     *
-     * @return a pair of (presale, boxOffice), either of which may be `null`.
-     */
-    private fun parsePrices(content: Element): Pair<BigDecimal?, BigDecimal?> {
-        var presale: BigDecimal? = null
-        var boxOffice: BigDecimal? = null
-
-        for (price in content.select(".prices .price")) {
-            val value = parsePrice(price.selectFirst(".price__value")?.text()) ?: continue
-            val label =
-                price
-                    .selectFirst(".price__label")
-                    ?.text()
-                    ?.lowercase()
-                    .orEmpty()
-            val isBoxOffice = label.contains("abendkasse") || AK_LABEL_PATTERN.containsMatchIn(label)
-            if (isBoxOffice) {
-                boxOffice = boxOffice ?: value
-            } else {
-                presale = presale ?: value
-            }
-        }
-
-        return presale to boxOffice
-    }
-
-    /**
-     * Parses the first monetary value from a price string, accepting both German
-     * (`39,90€`) and dot (`35.20€`) decimal separators. Returns `null` when no
-     * value is found.
-     */
-    @Suppress("ReturnCount") // Guard clauses for blank input and unparseable value are clearer than nesting
-    private fun parsePrice(text: String?): BigDecimal? {
-        if (text.isNullOrBlank()) return null
-        val match = PRICE_PATTERN.find(text) ?: return null
-        return try {
-            BigDecimal(match.groupValues[1].replace(",", "."))
-        } catch (_: NumberFormatException) {
-            null
-        }
-    }
-
-    companion object {
-        /** Matches a price value with an optional decimal part, e.g. "39,90€", "35.20€", "53€". */
-        private val PRICE_PATTERN = Regex("""(\d+(?:[.,]\d{1,2})?)\s*€""")
-
-        /** Matches the standalone "AK" (Abendkasse) token, so labels like "VVK" don't false-match on the letters. */
-        private val AK_LABEL_PATTERN = Regex("""\bak\b""")
-    }
 }

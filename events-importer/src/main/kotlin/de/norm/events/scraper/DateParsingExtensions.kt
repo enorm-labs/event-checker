@@ -107,6 +107,30 @@ fun parseIsoTime(dateTimeStr: String): LocalTime? {
 }
 
 /**
+ * Parses the date from a Kulturhäuser-platform `data-realdate` attribute
+ * (e.g. "2026-07-08 19:00:00 +0200"), reading only the leading ISO date.
+ *
+ * Shared by venues on the Kulturhäuser platform (Astra, Lido). Preferred over
+ * a human `DD.MM.YY` rendering because it carries a full four-digit year and no
+ * two-digit-year pivot ambiguity. Returns `null` when the attribute is absent
+ * (e.g. some detail headers) or unparseable, so the caller can fall back.
+ *
+ * Example:
+ * ```kotlin
+ * parseRealDate("2026-07-08 19:00:00 +0200")  // LocalDate.of(2026, 7, 8)
+ * parseRealDate(null)                          // null
+ * ```
+ */
+fun parseRealDate(attr: String?): LocalDate? {
+    if (attr.isNullOrBlank()) return null
+    return try {
+        LocalDate.parse(attr.trim().substringBefore(' '))
+    } catch (_: DateTimeParseException) {
+        null
+    }
+}
+
+/**
  * Parses a European short date in `DD/MM/YY` format.
  *
  * Two-digit years are resolved to the 2000–2099 range (e.g. "26" → 2026).

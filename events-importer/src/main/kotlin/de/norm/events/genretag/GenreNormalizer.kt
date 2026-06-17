@@ -52,6 +52,7 @@ private val GENRE_SYNONYMS: Map<String, String> =
         // Metal
         "metal" to "Metal",
         // Electronic family
+        "electronic" to "Electronic",
         "electronica" to "Electronic",
         "elektro-fusion" to "Electronic",
         "synthesizer instrumental & melodic electronica" to "Electronic",
@@ -59,6 +60,7 @@ private val GENRE_SYNONYMS: Map<String, String> =
         "house" to "House",
         // Post-punk / dark wave family
         "post punk" to "Post-Punk",
+        "post-punk" to "Post-Punk",
         "postpunk" to "Post-Punk",
         "new wave" to "New Wave",
         "darkwave" to "Darkwave",
@@ -79,6 +81,7 @@ private val GENRE_SYNONYMS: Map<String, String> =
         "folk" to "Folk",
         "americana" to "Americana",
         "singer-songwriter" to "Singer-Songwriter",
+        "singer songwriter" to "Singer-Songwriter",
         "singer-songwriterin" to "Singer-Songwriter",
         // Reggae
         "reggae" to "Reggae",
@@ -91,6 +94,7 @@ private val GENRE_SYNONYMS: Map<String, String> =
         "afro" to "Afrobeats",
         "afrobeats" to "Afrobeats",
         // World Music
+        "world" to "World Music",
         "world music" to "World Music",
         "indian" to "World Music",
         "urdu rock" to "World Music",

@@ -1,5 +1,6 @@
 package de.norm.events.scraper
 
+import de.norm.events.event.EventStatus
 import de.norm.events.event.EventType
 
 // Domain-level mapping utilities for scraped event data.
@@ -82,6 +83,50 @@ fun extractSupportFromSubtitle(subtitle: String?): List<String> {
 private val SUPPORT_PATTERN = Regex("""[Ss]upport:\s*(.+)""")
 
 /**
+ * Picks the subtitle line carrying the "Support:" marker from already-split
+ * subtitle [lines], or `null` if none.
+ *
+ * Venues whose subtitle stacks a support line and trailing notes across separate
+ * lines (e.g. an "ABGESAGT …" cancellation notice) must isolate the support line
+ * before handing it to [extractSupportFromSubtitle]; otherwise the note's text —
+ * which `.text()` flattens onto the same line — would be captured as a support
+ * act. Pair with [textLinesAt][de.norm.events.scraper.textLinesAt] to obtain the
+ * lines. Shared by the Kulturhäuser-platform scrapers (Astra, Lido).
+ *
+ * Example:
+ * ```kotlin
+ * supportSubtitleLine(listOf("+ Support: Jeff Clarke", "ABGESAGT. …note…"))  // "+ Support: Jeff Clarke"
+ * supportSubtitleLine(listOf("Tour 2026"))                                   // null
+ * ```
+ */
+fun supportSubtitleLine(lines: List<String>): String? = lines.firstOrNull { SUPPORT_PATTERN.containsMatchIn(it) }
+
+/**
+ * Maps a venue status-badge text (German or English) to an [EventStatus] name.
+ *
+ * Matching is case-insensitive. "sold out" / "ausverkauft" is intentionally
+ * **not** a status — venues capture it separately as the `soldOut` flag, leaving
+ * the status [SCHEDULED][EventStatus.SCHEDULED]. Shared across Kulturhäuser-platform
+ * scrapers (Astra, Lido) whose badges use these conventional labels.
+ *
+ * Example:
+ * ```kotlin
+ * parseEventStatus("Abgesagt")   // "CANCELLED"
+ * parseEventStatus("Verlegt")    // "RELOCATED"
+ * parseEventStatus("Ausverkauft") // "SCHEDULED" (sold-out is a flag, not a status)
+ * ```
+ */
+fun parseEventStatus(statusText: String): String {
+    val text = statusText.lowercase()
+    return when {
+        text.contains("abgesagt") || text.contains("cancel") -> EventStatus.CANCELLED.name
+        text.contains("verschoben") || text.contains("postpon") -> EventStatus.POSTPONED.name
+        text.contains("verlegt") || text.contains("reloc") -> EventStatus.RELOCATED.name
+        else -> EventStatus.SCHEDULED.name
+    }
+}
+
+/**
  * Common placeholder names used by venues when the artist has not been
  * announced yet (e.g. "TBA", "TBD", "N.N."). These should not be
  * created as artist entries in the database.
@@ -144,5 +189,39 @@ fun buildArtistList(
             .filterNot { isPlaceholderName(it) }
             .map { ScrapedArtist(name = it, role = "SUPPORT") }
 
+    return headliner + supportActs
+}
+
+/**
+ * Builds an artist list using the source's own event-type classification, for
+ * venues that expose a clean `kind`/type label (the Kulturhäuser platform —
+ * Astra, Lido). The strategy keys off [eventType]:
+ * - **Festivals / parties** — the title is an event name, not an artist; no
+ *   artists are extracted.
+ * - **Concerts** — the type confirms the title is the headliner, so it is always
+ *   added (plus any support acts), even without a support line.
+ * - **Unknown / other** — fall back to the conservative [buildArtistList], which
+ *   only treats the title as an artist when a "Support:" line is present.
+ *
+ * Support acts come from the subtitle's `"… + Support: A & B"` pattern.
+ */
+@Suppress("ReturnCount") // Guard clauses for the event-type branches are clearer than nesting
+fun buildArtistsForEventType(
+    title: String,
+    subtitle: String?,
+    eventType: String?
+): List<ScrapedArtist> {
+    if (eventType == EventType.FESTIVAL.name || eventType == EventType.PARTY.name) return emptyList()
+
+    val supportNames = extractSupportFromSubtitle(subtitle)
+    if (eventType != EventType.CONCERT.name) return buildArtistList(title, supportNames)
+
+    // Concert: the title is the headliner (unless a placeholder), then support acts in listing order.
+    val headliner =
+        if (isPlaceholderName(title)) emptyList() else listOf(ScrapedArtist(name = title, role = "HEADLINER"))
+    val supportActs =
+        supportNames
+            .filterNot { isPlaceholderName(it) }
+            .map { ScrapedArtist(name = it, role = "SUPPORT") }
     return headliner + supportActs
 }

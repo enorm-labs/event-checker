@@ -57,9 +57,11 @@ class AstraOverviewPageScraperTest {
     }
 
     @Test
-    fun `extracts headliner and support acts from the subtitle`() {
-        // Green Lung has no kind label, but the "Support:" line confirms the
-        // title is the headliner.
+    fun `extracts headliner and support acts from the subtitle, excluding a note appended after the support line`() {
+        // Green Lung has no kind label, but the "Support:" line confirms the title
+        // is the headliner. Its subtitle appends a rescheduling note on a later <br>
+        // line — only the "Support:" line must feed artist extraction, so the note
+        // must not be absorbed into the last support act ("GNOME").
         event("Green Lung").artists shouldContainExactly
             listOf(
                 ScrapedArtist("GREEN LUNG", "HEADLINER"),

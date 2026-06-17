@@ -152,4 +152,14 @@ class GenreNormalizerTest {
         normalizeGenre("Electronica, Jazz, Trip-Hop")
             .shouldContainExactlyInAnyOrder("Electronic", "Jazz", "Trip-Hop")
     }
+
+    @Test
+    fun `punctuation and spacing variants fold into existing canonical tags`() {
+        // Variants that previously fell through to as-is, creating duplicate tags
+        // (e.g. "World" vs "World Music", "Singer Songwriter" vs "Singer-Songwriter").
+        normalizeGenre("Electronic").shouldContainExactly("Electronic")
+        normalizeGenre("Post-Punk").shouldContainExactly("Post-Punk")
+        normalizeGenre("Singer Songwriter").shouldContainExactly("Singer-Songwriter")
+        normalizeGenre("World").shouldContainExactly("World Music")
+    }
 }
