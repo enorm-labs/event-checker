@@ -130,14 +130,15 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
 
-      # Cache the NVD database between runs. Without this, every run re-downloads the
-      # full National Vulnerability Database from the NVD API, which is heavily
-      # rate-limited and frequently returns errors — causing "Error updating the NVD
-      # Data" and aborting the scan before any report is written. A warm cache only
-      # needs a small incremental update. The key rotates per run (so each run saves an
-      # updated DB) while restore-keys falls back to the most recent prior cache.
-      - name: Cache NVD database
-        uses: actions/cache@v4
+      # Restore the cached NVD database. Without it, every run re-downloads the full
+      # National Vulnerability Database from the NVD API, which is heavily rate-limited
+      # and frequently returns 503s — causing "Error updating the NVD Data" and aborting
+      # the scan before any report is written. A warm cache lets the build skip the
+      # update (see nvd.validForHours in build.gradle.kts) or apply a tiny incremental
+      # one. restore-keys falls back to the most recent prior cache.
+      - name: Restore NVD database cache
+        id: nvd-cache
+        uses: actions/cache/restore@v4
         with:
           path: ~/.gradle/dependency-check-data
           key: dependency-check-data-${{ github.run_id }}
@@ -148,6 +149,15 @@ jobs:
         run: ./gradlew dependencyCheckAggregate
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+
+      # Save only on success. A failed run can leave a partially-written/corrupted H2
+      # store behind; saving it would poison every future run via restore-keys.
+      - name: Save NVD database cache
+        if: success()
+        uses: actions/cache/save@v4
+        with:
+          path: ~/.gradle/dependency-check-data
+          key: dependency-check-data-${{ github.run_id }}
 
       - name: Post report to Job Summary
         if: success() || failure()
