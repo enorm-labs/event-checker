@@ -10,6 +10,12 @@ const router = createRouter({
       component: HomeView,
     },
     {
+      path: '/calendar',
+      name: 'calendar',
+      // Lazy-loaded so FullCalendar's weight does not affect first paint elsewhere (see ADR-011).
+      component: () => import('../views/CalendarView.vue'),
+    },
+    {
       path: '/about',
       name: 'about',
       // route level code-splitting
