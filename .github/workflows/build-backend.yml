@@ -112,9 +112,15 @@ jobs:
           min-coverage-changed-files: 80
 
   # OWASP Dependency-Check runs as a separate job in parallel with the build to avoid
-  # slowing down the main feedback loop. The NVD database download can take several minutes.
+  # slowing down the main feedback loop.
+  #
+  # On PRs this job is INFORMATIONAL and non-blocking: it surfaces newly introduced
+  # vulnerable dependencies in GitHub Code Scanning but never blocks a merge, so a
+  # flaky/unavailable NVD API can't hold up PRs. The authoritative, enforced scan runs
+  # nightly in dependency-check-scheduled.yml, which also seeds the shared NVD cache on
+  # main that this job restores (caches created on main are restorable from PR branches).
   dependency-check:
-    name: OWASP Dependency-Check
+    name: OWASP Dependency-Check (informational)
     runs-on: ubuntu-latest
 
     steps:
@@ -130,12 +136,10 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
 
-      # Restore the cached NVD database. Without it, every run re-downloads the full
-      # National Vulnerability Database from the NVD API, which is heavily rate-limited
-      # and frequently returns 503s — causing "Error updating the NVD Data" and aborting
-      # the scan before any report is written. A warm cache lets the build skip the
-      # update (see nvd.validForHours in build.gradle.kts) or apply a tiny incremental
-      # one. restore-keys falls back to the most recent prior cache.
+      # Restore the NVD database cache seeded by the nightly scheduled scan on main.
+      # A warm cache lets the build skip the NVD update entirely (see nvd.validForHours
+      # in build.gradle.kts), so PR runs are fast and not exposed to NVD API outages.
+      # This job is read-only on the cache — the scheduled workflow owns seeding it.
       - name: Restore NVD database cache
         id: nvd-cache
         uses: actions/cache/restore@v4
@@ -145,29 +149,26 @@ jobs:
           restore-keys: |
             dependency-check-data-
 
+      # Non-blocking: a failure here (e.g. NVD unreachable on a cold cache) is recorded
+      # but does not fail the job, so PRs are never blocked by the dependency scan.
       - name: Run OWASP Dependency-Check
+        id: depcheck
+        continue-on-error: true
         run: ./gradlew dependencyCheckAggregate
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
 
-      # Save only on success. A failed run can leave a partially-written/corrupted H2
-      # store behind; saving it would poison every future run via restore-keys.
-      - name: Save NVD database cache
-        if: success()
-        uses: actions/cache/save@v4
-        with:
-          path: ~/.gradle/dependency-check-data
-          key: dependency-check-data-${{ github.run_id }}
-
       - name: Post report to Job Summary
         if: success() || failure()
         run: |
-          echo "## 🛡️ OWASP Dependency-Check" >> $GITHUB_STEP_SUMMARY
+          echo "## 🛡️ OWASP Dependency-Check (informational)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          if [ -f build/reports/dependency-check-report.html ]; then
-            echo "Dependency-Check report generated. See artifacts for full HTML report." >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.depcheck.outcome }}" = "success" ]; then
+            echo "✅ Scan completed. Findings (if any) are in the Security → Code scanning tab." >> $GITHUB_STEP_SUMMARY
           else
-            echo "No report generated." >> $GITHUB_STEP_SUMMARY
+            echo "⚠️ Scan did not complete (often a transient NVD API outage). This is" >> $GITHUB_STEP_SUMMARY
+            echo "non-blocking on PRs — the authoritative scan runs nightly via" >> $GITHUB_STEP_SUMMARY
+            echo "dependency-check-scheduled.yml." >> $GITHUB_STEP_SUMMARY
           fi
 
       # Only upload when the report exists. If the scan aborts (e.g. an NVD update
