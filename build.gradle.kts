@@ -123,4 +123,9 @@ dependencyCheck {
     // NVD API key speeds up database updates (rate-limited without it).
     // Set via NVD_API_KEY env var locally or as a GitHub Actions secret in CI.
     nvd.apiKey = System.getenv("NVD_API_KEY") ?: ""
+    // Treat cached NVD data as valid for 24h before re-contacting the API. Combined
+    // with caching the data directory in CI, this means most runs skip the NVD update
+    // entirely instead of re-downloading on every build — the NVD API is frequently
+    // rate-limited or returns 503s, and each contact is a chance to fail the scan.
+    nvd.validForHours = 24
 }
