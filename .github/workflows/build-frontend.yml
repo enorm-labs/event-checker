@@ -5,10 +5,12 @@ on:
     branches: [ main ]
     paths:
       - 'events-frontend/**'
+      - '.github/workflows/build-frontend.yml'
   pull_request:
     branches: [ main ]
     paths:
       - 'events-frontend/**'
+      - '.github/workflows/build-frontend.yml'
 
 permissions:
   contents: read
@@ -21,6 +23,9 @@ jobs:
   build:
     name: Build & Test
     runs-on: ubuntu-latest
+    # Fail fast instead of hanging for the GitHub default of 6h when the
+    # Playwright system-dependency install stalls on a slow apt mirror.
+    timeout-minutes: 15
 
     steps:
       - name: Checkout repository
