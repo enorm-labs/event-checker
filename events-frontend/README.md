@@ -3,7 +3,9 @@
 Displays events (today's event overview, week overview, month overview), provides an event calendar and allows to search
 for events.
 
-The frontend is built with Vue and uses the [events-bff](../events-bff) as backend.
+The frontend is built with Vue and uses the [events-bff](../events-bff) as backend. Styling uses
+[Tailwind CSS v4](https://tailwindcss.com) with [shadcn-vue](https://www.shadcn-vue.com) components — see
+[ADR-010](../docs/adr/ADR-010_FRONTEND_STYLING_FRAMEWORK.md) for the rationale.
 
 ## Development
 
@@ -120,6 +122,37 @@ npm run test:e2e -- --debug
 ```sh
 npm run lint
 ```
+
+### Add UI components (shadcn-vue)
+
+```sh
+# Add a component — it is generated into src/components/ui/<name>/ and owned by us (edit freely)
+npx shadcn-vue@latest add button
+npx shadcn-vue@latest add card dialog
+```
+
+The theme (colours, radius, typography, light/dark mode) is defined as CSS variables in
+[`src/assets/main.css`](src/assets/main.css). Re-theme by editing those variables — see
+[ADR-010](../docs/adr/ADR-010_FRONTEND_STYLING_FRAMEWORK.md).
+
+#### Updating a component to a newer registry version
+
+Components are copied into the repo and owned by us, so there is no automatic upgrade. To pull a newer
+upstream version, use git as a safety net — `--overwrite` replaces the file wholesale and does **not** merge:
+
+```sh
+# 1. Check whether the registry version differs from ours
+npx shadcn-vue@latest diff button
+
+# 2. On a clean working tree, overwrite with the latest version
+npx shadcn-vue@latest add button --overwrite
+
+# 3. Review what changed (and what it clobbered), then reconcile
+git diff src/components/ui/button
+```
+
+If you have customized the component, prefer hand-porting the change shown by `diff` rather than
+overwriting. This applies only to `src/components/ui/**` — your own components are not registry-managed.
 
 ## Customize configuration
 

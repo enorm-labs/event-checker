@@ -331,5 +331,8 @@ Java version is managed via SDKMAN (`.sdkmanrc` pins `java=25.0.2-tem`; run `sdk
 | ADR: Spring Modulith                  | `docs/adr/ADR-006_SPRING_MODULITH.md`                                             |
 | ADR: Web scraping strategy            | `docs/adr/ADR-007_WEB_SCRAPING_STRATEGY.md`                                       |
 | ADR: Import job scheduling            | `docs/adr/ADR-008_IMPORT_JOB_SCHEDULING.md`                                       |
+| ADR: Optimistic locking (event src)   | `docs/adr/ADR-009_OPTIMISTIC_LOCKING_EVENT_SOURCE.md`                             |
+| ADR: Frontend styling framework       | `docs/adr/ADR-010_FRONTEND_STYLING_FRAMEWORK.md`                                  |
+| ADR: Event-calendar library           | `docs/adr/ADR-011_CALENDAR_LIBRARY.md`                                            |
 | Frontend entry point                  | `events-frontend/src/main.ts`                                                     |
 | IntelliJ HTTP Client requests         | `http/` (per-entity `.http` files + `http-client.env.json` for environments)      |

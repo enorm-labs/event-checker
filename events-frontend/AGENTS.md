@@ -22,6 +22,7 @@ dev server (`/api` → `http://localhost:8080`).
 - **Vite 8** (build tool & dev server)
 - **Pinia** (state management)
 - **Vue Router** (client-side routing)
+- **Tailwind CSS v4** + **shadcn-vue** (styling & accessible component primitives — see ADR-010)
 - **oxlint + oxfmt** (primary linter & formatter — fast, Rust-based)
 - **eslint** (supplementary linting, integrated with oxlint via `eslint-plugin-oxlint`)
 - **Vitest** (unit tests, jsdom environment)
@@ -57,9 +58,10 @@ events-frontend/
 │   ├── composables/         # Reusable stateful logic (use* functions)
 │   ├── views/               # Route-level page components
 │   ├── components/          # Reusable UI components
-│   │   ├── __tests__/       # Unit tests (colocated)
-│   │   └── icons/           # SVG icon components
-│   └── assets/              # Static assets (CSS, images)
+│   │   ├── ui/              # shadcn-vue components (vendored; `npx shadcn-vue add`)
+│   │   └── __tests__/       # Unit tests (colocated)
+│   ├── lib/                 # Shared helpers (e.g. utils.ts → cn() classnames helper)
+│   └── assets/              # Static assets (main.css holds the theme tokens, images)
 ├── e2e/                     # Playwright end-to-end tests
 ├── public/                  # Static files served as-is
 ├── index.html               # HTML entry point
@@ -103,6 +105,43 @@ events-frontend/
 - **Props**: Define with `defineProps<T>()` using TypeScript interface syntax. Use `withDefaults()` for default values.
 - **Emits**: Define with `defineEmits<T>()` using TypeScript interface syntax.
 - **Scoped styles**: Always use `<style scoped>` to prevent style leakage.
+
+### Styling & UI Components (Tailwind v4 + shadcn-vue)
+
+See [ADR-010](../docs/adr/ADR-010_FRONTEND_STYLING_FRAMEWORK.md) for the decision and rationale.
+
+- **Styling** — use **Tailwind utility classes** in templates. Avoid hand-written CSS; reach for `<style scoped>`
+  only when utilities genuinely can't express something. Global styles and the design tokens live in
+  `src/assets/main.css`.
+- **Theming** — the colour/radius/typography tokens are **CSS variables** in `src/assets/main.css`
+  (`:root` for light, `.dark` for dark mode). Re-theme by editing those variables — do **not** hardcode hex
+  colours in components; use the semantic Tailwind tokens (`bg-background`, `text-foreground`, `bg-primary`,
+  `text-muted-foreground`, `border-border`, etc.).
+- **Components** — add shadcn-vue components with `npx shadcn-vue@latest add <name>` (e.g. `button`, `card`,
+  `dialog`). They are generated into `src/components/ui/<name>/` and are **owned by us** — edit them freely;
+  they are not managed/upgraded by npm. Import via the `@/components/ui/...` alias.
+- **Updating a `ui/` component to a newer registry version** — there is no automatic upgrade (we own the
+  code). `--overwrite` **replaces the file wholesale; it does not merge**, so use git as the reconciliation
+  tool:
+  1. `npx shadcn-vue@latest diff <name>` — check whether the registry version differs from ours.
+  2. Ensure the component has **no uncommitted changes**, then
+     `npx shadcn-vue@latest add <name> --overwrite` to pull the latest.
+  3. Review `git diff` to see both the upstream change and anything it clobbered, then reconcile
+     (keep upstream, re-apply our customizations, or `git checkout` to revert).
+
+  For a component we have customized, prefer hand-porting the change shown by `diff` instead of overwriting.
+  This applies **only** to vendored `src/components/ui/**` components — our own components (e.g.
+  `EventCalendar.vue`) are not registry-managed.
+- **Class merging** — compose conditional classes with the `cn()` helper from `@/lib/utils`
+  (clsx + tailwind-merge), as the generated components do.
+- **Icons** — use **`@lucide/vue`** (`import { CalendarDays } from '@lucide/vue'`) for new icons.
+- **Accessibility** — shadcn-vue components are built on Reka UI primitives and are accessible by default
+  (focus management, ARIA, keyboard nav). Preserve that — don't strip ARIA attributes or `:as`/slot wiring
+  when customizing.
+- **Naming exemption** — `vue/multi-word-component-names` is disabled for `src/components/ui/**` in
+  `eslint.config.ts` because shadcn components use single-word names (`Button`, `Card`) by design. This
+  exemption applies **only** to vendored `ui/` components; your own components still follow the multi-word
+  rule below.
 
 ### Template Conventions (per [Vue Style Guide](https://vuejs.org/style-guide/))
 
@@ -207,6 +246,9 @@ Uses Node 24.
 | Playwright config      | `playwright.config.ts`      |
 | ESLint config          | `eslint.config.ts`          |
 | oxlint config          | `.oxlintrc.json`            |
+| shadcn-vue config      | `components.json`           |
+| Theme & global CSS     | `src/assets/main.css`       |
+| shadcn UI components    | `src/components/ui/`         |
 | TypeScript root config | `tsconfig.json`             |
 | App entry point        | `src/main.ts`               |
 | Root component         | `src/App.vue`               |
