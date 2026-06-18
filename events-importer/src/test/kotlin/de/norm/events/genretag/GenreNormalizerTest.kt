@@ -154,6 +154,17 @@ class GenreNormalizerTest {
     }
 
     @Test
+    fun `arbitrary casing and spacing variants resolve via normalized lookup key`() {
+        // These exact spellings are not listed individually — they collapse to
+        // the same normalized key (e.g. "hiphop", "postpunk") as the canonical entry.
+        normalizeGenre("HIP HOP").shouldContainExactly("Hip Hop")
+        normalizeGenre("Hip   Hop").shouldContainExactly("Hip Hop")
+        normalizeGenre("POSTPUNK").shouldContainExactly("Post-Punk")
+        normalizeGenre("Gothic-Rock").shouldContainExactly("Gothic Rock")
+        normalizeGenre("Singer Songwriter").shouldContainExactly("Singer-Songwriter")
+    }
+
+    @Test
     fun `punctuation and spacing variants fold into existing canonical tags`() {
         // Variants that previously fell through to as-is, creating duplicate tags
         // (e.g. "World" vs "World Music", "Singer Songwriter" vs "Singer-Songwriter").

@@ -13,38 +13,42 @@ private val logger = KotlinLogging.logger {}
 // frontend's genre filter.
 
 /**
- * Synonym mapping from lowercase variations to canonical genre tag names.
+ * Synonym mapping from a normalized lookup key to canonical genre tag names.
  *
- * Covers common spelling differences, abbreviations, and compound genre labels
- * observed across Berlin venue websites. Canonical names use title case for
+ * Keys are *normalized* via [lookupKey] — lowercased with all separators
+ * (spaces, hyphens, slashes, etc.) stripped — so a single entry covers every
+ * spelling and spacing of the same label. For example the one key `"hiphop"`
+ * matches "Hip Hop", "hip-hop", and "HIPHOP" alike; there is no need to list
+ * each variant separately. Keep new keys in normalized form.
+ *
+ * The map therefore encodes only *semantic* knowledge — deliberate merges that
+ * string normalization can't derive (e.g. "rap"/"urban" → Hip Hop, "boogaloo"
+ * → Funk, "cumbia"/"salsa" → Latin). Canonical names use title case for
  * consistent display (e.g. "Hip Hop", not "hip hop" or "HIP HOP").
  *
- * When adding new venues, extend this map with any new synonyms encountered
- * in their genre labelling.
+ * When adding new venues, extend this map with any new semantic synonyms
+ * encountered in their genre labelling.
  */
 private val GENRE_SYNONYMS: Map<String, String> =
     mapOf(
         // Hip Hop family
-        "hip hop" to "Hip Hop",
-        "hip-hop" to "Hip Hop",
         "hiphop" to "Hip Hop",
         "rap" to "Hip Hop",
         "deutschrap" to "Hip Hop",
         "urban" to "Hip Hop",
-        "experimental hip-hop" to "Hip Hop",
+        "experimentalhiphop" to "Hip Hop",
         // Rock family
         "rock" to "Rock",
-        "alternative rock" to "Rock",
+        "alternativerock" to "Rock",
         "alternative" to "Alternative",
-        "alternative / indie" to "Alternative",
+        "alternativeindie" to "Alternative",
         // Indie family
         "indie" to "Indie",
-        "indie pop" to "Indie",
-        "indie-pop" to "Indie",
-        "indie rock" to "Indie",
+        "indiepop" to "Indie",
+        "indierock" to "Indie",
         // Pop family
         "pop" to "Pop",
-        "pop punk" to "Punk",
+        "poppunk" to "Punk",
         "synthpop" to "Synthpop",
         "synth" to "Synthpop",
         // Punk
@@ -54,20 +58,16 @@ private val GENRE_SYNONYMS: Map<String, String> =
         // Electronic family
         "electronic" to "Electronic",
         "electronica" to "Electronic",
-        "elektro-fusion" to "Electronic",
-        "synthesizer instrumental & melodic electronica" to "Electronic",
+        "elektrofusion" to "Electronic",
+        "synthesizerinstrumental&melodicelectronica" to "Electronic",
         "techno" to "Techno",
         "house" to "House",
         // Post-punk / dark wave family
-        "post punk" to "Post-Punk",
-        "post-punk" to "Post-Punk",
         "postpunk" to "Post-Punk",
-        "new wave" to "New Wave",
+        "newwave" to "New Wave",
         "darkwave" to "Darkwave",
-        "dark wave" to "Darkwave",
         "ebm" to "EBM",
         "gothicrock" to "Gothic Rock",
-        "gothic rock" to "Gothic Rock",
         // Soul / Funk / R&B family
         "soul" to "Soul",
         "funk" to "Funk",
@@ -76,28 +76,27 @@ private val GENRE_SYNONYMS: Map<String, String> =
         "rnb" to "R&B",
         // Jazz
         "jazz" to "Jazz",
-        "jazz-fusion" to "Jazz",
+        "jazzfusion" to "Jazz",
         // Folk
         "folk" to "Folk",
         "americana" to "Americana",
-        "singer-songwriter" to "Singer-Songwriter",
-        "singer songwriter" to "Singer-Songwriter",
-        "singer-songwriterin" to "Singer-Songwriter",
+        "singersongwriter" to "Singer-Songwriter",
+        "singersongwriterin" to "Singer-Songwriter",
         // Reggae
         "reggae" to "Reggae",
         // Latin family
         "cumbia" to "Latin",
         "salsa" to "Latin",
         "latin" to "Latin",
-        "latin roots" to "Latin",
+        "latinroots" to "Latin",
         // Afrobeats
         "afro" to "Afrobeats",
         "afrobeats" to "Afrobeats",
         // World Music
         "world" to "World Music",
-        "world music" to "World Music",
+        "worldmusic" to "World Music",
         "indian" to "World Music",
-        "urdu rock" to "World Music",
+        "urdurock" to "World Music",
         // Disco
         "disco" to "Disco",
         // Karaoke
@@ -112,6 +111,16 @@ private val GENRE_SYNONYMS: Map<String, String> =
         "oldschool" to "Old School",
         "newschool" to "New School"
     )
+
+/**
+ * Normalizes a raw genre token to a [GENRE_SYNONYMS] lookup key.
+ *
+ * Lowercases and strips every character that isn't `a-z`, `0-9`, or `&`, so all
+ * spelling/spacing variations of one label collapse to a single key
+ * (e.g. "Hip Hop", "hip-hop", "HIPHOP" → "hiphop"). `&` is kept so "R&B"/"rnb"
+ * keys stay meaningful.
+ */
+private fun lookupKey(raw: String): String = raw.lowercase().replace(Regex("[^a-z0-9&]"), "")
 
 /**
  * Delimiters used to split raw genre strings into individual genre tokens.
@@ -224,23 +233,25 @@ private fun resolveGenre(token: String): List<String> {
     if (lower.startsWith("all kinds of")) {
         val genre =
             GENRE_SYNONYMS[
-                lower
-                    .substringAfter("all kinds of")
-                    .trim()
-                    .split(" ")
-                    .first()
+                lookupKey(
+                    lower
+                        .substringAfter("all kinds of")
+                        .trim()
+                        .split(" ")
+                        .first()
+                )
             ]
         return listOfNotNull(genre)
     }
     if (lower.startsWith("from ")) return emptyList()
 
     // Direct synonym match
-    GENRE_SYNONYMS[lower]?.let { return listOf(it) }
+    GENRE_SYNONYMS[lookupKey(lower)]?.let { return listOf(it) }
 
     // Try matching individual words if the full token didn't match
     // (handles compound freeform labels like "Superheavy Funky Soul & Boogaloo")
     val words = lower.split(Regex("""\s+"""))
-    val matched = words.mapNotNull { GENRE_SYNONYMS[it] }.distinct()
+    val matched = words.mapNotNull { GENRE_SYNONYMS[lookupKey(it)] }.distinct()
     if (matched.isNotEmpty()) return matched
 
     // No match — use the original token with title case as a new genre
