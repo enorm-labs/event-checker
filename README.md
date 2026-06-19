@@ -109,12 +109,17 @@ The next `bootRun` will recreate the database and re-run all Flyway migrations.
 
 ### IntelliJ HTTP Client
 
-The [`http/`](./http) directory contains IntelliJ HTTP Client request files covering all admin endpoints
-(venues, artists, promoters, events) as well as health checks and OpenAPI specs.
+The [`http/`](./http) directory contains IntelliJ HTTP Client request files, split by service:
+
+- [`http/importer/`](./http/importer) — the importer's admin CRUD endpoints (venues, artists, promoters, events, event sources, dev seed) plus its
+  health/OpenAPI checks.
+- [`http/bff/`](./http/bff) — the BFF's public read API (events, venues, artists, genres) plus its health/OpenAPI checks.
+
+The shared `http-client.env.json` lives at the `http/` root (IntelliJ resolves it from parent directories), defining `importer-host` and `bff-host`.
 
 #### From IntelliJ IDEA
 
-1. Start the importer: `./gradlew :events-importer:bootRun`
+1. Start the relevant service: `./gradlew :events-importer:bootRun` and/or `./gradlew :events-bff:bootRun`
 2. Open any `.http` file in IntelliJ → select the **local** environment from the dropdown
 3. Click the green ▶ play button next to a request to execute it
 4. Create requests store response IDs automatically (e.g. `{{venue_id}}`), so subsequent

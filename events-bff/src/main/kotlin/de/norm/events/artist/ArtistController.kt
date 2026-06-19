@@ -2,7 +2,9 @@ package de.norm.events.artist
 
 import de.norm.events.common.PageResponse
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springdoc.core.annotations.ParameterObject
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
 import org.springframework.web.bind.annotation.GetMapping
@@ -23,13 +25,18 @@ class ArtistController(
     @GetMapping
     @Operation(summary = "List artists with pagination and optional name search")
     suspend fun list(
-        @RequestParam(required = false) q: String?,
-        @PageableDefault(size = 20, sort = ["name"]) pageable: Pageable
+        @Parameter(description = "Case-insensitive substring filter on the artist name. Omitted/blank returns all artists.")
+        @RequestParam(required = false)
+        q: String?,
+        @ParameterObject
+        @PageableDefault(size = 20, sort = ["name"])
+        pageable: Pageable
     ): PageResponse<ArtistSummaryResponse> = artistService.list(q, pageable)
 
     @GetMapping("/{slug}")
     @Operation(summary = "Get a single artist by slug")
     suspend fun findBySlug(
+        @Parameter(description = "Unique artist slug.", example = "actors", required = true)
         @PathVariable slug: String
     ): ArtistDetailResponse = artistService.findBySlug(slug)
 }

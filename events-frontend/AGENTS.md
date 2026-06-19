@@ -132,6 +132,7 @@ See [ADR-010](../docs/adr/ADR-010_FRONTEND_STYLING_FRAMEWORK.md) for the decisio
   For a component we have customized, prefer hand-porting the change shown by `diff` instead of overwriting.
   This applies **only** to vendored `src/components/ui/**` components — our own components (e.g.
   `EventCalendar.vue`) are not registry-managed.
+
 - **Class merging** — compose conditional classes with the `cn()` helper from `@/lib/utils`
   (clsx + tailwind-merge), as the generated components do.
 - **Icons** — use **`@lucide/vue`** (`import { CalendarDays } from '@lucide/vue'`) for new icons.
@@ -248,7 +249,7 @@ Uses Node 24.
 | oxlint config          | `.oxlintrc.json`            |
 | shadcn-vue config      | `components.json`           |
 | Theme & global CSS     | `src/assets/main.css`       |
-| shadcn UI components    | `src/components/ui/`         |
+| shadcn UI components   | `src/components/ui/`        |
 | TypeScript root config | `tsconfig.json`             |
 | App entry point        | `src/main.ts`               |
 | Root component         | `src/App.vue`               |

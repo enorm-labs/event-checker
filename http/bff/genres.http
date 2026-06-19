@@ -1,0 +1,10 @@
+### ============================================================
+### BFF: Genres — public read API
+###
+### Read-only, no auth. Lists genre tags (alphabetical) for the
+### frontend's event genre filter.
+### ============================================================
+
+### List all genre tags
+GET {{bff-host}}/genres
+Accept: application/json

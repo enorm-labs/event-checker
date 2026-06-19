@@ -186,21 +186,21 @@ Installed in `events-frontend/` per the
 - **Dependencies**: `tailwindcss` + `@tailwindcss/vite` (v4); `shadcn-vue@2.7.4 init` pulled in `reka-ui`,
   `@lucide/vue`, `class-variance-authority`, `clsx`, `tailwind-merge`, and `tw-animate-css`.
 - **Config**:
-  - `vite.config.ts` — added the `@tailwindcss/vite` plugin (kept the existing `vue`, `vue-devtools`
-    plugins and the `/api` → `:8080` proxy; the existing `@` → `./src` alias was reused).
-  - `src/assets/main.css` — replaced the Vue scaffolding styles with `@import 'tailwindcss'` plus the
-    shadcn theme: light/dark CSS-variable tokens (`oklch`), `@theme inline` token mapping, and a base
-    layer. `base.css` is no longer imported.
-  - `components.json` — style `reka-nova`, base color `neutral`, icon library `lucide`, CSS variables on.
-  - `src/lib/utils.ts` — the shadcn `cn()` helper.
-  - **TypeScript**: added `paths` (`@/*`) to `tsconfig.json`. Note the shadcn guide's `baseUrl` is
-    **omitted** — it is deprecated in this project's TypeScript 6.x; `paths` resolves without it.
-  - **ESLint**: `src/components/ui/**` is exempted from `vue/multi-word-component-names` because shadcn
-    components are vendored and single-word by design.
+    - `vite.config.ts` — added the `@tailwindcss/vite` plugin (kept the existing `vue`, `vue-devtools`
+      plugins and the `/api` → `:8080` proxy; the existing `@` → `./src` alias was reused).
+    - `src/assets/main.css` — replaced the Vue scaffolding styles with `@import 'tailwindcss'` plus the
+      shadcn theme: light/dark CSS-variable tokens (`oklch`), `@theme inline` token mapping, and a base
+      layer. `base.css` is no longer imported.
+    - `components.json` — style `reka-nova`, base color `neutral`, icon library `lucide`, CSS variables on.
+    - `src/lib/utils.ts` — the shadcn `cn()` helper.
+    - **TypeScript**: added `paths` (`@/*`) to `tsconfig.json`. Note the shadcn guide's `baseUrl` is
+      **omitted** — it is deprecated in this project's TypeScript 6.x; `paths` resolves without it.
+    - **ESLint**: `src/components/ui/**` is exempted from `vue/multi-word-component-names` because shadcn
+      components are vendored and single-word by design.
 - **Conventions**:
-  - Add components with `npx shadcn-vue@latest add <name>` — they land in `src/components/ui/<name>/`
-    and are **owned by us** (edit freely; not upgraded by a package manager).
-  - Re-theme by editing the CSS-variable tokens in `src/assets/main.css`; dark mode via the `.dark` class.
+    - Add components with `npx shadcn-vue@latest add <name>` — they land in `src/components/ui/<name>/`
+      and are **owned by us** (edit freely; not upgraded by a package manager).
+    - Re-theme by editing the CSS-variable tokens in `src/assets/main.css`; dark mode via the `.dark` class.
 - **Verified**: `type-check`, `build` (CSS ~4.3 KB gzip), `lint`, and `vitest run` all pass.
 - **Scaffolding removal**: the default Vue scaffolding (`HelloWorld`, `TheWelcome`, `WelcomeItem`, the
   welcome icons, the unused `counter` store, `base.css`, `logo.svg`) was deleted on 2026-06-18; `App.vue`

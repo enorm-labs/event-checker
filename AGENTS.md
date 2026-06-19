@@ -289,50 +289,50 @@ Java version is managed via SDKMAN (`.sdkmanrc` pins `java=25.0.2-tem`; run `sdk
 
 ## Key Files
 
-| Purpose                               | Path                                                                              |
-|---------------------------------------|-----------------------------------------------------------------------------------|
-| Root build config & shared versions   | `build.gradle.kts`                                                                |
-| Plugin versions & module includes     | `settings.gradle.kts`                                                             |
-| Gradle daemon JVM args                | `gradle.properties`                                                               |
-| Dev database (Postgres)               | `compose.yaml`                                                                    |
-| Detekt rule overrides                 | `detekt.yml`                                                                      |
-| OWASP CVE false-positive suppressions | `owasp-suppressions.xml`                                                          |
-| CI: backend build & test              | `.github/workflows/build-backend.yml`                                             |
-| CI: frontend build & test             | `.github/workflows/build-frontend.yml`                                            |
-| CI: dependency review (PR)            | `.github/workflows/dependency-review.yml`                                         |
-| CI: dependency graph submission       | `.github/workflows/dependency-submission.yml`                                     |
-| Dependabot config                     | `.github/dependabot.yml`                                                          |
-| Commit message prompt                 | `.github/prompts/commit-message.prompt.md`                                        |
-| Squash commit message prompt          | `.github/prompts/squash-commit-message.prompt.md`                                 |
-| Code review prompt                    | `.github/prompts/code-review.prompt.md`                                           |
-| Shared domain module marker           | `events-core/src/.../EventsCoreModule.kt`                                         |
-| Domain data classes                   | `events-core/src/.../artist/`, `event/`, `genretag/`, `promoter/`, `venue/`       |
-| Price normalization utility           | `events-core/src/.../event/MoneyExtensions.kt`                                    |
-| Initial DB migration                  | `events-importer/src/main/resources/db/migration/V001__create_initial_schema.sql` |
-| Global exception handler              | `events-importer/src/.../GlobalExceptionHandler.kt`                               |
-| Slug generator utility                | `events-importer/src/.../slug/SlugGenerator.kt`                                   |
-| Genre normalizer utility              | `events-importer/src/.../genretag/GenreNormalizer.kt`                             |
-| Shared scraping utilities             | `events-importer/src/.../scraper/ScrapingExtensions.kt`                           |
-| Shared date/time parsing              | `events-importer/src/.../scraper/DateParsingExtensions.kt`                        |
-| Shared event mapping utilities        | `events-importer/src/.../scraper/EventMappingExtensions.kt`                       |
-| WebFlux Pageable resolver config      | `events-importer/src/.../WebFluxConfiguration.kt`                                 |
-| Base integration test class           | `events-importer/src/test/.../BaseControllerTest.kt`                              |
-| Full lifecycle integration test       | `events-importer/src/test/.../event/FullLifecycleIntegrationTest.kt`              |
-| Testcontainers setup (BFF)            | `events-bff/src/test/.../PostgresTestcontainersConfiguration.kt`                  |
-| Testcontainers setup (importer)       | `events-importer/src/test/.../PostgresTestcontainersConfiguration.kt`             |
-| Modularity verification (BFF)         | `events-bff/src/test/.../ModularityTests.kt`                                      |
-| Modularity verification (importer)    | `events-importer/src/test/.../ModularityTests.kt`                                 |
-| Modularity verification (core)        | `events-core/src/test/.../ModularityTests.kt`                                     |
-| ADR: Reactive stack                   | `docs/adr/ADR-001_REACTIVE_STACK.md`                                              |
-| ADR: R2DBC query derivation limits    | `docs/adr/ADR-002_R2DBC_QUERY_DERIVATION.md`                                      |
-| ADR: Entity/domain separation         | `docs/adr/ADR-003_ENTITY_DOMAIN_SEPARATION.md`                                    |
-| ADR: Dedicated database schema        | `docs/adr/ADR-004_DEDICATED_DATABASE_SCHEMA.md`                                   |
-| ADR: Migrations owned by importer     | `docs/adr/ADR-005_MIGRATIONS_OWNED_BY_IMPORTER.md`                                |
-| ADR: Spring Modulith                  | `docs/adr/ADR-006_SPRING_MODULITH.md`                                             |
-| ADR: Web scraping strategy            | `docs/adr/ADR-007_WEB_SCRAPING_STRATEGY.md`                                       |
-| ADR: Import job scheduling            | `docs/adr/ADR-008_IMPORT_JOB_SCHEDULING.md`                                       |
-| ADR: Optimistic locking (event src)   | `docs/adr/ADR-009_OPTIMISTIC_LOCKING_EVENT_SOURCE.md`                             |
-| ADR: Frontend styling framework       | `docs/adr/ADR-010_FRONTEND_STYLING_FRAMEWORK.md`                                  |
-| ADR: Event-calendar library           | `docs/adr/ADR-011_CALENDAR_LIBRARY.md`                                            |
-| Frontend entry point                  | `events-frontend/src/main.ts`                                                     |
-| IntelliJ HTTP Client requests         | `http/` (per-entity `.http` files + `http-client.env.json` for environments)      |
+| Purpose                               | Path                                                                                                      |
+|---------------------------------------|-----------------------------------------------------------------------------------------------------------|
+| Root build config & shared versions   | `build.gradle.kts`                                                                                        |
+| Plugin versions & module includes     | `settings.gradle.kts`                                                                                     |
+| Gradle daemon JVM args                | `gradle.properties`                                                                                       |
+| Dev database (Postgres)               | `compose.yaml`                                                                                            |
+| Detekt rule overrides                 | `detekt.yml`                                                                                              |
+| OWASP CVE false-positive suppressions | `owasp-suppressions.xml`                                                                                  |
+| CI: backend build & test              | `.github/workflows/build-backend.yml`                                                                     |
+| CI: frontend build & test             | `.github/workflows/build-frontend.yml`                                                                    |
+| CI: dependency review (PR)            | `.github/workflows/dependency-review.yml`                                                                 |
+| CI: dependency graph submission       | `.github/workflows/dependency-submission.yml`                                                             |
+| Dependabot config                     | `.github/dependabot.yml`                                                                                  |
+| Commit message prompt                 | `.github/prompts/commit-message.prompt.md`                                                                |
+| Squash commit message prompt          | `.github/prompts/squash-commit-message.prompt.md`                                                         |
+| Code review prompt                    | `.github/prompts/code-review.prompt.md`                                                                   |
+| Shared domain module marker           | `events-core/src/.../EventsCoreModule.kt`                                                                 |
+| Domain data classes                   | `events-core/src/.../artist/`, `event/`, `genretag/`, `promoter/`, `venue/`                               |
+| Price normalization utility           | `events-core/src/.../event/MoneyExtensions.kt`                                                            |
+| Initial DB migration                  | `events-importer/src/main/resources/db/migration/V001__create_initial_schema.sql`                         |
+| Global exception handler              | `events-importer/src/.../GlobalExceptionHandler.kt`                                                       |
+| Slug generator utility                | `events-importer/src/.../slug/SlugGenerator.kt`                                                           |
+| Genre normalizer utility              | `events-importer/src/.../genretag/GenreNormalizer.kt`                                                     |
+| Shared scraping utilities             | `events-importer/src/.../scraper/ScrapingExtensions.kt`                                                   |
+| Shared date/time parsing              | `events-importer/src/.../scraper/DateParsingExtensions.kt`                                                |
+| Shared event mapping utilities        | `events-importer/src/.../scraper/EventMappingExtensions.kt`                                               |
+| WebFlux Pageable resolver config      | `events-importer/src/.../WebFluxConfiguration.kt`                                                         |
+| Base integration test class           | `events-importer/src/test/.../BaseControllerTest.kt`                                                      |
+| Full lifecycle integration test       | `events-importer/src/test/.../event/FullLifecycleIntegrationTest.kt`                                      |
+| Testcontainers setup (BFF)            | `events-bff/src/test/.../PostgresTestcontainersConfiguration.kt`                                          |
+| Testcontainers setup (importer)       | `events-importer/src/test/.../PostgresTestcontainersConfiguration.kt`                                     |
+| Modularity verification (BFF)         | `events-bff/src/test/.../ModularityTests.kt`                                                              |
+| Modularity verification (importer)    | `events-importer/src/test/.../ModularityTests.kt`                                                         |
+| Modularity verification (core)        | `events-core/src/test/.../ModularityTests.kt`                                                             |
+| ADR: Reactive stack                   | `docs/adr/ADR-001_REACTIVE_STACK.md`                                                                      |
+| ADR: R2DBC query derivation limits    | `docs/adr/ADR-002_R2DBC_QUERY_DERIVATION.md`                                                              |
+| ADR: Entity/domain separation         | `docs/adr/ADR-003_ENTITY_DOMAIN_SEPARATION.md`                                                            |
+| ADR: Dedicated database schema        | `docs/adr/ADR-004_DEDICATED_DATABASE_SCHEMA.md`                                                           |
+| ADR: Migrations owned by importer     | `docs/adr/ADR-005_MIGRATIONS_OWNED_BY_IMPORTER.md`                                                        |
+| ADR: Spring Modulith                  | `docs/adr/ADR-006_SPRING_MODULITH.md`                                                                     |
+| ADR: Web scraping strategy            | `docs/adr/ADR-007_WEB_SCRAPING_STRATEGY.md`                                                               |
+| ADR: Import job scheduling            | `docs/adr/ADR-008_IMPORT_JOB_SCHEDULING.md`                                                               |
+| ADR: Optimistic locking (event src)   | `docs/adr/ADR-009_OPTIMISTIC_LOCKING_EVENT_SOURCE.md`                                                     |
+| ADR: Frontend styling framework       | `docs/adr/ADR-010_FRONTEND_STYLING_FRAMEWORK.md`                                                          |
+| ADR: Event-calendar library           | `docs/adr/ADR-011_CALENDAR_LIBRARY.md`                                                                    |
+| Frontend entry point                  | `events-frontend/src/main.ts`                                                                             |
+| IntelliJ HTTP Client requests         | `http/importer/` (admin) and `http/bff/` (public read) `.http` files + shared `http/http-client.env.json` |
