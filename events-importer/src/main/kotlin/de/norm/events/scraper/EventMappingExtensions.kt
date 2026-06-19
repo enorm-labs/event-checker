@@ -57,7 +57,7 @@ fun mapEventType(
 /**
  * Extracts support act names from a subtitle's `"… + Support: A & B"` pattern.
  *
- * Splits the captured names on `,`, `&`, and `+` so multiple support acts are
+ * Splits the captured names on `, `, `&`, and `+` so multiple support acts are
  * returned individually. Returns an empty list when no support line is present.
  * Shared across venue scrapers (e.g. Privatclub, Astra) whose subtitles follow
  * this convention.
