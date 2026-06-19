@@ -50,6 +50,9 @@ dependencies {
     // See: https://springdoc.org/#getting-started
     implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:${property("springdoc.version")}")
 
+    // Logging — idiomatic SLF4J wrapper (see: https://github.com/oshai/kotlin-logging)
+    implementation("io.github.oshai:kotlin-logging-jvm:${property("kotlin-logging.version")}")
+
     // Kotlin
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -70,6 +73,12 @@ dependencies {
     testImplementation("org.testcontainers:testcontainers-junit-jupiter")
     testImplementation("org.testcontainers:testcontainers-postgresql")
     testImplementation("org.testcontainers:testcontainers-r2dbc")
+
+    // Flyway (test only) — the BFF owns no migrations; integration tests provision the schema
+    // by running the importer's existing migrations (via a filesystem location, see Test config below).
+    // This keeps the BFF's read entities verified against the real schema with zero DDL duplication.
+    testImplementation("org.springframework.boot:spring-boot-starter-flyway")
+    testImplementation("org.flywaydb:flyway-database-postgresql")
 }
 
 kotlin {
@@ -80,4 +89,10 @@ kotlin {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    // Point Flyway at the importer's migrations using an absolute filesystem path so the
+    // location is independent of the test working directory.
+    systemProperty(
+        "spring.flyway.locations",
+        "filesystem:${rootProject.projectDir}/events-importer/src/main/resources/db/migration"
+    )
 }

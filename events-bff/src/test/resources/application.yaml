@@ -1,0 +1,17 @@
+# Test configuration for the BFF.
+#
+# Shadows the main application.yaml on the test classpath, so it must repeat the runtime
+# properties the BFF relies on (schema for the R2DBC NamingStrategy) and additionally enables
+# Flyway. The BFF owns no migrations; in tests Flyway runs the importer's migrations to provision
+# the `events` schema against the Testcontainers database. The migration location is supplied as
+# an absolute filesystem path via the `spring.flyway.locations` system property (see build.gradle.kts).
+spring:
+  application:
+    name: events-bff
+  r2dbc:
+    properties:
+      schema: events
+  flyway:
+    enabled: true
+    schemas: events
+    create-schemas: true
