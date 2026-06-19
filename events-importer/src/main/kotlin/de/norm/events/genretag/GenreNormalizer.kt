@@ -126,7 +126,7 @@ private fun lookupKey(raw: String): String = raw.lowercase().replace(Regex("[^a-
  * Delimiters used to split raw genre strings into individual genre tokens.
  *
  * Handles the variety of separators observed in venue data:
- * - `,` — most common (e.g. "Pop, Rock, Indie")
+ * - `, ` — most common (e.g. "Pop, Rock, Indie")
  * - `//` — Cassiopeia floor descriptions (e.g. "80s Floor // Hip Hop Floor")
  * - `&` — compound genres (e.g. "80s, Disco & Hip Hop")
  * - `/` — slash-separated alternatives (e.g. "Alternative / Indie")
@@ -149,7 +149,7 @@ private val NOISE_SUFFIXES = listOf("disco floor", "floor")
  * Parses a raw genre string into a list of canonical genre tag names.
  *
  * The normalization pipeline:
- * 1. Split on common delimiters (`,`, `//`, ` & `, ` / `).
+ * 1. Split on common delimiters (`, `, `//`, ` & `, ` / `).
  * 2. Trim whitespace and strip noise suffixes ("Floor", "Disco Floor").
  * 3. Look up each token in the synonym map (case-insensitive).
  * 4. Deduplicate — multiple raw tokens may map to the same canonical name.
