@@ -1,0 +1,35 @@
+package de.norm.events.artist
+
+import de.norm.events.common.PageResponse
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PageableDefault
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
+
+/**
+ * Public read API for artists.
+ */
+@RestController
+@RequestMapping("/artists")
+@Tag(name = "Artists", description = "Public endpoints for browsing and searching artists")
+class ArtistController(
+    private val artistService: ArtistService
+) {
+    @GetMapping
+    @Operation(summary = "List artists with pagination and optional name search")
+    suspend fun list(
+        @RequestParam(required = false) q: String?,
+        @PageableDefault(size = 20, sort = ["name"]) pageable: Pageable
+    ): PageResponse<ArtistSummaryResponse> = artistService.list(q, pageable)
+
+    @GetMapping("/{slug}")
+    @Operation(summary = "Get a single artist by slug")
+    suspend fun findBySlug(
+        @PathVariable slug: String
+    ): ArtistDetailResponse = artistService.findBySlug(slug)
+}
