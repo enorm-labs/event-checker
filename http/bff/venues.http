@@ -1,0 +1,39 @@
+### ============================================================
+### BFF: Venues — public read API
+###
+### Read-only, no auth. `q` is a case-insensitive substring
+### match on the venue name. Sortable: name, slug, city.
+### ============================================================
+
+### List venues (default page 0, size 20, sort name)
+GET {{bff-host}}/venues
+Accept: application/json
+
+> {%
+    client.test("status is 200", function () {
+        client.assert(response.status === 200, "Expected 200 OK");
+    });
+    if (response.body.content.length > 0) {
+        client.global.set("venue_slug", response.body.content[0].slug);
+    }
+%}
+
+### List venues — pagination + sort (name desc)
+GET {{bff-host}}/venues?page=0&size=5&sort=name,desc
+Accept: application/json
+
+### Search venues by name (case-insensitive substring)
+GET {{bff-host}}/venues?q=astra
+Accept: application/json
+
+### Unknown/malicious sort is ignored (falls back to default order, not a 500)
+GET {{bff-host}}/venues?sort=name;DROP TABLE events.venue;--
+Accept: application/json
+
+### Get venue by slug (uses the slug captured from the list request above)
+GET {{bff-host}}/venues/{{venue_slug}}
+Accept: application/json
+
+### Get venue by unknown slug (expect 404)
+GET {{bff-host}}/venues/does-not-exist
+Accept: application/json

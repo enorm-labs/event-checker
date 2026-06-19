@@ -18,7 +18,7 @@ import java.time.LocalTime
 data class EventSummaryResponse(
     @Schema(description = "Database primary key", example = "101")
     val id: Long,
-    @Schema(description = "URL-friendly identifier", example = "2026-06-12-the-adicts")
+    @Schema(description = "URL-friendly identifier (format: {date}-{venue}-{title})", example = "2026-06-18-lido-sam-prekop-john-mcentire")
     val slug: String,
     @Schema(description = "Main headline or name of the event", example = "THE ADICTS")
     val title: String,
@@ -91,7 +91,7 @@ data class EventSummaryResponse(
 data class EventDetailResponse(
     @Schema(description = "Database primary key", example = "101")
     val id: Long,
-    @Schema(description = "URL-friendly identifier", example = "2026-06-12-the-adicts")
+    @Schema(description = "URL-friendly identifier (format: {date}-{venue}-{title})", example = "2026-06-18-lido-sam-prekop-john-mcentire")
     val slug: String,
     @Schema(description = "Main headline or name of the event", example = "THE ADICTS")
     val title: String,

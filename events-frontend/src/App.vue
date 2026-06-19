@@ -7,20 +7,20 @@ import { RouterLink, RouterView } from 'vue-router'
     <header class="border-b border-border">
       <nav class="mx-auto flex max-w-3xl items-center gap-6 p-4 text-sm font-medium">
         <RouterLink
-          to="/"
           class="text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
+          to="/"
         >
           Home
         </RouterLink>
         <RouterLink
-          to="/calendar"
           class="text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
+          to="/calendar"
         >
           Calendar
         </RouterLink>
         <RouterLink
-          to="/about"
           class="text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
+          to="/about"
         >
           About
         </RouterLink>

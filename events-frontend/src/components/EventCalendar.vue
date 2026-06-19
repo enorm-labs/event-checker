@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import type { CalendarOptions, EventInput } from '@fullcalendar/core'
 import { computed } from 'vue'
 import FullCalendar from '@fullcalendar/vue3'

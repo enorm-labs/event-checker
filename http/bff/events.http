@@ -1,0 +1,77 @@
+### ============================================================
+### BFF: Events — public read API
+###
+### Read-only, no auth. The list defaults to upcoming events
+### (event_date >= today) ordered by date, then start time.
+### Slug format: {date}-{venue}-{title}
+### ============================================================
+
+### List upcoming events (default page 0, size 20, sort eventDate)
+GET {{bff-host}}/events
+Accept: application/json
+
+> {%
+    client.test("status is 200", function () {
+        client.assert(response.status === 200, "Expected 200 OK");
+    });
+    // Capture the first slug so the detail request below resolves to a real event.
+    if (response.body.content.length > 0) {
+        client.global.set("event_slug", response.body.content[0].slug);
+    }
+%}
+
+### List events — pagination + sort (eventDate desc)
+GET {{bff-host}}/events?page=0&size=5&sort=eventDate,desc
+Accept: application/json
+
+### List events — sort by presale price ascending
+GET {{bff-host}}/events?sort=pricePresale,asc
+Accept: application/json
+
+### Filter by date range
+GET {{bff-host}}/events?from=2026-06-19&to=2026-07-15
+Accept: application/json
+
+### Filter by venue slug
+GET {{bff-host}}/events?venue=lido
+Accept: application/json
+
+### Filter by artist slug
+GET {{bff-host}}/events?artist=actors
+Accept: application/json
+
+### Filter by genre slug
+GET {{bff-host}}/events?genre=punk
+Accept: application/json
+
+### Filter by price range
+GET {{bff-host}}/events?minPrice=10&maxPrice=40
+Accept: application/json
+
+### Free-text search over title + subtitle
+GET {{bff-host}}/events?q=punk
+Accept: application/json
+
+### Combined filters + pagination
+GET {{bff-host}}/events?venue=lido&from=2026-06-19&page=0&size=10&sort=eventDate,asc
+Accept: application/json
+
+### Today's events
+GET {{bff-host}}/events/today
+Accept: application/json
+
+### Calendar — events within an inclusive date range (max 92 days)
+GET {{bff-host}}/events/calendar?from=2026-06-19&to=2026-07-15
+Accept: application/json
+
+### Calendar — inverted range (expect 400)
+GET {{bff-host}}/events/calendar?from=2026-07-15&to=2026-06-19
+Accept: application/json
+
+### Get event by slug (uses the slug captured from the list request above)
+GET {{bff-host}}/events/{{event_slug}}
+Accept: application/json
+
+### Get event by unknown slug (expect 404)
+GET {{bff-host}}/events/does-not-exist
+Accept: application/json

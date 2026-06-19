@@ -1,8 +1,10 @@
 package de.norm.events.artist
 
 import de.norm.events.common.PageResponse
+import de.norm.events.common.sanitizeSort
 import kotlinx.coroutines.flow.toList
 import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -21,14 +23,15 @@ class ArtistService(
         query: String?,
         pageable: Pageable
     ): PageResponse<ArtistSummaryResponse> {
+        val safePageable = pageable.sanitizeSort(SORTABLE_PROPERTIES, DEFAULT_SORT)
         val (entities, total) =
             if (query.isNullOrBlank()) {
-                artistRepository.findAllBy(pageable).toList() to artistRepository.count()
+                artistRepository.findAllBy(safePageable).toList() to artistRepository.count()
             } else {
-                artistRepository.findByNameContainingIgnoreCase(query, pageable).toList() to
+                artistRepository.findByNameContainingIgnoreCase(query, safePageable).toList() to
                     artistRepository.countByNameContainingIgnoreCase(query)
             }
-        return PageResponse.of(entities.map { ArtistSummaryResponse.fromEntity(it) }, pageable, total)
+        return PageResponse.of(entities.map { ArtistSummaryResponse.fromEntity(it) }, safePageable, total)
     }
 
     /**
@@ -40,5 +43,11 @@ class ArtistService(
     suspend fun findBySlug(slug: String): ArtistDetailResponse {
         val entity = artistRepository.findBySlug(slug) ?: throw ArtistNotFoundException(slug)
         return ArtistDetailResponse.fromEntity(entity)
+    }
+
+    companion object {
+        /** Entity properties a client may sort the artist list by; anything else is ignored. */
+        private val SORTABLE_PROPERTIES = setOf("name", "slug")
+        private val DEFAULT_SORT = Sort.by("name")
     }
 }

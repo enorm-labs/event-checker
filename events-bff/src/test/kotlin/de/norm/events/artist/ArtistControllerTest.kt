@@ -45,6 +45,47 @@ class ArtistControllerTest : BaseControllerTest() {
         }
 
     @Test
+    fun `GET artists ignores an unknown or malicious sort parameter`(): Unit =
+        runBlocking {
+            insertArtist("The Adicts", "the-adicts")
+            insertArtist("Maid Of Ace", "maid-of-ace")
+
+            // Swagger UI's array placeholder `["string"]` and an injection attempt both contain
+            // characters Spring Data rejects; without the sort whitelist these would surface as a
+            // 500. They are dropped, so the request succeeds with the default name-ascending order.
+            for (sort in listOf("""["string"]""", "name; DROP TABLE events.artist;--")) {
+                webTestClient
+                    .get()
+                    .uri("/artists?sort={sort}", sort)
+                    .exchange()
+                    .expectStatus()
+                    .isOk
+                    .expectBody()
+                    .jsonPath("$.totalElements")
+                    .isEqualTo(2)
+                    .jsonPath("$.content[0].slug")
+                    .isEqualTo("maid-of-ace")
+            }
+        }
+
+    @Test
+    fun `GET artists honours a whitelisted sort property`(): Unit =
+        runBlocking {
+            insertArtist("The Adicts", "the-adicts")
+            insertArtist("Maid Of Ace", "maid-of-ace")
+
+            webTestClient
+                .get()
+                .uri("/artists?sort=name,desc")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody()
+                .jsonPath("$.content[0].slug")
+                .isEqualTo("the-adicts")
+        }
+
+    @Test
     fun `GET artist by slug returns detail`(): Unit =
         runBlocking {
             insertArtist("The Adicts", "the-adicts", description = "Punk band from Ipswich")

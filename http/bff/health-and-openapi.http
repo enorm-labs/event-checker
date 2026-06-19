@@ -1,0 +1,18 @@
+### ============================================================
+### Health & OpenAPI — events-bff (port 8080)
+### ============================================================
+
+### Health check (Actuator)
+GET {{bff-host}}/actuator/health
+Accept: application/json
+
+### OpenAPI spec (JSON)
+GET {{bff-host}}/v3/api-docs
+Accept: application/json
+
+### Swagger UI (open in browser)
+GET {{bff-host}}/webjars/swagger-ui/index.html
+
+### Hello endpoint (internal smoke test)
+GET {{bff-host}}/hello
+Accept: text/plain

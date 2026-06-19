@@ -47,6 +47,47 @@ class VenueControllerTest : BaseControllerTest() {
         }
 
     @Test
+    fun `GET venues ignores an unknown or malicious sort parameter`(): Unit =
+        runBlocking {
+            insertVenue("Astra", "astra")
+            insertVenue("Lido", "lido")
+
+            // Swagger UI's array placeholder `["string"]` and an injection attempt both contain
+            // characters Spring Data rejects; without the sort whitelist these would surface as a
+            // 500. They are dropped, so the request succeeds with the default name-ascending order.
+            for (sort in listOf("""["string"]""", "name; DROP TABLE events.venue;--")) {
+                webTestClient
+                    .get()
+                    .uri("/venues?sort={sort}", sort)
+                    .exchange()
+                    .expectStatus()
+                    .isOk
+                    .expectBody()
+                    .jsonPath("$.totalElements")
+                    .isEqualTo(2)
+                    .jsonPath("$.content[0].slug")
+                    .isEqualTo("astra")
+            }
+        }
+
+    @Test
+    fun `GET venues honours a whitelisted sort property`(): Unit =
+        runBlocking {
+            insertVenue("Astra", "astra")
+            insertVenue("Lido", "lido")
+
+            webTestClient
+                .get()
+                .uri("/venues?sort=name,desc")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody()
+                .jsonPath("$.content[0].slug")
+                .isEqualTo("lido")
+        }
+
+    @Test
     fun `GET venue by slug returns detail`(): Unit =
         runBlocking {
             insertVenue("Astra", "astra", address = "Revaler Str. 99")

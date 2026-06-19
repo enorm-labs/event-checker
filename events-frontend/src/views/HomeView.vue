@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
-import { Moon, Sun, CalendarDays } from '@lucide/vue'
+import { CalendarDays, Moon, Sun } from '@lucide/vue'
 import { Button } from '@/components/ui/button'
 
 const message = ref<string>('')
@@ -31,9 +31,9 @@ onMounted(async () => {
     <div class="flex items-center justify-between">
       <h1 class="text-3xl font-bold tracking-tight">Event Checker</h1>
       <Button
-        variant="outline"
-        size="icon"
         :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+        size="icon"
+        variant="outline"
         @click="toggleDark"
       >
         <Moon v-if="isDark" />

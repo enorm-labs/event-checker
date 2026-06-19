@@ -4,6 +4,7 @@ import de.norm.events.artist.ArtistEntity
 import de.norm.events.artist.ArtistRepository
 import de.norm.events.artist.ArtistSummaryResponse
 import de.norm.events.common.PageResponse
+import de.norm.events.event.EventService.Companion.MAX_CALENDAR_DAYS
 import de.norm.events.genretag.EventGenreTagRepository
 import de.norm.events.genretag.GenreTagRepository
 import de.norm.events.promoter.PromoterRepository
