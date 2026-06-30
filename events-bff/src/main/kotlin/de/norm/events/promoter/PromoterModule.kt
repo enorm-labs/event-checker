@@ -3,7 +3,7 @@ package de.norm.events.promoter
 import org.springframework.modulith.ApplicationModule
 
 /**
- * Module metadata declaring the promoter read module as self-contained.
+ * Module metadata for the promoter read module. Depends only on the shared `common` module.
  */
-@ApplicationModule(allowedDependencies = [])
+@ApplicationModule(allowedDependencies = ["common"])
 class PromoterModule
