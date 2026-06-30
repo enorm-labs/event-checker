@@ -137,6 +137,38 @@ class EventControllerTest : BaseControllerTest() {
         }
 
     @Test
+    fun `GET events price filter falls back to box-office price when presale is unknown`(): Unit =
+        runBlocking {
+            val venueId = insertVenue("Astra", "astra")
+            // Presale known — matched on presale.
+            insertEvent(venueId, "Presale Gig", "presale-gig", LocalDate.now(), pricePresale = BigDecimal("80.00"))
+            // No presale, but a box-office price within range — matched via COALESCE fallback.
+            insertEvent(venueId, "Door Gig", "door-gig", LocalDate.now(), priceBoxOffice = BigDecimal("60.00"))
+            // Box-office price below the bound — excluded.
+            insertEvent(venueId, "Door Cheap", "door-cheap", LocalDate.now(), priceBoxOffice = BigDecimal("20.00"))
+            // No price at all — excluded by any bound.
+            insertEvent(venueId, "Free Gig", "free-gig", LocalDate.now())
+
+            webTestClient
+                .get()
+                .uri("/events?minPrice=50")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody()
+                .jsonPath("$.totalElements")
+                .isEqualTo(2)
+                .jsonPath("$.content[?(@.slug == 'door-gig')]")
+                .exists()
+                .jsonPath("$.content[?(@.slug == 'presale-gig')]")
+                .exists()
+                .jsonPath("$.content[?(@.slug == 'free-gig')]")
+                .doesNotExist()
+                .jsonPath("$.content[?(@.slug == 'door-cheap')]")
+                .doesNotExist()
+        }
+
+    @Test
     fun `GET events orders same-day events by start time`(): Unit =
         runBlocking {
             val venueId = insertVenue("Astra", "astra")

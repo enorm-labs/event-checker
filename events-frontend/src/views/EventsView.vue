@@ -22,6 +22,8 @@ const params = computed<EventSearchParams>(() => ({
   q: queryString('q') || undefined,
   eventType: queryString('eventType') || undefined,
   genre: queryString('genre') || undefined,
+  minPrice: queryString('minPrice') ? Number(queryString('minPrice')) : undefined,
+  maxPrice: queryString('maxPrice') ? Number(queryString('maxPrice')) : undefined,
   page: queryString('page') ? Number(queryString('page')) : 0,
   size: PAGE_SIZE,
 }))
@@ -29,12 +31,22 @@ const params = computed<EventSearchParams>(() => ({
 const genres = useGenres()
 const { data: page, error, loading, run } = useEventSearch(() => params.value)
 
-// Search box is a local draft applied on submit; selects apply immediately.
+// Search box and price range are local drafts applied on submit; selects apply immediately.
 const search = ref(queryString('q'))
 watch(
   () => route.query.q,
   () => {
     search.value = queryString('q')
+  },
+)
+
+const minPrice = ref(queryString('minPrice'))
+const maxPrice = ref(queryString('maxPrice'))
+watch(
+  () => [route.query.minPrice, route.query.maxPrice],
+  () => {
+    minPrice.value = queryString('minPrice')
+    maxPrice.value = queryString('maxPrice')
   },
 )
 
@@ -101,6 +113,34 @@ watch(() => route.query, run, { deep: true })
           {{ tag.name }}
         </option>
       </select>
+
+      <form
+        class="flex items-center gap-2"
+        @submit.prevent="applyFilters({ minPrice, maxPrice })"
+      >
+        <input
+          v-model="minPrice"
+          aria-label="Minimum presale price"
+          class="h-8 w-20 rounded-lg border border-border bg-background px-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+          inputmode="decimal"
+          min="0"
+          placeholder="Min €"
+          step="0.01"
+          type="number"
+        />
+        <span class="text-sm text-muted-foreground">–</span>
+        <input
+          v-model="maxPrice"
+          aria-label="Maximum presale price"
+          class="h-8 w-20 rounded-lg border border-border bg-background px-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+          inputmode="decimal"
+          min="0"
+          placeholder="Max €"
+          step="0.01"
+          type="number"
+        />
+        <Button type="submit" variant="outline">Apply</Button>
+      </form>
     </div>
 
     <p v-if="loading" class="text-sm text-muted-foreground">Loading…</p>

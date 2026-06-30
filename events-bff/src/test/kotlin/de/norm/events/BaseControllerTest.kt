@@ -114,12 +114,15 @@ abstract class BaseControllerTest {
         eventType: String = "CONCERT",
         startTime: LocalTime? = null,
         pricePresale: BigDecimal? = null,
+        priceBoxOffice: BigDecimal? = null,
         genre: String? = null
     ): Long =
         databaseClient
             .sql(
-                "INSERT INTO events.event (venue_id, title, subtitle, slug, event_date, start_time, source_id, event_type, price_presale, genre) " +
-                    "VALUES (:venueId, :title, :subtitle, :slug, :eventDate, :startTime, :sourceId, :eventType, :pricePresale, :genre) RETURNING id"
+                "INSERT INTO events.event " +
+                    "(venue_id, title, subtitle, slug, event_date, start_time, source_id, event_type, price_presale, price_box_office, genre) " +
+                    "VALUES (:venueId, :title, :subtitle, :slug, :eventDate, :startTime, :sourceId, :eventType, :pricePresale, :priceBoxOffice, :genre) " +
+                    "RETURNING id"
             ).bind("venueId", venueId)
             .bind("title", title)
             .bindOrNull("subtitle", subtitle)
@@ -129,6 +132,7 @@ abstract class BaseControllerTest {
             .bind("sourceId", sourceId)
             .bind("eventType", eventType)
             .bindOrNull("pricePresale", pricePresale, BigDecimal::class.java)
+            .bindOrNull("priceBoxOffice", priceBoxOffice, BigDecimal::class.java)
             .bindOrNull("genre", genre)
             .mapId()
 
