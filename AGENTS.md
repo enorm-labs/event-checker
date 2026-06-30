@@ -244,7 +244,7 @@ Java version is managed via SDKMAN (`.sdkmanrc` pins `java=25.0.2-tem`; run `sdk
 
 ## Testing Patterns
 
-- **JUnit 5** + **WebTestClient** for reactive endpoint tests (see `HelloControllerTest.kt`).
+- **JUnit 5** + **WebTestClient** for reactive endpoint tests (see `BaseControllerTest.kt`).
   Create the client via lazy delegate with `@LocalServerPort`:
   ```kotlin
   @LocalServerPort private var port: Int = 0

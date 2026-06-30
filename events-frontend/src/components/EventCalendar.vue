@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { CalendarOptions, EventInput } from '@fullcalendar/core'
+import type { CalendarOptions, DatesSetArg, EventClickArg, EventInput } from '@fullcalendar/core'
 import { computed } from 'vue'
 import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
@@ -15,6 +15,34 @@ const props = withDefaults(defineProps<Props>(), {
   initialView: 'dayGridMonth',
 })
 
+const emit = defineEmits<{
+  // Emitted whenever the visible range changes (initial render + navigation), so the parent
+  // can fetch events for the new window. Dates are inclusive ISO date strings.
+  datesSet: [range: { from: string; to: string }]
+  // Emitted when an event is clicked, carrying its slug for router navigation.
+  eventClick: [slug: string]
+}>()
+
+function toIsoDate(date: Date): string {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+function handleDatesSet(arg: DatesSetArg) {
+  // FullCalendar's `end` is exclusive; the BFF's `to` is inclusive, so step back a day.
+  const inclusiveEnd = new Date(arg.end)
+  inclusiveEnd.setDate(inclusiveEnd.getDate() - 1)
+  emit('datesSet', { from: toIsoDate(arg.start), to: toIsoDate(inclusiveEnd) })
+}
+
+function handleEventClick(arg: EventClickArg) {
+  arg.jsEvent.preventDefault() // navigate via vue-router instead of following event.url
+  const slug = arg.event.extendedProps.slug as string | undefined
+  if (slug) emit('eventClick', slug)
+}
+
 // FullCalendar is encapsulated here so the rest of the app sees a single, on-theme
 // component (see ADR-011). The CSS-variable bridge to our shadcn tokens lives in <style> below.
 const options = computed<CalendarOptions>(() => ({
@@ -29,6 +57,8 @@ const options = computed<CalendarOptions>(() => ({
   firstDay: 1, // Monday (Berlin / EU convention)
   nowIndicator: true,
   events: props.events,
+  datesSet: handleDatesSet,
+  eventClick: handleEventClick,
 }))
 </script>
 
