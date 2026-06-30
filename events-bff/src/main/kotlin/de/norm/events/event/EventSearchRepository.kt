@@ -153,10 +153,12 @@ class EventSearchRepository(
     }
 
     /**
-     * Applies the presale price bounds and the free-text title/subtitle search.
+     * Applies the price bounds and the free-text title/subtitle search.
      *
-     * Note: a price bound excludes events with a `NULL` presale price (unknown price). This is
-     * intentional — an event with no known price shouldn't claim to satisfy a "min €X" filter.
+     * Price bounds filter on the effective price: presale when known, otherwise the box-office
+     * price (`COALESCE(price_presale, price_box_office)`). A bound still excludes events whose
+     * price is entirely unknown (both `NULL`) — such an event shouldn't claim to satisfy a
+     * "min €X" filter.
      */
     private fun appendPriceAndQuery(
         filter: EventFilter,
@@ -164,11 +166,11 @@ class EventSearchRepository(
         params: MutableMap<String, Any>
     ) {
         filter.minPrice?.let {
-            conditions += "e.price_presale >= :minPrice"
+            conditions += "COALESCE(e.price_presale, e.price_box_office) >= :minPrice"
             params["minPrice"] = it
         }
         filter.maxPrice?.let {
-            conditions += "e.price_presale <= :maxPrice"
+            conditions += "COALESCE(e.price_presale, e.price_box_office) <= :maxPrice"
             params["maxPrice"] = it
         }
         filter.query?.takeIf { it.isNotBlank() }?.let {
