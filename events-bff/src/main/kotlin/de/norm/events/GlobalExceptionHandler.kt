@@ -2,6 +2,7 @@ package de.norm.events
 
 import de.norm.events.artist.ArtistNotFoundException
 import de.norm.events.event.EventNotFoundException
+import de.norm.events.promoter.PromoterNotFoundException
 import de.norm.events.venue.VenueNotFoundException
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.http.HttpStatus
@@ -21,7 +22,8 @@ class GlobalExceptionHandler {
     @ExceptionHandler(
         EventNotFoundException::class,
         VenueNotFoundException::class,
-        ArtistNotFoundException::class
+        ArtistNotFoundException::class,
+        PromoterNotFoundException::class
     )
     fun handleNotFound(ex: RuntimeException): ProblemDetail {
         logger.debug { "Resource not found: ${ex.message}" }

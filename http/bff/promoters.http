@@ -1,0 +1,39 @@
+### ============================================================
+### BFF: Promoters — public read API
+###
+### Read-only, no auth. `q` is a case-insensitive substring
+### match on the promoter name. Sortable: name, slug.
+### ============================================================
+
+### List promoters (default page 0, size 20, sort name)
+GET {{bff-host}}/promoters
+Accept: application/json
+
+> {%
+    client.test("status is 200", function () {
+        client.assert(response.status === 200, "Expected 200 OK");
+    });
+    if (response.body.content.length > 0) {
+        client.global.set("promoter_slug", response.body.content[0].slug);
+    }
+%}
+
+### List promoters — pagination + sort (name desc)
+GET {{bff-host}}/promoters?page=0&size=5&sort=name,desc
+Accept: application/json
+
+### Search promoters by name (case-insensitive substring)
+GET {{bff-host}}/promoters?q=concerts
+Accept: application/json
+
+### Unknown/malicious sort is ignored (falls back to default order, not a 500)
+GET {{bff-host}}/promoters?sort=name;DROP TABLE events.promoter;--
+Accept: application/json
+
+### Get promoter by slug (uses the slug captured from the list request above)
+GET {{bff-host}}/promoters/{{promoter_slug}}
+Accept: application/json
+
+### Get promoter by unknown slug (expect 404)
+GET {{bff-host}}/promoters/does-not-exist
+Accept: application/json

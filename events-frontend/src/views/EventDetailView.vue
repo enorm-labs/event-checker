@@ -135,7 +135,18 @@ watch(slug, run)
 
       <section v-if="event.promoters?.length" class="space-y-1">
         <h2 class="text-sm font-medium text-muted-foreground">Promoters</h2>
-        <p class="text-sm">{{ event.promoters.map((p) => p.name).join(', ') }}</p>
+        <p class="flex flex-wrap gap-x-1 text-sm">
+          <template v-for="(promoter, index) in event.promoters" :key="promoter.slug ?? promoter.name">
+            <RouterLink
+              v-if="promoter.slug"
+              :to="`/promoters/${promoter.slug}`"
+              class="text-primary underline-offset-4 hover:underline"
+            >
+              {{ promoter.name }}</RouterLink>
+            <span v-else>{{ promoter.name }}</span>
+            <span v-if="index < event.promoters.length - 1">, </span>
+          </template>
+        </p>
       </section>
 
       <section
