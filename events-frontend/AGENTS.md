@@ -20,7 +20,6 @@ dev server (`/api` → `http://localhost:8080`).
 - **Vue 3** (Composition API with `<script setup>`)
 - **TypeScript 6**
 - **Vite 8** (build tool & dev server)
-- **Pinia** (state management)
 - **Vue Router** (client-side routing)
 - **Tailwind CSS v4** + **shadcn-vue** (styling & accessible component primitives — see ADR-010)
 - **oxlint + oxfmt** (primary linter & formatter — fast, Rust-based)
@@ -54,7 +53,6 @@ events-frontend/
 │   ├── main.ts              # App entry point
 │   ├── App.vue              # Root component
 │   ├── router/index.ts      # Vue Router configuration
-│   ├── stores/              # Pinia stores (composable setup syntax)
 │   ├── composables/         # Reusable stateful logic (use* functions)
 │   ├── views/               # Route-level page components
 │   ├── components/          # Reusable UI components
@@ -82,7 +80,6 @@ events-frontend/
 
 - **Reference docs**: [Vue 3 Guide](https://vuejs.org/guide/introduction.html) |
   [Vue Style Guide](https://vuejs.org/style-guide/) |
-  [Pinia](https://pinia.vuejs.org/) |
   [Vue Router](https://router.vuejs.org/) |
   [Vite](https://vite.dev/)
 - **Composition API only** — always use `<script setup lang="ts">`. Do not use Options API.
@@ -155,13 +152,6 @@ See [ADR-010](../docs/adr/ADR-010_FRONTEND_STYLING_FRAMEWORK.md) for the decisio
   not _how_.
 - **Directive shorthands consistently** — always use `:` (not `v-bind:`), `@` (not `v-on:`), `#` (not `v-slot:`).
 - **Prop casing** — camelCase in declarations (`greetingText`), kebab-case when passed in templates (`greeting-text`).
-
-### State Management (Pinia)
-
-- Use the **Composition API (setup) syntax** for stores: `defineStore('name', () => { ... })`.
-- Stores live in `src/stores/` with descriptive filenames (e.g. `counter.ts`, `events.ts`).
-- Export the `use*Store` composable (e.g. `useCounterStore`, `useEventStore`).
-- Keep stores focused — one store per domain concept.
 
 ### Composables
 

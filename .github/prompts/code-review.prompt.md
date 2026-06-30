@@ -135,10 +135,8 @@ conventions.
 - Directive shorthands used consistently (`:`, `@`, `#`).
 - Scoped styles (`<style scoped>`) on all non-root components.
 
-#### State & Routing
+#### Routing
 
-- Pinia stores use Composition API (setup) syntax.
-- Stores are focused — one per domain concept.
 - Lazy-loaded routes for non-critical pages (dynamic `import()`).
 
 #### Testing (Frontend)

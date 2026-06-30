@@ -141,7 +141,7 @@ Manually update the version strings in `events-frontend/package.json` to the lat
 - **Major version bumps** (e.g., 3.x → 4.x): Check the migration guide and flag breaking changes for the user instead
   of silently applying them.
 - Keep `oxlint` and `eslint-plugin-oxlint` versions in sync (they share the same release cadence).
-- Keep `vue`, `vue-router`, and `pinia` compatible with each other (check Vue ecosystem compatibility).
+- Keep `vue` and `vue-router` compatible with each other (check Vue ecosystem compatibility).
 
 ### Step 9: Install Updated Dependencies
 
