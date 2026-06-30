@@ -3,6 +3,7 @@ import type { EventInput } from '@fullcalendar/core'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import EventCalendar from '@/components/EventCalendar.vue'
+import { describeError } from '@/api/client'
 import { fetchCalendarEvents } from '@/composables/useEvents'
 
 const router = useRouter()
@@ -28,8 +29,8 @@ async function loadRange({ from, to }: { from: string; to: string }) {
       extendedProps: { slug: event.slug },
     }))
     error.value = null
-  } catch {
-    error.value = 'Could not load calendar events.'
+  } catch (e) {
+    error.value = describeError(e, 'the calendar')
   }
 }
 

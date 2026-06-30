@@ -9,8 +9,13 @@ import { useEventSearch } from '@/composables/useEvents'
 const route = useRoute()
 const slug = computed(() => String(route.params.slug))
 
-const { data: venue, notFound, loading, run: loadVenue } = useVenue(() => slug.value)
-const { data: events, run: loadEvents } = useEventSearch(() => ({ venue: slug.value, size: 50 }))
+const { data: venue, error, notFound, loading, run: loadVenue } = useVenue(() => slug.value)
+const {
+  data: events,
+  error: eventsError,
+  loading: eventsLoading,
+  run: loadEvents,
+} = useEventSearch(() => ({ venue: slug.value, size: 50 }), 'events at this venue')
 
 // Composed in script to avoid fragile template whitespace around the comma/space separators.
 const addressLine = computed(() => {
@@ -40,6 +45,8 @@ watch(slug, reload)
       </Button>
     </div>
 
+    <p v-else-if="error" class="text-sm text-destructive">{{ error }}</p>
+
     <template v-else-if="venue">
       <header class="flex gap-4">
         <img
@@ -66,7 +73,9 @@ watch(slug, reload)
 
       <section class="space-y-4">
         <h2 class="text-xl font-semibold tracking-tight">Upcoming events</h2>
-        <p v-if="!events?.content?.length" class="text-sm text-muted-foreground">
+        <p v-if="eventsLoading" class="text-sm text-muted-foreground">Loading…</p>
+        <p v-else-if="eventsError" class="text-sm text-destructive">{{ eventsError }}</p>
+        <p v-else-if="!events?.content?.length" class="text-sm text-muted-foreground">
           No upcoming events at this venue.
         </p>
         <div v-else class="grid gap-3 sm:grid-cols-2">

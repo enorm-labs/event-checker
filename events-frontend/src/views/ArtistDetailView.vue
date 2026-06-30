@@ -9,8 +9,13 @@ import { useEventSearch } from '@/composables/useEvents'
 const route = useRoute()
 const slug = computed(() => String(route.params.slug))
 
-const { data: artist, notFound, loading, run: loadArtist } = useArtist(() => slug.value)
-const { data: events, run: loadEvents } = useEventSearch(() => ({ artist: slug.value, size: 50 }))
+const { data: artist, error, notFound, loading, run: loadArtist } = useArtist(() => slug.value)
+const {
+  data: events,
+  error: eventsError,
+  loading: eventsLoading,
+  run: loadEvents,
+} = useEventSearch(() => ({ artist: slug.value, size: 50 }), 'events for this artist')
 
 const links = computed(() =>
   [
@@ -40,6 +45,8 @@ watch(slug, reload)
         <RouterLink to="/events">Browse events</RouterLink>
       </Button>
     </div>
+
+    <p v-else-if="error" class="text-sm text-destructive">{{ error }}</p>
 
     <template v-else-if="artist">
       <header class="flex gap-4">
@@ -73,7 +80,9 @@ watch(slug, reload)
 
       <section class="space-y-4">
         <h2 class="text-xl font-semibold tracking-tight">Upcoming events</h2>
-        <p v-if="!events?.content?.length" class="text-sm text-muted-foreground">
+        <p v-if="eventsLoading" class="text-sm text-muted-foreground">Loading…</p>
+        <p v-else-if="eventsError" class="text-sm text-destructive">{{ eventsError }}</p>
+        <p v-else-if="!events?.content?.length" class="text-sm text-muted-foreground">
           No upcoming events featuring this artist.
         </p>
         <div v-else class="grid gap-3 sm:grid-cols-2">

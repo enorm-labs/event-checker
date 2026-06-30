@@ -35,7 +35,7 @@ onMounted(() => {
       <h2 class="text-xl font-semibold tracking-tight">Tonight</h2>
       <p v-if="today.loading.value" class="text-sm text-muted-foreground">Loading…</p>
       <p v-else-if="today.error.value" class="text-sm text-destructive">
-        Could not load tonight's events.
+        {{ today.error.value }}
       </p>
       <p v-else-if="!today.data.value?.length" class="text-sm text-muted-foreground">
         Nothing on tonight.
@@ -49,7 +49,7 @@ onMounted(() => {
       <h2 class="text-xl font-semibold tracking-tight">Upcoming</h2>
       <p v-if="upcoming.loading.value" class="text-sm text-muted-foreground">Loading…</p>
       <p v-else-if="upcoming.error.value" class="text-sm text-destructive">
-        Could not load upcoming events.
+        {{ upcoming.error.value }}
       </p>
       <p v-else-if="!upcoming.data.value?.length" class="text-sm text-muted-foreground">
         No upcoming events found.

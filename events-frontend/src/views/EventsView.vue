@@ -104,7 +104,7 @@ watch(() => route.query, run, { deep: true })
     </div>
 
     <p v-if="loading" class="text-sm text-muted-foreground">Loading…</p>
-    <p v-else-if="error" class="text-sm text-destructive">Could not load events.</p>
+    <p v-else-if="error" class="text-sm text-destructive">{{ error }}</p>
     <p v-else-if="!page?.content?.length" class="text-sm text-muted-foreground">
       No events match these filters.
     </p>

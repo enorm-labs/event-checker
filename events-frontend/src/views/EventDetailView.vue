@@ -37,7 +37,7 @@ watch(slug, run)
       </Button>
     </div>
 
-    <p v-else-if="error" class="text-sm text-destructive">Could not load this event.</p>
+    <p v-else-if="error" class="text-sm text-destructive">{{ error }}</p>
 
     <article v-else-if="event" class="space-y-8">
       <header class="space-y-3">
