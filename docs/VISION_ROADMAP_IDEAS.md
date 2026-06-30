@@ -1,9 +1,9 @@
 # Vision / Roadmap / Ideas
 
 * Ideas for Domain / App Name:
-  * Berlin Club Guide --> berlinclubguide.de or berlin-clubs.de
-  * Event Junkie -->event-junkie.de (Or rather something with "Berlin"? Because the scope is supposed to stay in Berlin — at least for now.)
-  * berlin-events.de is not available
+    * Berlin Club Guide --> berlinclubguide.de or berlin-clubs.de
+    * Event Junkie -->event-junkie.de (Or rather something with "Berlin"? Because the scope is supposed to stay in Berlin — at least for now.)
+    * berlin-events.de is not available
 * Like Resident Advisor, Bandsintown, eventbrite, and songkick for Berlin events, but better
     * There is something like this already: https://www.clubguideberlin.de/ and https://www.gaesteliste030.de/
 * Focus on all (and small) music events (concerts, club nights, festivals etc. - not only Techno/Electronic music) in venues (clubs, concert halls etc.) of

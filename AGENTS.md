@@ -69,8 +69,10 @@ subprojects sharing a root `settings.gradle.kts`, plus a standalone frontend pro
   of Swagger annotations to avoid coupling the shared library to web concerns.
 - **Jackson 3.x** (`tools.jackson.module:jackson-module-kotlin`) is used for JSON serialization.
 - **Spring Boot Actuator** is included in both BFF and importer for health checks and monitoring.
-- **Logging**: The importer uses [kotlin-logging](https://github.com/oshai/kotlin-logging) (`io.github.oshai:kotlin-logging-jvm`) as an idiomatic SLF4J
+- **Logging**: Both apps use [kotlin-logging](https://github.com/oshai/kotlin-logging) (`io.github.oshai:kotlin-logging-jvm`) as an idiomatic SLF4J
   wrapper. Declare loggers as: `private val logger = KotlinLogging.logger {}`. Use lambda syntax for lazy evaluation: `logger.info { "msg $var" }`.
+  The BFF registers a `RequestLoggingFilter` (`WebFilter`, `HIGHEST_PRECEDENCE`) that emits one INFO access-log line per request
+  (`GET /venues?q=astra -> 200 (12ms)`); WebFlux does not log requests at INFO by default.
 - **Error handling**: The importer has a `GlobalExceptionHandler` (`@RestControllerAdvice`) that translates domain exceptions into
   RFC 9457 Problem Details (`ProblemDetail`). Domain exceptions follow the `*NotFoundException` naming pattern (e.g. `VenueNotFoundException`)
   and map to 404. `DataIntegrityViolationException` maps to 409 CONFLICT for duplicate records. `WebExchangeBindException` maps to 400
