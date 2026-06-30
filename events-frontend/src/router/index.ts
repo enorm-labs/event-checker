@@ -16,6 +16,11 @@ const router = createRouter({
       component: () => import('../views/CalendarView.vue'),
     },
     {
+      path: '/events/:slug',
+      name: 'event',
+      component: () => import('../views/EventDetailView.vue'),
+    },
+    {
       path: '/about',
       name: 'about',
       // route level code-splitting
