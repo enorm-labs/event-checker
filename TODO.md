@@ -32,6 +32,7 @@
       encode them as optional prompt files you invoke explicitly when the task warrants it.
     * Try out Repomix https://repomix.com/
         * GH Actions: https://repomix.com/guide/github-actions
+    * Try out Spec Kit: https://github.github.com/spec-kit/
 5. Create test data set that can be used for tests (test fixtures) and for populating the local database
 6. Add Authentication and Authorization (depending on Cloud Platform? What's the best practice or standard for Spring apps? What about Keycloak (at least
    locally for testing?)
