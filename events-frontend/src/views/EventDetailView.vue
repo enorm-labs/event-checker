@@ -82,7 +82,14 @@ watch(slug, run)
             :key="entry.artist?.slug ?? entry.artist?.name"
             class="flex items-center justify-between gap-3 rounded-lg border border-border p-3"
           >
-            <span class="font-medium">{{ entry.artist?.name }}</span>
+            <RouterLink
+              v-if="entry.artist?.slug"
+              :to="`/artists/${entry.artist.slug}`"
+              class="font-medium text-primary underline-offset-4 hover:underline"
+            >
+              {{ entry.artist.name }}
+            </RouterLink>
+            <span v-else class="font-medium">{{ entry.artist?.name }}</span>
             <span v-if="entry.role" class="text-xs text-muted-foreground">
               {{ roleLabels[entry.role] ?? entry.role }}
             </span>
@@ -93,7 +100,14 @@ watch(slug, run)
       <section class="grid gap-6 sm:grid-cols-2">
         <div v-if="event.venue" class="space-y-1">
           <h2 class="text-sm font-medium text-muted-foreground">Venue</h2>
-          <p class="font-medium">{{ event.venue.name }}</p>
+          <RouterLink
+            v-if="event.venue.slug"
+            :to="`/venues/${event.venue.slug}`"
+            class="font-medium text-primary underline-offset-4 hover:underline"
+          >
+            {{ event.venue.name }}
+          </RouterLink>
+          <p v-else class="font-medium">{{ event.venue.name }}</p>
           <p v-if="event.venue.address" class="text-sm text-muted-foreground">
             {{ event.venue.address
             }}<template v-if="event.venue.city">, {{ event.venue.city }}</template>

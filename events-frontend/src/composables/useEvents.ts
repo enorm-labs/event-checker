@@ -1,6 +1,23 @@
 import { api, unwrap } from '@/api/client'
-import type { EventSummary } from '@/api/types'
+import type { EventPage, EventSummary } from '@/api/types'
 import { useAsync } from './useAsync'
+
+/** Query parameters accepted by the event search endpoint (`GET /events`). */
+export interface EventSearchParams {
+  from?: string
+  to?: string
+  eventType?: string
+  venue?: string
+  artist?: string
+  promoter?: string
+  genre?: string
+  minPrice?: number
+  maxPrice?: number
+  q?: string
+  page?: number
+  size?: number
+  sort?: string[]
+}
 
 /** Today's events for the Home "Tonight" section. */
 export function useTodayEvents() {
@@ -21,4 +38,12 @@ export function useUpcomingEvents(from: string, size = 12) {
  */
 export function fetchCalendarEvents(from: string, to: string): Promise<EventSummary[]> {
   return unwrap(api.GET('/events/calendar', { params: { query: { from, to } } }))
+}
+
+/**
+ * Paged event search for the events list and the venue/artist detail feeds. `params` is read
+ * lazily on each `run()`, so callers re-run after changing filters or the page.
+ */
+export function useEventSearch(params: () => EventSearchParams) {
+  return useAsync<EventPage>(() => unwrap(api.GET('/events', { params: { query: params() } })))
 }

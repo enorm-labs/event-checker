@@ -1,0 +1,85 @@
+<script lang="ts" setup>
+import { computed, onMounted, watch } from 'vue'
+import { RouterLink, useRoute } from 'vue-router'
+import { Button } from '@/components/ui/button'
+import EventCard from '@/components/EventCard.vue'
+import { useArtist } from '@/composables/useArtist'
+import { useEventSearch } from '@/composables/useEvents'
+
+const route = useRoute()
+const slug = computed(() => String(route.params.slug))
+
+const { data: artist, notFound, loading, run: loadArtist } = useArtist(() => slug.value)
+const { data: events, run: loadEvents } = useEventSearch(() => ({ artist: slug.value, size: 50 }))
+
+const links = computed(() =>
+  [
+    { label: 'Website', url: artist.value?.websiteUrl },
+    { label: 'Facebook', url: artist.value?.facebookUrl },
+    { label: 'Instagram', url: artist.value?.instagramUrl },
+    { label: 'YouTube', url: artist.value?.youtubeUrl },
+  ].filter((link): link is { label: string; url: string } => Boolean(link.url)),
+)
+
+function reload() {
+  loadArtist()
+  loadEvents()
+}
+
+onMounted(reload)
+watch(slug, reload)
+</script>
+
+<template>
+  <main class="mx-auto max-w-3xl space-y-8 p-8">
+    <p v-if="loading" class="text-sm text-muted-foreground">Loading…</p>
+
+    <div v-else-if="notFound" class="space-y-3">
+      <h1 class="text-2xl font-bold tracking-tight">Artist not found</h1>
+      <Button as-child variant="outline">
+        <RouterLink to="/events">Browse events</RouterLink>
+      </Button>
+    </div>
+
+    <template v-else-if="artist">
+      <header class="flex gap-4">
+        <img
+          v-if="artist.imageUrl"
+          :src="artist.imageUrl"
+          :alt="artist.name ?? ''"
+          class="size-24 shrink-0 rounded-lg border border-border object-cover"
+          loading="lazy"
+        />
+        <div class="space-y-2">
+          <h1 class="text-3xl font-bold tracking-tight">{{ artist.name }}</h1>
+          <div v-if="links.length" class="flex flex-wrap gap-3 text-sm">
+            <a
+              v-for="link in links"
+              :key="link.label"
+              :href="link.url"
+              class="text-primary underline-offset-4 hover:underline"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              {{ link.label }}
+            </a>
+          </div>
+        </div>
+      </header>
+
+      <p v-if="artist.description" class="whitespace-pre-line text-foreground/90">
+        {{ artist.description }}
+      </p>
+
+      <section class="space-y-4">
+        <h2 class="text-xl font-semibold tracking-tight">Upcoming events</h2>
+        <p v-if="!events?.content?.length" class="text-sm text-muted-foreground">
+          No upcoming events featuring this artist.
+        </p>
+        <div v-else class="grid gap-3 sm:grid-cols-2">
+          <EventCard v-for="event in events.content" :key="event.slug" :event="event" />
+        </div>
+      </section>
+    </template>
+  </main>
+</template>
