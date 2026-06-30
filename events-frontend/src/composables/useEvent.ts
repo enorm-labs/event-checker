@@ -4,7 +4,8 @@ import { useAsync } from './useAsync'
 
 /** Loads a single event by slug for the event detail page. Call `run()` to (re)fetch. */
 export function useEvent(slug: () => string) {
-  return useAsync<EventDetail>(() =>
-    unwrap(api.GET('/events/{slug}', { params: { path: { slug: slug() } } })),
+  return useAsync<EventDetail>(
+    () => unwrap(api.GET('/events/{slug}', { params: { path: { slug: slug() } } })),
+    'this event',
   )
 }

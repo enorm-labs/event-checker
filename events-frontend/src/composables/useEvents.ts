@@ -21,7 +21,7 @@ export interface EventSearchParams {
 
 /** Today's events for the Home "Tonight" section. */
 export function useTodayEvents() {
-  return useAsync<EventSummary[]>(() => unwrap(api.GET('/events/today')))
+  return useAsync<EventSummary[]>(() => unwrap(api.GET('/events/today')), "tonight's events")
 }
 
 /** First page of upcoming events from a given start date (inclusive), for the Home feed. */
@@ -29,7 +29,7 @@ export function useUpcomingEvents(from: string, size = 12) {
   return useAsync<EventSummary[]>(async () => {
     const page = await unwrap(api.GET('/events', { params: { query: { from, size } } }))
     return page.content ?? []
-  })
+  }, 'upcoming events')
 }
 
 /**
@@ -44,6 +44,9 @@ export function fetchCalendarEvents(from: string, to: string): Promise<EventSumm
  * Paged event search for the events list and the venue/artist detail feeds. `params` is read
  * lazily on each `run()`, so callers re-run after changing filters or the page.
  */
-export function useEventSearch(params: () => EventSearchParams) {
-  return useAsync<EventPage>(() => unwrap(api.GET('/events', { params: { query: params() } })))
+export function useEventSearch(params: () => EventSearchParams, label = 'events') {
+  return useAsync<EventPage>(
+    () => unwrap(api.GET('/events', { params: { query: params() } })),
+    label,
+  )
 }
