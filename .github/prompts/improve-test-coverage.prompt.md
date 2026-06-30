@@ -139,9 +139,8 @@ Uses `@vitest/coverage-v8` (V8's native code coverage — already installed as a
 Prioritize:
 
 1. **Composables** (`src/composables/`) — reusable logic functions are easy to unit test.
-2. **Pinia stores** (`src/stores/`) — state management logic, actions, and getters.
-3. **Utility/helper functions** — pure functions with no component dependencies.
-4. **Components with complex logic** — computed properties, watchers, event handlers.
+2. **Utility/helper functions** — pure functions with no component dependencies.
+3. **Components with complex logic** — computed properties, watchers, event handlers.
 
 Deprioritize:
 

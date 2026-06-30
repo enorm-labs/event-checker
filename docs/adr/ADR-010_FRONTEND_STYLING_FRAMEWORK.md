@@ -10,6 +10,9 @@ Accepted (2026-06-18)
 
 ## Context
 
+> **Note (2026-06-30):** Pinia was removed from the stack as it was unused. The styling decision
+> below is unaffected; the stack description here reflects the state at the time of this ADR.
+
 The frontend (`events-frontend/`) is a **Vue 3.5 + Vite 8 + Pinia + vue-router + TypeScript** SPA. It
 currently has **no CSS framework and no component library** — styling is a clean slate. We want:
 

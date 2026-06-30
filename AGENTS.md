@@ -30,7 +30,7 @@ subprojects sharing a root `settings.gradle.kts`, plus a standalone frontend pro
 - **`events-bff`** – Backend-for-Frontend REST API (Spring Boot 4 + WebFlux + R2DBC). Runs on default port `8080`.
 - **`events-importer`** – Imports events from external sources into the database (Spring Boot 4 + WebFlux + R2DBC + Flyway). Runs on port `8081`.
   Owns all Flyway migrations under `src/main/resources/db/migration/`.
-- **`events-frontend`** – Vue 3 SPA (Vite 8, TypeScript 6, Pinia, Vue Router). Uses oxlint/oxfmt for linting/formatting. Not a Gradle subproject — managed
+- **`events-frontend`** – Vue 3 SPA (Vite 8, TypeScript 6, Vue Router). Uses oxlint/oxfmt for linting/formatting. Not a Gradle subproject — managed
   separately via npm. Requires Node `^20.19.0 || >=22.12.0` (see `engines` in `package.json`).
 
 ## Architecture Decisions
