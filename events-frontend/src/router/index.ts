@@ -16,9 +16,24 @@ const router = createRouter({
       component: () => import('../views/CalendarView.vue'),
     },
     {
+      path: '/events',
+      name: 'events',
+      component: () => import('../views/EventsView.vue'),
+    },
+    {
       path: '/events/:slug',
       name: 'event',
       component: () => import('../views/EventDetailView.vue'),
+    },
+    {
+      path: '/venues/:slug',
+      name: 'venue',
+      component: () => import('../views/VenueDetailView.vue'),
+    },
+    {
+      path: '/artists/:slug',
+      name: 'artist',
+      component: () => import('../views/ArtistDetailView.vue'),
     },
     {
       path: '/about',
