@@ -22,13 +22,16 @@ cd events-frontend
 npm run type-check
 npm run lint
 npm run test:unit -- --run
+npm run test:e2e -- --project=chromium
 ```
 
 - `type-check` — `vue-tsc --build`
 - `lint` — runs both `oxlint --fix` and `eslint --fix --cache` (via `run-s lint:*`)
 - `test:unit -- --run` — vitest in single-run mode (default is watch)
-
-Skip E2E (`test:e2e`) here; it's slow and requires a running stack. Run it manually if needed.
+- `test:e2e -- --project=chromium` — Playwright e2e on chromium only. The suite mocks the BFF with request
+  routing and Playwright auto-starts the Vite dev server (`webServer` in `playwright.config.ts`), so **no backend or
+  database is required**. Chromium-only keeps the pre-PR gate fast; CI (`build-frontend.yml`) runs the full browser +
+  mobile matrix.
 
 ## How to run the skill
 
@@ -44,7 +47,7 @@ Skip E2E (`test:e2e`) here; it's slow and requires a running stack. Run it manua
 
    ```
    Backend:  ktlintCheck ✓  detekt ✓  build ✓  koverLog ✓
-   Frontend: type-check ✓  lint ✓  test:unit ✓
+   Frontend: type-check ✓  lint ✓  test:unit ✓  e2e ✓
    ```
 
    On failure, replace the ✓ with ✗ for the failing step, list the others as skipped if you stopped early, and quote
@@ -57,6 +60,8 @@ Skip E2E (`test:e2e`) here; it's slow and requires a running stack. Run it manua
 - **Database isn't required** for this skill — the build uses Testcontainers for tests; the dev `compose.yaml` Postgres
   is only needed for `bootRun`.
 - **NVD_API_KEY** is *not* needed here — `dependencyCheckAggregate` is not part of `build`.
+- **Playwright browser missing** — the first `test:e2e` run needs the chromium binary. If it fails with
+  `Executable doesn't exist`, run `npx playwright install chromium` once (from `events-frontend/`) and re-run.
 - **Backend-only or frontend-only changes**: if the diff touches only `events-frontend/`, skip the backend sequence;
   if it touches only backend modules, skip the frontend sequence. Use `git --no-pager diff --name-only main..HEAD`
   (or against the merge-base) to decide.
