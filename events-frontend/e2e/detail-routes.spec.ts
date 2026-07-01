@@ -1,0 +1,158 @@
+import { expect, test, type Page, type Route } from '@playwright/test'
+
+/**
+ * Detail-route e2e tests with a fully mocked BFF.
+ *
+ * The smoke suite deliberately skips the data-driven detail routes because they
+ * need real data. Here we intercept the BFF with Playwright's request routing so
+ * the happy path and the not-found path are both exercised deterministically,
+ * without a running backend or a seeded database.
+ *
+ * Endpoints per page:
+ *   /events/:slug     → GET /api/events/:slug
+ *   /venues/:slug     → GET /api/venues/:slug   + GET /api/events?venue=… (feed)
+ *   /artists/:slug    → GET /api/artists/:slug  + GET /api/events?artist=… (feed)
+ *   /promoters/:slug  → GET /api/promoters/:slug + GET /api/events?promoter=… (feed)
+ *
+ * Requests are matched with regexes rather than globs: the events search URL
+ * carries a query string, which glob wildcards handle awkwardly. The detail and
+ * search matchers are intentionally non-overlapping (`/events/:slug` vs
+ * `/events?…`), so route registration order does not matter.
+ */
+
+/** Collect uncaught exceptions — the "the app broke" signal, as in the smoke suite. */
+function collectPageErrors(page: Page): string[] {
+  const errors: string[] = []
+  page.on('pageerror', (error) => errors.push(error.message))
+  return errors
+}
+
+/** Fulfill a matched request with a JSON body. */
+function json(route: Route, body: unknown, status = 200): Promise<void> {
+  return route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(body) })
+}
+
+/** Empty paged result for the upcoming-events feed on venue/artist/promoter pages. */
+const emptyEventPage = { content: [], page: 0, size: 50, totalElements: 0, totalPages: 0 }
+
+const eventBody = {
+  slug: 'mock-event',
+  title: 'Mock Fest',
+  eventDate: '2026-08-15',
+  startTime: '20:00',
+  status: 'SCHEDULED',
+  venue: { slug: 'mock-venue', name: 'Mock Venue', address: 'Test Str. 1', city: 'Berlin' },
+  lineup: [
+    { artist: { slug: 'mock-artist', name: 'Mock Artist' }, role: 'HEADLINER', billingOrder: 1 },
+  ],
+  promoters: [{ slug: 'mock-promoter', name: 'Mock Promoter' }],
+}
+const venueBody = { slug: 'mock-venue', name: 'Mock Venue', city: 'Berlin' }
+const artistBody = { slug: 'mock-artist', name: 'Mock Artist' }
+const promoterBody = { slug: 'mock-promoter', name: 'Mock Promoter' }
+
+/** Matches the events search feed (`/api/events?…` or bare `/api/events`), not `/api/events/:slug`. */
+const eventsFeed = /\/api\/events(\?|$)/
+
+const detailRoutes = [
+  {
+    name: 'event',
+    path: '/events/mock-event',
+    matcher: /\/api\/events\/[^/?]+/,
+    body: eventBody,
+    heading: 'Mock Fest',
+    notFoundHeading: 'Event not found',
+  },
+  {
+    name: 'venue',
+    path: '/venues/mock-venue',
+    matcher: /\/api\/venues\//,
+    body: venueBody,
+    heading: 'Mock Venue',
+    notFoundHeading: 'Venue not found',
+  },
+  {
+    name: 'artist',
+    path: '/artists/mock-artist',
+    matcher: /\/api\/artists\//,
+    body: artistBody,
+    heading: 'Mock Artist',
+    notFoundHeading: 'Artist not found',
+  },
+  {
+    name: 'promoter',
+    path: '/promoters/mock-promoter',
+    matcher: /\/api\/promoters\//,
+    body: promoterBody,
+    heading: 'Mock Promoter',
+    notFoundHeading: 'Promoter not found',
+  },
+] as const
+
+test.beforeEach(async ({ page }) => {
+  // Venue/artist/promoter pages also load an upcoming-events feed; stub it empty so tests
+  // are deterministic and never fall through to the network. Harmless for the event page,
+  // which never hits this endpoint.
+  await page.route(eventsFeed, (route) => json(route, emptyEventPage))
+})
+
+for (const detail of detailRoutes) {
+  test.describe(`${detail.name} detail page`, () => {
+    test('renders the page when the API returns data', async ({ page }) => {
+      const errors = collectPageErrors(page)
+      await page.route(detail.matcher, (route) => json(route, detail.body))
+
+      await page.goto(detail.path)
+
+      await expect(page.getByRole('heading', { level: 1, name: detail.heading })).toBeVisible()
+      expect(errors, 'unexpected uncaught exceptions').toEqual([])
+    })
+
+    test('shows the not-found state on a 404', async ({ page }) => {
+      await page.route(detail.matcher, (route) => json(route, { message: 'not found' }, 404))
+
+      await page.goto(detail.path)
+
+      await expect(
+        page.getByRole('heading', { level: 1, name: detail.notFoundHeading }),
+      ).toBeVisible()
+    })
+
+    test('shows a reloadable error state on a 500', async ({ page }) => {
+      await page.route(detail.matcher, (route) => json(route, { message: 'boom' }, 500))
+
+      await page.goto(detail.path)
+
+      // A 500 is the `error` branch (not `notFound`): the view renders the describeError
+      // message, which always opens with "Couldn't load …", not a heading. Asserting that
+      // copy distinguishes the error state from both success and the 404 empty state.
+      await expect(page.getByText(/couldn't load/i)).toBeVisible()
+      await expect(page.getByRole('heading', { level: 1, name: detail.heading })).toHaveCount(0)
+      await expect(
+        page.getByRole('heading', { level: 1, name: detail.notFoundHeading }),
+      ).toHaveCount(0)
+    })
+  })
+}
+
+test('links nested entities and navigates from an event to its venue', async ({ page }) => {
+  const errors = collectPageErrors(page)
+  await page.route(/\/api\/events\/[^/?]+/, (route) => json(route, eventBody))
+  await page.route(/\/api\/venues\//, (route) => json(route, venueBody))
+
+  await page.goto('/events/mock-event')
+
+  // Nested data is bound into working router links.
+  await expect(page.getByRole('link', { name: 'Mock Artist' })).toHaveAttribute(
+    'href',
+    '/artists/mock-artist',
+  )
+  const venueLink = page.getByRole('link', { name: 'Mock Venue' })
+  await expect(venueLink).toHaveAttribute('href', '/venues/mock-venue')
+
+  await venueLink.click()
+
+  await expect(page).toHaveURL(/\/venues\/mock-venue$/)
+  await expect(page.getByRole('heading', { level: 1, name: 'Mock Venue' })).toBeVisible()
+  expect(errors, 'unexpected uncaught exceptions').toEqual([])
+})
