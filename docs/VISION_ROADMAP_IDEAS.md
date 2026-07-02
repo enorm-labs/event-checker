@@ -2,6 +2,7 @@
 
 * Public app name: **Event Junkie** (--> event-junkie.de). "Event Checker" stays the internal/repo name.
     * Tagline: "Can't get enough of Berlin"
+    * Branding, voice, logo & design ideas: see [BRANDING.md](BRANDING.md)
     * Other domain/name ideas considered:
         * Berlin Club Guide --> berlinclubguide.de or berlin-clubs.de
         * berlin-events.de is not available
