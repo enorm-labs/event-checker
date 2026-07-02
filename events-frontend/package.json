@@ -19,6 +19,7 @@
     "format": "oxfmt src"
   },
   "dependencies": {
+    "@fontsource-variable/geist": "5.2.9",
     "@fullcalendar/core": "6.1.21",
     "@fullcalendar/daygrid": "6.1.21",
     "@fullcalendar/list": "6.1.21",
