@@ -73,6 +73,8 @@ test('app shell exposes a working dark-mode toggle', async ({ page }) => {
   const toggle = page.getByRole('button', { name: /switch to (dark|light) mode/i })
   await expect(toggle).toBeVisible()
 
-  await toggle.click()
+  // New visitors start in dark (the default); toggling switches to light.
   await expect(page.locator('html')).toHaveClass(/dark/)
+  await toggle.click()
+  await expect(page.locator('html')).not.toHaveClass(/dark/)
 })

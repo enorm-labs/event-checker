@@ -106,9 +106,11 @@ existing red `--destructive` must stay visually distinct from any red-ish accent
 
 ### 5.2 Dark-mode-first
 
-Nightlife skews dark. Dark mode already exists and persists across reloads; consider making it the
-**default for first-time visitors** (respecting `prefers-color-scheme`), rather than defaulting to light.
-The accent should be tuned to glow on the dark surface.
+Nightlife skews dark. **Done:** dark mode is now the **default for first-time visitors**, set by the
+pre-paint script in `index.html` so there's no flash. An explicit light choice is remembered in
+`localStorage` and always wins on later visits. The default is unconditional (not gated on
+`prefers-color-scheme`) — a deliberate brand call; revisit if it proves user-hostile for light-OS users.
+The accent is tuned to glow on the dark surface.
 
 ### 5.3 Typography
 
@@ -150,6 +152,6 @@ waveform that animates on the logo. Always gate behind `prefers-reduced-motion: 
 
 - [ ] Pick the accent hue (§5.1) and apply it to the tokens; check AA contrast in both modes.
 - [ ] Prototype the logo (lean: waveform wordmark, §4 #1) + a favicon glyph, in both inks.
-- [ ] Decide whether dark mode becomes the default for new visitors (§5.2).
+- [x] Dark mode is the default for new visitors (§5.2).
 - [ ] Choose a display type face vs. staying all-Geist (§5.3); self-host fonts.
 - [ ] Register `event-junkie.de` (tracked in the roadmap).
