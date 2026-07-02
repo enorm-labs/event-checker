@@ -3,6 +3,7 @@ import { ref, watch } from 'vue'
 import { RouterLink, RouterView, useRouter } from 'vue-router'
 import { Moon, Sun } from '@lucide/vue'
 import { Button } from '@/components/ui/button'
+import BrandLogo from '@/components/BrandLogo.vue'
 import { pageTitle } from '@/composables/usePageTitle'
 
 // Screen-reader route announcer. Client-side navigations don't move focus or re-read the
@@ -43,11 +44,8 @@ function toggleDark() {
 
     <header class="border-b border-border">
       <nav class="mx-auto flex max-w-5xl items-center gap-6 p-4 text-sm font-medium">
-        <RouterLink
-          class="text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
-          to="/"
-        >
-          Home
+        <RouterLink class="mr-2 rounded-sm transition-opacity hover:opacity-80" to="/">
+          <BrandLogo />
         </RouterLink>
         <RouterLink
           class="text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"

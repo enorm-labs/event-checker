@@ -40,7 +40,8 @@ test('theme choice persists across in-app navigation', async ({ page }) => {
   await toggle(page).click()
   await expect(html(page)).toHaveClass(/dark/)
 
-  await navLink(page, 'Home').click()
+  // The logo is the home link.
+  await navLink(page, 'Event Junkie').click()
   await expect(page).toHaveURL(/\/$/)
   await expect(html(page)).toHaveClass(/dark/)
 })
