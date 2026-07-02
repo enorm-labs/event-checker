@@ -57,7 +57,10 @@ Tagline alternatives explored (kept for reference / A-B testing): *Never miss a 
 
 ## 4. Logo — directions to explore
 
-No logo exists yet (the favicon is the default `events-frontend/public/favicon.ico`). Principles first:
+**Done:** direction #1 below (pulse / waveform wordmark) was prototyped and shipped — the pulse mark is the
+favicon (`events-frontend/public/favicon.svg`) and, paired with the wordmark, the header lockup
+(`src/components/BrandLogo.vue`, collapsing to just the mark on mobile). The other directions stay parked as
+alternatives. The principles that guided it:
 
 - **Monochrome-first.** The UI theme is currently all-grayscale; the mark must read in a single ink and
   invert cleanly for dark mode. Design in black/white, add the accent (§5) as a highlight only.
@@ -79,7 +82,7 @@ Candidate directions (ordered by how well they fuse *music + the "junkie" concep
 5. **The live dot.** A single filled circle — a "hit," a record, a dot on a calendar day — that **pulses**
    when something's on tonight. Minimal, animatable, unbeatable as a favicon; leans on motion for meaning.
 
-**Suggested next step:** prototype #1 (waveform wordmark) + its standalone favicon glyph, in both inks.
+**Shipped:** #1 (waveform wordmark) + its standalone favicon glyph, in both inks.
 
 ## 5. Website / visual design — ideas
 
@@ -89,9 +92,9 @@ token edit, so most of the below is low-cost to try.
 
 ### 5.1 Colour — introduce ONE electric accent
 
-Today every token is neutral (`oklch(L 0 0)` — zero chroma). The single highest-impact brand move is to
-give `--primary` / `--accent` / `--ring` a **hue** while keeping everything else editorial-neutral, so the
-accent reads like a spotlight in a dark room. Candidate accents (drop-in oklch, tuned for contrast):
+**Done:** the **UV violet** row below was applied to `--primary` / `--accent` / `--ring` (and the matching
+sidebar tokens), keeping everything else neutral so the accent reads like a spotlight in a dark room —
+AA-verified in both modes. The other rows are kept as alternatives. Candidate accents (drop-in oklch):
 
 | Direction              | Vibe                         | Light `--primary`      | Dark `--primary`       |
 |------------------------|------------------------------|------------------------|------------------------|
@@ -114,11 +117,11 @@ The accent is tuned to glow on the dark surface.
 
 ### 5.3 Typography
 
-- **Body / UI:** keep **Geist** — clean, modern, already wired in.
-- **Display / hero:** consider a characterful face for big headings (a tight grotesque, or a mono for a
-  "listings/terminal" edge) to add nightlife personality; keep Geist for everything functional.
-- **Perf/CSP note:** `index.html` currently loads Geist from Google Fonts. Self-hosting the font (and any
-  display face) removes an external request and aligns with the strict-CSP direction.
+- **Body / UI:** **Geist** — now actually rendering and **self-hosted** via `@fontsource-variable/geist`
+  (imported in `main.ts`); the render-blocking Google Fonts request is gone. (A shadcn-scaffold name
+  mismatch had it silently falling back to a system font until that was fixed.)
+- **Display / hero:** *(open)* consider a characterful face for big headings (a tight grotesque, or a mono
+  for a "listings/terminal" edge) to add nightlife personality; keep Geist for everything functional.
 
 ### 5.4 Imagery
 
@@ -145,13 +148,17 @@ waveform that animates on the logo. Always gate behind `prefers-reduced-motion: 
   is CSS-variable edits only (ADR-010).
 - **Page titles & tagline** → already implemented in `src/composables/usePageTitle.ts`
   (`APP_NAME`, `TAGLINE`, `HOME_TITLE`) and `index.html` (title + OG/Twitter tags).
-- **Favicon / logo asset** → `events-frontend/public/` (replace `favicon.ico`; add an SVG mark).
-- **Fonts** → `index.html` `<link>` (currently Google Fonts) and the `--font-*` tokens in `main.css`.
+- **Favicon / logo** → `events-frontend/public/favicon.svg` (pulse badge) and
+  `src/components/BrandLogo.vue` (header lockup).
+- **Fonts** → self-hosted `@fontsource-variable/geist`, imported in `src/main.ts`; `--font-*` tokens in
+  `main.css`.
 
 ## 7. Open questions / next steps
 
-- [ ] Pick the accent hue (§5.1) and apply it to the tokens; check AA contrast in both modes.
-- [ ] Prototype the logo (lean: waveform wordmark, §4 #1) + a favicon glyph, in both inks.
+- [x] Applied the **UV violet** accent to the tokens, AA-verified in both modes (§5.1).
+- [x] Prototyped the waveform wordmark and shipped it as the favicon + header lockup (§4).
 - [x] Dark mode is the default for new visitors (§5.2).
-- [ ] Choose a display type face vs. staying all-Geist (§5.3); self-host fonts.
+- [x] Self-hosted Geist via `@fontsource-variable/geist`, so it actually renders with no external request (§5.3).
+- [ ] Decide on a display/hero type face vs. staying all-Geist (§5.3).
+- [ ] Add an `apple-touch-icon` PNG (iOS home screen doesn't render SVG favicons).
 - [ ] Register `event-junkie.de` (tracked in the roadmap).
