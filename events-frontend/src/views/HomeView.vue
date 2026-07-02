@@ -19,7 +19,7 @@ onMounted(() => {
 <template>
   <main class="mx-auto max-w-5xl space-y-10 p-8">
     <section class="space-y-3">
-      <h1 class="text-3xl font-bold tracking-tight">Event Checker</h1>
+      <h1 class="text-3xl font-bold tracking-tight">Event Junkie</h1>
       <p class="text-muted-foreground">
         Concerts, club nights, and festivals across Berlin's venues.
       </p>

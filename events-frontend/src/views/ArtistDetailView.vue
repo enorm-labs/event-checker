@@ -4,12 +4,15 @@ import { RouterLink, useRoute } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import EventCard from '@/components/EventCard.vue'
 import { useArtist } from '@/composables/useArtist'
+import { usePageTitle } from '@/composables/usePageTitle'
 import { useEventSearch } from '@/composables/useEvents'
 
 const route = useRoute()
 const slug = computed(() => String(route.params.slug))
 
 const { data: artist, error, notFound, loading, run: loadArtist } = useArtist(() => slug.value)
+
+usePageTitle(() => (notFound.value ? 'Artist not found' : (artist.value?.name ?? 'Artist')))
 const {
   data: events,
   error: eventsError,

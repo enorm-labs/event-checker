@@ -4,12 +4,15 @@ import { RouterLink, useRoute } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import EventCard from '@/components/EventCard.vue'
 import { useVenue } from '@/composables/useVenue'
+import { usePageTitle } from '@/composables/usePageTitle'
 import { useEventSearch } from '@/composables/useEvents'
 
 const route = useRoute()
 const slug = computed(() => String(route.params.slug))
 
 const { data: venue, error, notFound, loading, run: loadVenue } = useVenue(() => slug.value)
+
+usePageTitle(() => (notFound.value ? 'Venue not found' : (venue.value?.name ?? 'Venue')))
 const {
   data: events,
   error: eventsError,
