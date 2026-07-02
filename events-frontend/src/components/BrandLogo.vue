@@ -27,7 +27,9 @@
         stroke-linejoin="round"
       />
     </svg>
-    <span class="text-lg font-bold tracking-tight text-foreground">
+    <!-- Wordmark collapses to just the mark on narrow screens so the header never overflows;
+         kept in the a11y tree (sr-only) so the link's accessible name stays "Event Junkie". -->
+    <span class="sr-only text-lg font-bold tracking-tight text-foreground sm:not-sr-only">
       Event <span class="text-primary">Junkie</span>
     </span>
   </span>
