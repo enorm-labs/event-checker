@@ -1,3 +1,4 @@
+import '@fontsource-variable/geist/index.css'
 import './assets/main.css'
 
 import { createApp } from 'vue'
