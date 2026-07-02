@@ -21,10 +21,11 @@ import { expect, test, type Page } from '@playwright/test'
 
 /** Static routes and the stable <h1> each is expected to mount. */
 const staticRoutes = [
-  { path: '/', name: 'home', heading: 'Event Junkie' },
-  { path: '/events', name: 'events', heading: 'Events' },
-  { path: '/calendar', name: 'calendar', heading: 'Calendar' },
-  { path: '/about', name: 'about', heading: 'About' },
+  // `nav` is the accessible name of the nav link — home's is the brand logo, not "Home".
+  { path: '/', name: 'home', nav: 'Event Junkie', heading: 'Event Junkie' },
+  { path: '/events', name: 'events', nav: 'Events', heading: 'Events' },
+  { path: '/calendar', name: 'calendar', nav: 'Calendar', heading: 'Calendar' },
+  { path: '/about', name: 'about', nav: 'About', heading: 'About' },
 ] as const
 
 /** Attach an uncaught-exception collector before navigation. */
@@ -58,8 +59,7 @@ test('navigates between static routes via the nav bar', async ({ page }) => {
   const nav = page.getByRole('navigation')
 
   for (const route of staticRoutes) {
-    const linkName = route.name.charAt(0).toUpperCase() + route.name.slice(1)
-    await nav.getByRole('link', { name: linkName, exact: true }).click()
+    await nav.getByRole('link', { name: route.nav, exact: true }).click()
     await expect(page).toHaveURL(new RegExp(`${route.path.replace('/', '\\/')}$`))
     await expect(page.getByRole('heading', { level: 1, name: route.heading })).toBeVisible()
   }
