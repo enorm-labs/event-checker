@@ -4,12 +4,15 @@ import { RouterLink, useRoute } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import EventCard from '@/components/EventCard.vue'
 import { usePromoter } from '@/composables/usePromoter'
+import { usePageTitle } from '@/composables/usePageTitle'
 import { useEventSearch } from '@/composables/useEvents'
 
 const route = useRoute()
 const slug = computed(() => String(route.params.slug))
 
 const { data: promoter, error, notFound, loading, run: loadPromoter } = usePromoter(() => slug.value)
+
+usePageTitle(() => (notFound.value ? 'Promoter not found' : (promoter.value?.name ?? 'Promoter')))
 const {
   data: events,
   error: eventsError,

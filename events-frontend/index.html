@@ -4,7 +4,30 @@
     <meta charset="UTF-8" />
     <link href="/favicon.ico" rel="icon" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Vite App</title>
+    <title>Event Junkie — Can't get enough of Berlin</title>
+
+    <!--
+      Site-level meta and social-share tags. The SPA keeps `og:title`/`twitter:title` in
+      sync per view (see usePageTitle), which reaches JS-executing crawlers; non-JS
+      scrapers fall back to these static values. Full per-route coverage needs SSR/prerender.
+    -->
+    <meta
+      content="Concerts, club nights, festivals and more across Berlin venues. Find your next event with Event Junkie."
+      name="description"
+    />
+    <meta content="website" property="og:type" />
+    <meta content="Event Junkie" property="og:site_name" />
+    <meta content="Event Junkie — Can't get enough of Berlin" property="og:title" />
+    <meta
+      content="Concerts, club nights, festivals and more across Berlin venues. Find your next event with Event Junkie."
+      property="og:description"
+    />
+    <meta content="summary" name="twitter:card" />
+    <meta content="Event Junkie — Can't get enough of Berlin" name="twitter:title" />
+    <meta
+      content="Concerts, club nights, festivals and more across Berlin venues. Find your next event with Event Junkie."
+      name="twitter:description"
+    />
     <script>
       // Apply the persisted theme before first paint so a reload never flashes the wrong mode.
       try {

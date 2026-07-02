@@ -3,12 +3,15 @@ import { computed, onMounted, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import { useEvent } from '@/composables/useEvent'
+import { usePageTitle } from '@/composables/usePageTitle'
 import { formatDate, formatPrice, formatTime } from '@/lib/format'
 
 const route = useRoute()
 const slug = computed(() => String(route.params.slug))
 
 const { data: event, error, notFound, loading, run } = useEvent(() => slug.value)
+
+usePageTitle(() => (notFound.value ? 'Event not found' : (event.value?.title ?? 'Event')))
 
 // Lineup arrives in billing order already, but sort defensively so headliners stay first.
 const lineup = computed(() =>

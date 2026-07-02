@@ -21,7 +21,7 @@ import { expect, test, type Page } from '@playwright/test'
 
 /** Static routes and the stable <h1> each is expected to mount. */
 const staticRoutes = [
-  { path: '/', name: 'home', heading: 'Event Checker' },
+  { path: '/', name: 'home', heading: 'Event Junkie' },
   { path: '/events', name: 'events', heading: 'Events' },
   { path: '/calendar', name: 'calendar', heading: 'Calendar' },
   { path: '/about', name: 'about', heading: 'About' },
