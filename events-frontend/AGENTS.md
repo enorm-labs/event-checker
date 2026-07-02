@@ -209,10 +209,17 @@ The project uses a two-tier linting strategy:
 ### End-to-End Tests (Playwright)
 
 - Test files live in `e2e/` directory with `*.spec.ts` extension.
-- Tests run against all major browsers: Chromium, Firefox, WebKit.
+- Tests run against **five projects**: Desktop Chromium, Firefox, WebKit, plus **Mobile Chrome (Pixel 5)
+  and Mobile Safari (iPhone 12)** — the last two use ~390px viewports.
 - Dev mode: runs against `http://localhost:5173` (Vite dev server, reuses existing).
 - CI mode: builds first, then runs against `http://localhost:4173` (Vite preview server).
-- Run with: `npm run test:e2e`.
+- Run with: `npm run test:e2e`. CI runs the **full matrix**; the `/verify` skill runs **chromium only** to stay fast.
+- **Layout/responsive gotcha:** because `/verify` is chromium-only (desktop viewport), it will not catch
+  regressions that only appear on the mobile projects — e.g. a wider header nav overflowing a ~390px screen
+  and pushing a control off-screen (a real failure we hit). When touching the **app shell, header/nav, or any
+  layout**, run the mobile projects locally before pushing:
+  `npm run test:e2e -- --project="Mobile Chrome" --project="Mobile Safari"`. On CI such a break also *slows*
+  the run — a failing interaction burns the 30s action timeout × 2 retries × 5 projects.
 
 ## CI/CD
 
