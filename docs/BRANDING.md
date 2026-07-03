@@ -160,7 +160,7 @@ waveform that animates on the logo. Always gate behind `prefers-reduced-motion: 
 - [x] Dark mode is the default for new visitors (§5.2).
 - [x] Self-hosted Geist via `@fontsource-variable/geist`, so it actually renders with no external request (§5.3).
 - [ ] Decide on a display/hero type face vs. staying all-Geist (§5.3).
-- [ ] Add an `apple-touch-icon` PNG (iOS home screen doesn't render SVG favicons).
+- [x] Add an `apple-touch-icon` PNG (iOS home screen doesn't render SVG favicons).
 - [ ] Register `event-junkie.de` (tracked in the roadmap).
 
 ### Design refresh — applying the prototype look app-wide
