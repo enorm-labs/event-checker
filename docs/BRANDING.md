@@ -169,7 +169,7 @@ A sequence that also captures the §3–§5 design ideas not tracked in the chec
 
 - [x] Home hero — ambient violet glow, animated pulse mark, wordmark + tagline — and mono eyebrow
   section labels (`PulseMark`, `SectionLabel`, motion keyframes in `main.css`). *(§5.5, §5.6)*
-- [ ] Refined event cards + a pulsing "live tonight" dot + hover-lift, gated by reduced-motion. *(§5.5)*
+- [x] Refined event cards + a pulsing "live tonight" dot + hover-lift, gated by reduced-motion. *(§5.5)*
 - [ ] Events & Calendar: eyebrow headers, filter-forward polish, accent-branded day markers. *(§5.6)*
 - [ ] Detail pages: editorial layout + eyebrow section labels; duotone/accent image treatment. *(§4, §5.4)*
 - [ ] Empty / 404 / loading microcopy in the brand voice. *(§3)*
@@ -191,7 +191,8 @@ implementation is still on the backlog above.
   File: `events-frontend/public/favicon.svg`.
 - **Home hero** — the top block of the home page: the animated pulse mark, the wordmark, the tagline,
   and the primary call-to-action, over the ambient glow.
-- **Live dot** — a small pulsing dot marking events happening tonight / right now. See §5.5. *(planned)*
+- **Live dot** — a small pulsing accent dot on cards for events happening today, reinforcing liveness.
+  See §5.5; implemented in `EventCard.vue`.
 - **Lockup** — the mark and wordmark used together as one unit (e.g. in the header nav).
   Component: `BrandLogo.vue`.
 - **Monogram** — an "EJ" ligature; a parked logo alternative for icon-only use. See §4.
