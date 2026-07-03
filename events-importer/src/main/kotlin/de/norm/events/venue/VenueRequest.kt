@@ -28,6 +28,9 @@ data class VenueRequest(
     @field:Size(max = 20, message = "Postal code must not exceed 20 characters")
     @Schema(description = "Postal code of the venue's address", example = "10245")
     val postalCode: String? = null,
+    @field:Size(max = 50, message = "District must not exceed 50 characters")
+    @Schema(description = "Berlin borough (Bezirk) as a canonical slug", example = "friedrichshain-kreuzberg")
+    val district: String? = null,
     @Schema(description = "Geographic latitude for map display", example = "52.507242")
     val latitude: BigDecimal? = null,
     @Schema(description = "Geographic longitude for map display", example = "13.451803")

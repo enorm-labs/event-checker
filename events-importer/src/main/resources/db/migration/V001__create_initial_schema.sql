@@ -18,6 +18,9 @@ CREATE TABLE venue
     address     TEXT,
     city        TEXT        NOT NULL DEFAULT 'Berlin',
     postal_code TEXT,
+    -- Berlin borough (Bezirk) as a canonical slug, e.g. 'friedrichshain-kreuzberg'. Set explicitly
+    -- per venue; Berlin postal codes map to boroughs many-to-one so PLZ can't derive it reliably.
+    district    TEXT,
     latitude    DECIMAL(9, 6),
     longitude   DECIMAL(9, 6),
     website_url TEXT,
@@ -25,6 +28,8 @@ CREATE TABLE venue
     created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+CREATE INDEX idx_venue_district ON venue (district);
 
 -- No explicit slug index needed — the UNIQUE constraint already creates an implicit index.
 

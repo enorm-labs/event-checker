@@ -252,6 +252,11 @@ export interface components {
              * @example Revaler Str. 99
              */
             address?: string | null;
+            /**
+             * @description Berlin borough (Bezirk) as a canonical slug
+             * @example friedrichshain-kreuzberg
+             */
+            district?: string | null;
             /** @description URL of the venue's logo or photo */
             imageUrl?: string | null;
         };
@@ -288,6 +293,11 @@ export interface components {
              * @example 10245
              */
             postalCode?: string | null;
+            /**
+             * @description Berlin borough (Bezirk) as a canonical slug
+             * @example friedrichshain-kreuzberg
+             */
+            district?: string | null;
             /**
              * @description Geographic latitude for map display
              * @example 52.507242
@@ -873,6 +883,8 @@ export interface operations {
                 eventType?: string;
                 /** @description Venue slug filter — only events at the matching venue. */
                 venue?: string;
+                /** @description District filter — only events at venues in the matching Berlin borough (e.g. friedrichshain-kreuzberg). */
+                district?: string;
                 /** @description Artist slug filter — only events featuring the matching artist. */
                 artist?: string;
                 /** @description Promoter slug filter — only events from the matching promoter. */

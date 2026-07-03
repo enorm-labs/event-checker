@@ -49,6 +49,7 @@ function eventsResponseFor(sp: URLSearchParams) {
   if (sp.get('q') === 'jazz') return eventPage(['Jazz Night'])
   if (sp.get('eventType') === 'FESTIVAL') return eventPage(['Big Festival'])
   if (sp.get('genre') === 'techno') return eventPage(['Techno Rave'])
+  if (sp.get('district') === 'neukoelln') return eventPage(['Neukölln Night'])
   if (sp.get('excludeSoldOut') === 'true') return eventPage(['Available Only'])
   if (sp.get('free') === 'true') return eventPage(['Free Show'])
   if (sp.get('minPrice') || sp.get('maxPrice')) return eventPage(['Cheap Gig'])
@@ -116,6 +117,16 @@ test('filters by genre', async ({ page }) => {
 
   await expect(page).toHaveURL(/[?&]genre=techno\b/)
   await expect(eventHeading(page, 'Techno Rave')).toBeVisible()
+})
+
+test('filters by district', async ({ page }) => {
+  await page.goto('/events')
+  await expect(eventHeading(page, 'Default Event A')).toBeVisible()
+
+  await selectWithOption(page, 'All districts').selectOption('neukoelln')
+
+  await expect(page).toHaveURL(/[?&]district=neukoelln\b/)
+  await expect(eventHeading(page, 'Neukölln Night')).toBeVisible()
 })
 
 test('filters by price range', async ({ page }) => {

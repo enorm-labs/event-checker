@@ -17,6 +17,7 @@ data class EventFilter(
     val to: LocalDate? = null,
     val eventType: String? = null,
     val venueSlug: String? = null,
+    val district: String? = null,
     val artistSlug: String? = null,
     val promoterSlug: String? = null,
     val genreSlug: String? = null,
@@ -127,6 +128,10 @@ class EventSearchRepository(
         filter.venueSlug?.takeIf { it.isNotBlank() }?.let {
             conditions += "e.venue_id IN (SELECT id FROM $SCHEMA.venue WHERE slug = :venueSlug)"
             params["venueSlug"] = it.trim()
+        }
+        filter.district?.takeIf { it.isNotBlank() }?.let {
+            conditions += "e.venue_id IN (SELECT id FROM $SCHEMA.venue WHERE district = :district)"
+            params["district"] = it.trim()
         }
         if (filter.excludeSoldOut) {
             conditions += "e.sold_out = FALSE"

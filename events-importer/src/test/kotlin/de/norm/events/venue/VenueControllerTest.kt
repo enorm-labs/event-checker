@@ -50,7 +50,10 @@ class VenueControllerTest : BaseControllerTest() {
             .isOk
             .expectBody<VenueResponse>()
             .consumeWith { result ->
-                result.responseBody!!.name shouldBe "Astra Kulturhaus"
+                val venue = result.responseBody!!
+                venue.name shouldBe "Astra Kulturhaus"
+                // District round-trips through create → persist → read.
+                venue.district shouldBe "friedrichshain-kreuzberg"
             }
 
         // Update

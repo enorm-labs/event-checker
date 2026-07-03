@@ -18,6 +18,8 @@ data class VenueSummaryResponse(
     val city: String,
     @Schema(description = "Street address of the venue", example = "Revaler Str. 99")
     val address: String?,
+    @Schema(description = "Berlin borough (Bezirk) as a canonical slug", example = "friedrichshain-kreuzberg")
+    val district: String?,
     @Schema(description = "URL of the venue's logo or photo")
     val imageUrl: String?
 ) {
@@ -29,6 +31,7 @@ data class VenueSummaryResponse(
                 name = entity.name,
                 city = entity.city,
                 address = entity.address,
+                district = entity.district,
                 imageUrl = entity.imageUrl
             )
     }
@@ -54,6 +57,8 @@ data class VenueDetailResponse(
     val city: String,
     @Schema(description = "Postal code of the venue's address", example = "10245")
     val postalCode: String?,
+    @Schema(description = "Berlin borough (Bezirk) as a canonical slug", example = "friedrichshain-kreuzberg")
+    val district: String?,
     @Schema(description = "Geographic latitude for map display", example = "52.507242")
     val latitude: BigDecimal?,
     @Schema(description = "Geographic longitude for map display", example = "13.451803")
@@ -72,6 +77,7 @@ data class VenueDetailResponse(
                 address = entity.address,
                 city = entity.city,
                 postalCode = entity.postalCode,
+                district = entity.district,
                 latitude = entity.latitude,
                 longitude = entity.longitude,
                 websiteUrl = entity.websiteUrl,
