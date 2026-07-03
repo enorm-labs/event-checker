@@ -3,6 +3,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter, type LocationQueryRaw } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import EventCard from '@/components/EventCard.vue'
+import SectionLabel from '@/components/SectionLabel.vue'
 import { useEventSearch, type EventSearchParams } from '@/composables/useEvents'
 import { useGenres } from '@/composables/useGenres'
 
@@ -79,11 +80,12 @@ watch(() => route.query, run, { deep: true })
 <template>
   <main class="mx-auto max-w-5xl space-y-6 p-8">
     <header class="space-y-1">
+      <SectionLabel as="p">Pick your poison</SectionLabel>
       <h1 class="text-3xl font-bold tracking-tight">Events</h1>
       <p class="text-muted-foreground">Browse and filter upcoming music events across Berlin.</p>
     </header>
 
-    <div class="flex flex-wrap items-end gap-3">
+    <div class="flex flex-wrap items-end gap-3 rounded-xl border border-border bg-card p-4">
       <form class="flex gap-2" @submit.prevent="applyFilters({ q: search })">
         <input
           v-model="search"

@@ -3,6 +3,7 @@ import type { EventInput } from '@fullcalendar/core'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import EventCalendar from '@/components/EventCalendar.vue'
+import SectionLabel from '@/components/SectionLabel.vue'
 import { describeError } from '@/api/client'
 import { fetchCalendarEvents } from '@/composables/useEvents'
 
@@ -42,6 +43,7 @@ function openEvent(slug: string) {
 <template>
   <main class="mx-auto max-w-5xl space-y-6 p-8">
     <header class="space-y-1">
+      <SectionLabel as="p">Plan your nights</SectionLabel>
       <h1 class="text-3xl font-bold tracking-tight">Calendar</h1>
       <p class="text-muted-foreground">Browse upcoming music events across Berlin.</p>
     </header>
