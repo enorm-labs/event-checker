@@ -26,6 +26,7 @@ const params = computed<EventSearchParams>(() => ({
   minPrice: queryString('minPrice') ? Number(queryString('minPrice')) : undefined,
   maxPrice: queryString('maxPrice') ? Number(queryString('maxPrice')) : undefined,
   excludeSoldOut: queryString('excludeSoldOut') === 'true' || undefined,
+  free: queryString('free') === 'true' || undefined,
   page: queryString('page') ? Number(queryString('page')) : 0,
   size: PAGE_SIZE,
 }))
@@ -153,6 +154,16 @@ watch(() => route.query, run, { deep: true })
           @change="applyFilters({ excludeSoldOut: ($event.target as HTMLInputElement).checked ? 'true' : '' })"
         />
         Hide sold out
+      </label>
+
+      <label class="flex h-8 items-center gap-2 text-sm text-muted-foreground">
+        <input
+          :checked="queryString('free') === 'true'"
+          class="size-4 rounded border-border accent-primary outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+          type="checkbox"
+          @change="applyFilters({ free: ($event.target as HTMLInputElement).checked ? 'true' : '' })"
+        />
+        Free only
       </label>
     </div>
 

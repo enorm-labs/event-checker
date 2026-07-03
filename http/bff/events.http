@@ -56,6 +56,10 @@ Accept: application/json
 GET {{bff-host}}/events?excludeSoldOut=true
 Accept: application/json
 
+### Only free events
+GET {{bff-host}}/events?free=true
+Accept: application/json
+
 ### Combined filters + pagination
 GET {{bff-host}}/events?venue=lido&from=2026-06-19&page=0&size=10&sort=eventDate,asc
 Accept: application/json

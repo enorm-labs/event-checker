@@ -63,6 +63,12 @@ watch(slug, run)
           >
             Sold out
           </span>
+          <span
+            v-else-if="event.free"
+            class="rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-400"
+          >
+            Free
+          </span>
         </div>
       </header>
 

@@ -56,6 +56,11 @@ data class ScrapedEvent(
     val priceNote: String? = null,
     /** Whether all tickets are sold out. */
     val soldOut: Boolean = false,
+    /**
+     * Whether the event is free to attend. Scrapers may set this explicitly; when left false,
+     * [toEventEntity] still derives it from the prices and price note via [detectFree].
+     */
+    val free: Boolean = false,
     /** Scheduling status (e.g. "SCHEDULED", "CANCELLED", "POSTPONED", "RELOCATED"). */
     val status: String = "SCHEDULED",
     /**
@@ -119,7 +124,9 @@ data class ScrapedEvent(
             pricePresale = pricePresale?.normalizeMoneyScale(),
             priceBoxOffice = priceBoxOffice?.normalizeMoneyScale(),
             priceNote = priceNote,
-            soldOut = soldOut
+            soldOut = soldOut,
+            // Honour an explicit scraper flag, otherwise derive from prices/note/title.
+            free = free || detectFree(pricePresale, priceBoxOffice, priceNote, title)
         )
 }
 

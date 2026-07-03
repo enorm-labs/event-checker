@@ -469,6 +469,11 @@ export interface components {
              * @example false
              */
             soldOut?: boolean;
+            /**
+             * @description Whether the event is free to attend (free entry)
+             * @example false
+             */
+            free?: boolean;
             /** @description The venue where this event takes place */
             venue?: components["schemas"]["VenueSummaryResponse"];
             /**
@@ -622,6 +627,11 @@ export interface components {
              * @example false
              */
             soldOut?: boolean;
+            /**
+             * @description Whether the event is free to attend (free entry)
+             * @example false
+             */
+            free?: boolean;
             /** @description The venue where this event takes place */
             venue?: components["schemas"]["VenueSummaryResponse"];
             /** @description Lineup in billing order (headliner first) */
@@ -877,6 +887,8 @@ export interface operations {
                 q?: string;
                 /** @description When true, excludes events flagged as sold out. Defaults to false (include all). */
                 excludeSoldOut?: boolean;
+                /** @description When true, returns only events flagged as free to attend. Defaults to false. */
+                free?: boolean;
                 /** @description Zero-based page index (0..N) */
                 page?: number;
                 /** @description The size of the page to be returned */

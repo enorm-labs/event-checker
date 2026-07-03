@@ -212,6 +212,40 @@ class EventControllerTest : BaseControllerTest() {
         }
 
     @Test
+    fun `GET events returns only free events when free is set`(): Unit =
+        runBlocking {
+            val venueId = insertVenue("Astra", "astra")
+            insertEvent(venueId, "Paid Gig", "paid-gig", LocalDate.now())
+            insertEvent(venueId, "Free Gig", "free-gig", LocalDate.now(), free = true)
+
+            // Default: both events are returned.
+            webTestClient
+                .get()
+                .uri("/events")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody()
+                .jsonPath("$.totalElements")
+                .isEqualTo(2)
+
+            // free=true returns only the free event, and exposes the flag on the summary.
+            webTestClient
+                .get()
+                .uri("/events?free=true")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody()
+                .jsonPath("$.totalElements")
+                .isEqualTo(1)
+                .jsonPath("$.content[0].slug")
+                .isEqualTo("free-gig")
+                .jsonPath("$.content[0].free")
+                .isEqualTo(true)
+        }
+
+    @Test
     fun `GET events orders same-day events by start time`(): Unit =
         runBlocking {
             val venueId = insertVenue("Astra", "astra")

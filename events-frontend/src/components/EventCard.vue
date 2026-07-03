@@ -42,6 +42,12 @@ const isLive = computed(() => Boolean(props.event.eventDate) && props.event.even
         >
           Sold out
         </span>
+        <span
+          v-else-if="event.free"
+          class="shrink-0 rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-400"
+        >
+          Free
+        </span>
       </div>
       <p v-if="event.subtitle" class="truncate text-sm text-muted-foreground">
         {{ event.subtitle }}

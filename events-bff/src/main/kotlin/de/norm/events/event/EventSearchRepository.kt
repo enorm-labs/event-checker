@@ -23,7 +23,8 @@ data class EventFilter(
     val minPrice: BigDecimal? = null,
     val maxPrice: BigDecimal? = null,
     val query: String? = null,
-    val excludeSoldOut: Boolean = false
+    val excludeSoldOut: Boolean = false,
+    val onlyFree: Boolean = false
 )
 
 /** An ordered page of event IDs plus the total count of matches across all pages. */
@@ -129,6 +130,9 @@ class EventSearchRepository(
         }
         if (filter.excludeSoldOut) {
             conditions += "e.sold_out = FALSE"
+        }
+        if (filter.onlyFree) {
+            conditions += "e.free = TRUE"
         }
     }
 

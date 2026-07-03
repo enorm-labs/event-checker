@@ -6,6 +6,7 @@ import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
+import java.math.BigDecimal
 
 class EventMappingExtensionsTest {
     // --- mapEventType ---
@@ -133,5 +134,45 @@ class EventMappingExtensionsTest {
         val result = buildArtistList("The Adicts", listOf("TBA", "TBD"))
         result shouldHaveSize 1
         result[0] shouldBe ScrapedArtist(name = "The Adicts", role = "HEADLINER")
+    }
+
+    // --- detectFree ---
+
+    @Test
+    fun `detectFree is true for an explicit zero presale or box-office price`() {
+        detectFree(pricePresale = BigDecimal.ZERO) shouldBe true
+        detectFree(pricePresale = BigDecimal("0.00")) shouldBe true
+        detectFree(priceBoxOffice = BigDecimal("0.00")) shouldBe true
+    }
+
+    @Test
+    fun `detectFree is true for free-entry phrases in the price note or title`() {
+        detectFree(priceNote = "Eintritt frei") shouldBe true
+        detectFree(priceNote = "Freier Eintritt, Spende erwünscht") shouldBe true
+        detectFree(priceNote = "Free entry all night") shouldBe true
+        detectFree(title = "Sommerfest — Free Admission") shouldBe true
+    }
+
+    @Test
+    fun `detectFree matches single-word markers only in the price note`() {
+        detectFree(priceNote = "Gratis") shouldBe true
+        detectFree(priceNote = "kostenlos") shouldBe true
+        detectFree(priceNote = "umsonst") shouldBe true
+        // A bare token in the title (not the pricing-scoped note) must not trigger.
+        detectFree(title = "Gratis Vibes Live") shouldBe false
+    }
+
+    @Test
+    fun `detectFree does not false-positive on names or word fragments`() {
+        detectFree(title = "Freedom Festival") shouldBe false
+        detectFree(title = "Freikörperkultur") shouldBe false
+        detectFree(priceNote = "freestyle session") shouldBe false
+        detectFree(pricePresale = BigDecimal("12.00"), priceBoxOffice = BigDecimal("15.00")) shouldBe false
+    }
+
+    @Test
+    fun `detectFree is false when nothing is provided`() {
+        detectFree() shouldBe false
+        detectFree(priceNote = null, title = null) shouldBe false
     }
 }

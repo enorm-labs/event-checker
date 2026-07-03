@@ -33,7 +33,7 @@ Public name is **Event Junkie**; internal/repo name stays **Event Checker**
 - [ ] Full frontend UX pass — what's missing / improvable? (cross-check the vision + branding docs)
 - [ ] Verify responsive design + look on mobile
 - [x] "Sold Out" label + filter to exclude sold-out events (PR #57)
-- [ ] Free-events filter (detect free when price missing — needs importer support, see below)
+- [x] Free-events filter + "Free" badge (import-time detection via `detectFree`)
 - [ ] Audit that all **user-facing** surfaces read "Event Junkie" (internal stays "Event Checker")
 - [ ] Decide on a display/hero typeface vs. staying all-Geist (BRANDING §5.3)
 - [ ] "Venue or event missing? Let us know" form (→ GitHub issues?)
@@ -52,7 +52,7 @@ Public name is **Event Junkie**; internal/repo name stays **Event Checker**
 
 ## Importer / Data
 
-- [ ] Detect free events when price is missing (unblocks the free-events filter above)
+- [x] Detect free events at import (`detectFree`: €0 price or free-entry phrases → `free` flag)
 - [ ] Enrich venues: type (club/bar/concert hall), description, image/photo, genres, event types
 - [ ] Improve importer Swagger UI (match the BFF)
 - [ ] Implement more importers/scrapers (see EVENT_DATA_SOURCES.md)
