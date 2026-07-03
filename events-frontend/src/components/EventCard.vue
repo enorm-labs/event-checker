@@ -21,7 +21,7 @@ const isLive = computed(() => Boolean(props.event.eventDate) && props.event.even
       v-if="event.imageUrl"
       :src="event.imageUrl"
       :alt="event.title ?? ''"
-      class="size-20 shrink-0 rounded-lg object-cover"
+      class="size-20 shrink-0 rounded-lg object-cover grayscale-[0.5] transition duration-300 group-hover:grayscale-0"
       loading="lazy"
     />
     <div class="min-w-0 flex-1 space-y-1">

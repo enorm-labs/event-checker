@@ -3,6 +3,7 @@ import { computed, onMounted, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import EventCard from '@/components/EventCard.vue'
+import SectionLabel from '@/components/SectionLabel.vue'
 import { useArtist } from '@/composables/useArtist'
 import { usePageTitle } from '@/composables/usePageTitle'
 import { useEventSearch } from '@/composables/useEvents'
@@ -61,6 +62,7 @@ watch(slug, reload)
           loading="lazy"
         />
         <div class="space-y-2">
+          <SectionLabel as="p">Artist</SectionLabel>
           <h1 class="text-3xl font-bold tracking-tight">{{ artist.name }}</h1>
           <div v-if="links.length" class="flex flex-wrap gap-3 text-sm">
             <a
@@ -82,7 +84,7 @@ watch(slug, reload)
       </p>
 
       <section class="space-y-4">
-        <h2 class="text-xl font-semibold tracking-tight">Upcoming events</h2>
+        <SectionLabel>Upcoming events</SectionLabel>
         <p v-if="eventsLoading" class="text-sm text-muted-foreground">Loading…</p>
         <p v-else-if="eventsError" class="text-sm text-destructive">{{ eventsError }}</p>
         <p v-else-if="!events?.content?.length" class="text-sm text-muted-foreground">
