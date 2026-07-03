@@ -171,7 +171,7 @@ A sequence that also captures the §3–§5 design ideas not tracked in the chec
   section labels (`PulseMark`, `SectionLabel`, motion keyframes in `main.css`). *(§5.5, §5.6)*
 - [x] Refined event cards + a pulsing "live tonight" dot + hover-lift, gated by reduced-motion. *(§5.5)*
 - [x] Events & Calendar: eyebrow headers, filter-forward polish, accent-branded day markers. *(§5.6)*
-- [ ] Detail pages: editorial layout + eyebrow section labels; duotone/accent image treatment. *(§4, §5.4)*
+- [x] Detail pages: editorial layout + eyebrow section labels; desaturate-on-rest image treatment. *(§4, §5.4)*
 - [ ] Empty / 404 / loading microcopy in the brand voice. *(§3)*
 
 ## Glossary
@@ -183,14 +183,15 @@ implementation is still on the backlog above.
   tokens; everything else stays neutral so it reads like a spotlight. See §5.1.
 - **Ambient glow** — the soft radial violet light in the home hero, centered on the pulse mark so the
   mark reads as its source. Fades to transparent on its own (no `overflow` clip), never a hard shape.
-- **Duotone** — a two-tone image treatment (shadows → one colour, highlights → another) to make
-  mismatched, scraped event photos feel cohesive. See §5.4. *(planned)*
 - **Eyebrow label** — a small, mono, uppercase, letter-spaced heading in the accent, used where a
   section title goes (e.g. "TONIGHT"). The editorial "listings" look. Component: `SectionLabel.vue`.
 - **Favicon badge** — the app icon: a rounded, violet-gradient square holding the white pulse.
   File: `events-frontend/public/favicon.svg`.
 - **Home hero** — the top block of the home page: the animated pulse mark, the wordmark, the tagline,
   and the primary call-to-action, over the ambient glow.
+- **Image treatment** — event card thumbnails are desaturated at rest and reveal full colour on
+  hover, so mismatched, scraped photos feel cohesive. Detail-page hero images stay full colour.
+  See §5.4; implemented in `EventCard.vue`.
 - **Live dot** — a small pulsing accent dot on cards for events happening today, reinforcing liveness.
   See §5.5; implemented in `EventCard.vue`.
 - **Lockup** — the mark and wordmark used together as one unit (e.g. in the header nav).

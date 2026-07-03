@@ -2,6 +2,7 @@
 import { computed, onMounted, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { Button } from '@/components/ui/button'
+import SectionLabel from '@/components/SectionLabel.vue'
 import { useEvent } from '@/composables/useEvent'
 import { usePageTitle } from '@/composables/usePageTitle'
 import { formatDate, formatPrice, formatTime } from '@/lib/format'
@@ -78,7 +79,7 @@ watch(slug, run)
       </p>
 
       <section v-if="lineup.length" class="space-y-3">
-        <h2 class="text-xl font-semibold tracking-tight">Lineup</h2>
+        <SectionLabel>Lineup</SectionLabel>
         <ul class="space-y-2">
           <li
             v-for="entry in lineup"
@@ -102,7 +103,7 @@ watch(slug, run)
 
       <section class="grid gap-6 sm:grid-cols-2">
         <div v-if="event.venue" class="space-y-1">
-          <h2 class="text-sm font-medium text-muted-foreground">Venue</h2>
+          <SectionLabel>Venue</SectionLabel>
           <RouterLink
             v-if="event.venue.slug"
             :to="`/venues/${event.venue.slug}`"
@@ -125,7 +126,7 @@ watch(slug, run)
           "
           class="space-y-1"
         >
-          <h2 class="text-sm font-medium text-muted-foreground">Tickets</h2>
+          <SectionLabel>Tickets</SectionLabel>
           <p v-if="formatPrice(event.pricePresale, event.priceCurrency)" class="text-sm">
             Presale: {{ formatPrice(event.pricePresale, event.priceCurrency) }}
           </p>
@@ -137,7 +138,7 @@ watch(slug, run)
       </section>
 
       <section v-if="event.promoters?.length" class="space-y-1">
-        <h2 class="text-sm font-medium text-muted-foreground">Promoters</h2>
+        <SectionLabel>Promoters</SectionLabel>
         <p class="flex flex-wrap gap-x-1 text-sm">
           <template v-for="(promoter, index) in event.promoters" :key="promoter.slug ?? promoter.name">
             <RouterLink
