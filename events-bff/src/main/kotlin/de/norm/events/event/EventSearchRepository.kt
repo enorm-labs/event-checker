@@ -22,7 +22,8 @@ data class EventFilter(
     val genreSlug: String? = null,
     val minPrice: BigDecimal? = null,
     val maxPrice: BigDecimal? = null,
-    val query: String? = null
+    val query: String? = null,
+    val excludeSoldOut: Boolean = false
 )
 
 /** An ordered page of event IDs plus the total count of matches across all pages. */
@@ -125,6 +126,9 @@ class EventSearchRepository(
         filter.venueSlug?.takeIf { it.isNotBlank() }?.let {
             conditions += "e.venue_id IN (SELECT id FROM $SCHEMA.venue WHERE slug = :venueSlug)"
             params["venueSlug"] = it.trim()
+        }
+        if (filter.excludeSoldOut) {
+            conditions += "e.sold_out = FALSE"
         }
     }
 

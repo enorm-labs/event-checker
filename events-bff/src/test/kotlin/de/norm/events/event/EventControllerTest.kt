@@ -169,6 +169,49 @@ class EventControllerTest : BaseControllerTest() {
         }
 
     @Test
+    fun `GET events excludes sold-out events only when excludeSoldOut is set`(): Unit =
+        runBlocking {
+            val venueId = insertVenue("Astra", "astra")
+            insertEvent(venueId, "Available Gig", "available-gig", LocalDate.now())
+            insertEvent(venueId, "Sold Out Gig", "sold-out-gig", LocalDate.now(), soldOut = true)
+
+            // Default: both events are returned.
+            webTestClient
+                .get()
+                .uri("/events")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody()
+                .jsonPath("$.totalElements")
+                .isEqualTo(2)
+
+            // excludeSoldOut=true drops the sold-out event.
+            webTestClient
+                .get()
+                .uri("/events?excludeSoldOut=true")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody()
+                .jsonPath("$.totalElements")
+                .isEqualTo(1)
+                .jsonPath("$.content[0].slug")
+                .isEqualTo("available-gig")
+
+            // excludeSoldOut=false imposes no constraint.
+            webTestClient
+                .get()
+                .uri("/events?excludeSoldOut=false")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody()
+                .jsonPath("$.totalElements")
+                .isEqualTo(2)
+        }
+
+    @Test
     fun `GET events orders same-day events by start time`(): Unit =
         runBlocking {
             val venueId = insertVenue("Astra", "astra")

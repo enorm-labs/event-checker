@@ -49,6 +49,7 @@ function eventsResponseFor(sp: URLSearchParams) {
   if (sp.get('q') === 'jazz') return eventPage(['Jazz Night'])
   if (sp.get('eventType') === 'FESTIVAL') return eventPage(['Big Festival'])
   if (sp.get('genre') === 'techno') return eventPage(['Techno Rave'])
+  if (sp.get('excludeSoldOut') === 'true') return eventPage(['Available Only'])
   if (sp.get('minPrice') || sp.get('maxPrice')) return eventPage(['Cheap Gig'])
 
   return Number(sp.get('page') ?? '0') >= 1
@@ -127,6 +128,17 @@ test('filters by price range', async ({ page }) => {
   await expect(page).toHaveURL(/[?&]minPrice=10\b/)
   await expect(page).toHaveURL(/[?&]maxPrice=30\b/)
   await expect(eventHeading(page, 'Cheap Gig')).toBeVisible()
+})
+
+test('hides sold-out events when the toggle is checked', async ({ page }) => {
+  await page.goto('/events')
+  await expect(eventHeading(page, 'Default Event A')).toBeVisible()
+
+  await page.getByLabel('Hide sold out').check()
+
+  await expect(page).toHaveURL(/[?&]excludeSoldOut=true\b/)
+  await expect(eventHeading(page, 'Available Only')).toBeVisible()
+  await expect(eventHeading(page, 'Default Event A')).toHaveCount(0)
 })
 
 test('shows the empty state when no events match', async ({ page }) => {

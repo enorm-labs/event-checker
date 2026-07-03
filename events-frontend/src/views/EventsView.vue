@@ -25,6 +25,7 @@ const params = computed<EventSearchParams>(() => ({
   genre: queryString('genre') || undefined,
   minPrice: queryString('minPrice') ? Number(queryString('minPrice')) : undefined,
   maxPrice: queryString('maxPrice') ? Number(queryString('maxPrice')) : undefined,
+  excludeSoldOut: queryString('excludeSoldOut') === 'true' || undefined,
   page: queryString('page') ? Number(queryString('page')) : 0,
   size: PAGE_SIZE,
 }))
@@ -143,6 +144,16 @@ watch(() => route.query, run, { deep: true })
         />
         <Button type="submit" variant="outline">Apply</Button>
       </form>
+
+      <label class="flex h-8 items-center gap-2 text-sm text-muted-foreground">
+        <input
+          :checked="queryString('excludeSoldOut') === 'true'"
+          class="size-4 rounded border-border accent-primary outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+          type="checkbox"
+          @change="applyFilters({ excludeSoldOut: ($event.target as HTMLInputElement).checked ? 'true' : '' })"
+        />
+        Hide sold out
+      </label>
     </div>
 
     <p v-if="loading" class="text-sm text-muted-foreground">Cueing it up…</p>

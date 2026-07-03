@@ -32,7 +32,7 @@ Public name is **Event Junkie**; internal/repo name stays **Event Checker**
 
 - [ ] Full frontend UX pass — what's missing / improvable? (cross-check the vision + branding docs)
 - [ ] Verify responsive design + look on mobile
-- [ ] "Sold Out" label + filter to exclude sold-out events
+- [x] "Sold Out" label + filter to exclude sold-out events (PR #57)
 - [ ] Free-events filter (detect free when price missing — needs importer support, see below)
 - [ ] Audit that all **user-facing** surfaces read "Event Junkie" (internal stays "Event Checker")
 - [ ] Decide on a display/hero typeface vs. staying all-Geist (BRANDING §5.3)
