@@ -162,3 +162,46 @@ waveform that animates on the logo. Always gate behind `prefers-reduced-motion: 
 - [ ] Decide on a display/hero type face vs. staying all-Geist (§5.3).
 - [ ] Add an `apple-touch-icon` PNG (iOS home screen doesn't render SVG favicons).
 - [ ] Register `event-junkie.de` (tracked in the roadmap).
+
+### Design refresh — applying the prototype look app-wide
+
+A sequence that also captures the §3–§5 design ideas not tracked in the checklist above.
+
+- [x] Home hero — ambient violet glow, animated pulse mark, wordmark + tagline — and mono eyebrow
+  section labels (`PulseMark`, `SectionLabel`, motion keyframes in `main.css`). *(§5.5, §5.6)*
+- [ ] Refined event cards + a pulsing "live tonight" dot + hover-lift, gated by reduced-motion. *(§5.5)*
+- [ ] Events & Calendar: eyebrow headers, filter-forward polish, accent-branded day markers. *(§5.6)*
+- [ ] Detail pages: editorial layout + eyebrow section labels; duotone/accent image treatment. *(§4, §5.4)*
+- [ ] Empty / 404 / loading microcopy in the brand voice. *(§3)*
+
+## Glossary
+
+Shorthand used across this doc, the code, and PR descriptions. *(planned)* marks a term whose
+implementation is still on the backlog above.
+
+- **Accent** — the single brand hue (UV violet) applied to the `--primary` / `--accent` / `--ring`
+  tokens; everything else stays neutral so it reads like a spotlight. See §5.1.
+- **Ambient glow** — the soft radial violet light in the home hero, centered on the pulse mark so the
+  mark reads as its source. Fades to transparent on its own (no `overflow` clip), never a hard shape.
+- **Duotone** — a two-tone image treatment (shadows → one colour, highlights → another) to make
+  mismatched, scraped event photos feel cohesive. See §5.4. *(planned)*
+- **Eyebrow label** — a small, mono, uppercase, letter-spaced heading in the accent, used where a
+  section title goes (e.g. "TONIGHT"). The editorial "listings" look. Component: `SectionLabel.vue`.
+- **Favicon badge** — the app icon: a rounded, violet-gradient square holding the white pulse.
+  File: `events-frontend/public/favicon.svg`.
+- **Home hero** — the top block of the home page: the animated pulse mark, the wordmark, the tagline,
+  and the primary call-to-action, over the ambient glow.
+- **Live dot** — a small pulsing dot marking events happening tonight / right now. See §5.5. *(planned)*
+- **Lockup** — the mark and wordmark used together as one unit (e.g. in the header nav).
+  Component: `BrandLogo.vue`.
+- **Monogram** — an "EJ" ligature; a parked logo alternative for icon-only use. See §4.
+- **oklch** — the perceptual colour space the theme tokens are written in:
+  `oklch(lightness chroma hue)`. Neutral tokens have chroma `0`.
+- **Pulse mark** — the logomark itself: a single-stroke line that is at once a soundwave, a heartbeat
+  (ECG), and a "hit". Component: `PulseMark.vue`; also the favicon glyph.
+- **Reversed / single-ink** — the mark or lockup drawn in one flat colour (e.g. white on the accent),
+  for contexts where the gradient can't render.
+- **Token** — a CSS-variable design value (colour, radius, font) in `main.css` (`:root` + `.dark`);
+  re-theming means editing tokens, not components. See §6.
+- **Wordmark** — "Event Junkie" set as type (accent on "Junkie"), as distinct from the pulse mark.
+  Part of the lockup and the hero.
