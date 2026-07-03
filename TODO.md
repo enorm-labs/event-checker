@@ -1,81 +1,135 @@
-## TODO
+# TODO — Backlog
 
-1. events-importer: Implement first event import job/controller to import events from one source and store them in the database.
-    * check if more websites offer an RSS feed
-2. Fix security issues https://github.com/enorm-labs/event-checker/security/dependabot
-3. Add multiple agents.md files (or at least one for backend and one for frontend)
-    * Create path-specific custom
-      instructions https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/add-custom-instructions/add-repository-instructions#creating-path-specific-custom-instructions
-4. Create more prompts, skills, or agents, e.g. for planning/creating a new feature (interview, documentation, implementation) or adr
-    * How to add skills: https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/customize-cloud-agent/add-skills
-    * How to add agents: https://docs.github.com/en/copilot/concepts/agents/cloud-agent/about-custom-agents
-    * Awesome Copilot: https://awesome-copilot.github.com/ --> Check what could be useful
-    * Note: Personal/Global skills are currently a Copilot CLI feature. In IDE chat (JetBrains/VS Code), only project-level skills in .github/skills/ are
-      supported. Global ~/.copilot/skills/ works with Copilot CLI.
-    * UPDATE: IntelliJs GitHub Copilot Chat now supports provider "Copilot CLI" besides "Local"
-    * See https://github.com/github/awesome-copilot/tree/main, https://github.com/obra/superpowers, and https://github.com/gsd-build/get-shit-done
-    * Create a feature planning and spec creation agent/prompt, see https://github.com/github/spec-kit
-    * Create an agent for reviews
-    * Create a prompt/agent for updating documentation
-    * Create a prompt/agent for security
-    * Create a prompt/agent for UI/UX
-    * Create a prompt/agent for refactoring code and improving code quality (making it better, more maintainable, and more readable, but not changing the
-      functionality)
-    * Create a prompt/agent for reviewing the overall architecture of the project
-    * Maybe add BACKLOG.md, see https://www.codecentric.de/wissens-hub/blog/strukturierte-migration-mit-claude-code-context-engineering-statt-prompt-engineering
-    * Want structured planning for big features? Add a prompt file (e.g., .github/prompts/feature-planning.prompt.md) that you invoke manually when needed.
-      Include the brainstorm → spec → plan flow.
-    * Want subagent-driven execution? You can ask any agent to "break this into tasks and use subagents for each one" — no plugin needed.
-    * Want TDD enforcement? Add it as a rule in your AGENTS.md under Testing Patterns.
-    * Recommendation: Don't install Superpowers. Your AGENTS.md is already well-structured and project-specific. Superpowers' always-on ceremony would slow you
-      down for the small-to-medium tasks that make up most of your work. Instead, steal the good ideas (spec-first for complex features, task decomposition) and
-      encode them as optional prompt files you invoke explicitly when the task warrants it.
-    * Try out Repomix https://repomix.com/
-        * GH Actions: https://repomix.com/guide/github-actions
-    * Try out Spec Kit: https://github.github.com/spec-kit/
-5. Create test data set that can be used for tests (test fixtures) and for populating the local database
-6. Add Authentication and Authorization (depending on Cloud Platform? What's the best practice or standard for Spring apps? What about Keycloak (at least
-   locally for testing?)
-7. Use Stitch for UI design? Alternatives?
-8. Create dashboard for analysing the data (Apache Superset, Kibana, or Grafana? Or something else?)
-9. Choose a Cloud Platform / Runtime environment
-10. Choose a Domain Name (Brainstorming with AI)
-11. Deploy to Cloud Platform
-12. Make repository public and enable Advanced Security Analysis
-13. Create Template Repository from this project in my Enterprise Repository and my private Repository on GitHub.
-    * with `.github` directory and workflows, instructions, skills, prompts,and agents
-    * with README, CONTRIBUTING, LICENSE, etc. (see GitHub docs and best practices)
-    * check if there are any good existing templates already
-    * see also OTR service template
-    * add scaffolding?
-14. Create a Roadmap
+Single source of truth for planned work. Longer-form context lives in
+[docs/VISION_ROADMAP_IDEAS.md](docs/VISION_ROADMAP_IDEAS.md) and
+[docs/BRANDING.md](docs/BRANDING.md); this file is the actionable backlog.
 
-### Technical TODOs
+Rough priority: **Now** → **Next** → grouped backlog → **Someday / Vision**.
+Public name is **Event Junkie**; internal/repo name stays **Event Checker**
+(see the BRANDING naming rule — don't "fix" internal identifiers).
 
-* Add checkov scan if it makes sense
-* Logging: Always add context to logs (e.g. event id, artist id, etc.)
-* Protect APIs (e.g. against DDoS)
-    * Rate Limiting
-    * Use Api Gateway?
-* I18N and L10N
-* Translations?
-* What to consider before going live?
-    * Imprint?
-    * Display used FOSS?
-    * DSGVO?
-    * Accessibility?
-    * Link to GitHub repository
-    * Is it legal to scrape events from websites and display them on my website?
-* Infrastructure and Tooling Update Checker (can dependabot also do this? Or use something like Renovate?)
-* Check useful workflows: https://github.com/enorm-labs/event-checker/actions/new?category=security
-* Housekeeping: When to delete events from the database?
+---
 
-### Organizational TODOs
+## 🔴 Now (path to go-live)
 
-* Generate Mermaid Diagram (domain class diagram) via gradle
-* What to consider before allowing contributions and posting issues? (contributing.md, code_of_conduct.md, security.md, support.md)
-    * see https://github.com/github-samples/gitfolio for example
-* Repository best practices
-* See GitHub docs and best practices
-* Go-Live checklist (legal, security, SEO, monitoring, alerting, dashboards, backups, recovery, etc.)
-* Enable Agentic Workflows (Continuous refactoring and documentation etc.) https://github.github.com/gh-aw/
+- [ ] Choose a cloud platform / runtime environment (AWS, GCP, …)
+- [ ] Register the domain **event-junkie.de**
+- [ ] Create release + deploy workflows (CI/CD)
+- [ ] Deploy to the chosen cloud platform
+- [ ] Fix Dependabot security issues → https://github.com/enorm-labs/event-checker/security/dependabot
+- [ ] Go-live checklist: legal, security, SEO, monitoring, alerting, dashboards, backups, recovery
+
+## 🟠 Next
+
+- [ ] Add Authentication & Authorization (best practice for Spring? Keycloak, at least locally for testing?)
+- [ ] Caching (BFF)
+- [ ] Protect the public BFF API (rate limiting, DDoS; API gateway?)
+- [ ] Create a test data set — reusable as test fixtures **and** to populate the local DB
+
+---
+
+## UI / UX / Branding
+
+- [ ] Full frontend UX pass — what's missing / improvable? (cross-check the vision + branding docs)
+- [ ] Verify responsive design + look on mobile
+- [ ] "Sold Out" label + filter to exclude sold-out events
+- [ ] Free-events filter (detect free when price missing — needs importer support, see below)
+- [ ] Audit that all **user-facing** surfaces read "Event Junkie" (internal stays "Event Checker")
+- [ ] Decide on a display/hero typeface vs. staying all-Geist (BRANDING §5.3)
+- [ ] "Venue or event missing? Let us know" form (→ GitHub issues?)
+- [ ] Feedback form (or link to GitHub issues)
+- Design tooling to try: Stitch, "trainspotting"-inspired design — what's the best tool for generating a website design?
+
+## Frontend & BFF
+
+- [ ] Venues page (with map) — consumes the existing `GET /venues` list endpoint
+- [ ] District filter/feed → add a `district` column to the venue table
+- [ ] Sitemap (still worthwhile for SEO?)
+- [ ] RSS feed for newly imported events
+- [ ] I18N / L10N + translations
+- Note: `GET /artists`, `GET /venues`, `GET /promoters` list endpoints exist and are smoke-tested,
+  but only their `/{slug}` detail counterparts have UI pages yet.
+
+## Importer / Data
+
+- [ ] Detect free events when price is missing (unblocks the free-events filter above)
+- [ ] Enrich venues: type (club/bar/concert hall), description, image/photo, genres, event types
+- [ ] Improve importer Swagger UI (match the BFF)
+- [ ] Implement more importers/scrapers (see EVENT_DATA_SOURCES.md)
+    - [ ] Strategy to implement the remaining importers fast — but still clean, robust, fully tested
+    - [ ] Create a prompt/skill for scaffolding a new importer
+    - [ ] Standardize/simplify existing importers + scrapers where it helps
+- [ ] Housekeeping: policy for when to delete old events from the DB
+
+## Operations & Hardening
+
+- [ ] Logging: always attach context (event id, artist id, …)
+- [ ] Checkov scan (if it makes sense)
+- [ ] Infra/tooling update checker beyond Dependabot (Renovate?)
+- [ ] Review useful security workflows → https://github.com/enorm-labs/event-checker/actions/new?category=security
+- [ ] Dashboard for analysing the data (Superset, Kibana, Grafana, …?)
+- [ ] Enable agentic workflows (continuous refactoring/docs) → https://github.github.com/gh-aw/
+
+## Legal / Compliance (before going live)
+
+- [ ] Imprint (Impressum)
+- [ ] DSGVO / GDPR
+- [ ] Accessibility review
+- [ ] Display used FOSS / attributions
+- [ ] Link to the GitHub repository
+- [ ] Confirm legality of scraping events and displaying them
+
+## Tooling, AI Agents & Skills
+
+- [ ] Multiple/path-specific instruction files (at least backend + frontend) →
+  [docs](https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/add-custom-instructions/add-repository-instructions#creating-path-specific-custom-instructions)
+- [ ] Create more prompts/skills/agents:
+    - [ ] Feature planning + spec creation (interview → spec → plan; see [spec-kit](https://github.github.com/spec-kit/))
+    - [ ] Code review agent
+    - [ ] Documentation-update agent
+    - [ ] Security agent
+    - [ ] UI/UX agent
+    - [ ] Refactoring / code-quality agent (behavior-preserving)
+    - [ ] Architecture-review agent
+    - [ ] ADR-authoring prompt
+- [ ] Evaluate/steal ideas (don't necessarily install): [awesome-copilot](https://github.com/github/awesome-copilot),
+  [superpowers](https://github.com/obra/superpowers), [get-shit-done](https://github.com/gsd-build/get-shit-done)
+  — recommendation on record: keep AGENTS.md as the source of truth; add optional prompt files, don't adopt always-on ceremony.
+- [ ] Try [Repomix](https://repomix.com/) (+ [GH Actions](https://repomix.com/guide/github-actions))
+- [ ] Consider a `BACKLOG.md` context-engineering approach
+  ([reference](https://www.codecentric.de/wissens-hub/blog/strukturierte-migration-mit-claude-code-context-engineering-statt-prompt-engineering))
+- Note: IntelliJ Copilot Chat now supports the "Copilot CLI" provider, so global `~/.copilot/skills/` are usable there too.
+
+## Docs, Repo & Templates
+
+- [ ] **To consider:** rename the repo (and internal `event-checker` references) to `event-junkie` —
+  would collapse the public/internal split. Note: this **reverses the current BRANDING naming rule**
+  (§ "Naming rule"); if pursued, update BRANDING.md accordingly. Scope: repo name, Gradle modules,
+  packages, DB schema, ADRs, docs.
+- [ ] Generate a Mermaid domain class diagram via Gradle
+- [ ] Community/repo health files: CONTRIBUTING, CODE_OF_CONDUCT, SECURITY, SUPPORT
+  (example: [gitfolio](https://github.com/github-samples/gitfolio))
+- [ ] Repository best-practices pass (follow GitHub docs)
+- [ ] Create a public Roadmap
+- [ ] Create a template repository (Enterprise + private):
+    - [ ] `.github/` with workflows, instructions, skills, prompts, agents
+    - [ ] README, CONTRIBUTING, LICENSE, etc.
+    - [ ] Check for good existing templates first; see also the OTR service template; add scaffolding
+
+---
+
+## 🔵 Someday / Vision
+
+Bigger bets and post-MVP features. Details in [docs/VISION_ROADMAP_IDEAS.md](docs/VISION_ROADMAP_IDEAS.md).
+
+- iCal support; export/import calendar to Google Calendar or file
+- Login / profile: favourites (Merkliste), reminders, favourite venues/artists, notifications,
+  customizable start page, RSVP ("interested"/"going"), recommendations
+- User/venue-submitted events with review-before-publish (→ RBAC / Keycloak)
+- Social layer: connect with friends, see friends' interest/attendance
+- Venue & artist profiles (with links); venues browsable by genre + location
+- Rank events by popularity (RSVPs) and by artist popularity
+- Integrate Spotify / Deezer / SoundCloud / Resident Advisor (notify when favourite artists play)
+- Club map — events nearby
+- Public API for third-party apps → API management (subscriptions, keys)
+- Expand beyond Berlin to other cities
