@@ -69,8 +69,9 @@ test('shows empty states when both feeds are empty', async ({ page }) => {
 
   await page.goto('/')
 
-  await expect(page.getByText('Nothing on tonight.')).toBeVisible()
-  await expect(page.getByText('No upcoming events found.')).toBeVisible()
+  // Empty-state copy is in the brand voice; assert on a stable substring so wording can flex.
+  await expect(page.getByText(/nothing on tonight/i)).toBeVisible()
+  await expect(page.getByText(/nothing upcoming/i)).toBeVisible()
 })
 
 test('shows an error in one feed without affecting the other', async ({ page }) => {

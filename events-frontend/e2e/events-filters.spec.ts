@@ -136,7 +136,8 @@ test('shows the empty state when no events match', async ({ page }) => {
   await page.getByRole('searchbox').fill('nothing')
   await page.getByRole('button', { name: 'Search' }).click()
 
-  await expect(page.getByText('No events match these filters.')).toBeVisible()
+  // Brand-voice empty state; match a stable substring so the wording can flex.
+  await expect(page.getByText(/nothing matches/i)).toBeVisible()
   await expect(eventHeading(page, 'Default Event A')).toHaveCount(0)
 })
 

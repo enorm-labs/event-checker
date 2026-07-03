@@ -51,12 +51,12 @@ onMounted(() => {
 
     <section class="space-y-4">
       <SectionLabel>Tonight</SectionLabel>
-      <p v-if="today.loading.value" class="text-sm text-muted-foreground">Loading…</p>
+      <p v-if="today.loading.value" class="text-sm text-muted-foreground">Cueing it up…</p>
       <p v-else-if="today.error.value" class="text-sm text-destructive">
         {{ today.error.value }}
       </p>
       <p v-else-if="!today.data.value?.length" class="text-sm text-muted-foreground">
-        Nothing on tonight.
+        Nothing on tonight? In Berlin? Unlikely — try the calendar.
       </p>
       <div v-else class="grid gap-3 sm:grid-cols-2">
         <EventCard v-for="event in today.data.value" :key="event.slug" :event="event" />
@@ -65,12 +65,12 @@ onMounted(() => {
 
     <section class="space-y-4">
       <SectionLabel>Upcoming</SectionLabel>
-      <p v-if="upcoming.loading.value" class="text-sm text-muted-foreground">Loading…</p>
+      <p v-if="upcoming.loading.value" class="text-sm text-muted-foreground">Cueing it up…</p>
       <p v-else-if="upcoming.error.value" class="text-sm text-destructive">
         {{ upcoming.error.value }}
       </p>
       <p v-else-if="!upcoming.data.value?.length" class="text-sm text-muted-foreground">
-        No upcoming events found.
+        Nothing upcoming right now — check back soon.
       </p>
       <div v-else class="grid gap-3 sm:grid-cols-2">
         <EventCard v-for="event in upcoming.data.value" :key="event.slug" :event="event" />

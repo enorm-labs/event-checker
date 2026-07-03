@@ -31,11 +31,11 @@ watch(slug, run)
 
 <template>
   <main class="mx-auto max-w-3xl space-y-8 p-8">
-    <p v-if="loading" class="text-sm text-muted-foreground">Loading…</p>
+    <p v-if="loading" class="text-sm text-muted-foreground">Cueing it up…</p>
 
     <div v-else-if="notFound" class="space-y-3">
       <h1 class="text-2xl font-bold tracking-tight">Event not found</h1>
-      <p class="text-muted-foreground">This event may have been removed or never existed.</p>
+      <p class="text-muted-foreground">This one's gone — like last call. Plenty more nights out there.</p>
       <Button as-child variant="outline">
         <RouterLink to="/">Back to home</RouterLink>
       </Button>
