@@ -170,7 +170,7 @@ A sequence that also captures the §3–§5 design ideas not tracked in the chec
 - [x] Home hero — ambient violet glow, animated pulse mark, wordmark + tagline — and mono eyebrow
   section labels (`PulseMark`, `SectionLabel`, motion keyframes in `main.css`). *(§5.5, §5.6)*
 - [x] Refined event cards + a pulsing "live tonight" dot + hover-lift, gated by reduced-motion. *(§5.5)*
-- [ ] Events & Calendar: eyebrow headers, filter-forward polish, accent-branded day markers. *(§5.6)*
+- [x] Events & Calendar: eyebrow headers, filter-forward polish, accent-branded day markers. *(§5.6)*
 - [ ] Detail pages: editorial layout + eyebrow section labels; duotone/accent image treatment. *(§4, §5.4)*
 - [ ] Empty / 404 / loading microcopy in the brand voice. *(§3)*
 
