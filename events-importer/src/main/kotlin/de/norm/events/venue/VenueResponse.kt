@@ -24,6 +24,8 @@ data class VenueResponse(
     val city: String,
     @Schema(description = "Postal code of the venue's address", example = "10245")
     val postalCode: String?,
+    @Schema(description = "Berlin borough (Bezirk) as a canonical slug", example = "friedrichshain-kreuzberg")
+    val district: String?,
     @Schema(description = "Geographic latitude for map display", example = "52.507242")
     val latitude: BigDecimal?,
     @Schema(description = "Geographic longitude for map display", example = "13.451803")
@@ -47,6 +49,7 @@ data class VenueResponse(
                 address = venue.address,
                 city = venue.city,
                 postalCode = venue.postalCode,
+                district = venue.district,
                 latitude = venue.latitude,
                 longitude = venue.longitude,
                 websiteUrl = venue.websiteUrl,

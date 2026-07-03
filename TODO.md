@@ -43,7 +43,7 @@ Public name is **Event Junkie**; internal/repo name stays **Event Checker**
 ## Frontend & BFF
 
 - [ ] Venues page (with map) — consumes the existing `GET /venues` list endpoint
-- [ ] District filter/feed → add a `district` column to the venue table
+- [x] District filter/feed → `district` on the venue table + `?district=` events filter (explicit per venue; Berlin PLZ→Bezirk is many-to-one so not derivable)
 - [ ] Sitemap (still worthwhile for SEO?)
 - [ ] RSS feed for newly imported events
 - [ ] I18N / L10N + translations

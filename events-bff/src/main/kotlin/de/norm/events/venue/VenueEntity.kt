@@ -20,6 +20,7 @@ data class VenueEntity(
     val address: String? = null,
     val city: String = "Berlin",
     val postalCode: String? = null,
+    val district: String? = null,
     val latitude: BigDecimal? = null,
     val longitude: BigDecimal? = null,
     val websiteUrl: String? = null,

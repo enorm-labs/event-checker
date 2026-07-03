@@ -10,6 +10,23 @@ import { useGenres } from '@/composables/useGenres'
 const PAGE_SIZE = 20
 const EVENT_TYPES = ['CONCERT', 'FESTIVAL', 'PARTY', 'QUIZ', 'CLUB_NIGHT', 'SHOW', 'OTHER']
 
+// Berlin's 12 boroughs (Bezirke), as { slug, label } for the district filter. Venues carry the
+// slug; the label is shown in the dropdown. Kept as a static list since the set is fixed.
+const DISTRICTS = [
+  { slug: 'mitte', label: 'Mitte' },
+  { slug: 'friedrichshain-kreuzberg', label: 'Friedrichshain-Kreuzberg' },
+  { slug: 'pankow', label: 'Pankow' },
+  { slug: 'charlottenburg-wilmersdorf', label: 'Charlottenburg-Wilmersdorf' },
+  { slug: 'spandau', label: 'Spandau' },
+  { slug: 'steglitz-zehlendorf', label: 'Steglitz-Zehlendorf' },
+  { slug: 'tempelhof-schoeneberg', label: 'Tempelhof-Schöneberg' },
+  { slug: 'neukoelln', label: 'Neukölln' },
+  { slug: 'treptow-koepenick', label: 'Treptow-Köpenick' },
+  { slug: 'marzahn-hellersdorf', label: 'Marzahn-Hellersdorf' },
+  { slug: 'lichtenberg', label: 'Lichtenberg' },
+  { slug: 'reinickendorf', label: 'Reinickendorf' },
+]
+
 const route = useRoute()
 const router = useRouter()
 
@@ -22,6 +39,7 @@ function queryString(key: string): string {
 const params = computed<EventSearchParams>(() => ({
   q: queryString('q') || undefined,
   eventType: queryString('eventType') || undefined,
+  district: queryString('district') || undefined,
   genre: queryString('genre') || undefined,
   minPrice: queryString('minPrice') ? Number(queryString('minPrice')) : undefined,
   maxPrice: queryString('maxPrice') ? Number(queryString('maxPrice')) : undefined,
@@ -105,6 +123,16 @@ watch(() => route.query, run, { deep: true })
       >
         <option value="">All types</option>
         <option v-for="type in EVENT_TYPES" :key="type" :value="type">{{ type }}</option>
+      </select>
+
+      <select
+        :value="queryString('district')"
+        aria-label="Filter by district"
+        class="h-8 rounded-lg border border-border bg-background px-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+        @change="applyFilters({ district: ($event.target as HTMLSelectElement).value })"
+      >
+        <option value="">All districts</option>
+        <option v-for="d in DISTRICTS" :key="d.slug" :value="d.slug">{{ d.label }}</option>
       </select>
 
       <select

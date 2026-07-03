@@ -43,6 +43,9 @@ class EventController(
         @Parameter(description = "Venue slug filter — only events at the matching venue.")
         @RequestParam(required = false)
         venue: String?,
+        @Parameter(description = "District filter — only events at venues in the matching Berlin borough (e.g. friedrichshain-kreuzberg).")
+        @RequestParam(required = false)
+        district: String?,
         @Parameter(description = "Artist slug filter — only events featuring the matching artist.")
         @RequestParam(required = false)
         artist: String?,
@@ -77,6 +80,7 @@ class EventController(
                 to = to,
                 eventType = eventType,
                 venueSlug = venue,
+                district = district,
                 artistSlug = artist,
                 promoterSlug = promoter,
                 genreSlug = genre,

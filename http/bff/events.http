@@ -36,6 +36,10 @@ Accept: application/json
 GET {{bff-host}}/events?venue=lido
 Accept: application/json
 
+### Filter by district (Berlin borough)
+GET {{bff-host}}/events?district=friedrichshain-kreuzberg
+Accept: application/json
+
 ### Filter by artist slug
 GET {{bff-host}}/events?artist=actors
 Accept: application/json

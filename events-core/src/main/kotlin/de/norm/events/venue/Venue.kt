@@ -22,6 +22,8 @@ data class Venue(
     val city: String = "Berlin",
     /** Postal code of the venue's address. Example: `"10245"` */
     val postalCode: String? = null,
+    /** Berlin borough (Bezirk) as a canonical slug. Example: `"friedrichshain-kreuzberg"` */
+    val district: String? = null,
     /** Geographic latitude for map display. Example: `52.507242` */
     val latitude: BigDecimal? = null,
     /** Geographic longitude for map display. Example: `13.451803` */

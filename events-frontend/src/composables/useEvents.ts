@@ -8,6 +8,7 @@ export interface EventSearchParams {
   to?: string
   eventType?: string
   venue?: string
+  district?: string
   artist?: string
   promoter?: string
   genre?: string

@@ -26,6 +26,7 @@ Content-Type: application/json
     "address": "Revaler Str. 99",
     "city": "Berlin",
     "postalCode": "10245",
+    "district": "friedrichshain-kreuzberg",
     "latitude": 52.50730,
     "longitude": 13.45414,
     "websiteUrl": "https://cassiopeia-berlin.de"
@@ -83,6 +84,7 @@ Content-Type: application/json
     "address": "Skalitzer Str. 85-86",
     "city": "Berlin",
     "postalCode": "10997",
+    "district": "friedrichshain-kreuzberg",
     "latitude": 52.49985,
     "longitude": 13.43112,
     "websiteUrl": "https://privatclub-berlin.de"
@@ -140,6 +142,7 @@ Content-Type: application/json
     "address": "Lübbener Str. 19",
     "city": "Berlin",
     "postalCode": "10997",
+    "district": "friedrichshain-kreuzberg",
     "latitude": 52.49967,
     "longitude": 13.43714,
     "websiteUrl": "https://madameclaude.de"
@@ -197,6 +200,7 @@ Content-Type: application/json
     "address": "Revaler Str. 99",
     "city": "Berlin",
     "postalCode": "10245",
+    "district": "friedrichshain-kreuzberg",
     "latitude": 52.50724,
     "longitude": 13.45180,
     "websiteUrl": "https://www.astra-berlin.de"
@@ -255,6 +259,7 @@ Content-Type: application/json
     "address": "Cuvrystr. 7",
     "city": "Berlin",
     "postalCode": "10997",
+    "district": "friedrichshain-kreuzberg",
     "latitude": 52.49778,
     "longitude": 13.43782,
     "websiteUrl": "https://www.lido-berlin.de"
