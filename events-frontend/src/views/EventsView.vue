@@ -145,10 +145,10 @@ watch(() => route.query, run, { deep: true })
       </form>
     </div>
 
-    <p v-if="loading" class="text-sm text-muted-foreground">Loading…</p>
+    <p v-if="loading" class="text-sm text-muted-foreground">Cueing it up…</p>
     <p v-else-if="error" class="text-sm text-destructive">{{ error }}</p>
     <p v-else-if="!page?.content?.length" class="text-sm text-muted-foreground">
-      No events match these filters.
+      Nothing matches those filters. Ease up and try again.
     </p>
     <template v-else>
       <p class="text-sm text-muted-foreground">

@@ -172,7 +172,7 @@ A sequence that also captures the §3–§5 design ideas not tracked in the chec
 - [x] Refined event cards + a pulsing "live tonight" dot + hover-lift, gated by reduced-motion. *(§5.5)*
 - [x] Events & Calendar: eyebrow headers, filter-forward polish, accent-branded day markers. *(§5.6)*
 - [x] Detail pages: editorial layout + eyebrow section labels; desaturate-on-rest image treatment. *(§4, §5.4)*
-- [ ] Empty / 404 / loading microcopy in the brand voice. *(§3)*
+- [x] Empty / 404 / loading microcopy in the brand voice. *(§3)*
 
 ## Glossary
 

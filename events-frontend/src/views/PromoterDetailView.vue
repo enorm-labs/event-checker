@@ -32,10 +32,11 @@ watch(slug, reload)
 
 <template>
   <main class="mx-auto max-w-3xl space-y-8 p-8">
-    <p v-if="loading" class="text-sm text-muted-foreground">Loading…</p>
+    <p v-if="loading" class="text-sm text-muted-foreground">Cueing it up…</p>
 
     <div v-else-if="notFound" class="space-y-3">
       <h1 class="text-2xl font-bold tracking-tight">Promoter not found</h1>
+      <p class="text-muted-foreground">This promoter isn't in our books.</p>
       <Button as-child variant="outline">
         <RouterLink to="/events">Browse events</RouterLink>
       </Button>
@@ -69,10 +70,10 @@ watch(slug, reload)
 
       <section class="space-y-4">
         <SectionLabel>Upcoming events</SectionLabel>
-        <p v-if="eventsLoading" class="text-sm text-muted-foreground">Loading…</p>
+        <p v-if="eventsLoading" class="text-sm text-muted-foreground">Cueing it up…</p>
         <p v-else-if="eventsError" class="text-sm text-destructive">{{ eventsError }}</p>
         <p v-else-if="!events?.content?.length" class="text-sm text-muted-foreground">
-          No upcoming events from this promoter.
+          Nothing on their calendar yet — check back soon.
         </p>
         <div v-else class="grid gap-3 sm:grid-cols-2">
           <EventCard v-for="event in events.content" :key="event.slug" :event="event" />
