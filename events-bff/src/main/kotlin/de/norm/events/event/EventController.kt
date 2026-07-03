@@ -61,6 +61,9 @@ class EventController(
         @Parameter(description = "Case-insensitive substring search over the event title and subtitle.")
         @RequestParam(required = false)
         q: String?,
+        @Parameter(description = "When true, excludes events flagged as sold out. Defaults to false (include all).")
+        @RequestParam(required = false)
+        excludeSoldOut: Boolean?,
         @ParameterObject
         @PageableDefault(size = 20, sort = ["eventDate"])
         pageable: Pageable
@@ -76,7 +79,8 @@ class EventController(
                 genreSlug = genre,
                 minPrice = minPrice,
                 maxPrice = maxPrice,
-                query = q
+                query = q,
+                excludeSoldOut = excludeSoldOut ?: false
             ),
             pageable
         )

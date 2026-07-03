@@ -14,6 +14,7 @@ export interface EventSearchParams {
   minPrice?: number
   maxPrice?: number
   q?: string
+  excludeSoldOut?: boolean
   page?: number
   size?: number
   sort?: string[]

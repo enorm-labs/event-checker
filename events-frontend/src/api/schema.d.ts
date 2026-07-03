@@ -875,6 +875,8 @@ export interface operations {
                 maxPrice?: number;
                 /** @description Case-insensitive substring search over the event title and subtitle. */
                 q?: string;
+                /** @description When true, excludes events flagged as sold out. Defaults to false (include all). */
+                excludeSoldOut?: boolean;
                 /** @description Zero-based page index (0..N) */
                 page?: number;
                 /** @description The size of the page to be returned */
