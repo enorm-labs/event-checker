@@ -140,6 +140,7 @@ CREATE TABLE event
     price_currency     TEXT        NOT NULL DEFAULT 'EUR',
     price_note         TEXT,
     sold_out           BOOLEAN     NOT NULL DEFAULT FALSE,
+    free               BOOLEAN     NOT NULL DEFAULT FALSE,
     created_at         TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at         TIMESTAMPTZ NOT NULL DEFAULT now()
 );

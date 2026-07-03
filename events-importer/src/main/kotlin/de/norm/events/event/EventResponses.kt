@@ -60,6 +60,8 @@ data class EventResponse(
     val priceNote: String?,
     @Schema(description = "Whether all tickets for this event are sold out", example = "false")
     val soldOut: Boolean,
+    @Schema(description = "Whether the event is free to attend (free entry)", example = "false")
+    val free: Boolean,
     @Schema(description = "Timestamp when this record was first created")
     val createdAt: Instant?,
     @Schema(description = "Timestamp when this record was last modified")
@@ -108,6 +110,7 @@ data class EventResponse(
                 priceCurrency = entity.priceCurrency,
                 priceNote = entity.priceNote,
                 soldOut = entity.soldOut,
+                free = entity.free,
                 createdAt = entity.createdAt,
                 updatedAt = entity.updatedAt,
                 artists = artists,

@@ -137,7 +137,8 @@ class EventService(
                 priceBoxOffice = request.priceBoxOffice?.normalizeMoneyScale(),
                 priceCurrency = request.priceCurrency,
                 priceNote = request.priceNote,
-                soldOut = request.soldOut
+                soldOut = request.soldOut,
+                free = request.free
             )
         val saved = eventRepository.save(entity)
         val eventId = saved.id!!
@@ -192,7 +193,8 @@ class EventService(
                 priceBoxOffice = request.priceBoxOffice?.normalizeMoneyScale(),
                 priceCurrency = request.priceCurrency,
                 priceNote = request.priceNote,
-                soldOut = request.soldOut
+                soldOut = request.soldOut,
+                free = request.free
             )
         val saved = eventRepository.save(updated)
 

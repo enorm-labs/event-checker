@@ -64,6 +64,9 @@ class EventController(
         @Parameter(description = "When true, excludes events flagged as sold out. Defaults to false (include all).")
         @RequestParam(required = false)
         excludeSoldOut: Boolean?,
+        @Parameter(description = "When true, returns only events flagged as free to attend. Defaults to false.")
+        @RequestParam(required = false)
+        free: Boolean?,
         @ParameterObject
         @PageableDefault(size = 20, sort = ["eventDate"])
         pageable: Pageable
@@ -80,7 +83,8 @@ class EventController(
                 minPrice = minPrice,
                 maxPrice = maxPrice,
                 query = q,
-                excludeSoldOut = excludeSoldOut ?: false
+                excludeSoldOut = excludeSoldOut ?: false,
+                onlyFree = free ?: false
             ),
             pageable
         )

@@ -78,6 +78,8 @@ data class EventRequest(
     val priceNote: String? = null,
     @Schema(description = "Whether all tickets for this event are sold out", example = "false")
     val soldOut: Boolean = false,
+    @Schema(description = "Whether the event is free to attend (free entry)", example = "false")
+    val free: Boolean = false,
     /** Artists performing at this event with their role and billing position. */
     @field:Valid
     @Schema(description = "Artists performing at this event with their role and billing position")

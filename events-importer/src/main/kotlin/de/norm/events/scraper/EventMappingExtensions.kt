@@ -2,6 +2,7 @@ package de.norm.events.scraper
 
 import de.norm.events.event.EventStatus
 import de.norm.events.event.EventType
+import java.math.BigDecimal
 
 // Domain-level mapping utilities for scraped event data.
 //
@@ -224,4 +225,61 @@ fun buildArtistsForEventType(
             .filterNot { isPlaceholderName(it) }
             .map { ScrapedArtist(name = it, role = "SUPPORT") }
     return headliner + supportActs
+}
+
+/**
+ * Free-entry phrases unambiguous enough to detect from any text field (title or
+ * price note). Multi-word, so they won't collide with band or festival names.
+ */
+private val FREE_PHRASES =
+    listOf(
+        "eintritt frei",
+        "freier eintritt",
+        "kostenloser eintritt",
+        "free entry",
+        "free admission"
+    )
+
+/**
+ * Single-word free markers, only scanned within the pricing-scoped [ScrapedEvent.priceNote]
+ * (never the title/subtitle) to avoid false positives from names like "Freedom Festival"
+ * or "Freikörperkultur". Word-boundary matched, so "free" won't match "freestyle".
+ */
+private val FREE_TOKENS = listOf("free", "frei", "gratis", "kostenlos", "umsonst")
+
+private val FREE_PHRASE_PATTERN =
+    Regex(FREE_PHRASES.joinToString("|") { Regex.escape(it) }, RegexOption.IGNORE_CASE)
+
+private val FREE_TOKEN_PATTERN =
+    Regex("""\b(${FREE_TOKENS.joinToString("|") { Regex.escape(it) }})\b""", RegexOption.IGNORE_CASE)
+
+/**
+ * Detects whether an event is free to attend, from its prices and text.
+ *
+ * A *positive* signal is required — an absent price means the price is **unknown**,
+ * not free — so this returns `true` only for:
+ * - an explicit €0 presale or box-office price, or
+ * - an unambiguous free-entry phrase ([FREE_PHRASES]) in the title or price note, or
+ * - a single-word free marker ([FREE_TOKENS]) in the price note (pricing-scoped, so
+ *   an artist name in the title can't trigger it).
+ *
+ * Example:
+ * ```kotlin
+ * detectFree(priceNote = "Eintritt frei")         // true
+ * detectFree(pricePresale = BigDecimal.ZERO)      // true
+ * detectFree(title = "Freedom Festival")          // false
+ * detectFree(pricePresale = BigDecimal("12.00"))  // false
+ * ```
+ */
+fun detectFree(
+    pricePresale: BigDecimal? = null,
+    priceBoxOffice: BigDecimal? = null,
+    priceNote: String? = null,
+    title: String? = null
+): Boolean {
+    val hasZeroPrice = pricePresale?.signum() == 0 || priceBoxOffice?.signum() == 0
+    val phraseInTitle = title?.let { FREE_PHRASE_PATTERN.containsMatchIn(it) } ?: false
+    val markerInNote =
+        priceNote?.let { FREE_PHRASE_PATTERN.containsMatchIn(it) || FREE_TOKEN_PATTERN.containsMatchIn(it) } ?: false
+    return hasZeroPrice || phraseInTitle || markerInNote
 }

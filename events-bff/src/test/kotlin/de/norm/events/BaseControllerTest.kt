@@ -116,15 +116,16 @@ abstract class BaseControllerTest {
         pricePresale: BigDecimal? = null,
         priceBoxOffice: BigDecimal? = null,
         genre: String? = null,
-        soldOut: Boolean = false
+        soldOut: Boolean = false,
+        free: Boolean = false
     ): Long =
         databaseClient
             .sql(
                 "INSERT INTO events.event " +
                     "(venue_id, title, subtitle, slug, event_date, start_time, source_id, event_type, " +
-                    "price_presale, price_box_office, genre, sold_out) " +
+                    "price_presale, price_box_office, genre, sold_out, free) " +
                     "VALUES (:venueId, :title, :subtitle, :slug, :eventDate, :startTime, :sourceId, :eventType, " +
-                    ":pricePresale, :priceBoxOffice, :genre, :soldOut) " +
+                    ":pricePresale, :priceBoxOffice, :genre, :soldOut, :free) " +
                     "RETURNING id"
             ).bind("venueId", venueId)
             .bind("title", title)
@@ -138,6 +139,7 @@ abstract class BaseControllerTest {
             .bindOrNull("priceBoxOffice", priceBoxOffice, BigDecimal::class.java)
             .bindOrNull("genre", genre)
             .bind("soldOut", soldOut)
+            .bind("free", free)
             .mapId()
 
     protected suspend fun linkArtist(

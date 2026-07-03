@@ -36,6 +36,7 @@ data class EventEntity(
     val priceCurrency: String = "EUR",
     val priceNote: String? = null,
     val soldOut: Boolean = false,
+    val free: Boolean = false,
     val createdAt: Instant? = null,
     val updatedAt: Instant? = null
 )

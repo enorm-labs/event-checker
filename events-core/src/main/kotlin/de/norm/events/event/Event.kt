@@ -117,6 +117,8 @@ data class Event(
     val priceNote: String? = null,
     /** Whether all tickets for this event are sold out. Example: `true` */
     val soldOut: Boolean = false,
+    /** Whether this event is free to attend (no ticket needed / free entry). Example: `true` */
+    val free: Boolean = false,
     /** Timestamp when this record was first created. Set by the database. */
     val createdAt: Instant? = null,
     /** Timestamp when this record was last modified. Set by the database. */

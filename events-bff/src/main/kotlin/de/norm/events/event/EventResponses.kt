@@ -46,6 +46,8 @@ data class EventSummaryResponse(
     val priceNote: String?,
     @Schema(description = "Whether all tickets for this event are sold out", example = "false")
     val soldOut: Boolean,
+    @Schema(description = "Whether the event is free to attend (free entry)", example = "false")
+    val free: Boolean,
     @Schema(description = "The venue where this event takes place")
     val venue: VenueSummaryResponse,
     @Schema(description = "Artist names in billing order (headliner first)", example = "[\"The Adicts\", \"Maid Of Ace\"]")
@@ -76,6 +78,7 @@ data class EventSummaryResponse(
                 priceCurrency = entity.priceCurrency,
                 priceNote = entity.priceNote,
                 soldOut = entity.soldOut,
+                free = entity.free,
                 venue = venue,
                 artistNames = artistNames,
                 genreTags = genreTags
@@ -129,6 +132,8 @@ data class EventDetailResponse(
     val priceNote: String?,
     @Schema(description = "Whether all tickets for this event are sold out", example = "false")
     val soldOut: Boolean,
+    @Schema(description = "Whether the event is free to attend (free entry)", example = "false")
+    val free: Boolean,
     @Schema(description = "The venue where this event takes place")
     val venue: VenueSummaryResponse,
     @Schema(description = "Lineup in billing order (headliner first)")
@@ -167,6 +172,7 @@ data class EventDetailResponse(
                 priceCurrency = entity.priceCurrency,
                 priceNote = entity.priceNote,
                 soldOut = entity.soldOut,
+                free = entity.free,
                 venue = venue,
                 lineup = lineup,
                 promoters = promoters,

@@ -40,6 +40,22 @@ describe('EventCard', () => {
     expect(wrapper.text()).toContain('Sold out')
   })
 
+  it('shows a Free badge for a free event, not when sold out', () => {
+    const free = mount(EventCard, {
+      props: { event: { ...event, soldOut: false, free: true } },
+      global: { stubs },
+    })
+    expect(free.text()).toContain('Free')
+
+    // Sold out takes precedence — a sold-out event never shows the Free badge.
+    const both = mount(EventCard, {
+      props: { event: { ...event, soldOut: true, free: true } },
+      global: { stubs },
+    })
+    expect(both.text()).toContain('Sold out')
+    expect(both.text()).not.toContain('Free')
+  })
+
   it('marks an event happening today as live', () => {
     const wrapper = mount(EventCard, {
       props: { event: { ...event, eventDate: todayIso() } },
