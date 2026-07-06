@@ -11,6 +11,11 @@
 
 A simple app/website for checking and finding music events in Berlin (scope might be extended in the future).
 
+## Overview
+
+What Event Junkie is, what it does, the problems it solves, and the current feature set:
+see [PRODUCT_OVERVIEW.md](./docs/PRODUCT_OVERVIEW.md).
+
 ## Project Status
 
 🚧 **In Development** — This project is not yet live or deployed to any production environment.
@@ -23,7 +28,7 @@ See [TODO.md](./TODO.md)
 
 ## Vision / Roadmap / Ideas
 
-See [VISION ROADMAP_IDEAS.md](./docs/VISION_ROADMAP_IDEAS.md)
+See [VISION_ROADMAP_IDEAS.md](./docs/VISION_ROADMAP_IDEAS.md)
 
 ## Architecture
 

@@ -31,6 +31,8 @@ Public name is **Event Junkie**; internal/repo name stays **Event Checker**
 ## UI / UX / Branding
 
 - [ ] Full frontend UX pass — what's missing / improvable? (cross-check the vision + branding docs)
+- [ ] Improve **branding & UI/visual design** — a dedicated visual pass beyond the UX audit
+  (colour, type, spacing, components, logo, iconography, imagery, motion), aligned with [BRANDING.md](docs/BRANDING.md)
 - [ ] Verify responsive design + look on mobile
 - [x] "Sold Out" label + filter to exclude sold-out events (PR #57)
 - [x] Free-events filter + "Free" badge (import-time detection via `detectFree`)
@@ -38,7 +40,9 @@ Public name is **Event Junkie**; internal/repo name stays **Event Checker**
 - [ ] Decide on a display/hero typeface vs. staying all-Geist (BRANDING §5.3)
 - [ ] "Venue or event missing? Let us know" form (→ GitHub issues?)
 - [ ] Feedback form (or link to GitHub issues)
-- Design tooling to try: Stitch, "trainspotting"-inspired design — what's the best tool for generating a website design?
+- [ ] Evaluate design tools & AI models for UI + branding — which best generate/refine a site design?
+  Candidates: Google Stitch, v0, Lovable, Figma (+ AI / Make), plus image models (e.g. Midjourney) for
+  visuals/mood boards. Explore the "trainspotting"-inspired direction.
 
 ## Frontend & BFF
 
@@ -55,6 +59,9 @@ Public name is **Event Junkie**; internal/repo name stays **Event Checker**
 - [x] Detect free events at import (`detectFree`: €0 price or free-entry phrases → `free` flag)
 - [ ] Enrich venues: type (club/bar/concert hall), description, image/photo, genres, event types
 - [ ] Improve importer Swagger UI (match the BFF)
+- [ ] Admin imports-status dashboard — surface import states and especially **failed** imports.
+  Start with Importer API endpoints + an admin IntelliJ HTTP Client collection; a proper admin
+  frontend later. (`EventSourceController` already exposes per-source status + retry — build on it.)
 - [ ] Implement more importers/scrapers (see EVENT_DATA_SOURCES.md)
     - [ ] Strategy to implement the remaining importers fast — but still clean, robust, fully tested
     - [ ] Create a prompt/skill for scaffolding a new importer
@@ -113,7 +120,7 @@ Public name is **Event Junkie**; internal/repo name stays **Event Checker**
 - [ ] Community/repo health files: CONTRIBUTING, CODE_OF_CONDUCT, SECURITY, SUPPORT
   (example: [gitfolio](https://github.com/github-samples/gitfolio))
 - [ ] Repository best-practices pass (follow GitHub docs)
-- [ ] Create a public Roadmap
+- [ ] Create a public Roadmap (seed it from the phased roadmap in [docs/VISION_ROADMAP_IDEAS.md](docs/VISION_ROADMAP_IDEAS.md))
 - [ ] Create a template repository (Enterprise + private):
     - [ ] `.github/` with workflows, instructions, skills, prompts, agents
     - [ ] README, CONTRIBUTING, LICENSE, etc.
@@ -126,10 +133,13 @@ Public name is **Event Junkie**; internal/repo name stays **Event Checker**
 Bigger bets and post-MVP features. Details in [docs/VISION_ROADMAP_IDEAS.md](docs/VISION_ROADMAP_IDEAS.md).
 
 - iCal support; export/import calendar to Google Calendar or file
-- Login / profile: favourites (Merkliste), reminders, favourite venues/artists, notifications,
-  customizable start page, RSVP ("interested"/"going"), recommendations
+- **Expansion stage 1 — Login / profile:** follow/favourite artists, venues, districts, promoters,
+  genres (…) to filter events and drive notifications — two steps, YouTube-style: (1) follow,
+  (2) get notified. Plus favourites (Merkliste), reminders, customizable start page,
+  RSVP ("interested"/"going"), recommendations. (→ RBAC / Keycloak)
+- **Expansion stage 2 — Social layer:** connect with friends to see which events they're interested
+  in or going to (interest/attendance).
 - User/venue-submitted events with review-before-publish (→ RBAC / Keycloak)
-- Social layer: connect with friends, see friends' interest/attendance
 - Venue & artist profiles (with links); venues browsable by genre + location
 - Rank events by popularity (RSVPs) and by artist popularity
 - Integrate Spotify / Deezer / SoundCloud / Resident Advisor (notify when favourite artists play)
