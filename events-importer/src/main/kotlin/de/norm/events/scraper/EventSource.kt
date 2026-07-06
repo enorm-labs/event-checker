@@ -22,7 +22,10 @@ enum class EventSource {
     ASTRA,
 
     /** Lido Berlin – same Kulturhäuser platform as Astra (different theme), homepage listing with detail pages. */
-    LIDO;
+    LIDO,
+
+    /** SO36 Berlin – Ticket-Toaster shop platform; `/tickets` listing with per-event `/produkte/…` detail pages. */
+    SO36;
 
     /**
      * Prefix for `sourceId` values, derived from the enum name in lowercase.
