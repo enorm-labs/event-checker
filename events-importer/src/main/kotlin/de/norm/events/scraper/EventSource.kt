@@ -25,7 +25,10 @@ enum class EventSource {
     LIDO,
 
     /** SO36 Berlin – Ticket-Toaster shop platform; `/tickets` listing with per-event `/produkte/…` detail pages. */
-    SO36;
+    SO36,
+
+    /** Roadrunner's Paradise Berlin – retro hand-coded single-page `programm.html` listing (rockabilly/roots). */
+    ROADRUNNER;
 
     /**
      * Prefix for `sourceId` values, derived from the enum name in lowercase.

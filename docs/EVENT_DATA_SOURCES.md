@@ -34,7 +34,7 @@ The **Import** column tracks whether an automated importer has been implemented 
 | Urban Spree                 | https://www.urbanspree.com/                 | Club         |     ✅      |        |                                   |
 | Lido                        | https://www.lido-berlin.de/                 | Concert Hall |     ✅      |   ✅    |                                   |
 | Hole 44                     | https://hole-berlin.de/                     | Concert Hall |     ✅      |        |                                   |
-| SO36                        | https://www.so36.com/                       | Club         |     ✅      |        | Cookie wall blocks content        |
+| SO36                        | https://www.so36.com/                       | Club         |     ✅      |   ✅    | Cookie wall blocks content        |
 | Artliners Berlin            | https://artliners-berlin.com/               | Club         |     ✅      |        | No structured events; flyers only |
 | Madame Claude               | https://madameclaude.de/                    | Bar          |     ✅      |   ✅    |                                   |
 | Bar jeder Vernunft          | https://www.bar-jeder-vernunft.de/          | Bar          |     ✅      |        | Theater/cabaret; multi-day ranges |
@@ -43,7 +43,7 @@ The **Import** column tracks whether an automated importer has been implemented 
 | Wild at Heart               | https://www.wildatheartberlin.de/index1.htm | Bar          |     ✅      |        | Minimal page; no events           |
 | Bohnengold                  |                                             | Bar          |            |        |                                   |
 | Mikropol                    | https://mikropol-berlin.de/                 | Club         |     ✅      |        | Booking info only; no listings    |
-| Roadrunner's Paradise       | http://www.roadrunners-paradise.de/         | Bar          |     ✅      |        | Retro HTML; rich event data       |
+| Roadrunner's Paradise       | http://www.roadrunners-paradise.de/         | Bar          |     ✅      |   ✅    | Retro HTML; rich event data       |
 | Havanna                     | https://www.havanna-berlin.de/              | Club         |     ✅      |        | Latin dance club; no event data   |
 | Paloma                      | https://www.palomabar.de/                   | Bar          |     ✅      |        | Sparse listings; no dates         |
 | Arkaoda                     | https://berlin.arkaoda.com/                 | Bar          |     ✅      |        |                                   |
