@@ -1,0 +1,88 @@
+package de.norm.events.scraper.badehaus
+
+import de.norm.events.event.EventStatus
+import de.norm.events.event.EventType
+import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.nulls.shouldNotBeNull
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldStartWith
+import org.jsoup.Jsoup
+import org.junit.jupiter.api.Test
+import java.time.LocalDate
+import java.time.LocalTime
+
+/**
+ * Unit tests for [BadehausOverviewPageScraper].
+ *
+ * Parses the real `/events/` listing snapshot and asserts card extraction plus the
+ * CSS-class-based sold-out / relocated status signals.
+ */
+class BadehausOverviewPageScraperTest {
+    private val scraper = BadehausOverviewPageScraper()
+    private val baseUrl = "https://badehaus-berlin.com/events/"
+
+    private fun listing() =
+        Jsoup.parse(
+            javaClass.classLoader
+                .getResourceAsStream("scraper/badehaus/badehaus-events.html")!!
+                .bufferedReader()
+                .readText(),
+            baseUrl
+        )
+
+    private fun events() = scraper.scrape(listing(), baseUrl)
+
+    @Test
+    fun `parses every event card on the listing`() {
+        events() shouldHaveSize 90
+    }
+
+    @Test
+    fun `extracts all fields of a scheduled event`() {
+        val ela = events().first { it.sourceId == "badehaus:ela" }
+        ela.title shouldBe "ela."
+        ela.eventDate shouldBe LocalDate.of(2026, 9, 23)
+        ela.doorsTime shouldBe LocalTime.of(19, 0)
+        ela.sourceUrl shouldBe "https://badehaus-berlin.com/events/ela/"
+        ela.subtitle shouldBe "Pinke Plüschjacke Tour | Deutsch-Pop"
+        ela.ticketUrl.shouldNotBeNull()
+        ela.ticketUrl!! shouldStartWith "https://www.eventim-light.com/"
+        ela.imageUrl.shouldNotBeNull()
+        ela.imageUrl!! shouldStartWith "https://badehaus-berlin.com/wp-content/uploads/"
+        ela.soldOut shouldBe false
+        ela.status shouldBe EventStatus.SCHEDULED.name
+        // No category is published, so the type is inferred: a plain music event → CONCERT.
+        ela.eventType shouldBe EventType.CONCERT.name
+    }
+
+    @Test
+    fun `infers the event type from the title when no category is published`() {
+        val events = events()
+        events.first { it.sourceId == "badehaus:pubquiz-with-simply-quiz-162" }.eventType shouldBe EventType.QUIZ.name
+        events.first { it.sourceId == "badehaus:call-me-maybe-2000s-2010s-pop-party-8" }.eventType shouldBe
+            EventType.PARTY.name
+        events.first { it.sourceId == "badehaus:world-cup-2026-live-screening-7" }.eventType shouldBe EventType.OTHER.name
+    }
+
+    @Test
+    fun `flags a sold-out event from the AUSVERKAUFT card class`() {
+        val soldOut = events().first { it.sourceId == "badehaus:futurebae" }
+        soldOut.soldOut shouldBe true
+        // Sold out is a flag, not a status.
+        soldOut.status shouldBe EventStatus.SCHEDULED.name
+        soldOut.eventDate shouldBe LocalDate.of(2026, 9, 22)
+    }
+
+    @Test
+    fun `maps a VERLEGT card class to RELOCATED status`() {
+        val relocated = events().first { it.sourceId == "badehaus:forager" }
+        relocated.status shouldBe EventStatus.RELOCATED.name
+        relocated.soldOut shouldBe false
+    }
+
+    @Test
+    fun `returns no events for a listing without cards`() {
+        val html = "<html><body><div class='content'><p>No events</p></div></body></html>"
+        scraper.scrape(Jsoup.parse(html, baseUrl), baseUrl) shouldHaveSize 0
+    }
+}

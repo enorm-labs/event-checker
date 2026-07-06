@@ -56,7 +56,13 @@ Public name is **Event Junkie**; internal/repo name stays **Event Checker**
 
 ## Importer / Data
 
+- Known per-importer gaps & missing-data limitations are catalogued in
+  [docs/IMPORTER_KNOWN_ISSUES.md](docs/IMPORTER_KNOWN_ISSUES.md) — pull from there when picking up work.
+
 - [x] Detect free events at import (`detectFree`: €0 price or free-entry phrases → `free` flag)
+- [ ] Normalize artists (at least use normal case instead of all upper case, except for acronyms)
+- [ ] Use AI in importer to enrich events with missing data (e.g. genres, event types)
+- [ ] Build Admin tool/frontend to enrich events fast and easy with missing data (e.g. genres, event types) - sort and filter events by missing data
 - [ ] Enrich venues: type (club/bar/concert hall), description, image/photo, genres, event types
 - [ ] Improve importer Swagger UI (match the BFF)
 - [ ] Admin imports-status dashboard — surface import states and especially **failed** imports.
@@ -133,6 +139,7 @@ Public name is **Event Junkie**; internal/repo name stays **Event Checker**
 Bigger bets and post-MVP features. Details in [docs/VISION_ROADMAP_IDEAS.md](docs/VISION_ROADMAP_IDEAS.md).
 
 - iCal support; export/import calendar to Google Calendar or file
+- Chatbot and/or MCP server to find events and answer questions about events, artists, venues, districts, promoters, genres, etc.
 - **Expansion stage 1 — Login / profile:** follow/favourite artists, venues, districts, promoters,
   genres (…) to filter events and drive notifications — two steps, YouTube-style: (1) follow,
   (2) get notified. Plus favourites (Merkliste), reminders, customizable start page,

@@ -199,6 +199,18 @@ class EventSourceControllerTest : BaseControllerTest() {
     }
 
     @Test
+    fun `POST import for non-existent source returns 404`() {
+        // The trigger validates the slug synchronously before launching the background job,
+        // so an unknown slug surfaces as 404 rather than a silent background failure.
+        webTestClient
+            .post()
+            .uri("/api/admin/event-sources/non-existent/import")
+            .exchange()
+            .expectStatus()
+            .isNotFound
+    }
+
+    @Test
     fun `PATCH non-existent source returns 404`() {
         webTestClient
             .patch()

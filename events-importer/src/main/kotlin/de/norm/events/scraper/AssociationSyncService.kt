@@ -14,6 +14,7 @@ import de.norm.events.genretag.GenreTagRepository
 import de.norm.events.genretag.normalizeGenre
 import de.norm.events.promoter.PromoterEntity
 import de.norm.events.promoter.PromoterRepository
+import de.norm.events.promoter.canonicalPromoterName
 import de.norm.events.slug.SlugGenerator
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.flow.toList
@@ -207,7 +208,10 @@ class AssociationSyncService(
      *   promoters referenced by the scraped events.
      */
     private suspend fun resolveAllPromoters(scrapedEvents: List<ScrapedEvent>): Map<String, PromoterEntity> {
-        val allPromoterSlugs = scrapedEvents.flatMap { it.promoters }.map { SlugGenerator.slugify(it) }.toSet()
+        // Canonicalize names first so variants of the same promoter ("LOFT",
+        // "Loft Concerts GmbH") resolve to one entity (see canonicalPromoterName).
+        val canonicalNames = scrapedEvents.flatMap { it.promoters }.map { canonicalPromoterName(it) }
+        val allPromoterSlugs = canonicalNames.map { SlugGenerator.slugify(it) }.toSet()
         if (allPromoterSlugs.isEmpty()) return emptyMap()
 
         val promoterCache =
@@ -218,8 +222,7 @@ class AssociationSyncService(
                 .toMutableMap()
 
         // Auto-create only the promoters not already in the database
-        scrapedEvents
-            .flatMap { it.promoters }
+        canonicalNames
             .distinctBy { SlugGenerator.slugify(it) }
             .forEach { resolveOrCreatePromoter(it, promoterCache) }
 
@@ -227,10 +230,10 @@ class AssociationSyncService(
     }
 
     /**
-     * Resolves a promoter by slug (derived from name) from the [promoterCache],
-     * or auto-creates a new promoter entity if no match is found. Newly created
-     * promoters are added to the cache so subsequent events in the same batch
-     * can reuse them without additional database queries.
+     * Resolves a promoter by slug (derived from its already-canonicalized [name]) from
+     * the [promoterCache], or auto-creates a new promoter entity if no match is found.
+     * Newly created promoters store the canonical name and are added to the cache so
+     * subsequent events in the same batch can reuse them without additional DB queries.
      *
      * Handles concurrent promoter creation gracefully: if another import creates
      * the same promoter between our cache check and save, the unique constraint
@@ -267,8 +270,9 @@ class AssociationSyncService(
                 EventPromoterEntity::eventId
             ) ?: return
 
-        // Build the desired associations from scraped data
-        val promotersBySourceId = scrapedEvents.associate { it.sourceId to it.promoters }
+        // Build the desired associations from scraped data, canonicalizing names so the
+        // slug lookup matches the (canonical) keys used when the cache was populated.
+        val promotersBySourceId = scrapedEvents.associate { it.sourceId to it.promoters.map { p -> canonicalPromoterName(p) } }
         val toInsert = mutableListOf<EventPromoterEntity>()
         val toDeleteIds = mutableListOf<Long>()
 

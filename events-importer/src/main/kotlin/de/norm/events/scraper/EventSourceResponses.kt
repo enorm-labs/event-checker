@@ -72,3 +72,18 @@ data class ImportResultResponse(
     @Schema(description = "Error message if the import failed")
     val error: String? = null
 )
+
+/**
+ * Response DTO acknowledging that an import was accepted and started in the background.
+ *
+ * Manual import triggers are fire-and-forget (HTTP `202 Accepted`): the import runs
+ * asynchronously so its duration is decoupled from the request. Poll the event source's
+ * status via `GET /api/admin/event-sources/{slug}` to observe progress and the outcome.
+ */
+@Schema(description = "Acknowledgement that a background import was accepted and started")
+data class ImportTriggeredResponse(
+    @Schema(description = "Human-readable acknowledgement message", example = "Import started for source 'privatclub'")
+    val message: String,
+    @Schema(description = "Slug of the triggered source, or null when all enabled sources were triggered", example = "privatclub")
+    val sourceSlug: String? = null
+)

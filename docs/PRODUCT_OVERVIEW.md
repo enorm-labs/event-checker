@@ -68,10 +68,12 @@ path to a public launch (hosting, domain, auth, legal) is tracked in [TODO.md](.
 
 **Automated data aggregation — Importer**
 
-- **Six Berlin venues live:** Cassiopeia, Privatclub, Madame Claude, Astra Kulturhaus, Lido, and SO36.
+- **Eight Berlin venues live:** Cassiopeia, Privatclub, Madame Claude, Astra Kulturhaus, Lido, SO36,
+  Roadrunner's Paradise, and Badehaus.
 - **Scheduled imports** with **change detection** (ETag / Last-Modified), **per-host politeness
   throttling**, deduplication, and **stale-event cleanup**.
-- **Per-source status tracking + retry**, managed via an admin API (create/enable/trigger/retry sources).
+- **Per-source status tracking + retry**, managed via an admin API — imports trigger asynchronously
+  (fire-and-forget) and their status is polled (create/enable/trigger/retry sources).
 - **Data enrichment at import:** free-event detection, sold-out and event-status detection, and automatic
   creation + linking of **artists (with roles/billing order), promoters and genre tags**.
 - A **`/scaffold-importer`** skill that turns adding a new venue into a guided, tested workflow.
@@ -90,7 +92,7 @@ path to a public launch (hosting, domain, auth, legal) is tracked in [TODO.md](.
 ### Not there yet
 
 User accounts & personalization, notifications, a venues map, broader venue coverage (beyond the current
-six), and a public deployment. These are the roadmap — see
+eight), and a public deployment. These are the roadmap — see
 [VISION_ROADMAP_IDEAS.md](VISION_ROADMAP_IDEAS.md) and [TODO.md](../TODO.md).
 
 ---
