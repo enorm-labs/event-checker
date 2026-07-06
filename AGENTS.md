@@ -166,7 +166,7 @@ subprojects sharing a root `settings.gradle.kts`, plus a standalone frontend pro
       Each contains a `*WebsiteImporter.kt` implementing `EventImporter`, plus `*OverviewPageScraper.kt` and `*DetailPageScraper.kt`
       for pure HTML parsing (no I/O). Use existing implementations as templates when adding new venue importers.
     - **`AbstractTwoPageWebsiteImporter`** — base class for venues that use the overview → detail pattern (currently
-      Cassiopeia and Madame Claude). Owns the shared overview-fetch → per-event detail-fetch → gap-fill orchestration,
+      Cassiopeia, Madame Claude, Astra, Lido, SO36, and Badehaus). Owns the shared overview-fetch → per-event detail-fetch → gap-fill orchestration,
       including `NotModified` handling and the "degrade to overview data if the detail page fails" fallback. Subclasses
       implement only `scrapeOverview`, `scrapeDetail`, and `fillGapsFromOverview` (the venue-specific merge strategy).
       Single-page venues (e.g. `PrivatclubWebsiteImporter`) implement `EventImporter` directly instead.

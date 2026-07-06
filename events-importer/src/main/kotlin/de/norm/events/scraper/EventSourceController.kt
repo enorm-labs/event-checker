@@ -27,31 +27,44 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/admin/event-sources")
 @Tag(name = "Admin: Event Sources", description = "Endpoints for managing event sources and triggering imports")
 class EventSourceController(
-    private val eventImportService: EventImportService,
+    private val importJobLauncher: ImportJobLauncher,
     private val eventSourceService: EventSourceService
 ) {
     // -- Import operations ---
 
     /**
-     * Triggers an import for all enabled event sources.
+     * Triggers a background import for all enabled event sources.
      *
-     * Each source is processed independently — a failure in one does not
-     * prevent others from being imported.
+     * Returns `202 Accepted` immediately; the import runs asynchronously (see
+     * [ImportJobLauncher]) so its duration is decoupled from the request. Each source is
+     * processed independently — a failure in one does not prevent others from being imported.
+     * Poll `GET /api/admin/event-sources` to observe each source's status.
      */
     @PostMapping("/import")
-    @Operation(summary = "Trigger import for all enabled event sources")
-    suspend fun importAll(): List<ImportResultResponse> = eventImportService.importAll()
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @Operation(summary = "Trigger a background import for all enabled event sources")
+    fun importAll(): ImportTriggeredResponse {
+        importJobLauncher.triggerImportAll()
+        return ImportTriggeredResponse(message = "Import started for all enabled event sources")
+    }
 
     /**
-     * Triggers an import for a single event source identified by its slug.
+     * Triggers a background import for a single event source identified by its slug.
+     *
+     * Returns `202 Accepted` immediately; the import runs asynchronously (see
+     * [ImportJobLauncher]). Poll `GET /api/admin/event-sources/{slug}` to observe its status.
      *
      * @throws EventSourceNotFoundException if no source with the given slug exists.
      */
     @PostMapping("/{slug}/import")
-    @Operation(summary = "Trigger import for a single event source by slug")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @Operation(summary = "Trigger a background import for a single event source by slug")
     suspend fun importBySlug(
         @PathVariable slug: String
-    ): ImportResultResponse = eventImportService.importBySlug(slug)
+    ): ImportTriggeredResponse {
+        importJobLauncher.triggerImportBySlug(slug)
+        return ImportTriggeredResponse(message = "Import started for source '$slug'", sourceSlug = slug)
+    }
 
     // -- CRUD operations ---
 

@@ -1,0 +1,65 @@
+package de.norm.events.promoter
+
+import io.kotest.matchers.shouldBe
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertAll
+
+/**
+ * Unit tests for [canonicalPromoterName].
+ *
+ * The cases are drawn from real promoter names seen across the venue importers,
+ * where the same promoter appears abbreviated on one site and with a full trading
+ * name on another.
+ */
+class PromoterNormalizerTest {
+    @Test
+    fun `merges abbreviated and full trading-name variants of the same promoter`() {
+        assertAll(
+            { canonicalPromoterName("LOFT") shouldBe "Loft" },
+            { canonicalPromoterName("Loft Concerts") shouldBe "Loft" },
+            { canonicalPromoterName("Loft Concert GmbH") shouldBe "Loft" },
+            { canonicalPromoterName("Loft Concerts GmbH") shouldBe "Loft" },
+            { canonicalPromoterName("UNDERCOVER") shouldBe "Undercover" },
+            { canonicalPromoterName("Undercover GmbH") shouldBe "Undercover" },
+            { canonicalPromoterName("TRINITY") shouldBe "Trinity" },
+            { canonicalPromoterName("Trinity Music") shouldBe "Trinity" },
+            { canonicalPromoterName("Trinity Music GmbH") shouldBe "Trinity" },
+            { canonicalPromoterName("LANDSTREICHER") shouldBe "Landstreicher" },
+            { canonicalPromoterName("Landstreicher Konzerte") shouldBe "Landstreicher" },
+            { canonicalPromoterName("Landstreicher Konzerte GmbH") shouldBe "Landstreicher" }
+        )
+    }
+
+    @Test
+    fun `de-shouts all-caps labels but preserves intentional mixed casing`() {
+        assertAll(
+            { canonicalPromoterName("SIMPLY QUIZ") shouldBe "Simply Quiz" },
+            { canonicalPromoterName("THE SWAG") shouldBe "The Swag" },
+            { canonicalPromoterName("FANIA BRAVA") shouldBe "Fania Brava" },
+            // Mixed casing is a deliberate style choice — leave it alone.
+            { canonicalPromoterName("GreyZone Concerts") shouldBe "GreyZone" },
+            { canonicalPromoterName("Greyzone") shouldBe "Greyzone" }
+        )
+    }
+
+    @Test
+    fun `does not strip a descriptor word that is not trailing`() {
+        // "Concert" is load-bearing here (it's the promoter "Concert Concept"),
+        // and only trailing descriptors are stripped, so the name is left intact.
+        canonicalPromoterName("Concert Concept") shouldBe "Concert Concept"
+    }
+
+    @Test
+    fun `never strips a promoter down to nothing`() {
+        assertAll(
+            // A promoter named purely of descriptor words keeps its single word.
+            { canonicalPromoterName("Records") shouldBe "Records" },
+            { canonicalPromoterName("36 Concerts") shouldBe "36" }
+        )
+    }
+
+    @Test
+    fun `normalizes surrounding and internal whitespace`() {
+        canonicalPromoterName("  Loft   Concerts  ") shouldBe "Loft"
+    }
+}

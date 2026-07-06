@@ -39,23 +39,23 @@ Accept: application/json
     });
 %}
 
-### Trigger import for all enabled event sources
+### Trigger import for all enabled event sources (runs in background → 202 Accepted)
 POST {{importer-host}}/api/admin/event-sources/import
 Accept: application/json
 
 > {%
-    client.test("should return 200", function () {
-        client.assert(response.status === 200, "Expected 200 but got " + response.status);
+    client.test("should return 202", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}
 
-### Trigger import for a single event source by slug
+### Trigger import for a single event source by slug (runs in background → 202 Accepted)
 POST {{importer-host}}/api/admin/event-sources/{{source_slug}}/import
 Accept: application/json
 
 > {%
-    client.test("should return 200", function () {
-        client.assert(response.status === 200, "Expected 200 but got " + response.status);
+    client.test("should return 202", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}
 

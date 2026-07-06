@@ -9,26 +9,29 @@ package de.norm.events.scraper
  * every registered source must have a matching importer bean.
  */
 enum class EventSource {
-    /** Cassiopeia Berlin – Webflow-based event listing at `/club`. */
-    CASSIOPEIA,
-
-    /** Privatclub Berlin – WordPress-based single-page event listing. */
-    PRIVATCLUB,
-
-    /** Madame Claude Berlin – WordPress-based event listing with detail pages. */
-    MADAME_CLAUDE,
-
     /** Astra Kulturhaus Berlin – Kulturhäuser-platform listing on the homepage with per-event detail pages. */
     ASTRA,
+
+    /** Badehaus Berlin – WordPress/Events-Manager single-page `/events/` listing with status classes. */
+    BADEHAUS,
+
+    /** Cassiopeia Berlin – Webflow-based event listing at `/club`. */
+    CASSIOPEIA,
 
     /** Lido Berlin – same Kulturhäuser platform as Astra (different theme), homepage listing with detail pages. */
     LIDO,
 
-    /** SO36 Berlin – Ticket-Toaster shop platform; `/tickets` listing with per-event `/produkte/…` detail pages. */
-    SO36,
+    /** Madame Claude Berlin – WordPress-based event listing with detail pages. */
+    MADAME_CLAUDE,
+
+    /** Privatclub Berlin – WordPress-based single-page event listing. */
+    PRIVATCLUB,
 
     /** Roadrunner's Paradise Berlin – retro hand-coded single-page `programm.html` listing (rockabilly/roots). */
-    ROADRUNNER;
+    ROADRUNNER,
+
+    /** SO36 Berlin – Ticket-Toaster shop platform; `/tickets` listing with per-event `/produkte/…` detail pages. */
+    SO36;
 
     /**
      * Prefix for `sourceId` values, derived from the enum name in lowercase.

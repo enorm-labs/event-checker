@@ -172,7 +172,7 @@ classDiagram
     EventImportService --> EventUpsertService: delegates persistence
     EventUpsertService --> AssociationSyncService: delegates associations
     EventSourceService --> EventSourceEntity: CRUD
-    EventSourceController --> EventImportService: triggers imports
+    EventSourceController --> EventImportService: triggers imports (async, via ImportJobLauncher)
     EventSourceController --> EventSourceService: manages sources
     ScheduledImportService --> EventImportService: triggers imports
     ScheduledImportService --> EventSourceEntity: finds due sources

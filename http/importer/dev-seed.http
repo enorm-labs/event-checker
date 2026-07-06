@@ -5,195 +5,26 @@
 ### after starting the importer with a fresh database.
 ### Requests are idempotent-safe: duplicates will return 409.
 ###
-### Sources:
-###   1. Cassiopeia    — https://cassiopeia-berlin.de/club
-###   2. Privatclub    — https://privatclub-berlin.de/
-###   3. Madame Claude — https://madameclaude.de/events/
-###   4. Astra         — https://www.astra-berlin.de/
-###   5. Lido          — https://www.lido-berlin.de/
-###   6. SO36          — https://www.so36.com/tickets
-###   7. Roadrunner's  — http://www.roadrunners-paradise.de/programm.html
+### Import triggers are asynchronous: each returns 202 Accepted immediately and the
+### import runs in the background, so events keep landing for up to ~a minute after the
+### run finishes. Poll `GET /api/admin/event-sources` to watch each source's status.
+###
+### Sources (alphabetical):
+###   Astra Kulturhaus     — https://www.astra-berlin.de/
+###   Badehaus             — https://badehaus-berlin.com/events/
+###   Cassiopeia           — https://cassiopeia-berlin.de/club
+###   Lido                 — https://www.lido-berlin.de/
+###   Madame Claude        — https://madameclaude.de/events/
+###   Privatclub           — https://privatclub-berlin.de/
+###   Roadrunner's Paradise — http://www.roadrunners-paradise.de/programm.html
+###   SO36                 — https://www.so36.com/tickets
 ### ============================================================
-
-### ————————————————————————————————————————————————————————————
-### Cassiopeia (Revaler Str. 99, Berlin-Friedrichshain)
-### ————————————————————————————————————————————————————————————
-
-### --- Step 1: Create Cassiopeia venue ---
-POST {{importer-host}}/api/admin/venues
-Content-Type: application/json
-
-{
-    "name": "Cassiopeia",
-    "address": "Revaler Str. 99",
-    "city": "Berlin",
-    "postalCode": "10245",
-    "district": "friedrichshain-kreuzberg",
-    "latitude": 52.50730,
-    "longitude": 13.45414,
-    "websiteUrl": "https://cassiopeia-berlin.de"
-}
-
-> {%
-    client.global.set("cassiopeia_venue_id", response.body.id);
-    client.test("Cassiopeia venue created", function () {
-        client.assert(response.status === 201, "Expected 201 but got " + response.status);
-    });
-%}
-
-### --- Step 2: Create Cassiopeia event source ---
-# Links the venue to the CassiopeiaWebsiteImporter.
-# The sourceType "CASSIOPEIA" matches EventSource.CASSIOPEIA.
-POST {{importer-host}}/api/admin/event-sources
-Content-Type: application/json
-
-{
-    "venueId": {{cassiopeia_venue_id}},
-    "name": "Cassiopeia",
-    "url": "https://cassiopeia-berlin.de/club",
-    "sourceType": "CASSIOPEIA",
-    "enabled": true,
-    "importIntervalMinutes": 1440,
-    "maxRetries": 3
-}
-
-> {%
-    client.test("Cassiopeia event source created", function () {
-        client.assert(response.status === 201, "Expected 201 but got " + response.status);
-    });
-%}
-
-### --- Step 3: Trigger initial Cassiopeia import ---
-POST {{importer-host}}/api/admin/event-sources/cassiopeia/import
-Accept: application/json
-
-> {%
-    client.test("Cassiopeia import triggered", function () {
-        client.assert(response.status === 200, "Expected 200 but got " + response.status);
-    });
-%}
-
-### ————————————————————————————————————————————————————————————
-### Privatclub (Skalitzer Str. 85-86, Berlin-Kreuzberg)
-### ————————————————————————————————————————————————————————————
-
-### --- Step 4: Create Privatclub venue ---
-POST {{importer-host}}/api/admin/venues
-Content-Type: application/json
-
-{
-    "name": "Privatclub",
-    "address": "Skalitzer Str. 85-86",
-    "city": "Berlin",
-    "postalCode": "10997",
-    "district": "friedrichshain-kreuzberg",
-    "latitude": 52.49985,
-    "longitude": 13.43112,
-    "websiteUrl": "https://privatclub-berlin.de"
-}
-
-> {%
-    client.global.set("privatclub_venue_id", response.body.id);
-    client.test("Privatclub venue created", function () {
-        client.assert(response.status === 201, "Expected 201 but got " + response.status);
-    });
-%}
-
-### --- Step 5: Create Privatclub event source ---
-# Links the venue to the PrivatclubWebsiteImporter.
-# The sourceType "PRIVATCLUB" matches EventSource.PRIVATCLUB.
-POST {{importer-host}}/api/admin/event-sources
-Content-Type: application/json
-
-{
-    "venueId": {{privatclub_venue_id}},
-    "name": "Privatclub",
-    "url": "https://privatclub-berlin.de/",
-    "sourceType": "PRIVATCLUB",
-    "enabled": true,
-    "importIntervalMinutes": 1440,
-    "maxRetries": 3
-}
-
-> {%
-    client.test("Privatclub event source created", function () {
-        client.assert(response.status === 201, "Expected 201 but got " + response.status);
-    });
-%}
-
-### --- Step 6: Trigger initial Privatclub import ---
-POST {{importer-host}}/api/admin/event-sources/privatclub/import
-Accept: application/json
-
-> {%
-    client.test("Privatclub import triggered", function () {
-        client.assert(response.status === 200, "Expected 200 but got " + response.status);
-    });
-%}
-
-### ————————————————————————————————————————————————————————————
-### Madame Claude (Lübbener Str. 19, Berlin-Kreuzberg)
-### ————————————————————————————————————————————————————————————
-
-### --- Step 7: Create Madame Claude venue ---
-POST {{importer-host}}/api/admin/venues
-Content-Type: application/json
-
-{
-    "name": "Madame Claude",
-    "address": "Lübbener Str. 19",
-    "city": "Berlin",
-    "postalCode": "10997",
-    "district": "friedrichshain-kreuzberg",
-    "latitude": 52.49967,
-    "longitude": 13.43714,
-    "websiteUrl": "https://madameclaude.de"
-}
-
-> {%
-    client.global.set("madame_claude_venue_id", response.body.id);
-    client.test("Madame Claude venue created", function () {
-        client.assert(response.status === 201, "Expected 201 but got " + response.status);
-    });
-%}
-
-### --- Step 8: Create Madame Claude event source ---
-# Links the venue to the MadameClaudeWebsiteImporter.
-# The sourceType "MADAME_CLAUDE" matches EventSource.MADAME_CLAUDE.
-POST {{importer-host}}/api/admin/event-sources
-Content-Type: application/json
-
-{
-    "venueId": {{madame_claude_venue_id}},
-    "name": "Madame Claude",
-    "url": "https://madameclaude.de/events/",
-    "sourceType": "MADAME_CLAUDE",
-    "enabled": true,
-    "importIntervalMinutes": 1440,
-    "maxRetries": 3
-}
-
-> {%
-    client.test("Madame Claude event source created", function () {
-        client.assert(response.status === 201, "Expected 201 but got " + response.status);
-    });
-%}
-
-### --- Step 9: Trigger initial Madame Claude import ---
-POST {{importer-host}}/api/admin/event-sources/madame-claude/import
-Accept: application/json
-
-> {%
-    client.test("Madame Claude import triggered", function () {
-        client.assert(response.status === 200, "Expected 200 but got " + response.status);
-    });
-%}
 
 ### ————————————————————————————————————————————————————————————
 ### Astra Kulturhaus (Revaler Str. 99, Berlin-Friedrichshain — RAW-Gelände)
 ### ————————————————————————————————————————————————————————————
 
-### --- Step 10: Create Astra Kulturhaus venue ---
+### --- Create Astra Kulturhaus venue ---
 POST {{importer-host}}/api/admin/venues
 Content-Type: application/json
 
@@ -215,7 +46,7 @@ Content-Type: application/json
     });
 %}
 
-### --- Step 11: Create Astra Kulturhaus event source ---
+### --- Create Astra Kulturhaus event source ---
 # Links the venue to the AstraWebsiteImporter.
 # The sourceType "ASTRA" matches EventSource.ASTRA.
 # NOTE: the URL is the homepage `/` (the program); `/events` is the past archive.
@@ -238,13 +69,130 @@ Content-Type: application/json
     });
 %}
 
-### --- Step 12: Trigger initial Astra Kulturhaus import ---
+### --- Trigger initial Astra Kulturhaus import ---
 POST {{importer-host}}/api/admin/event-sources/astra-kulturhaus/import
 Accept: application/json
 
 > {%
     client.test("Astra Kulturhaus import triggered", function () {
-        client.assert(response.status === 200, "Expected 200 but got " + response.status);
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Badehaus (Revaler Str. 99, Berlin-Friedrichshain — RAW-Gelände)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Badehaus venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Badehaus",
+    "address": "Revaler Str. 99",
+    "city": "Berlin",
+    "postalCode": "10245",
+    "district": "friedrichshain-kreuzberg",
+    "latitude": 52.50780,
+    "longitude": 13.45250,
+    "websiteUrl": "https://badehaus-berlin.com"
+}
+
+> {%
+    client.global.set("badehaus_venue_id", response.body.id);
+    client.test("Badehaus venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Badehaus event source ---
+# Links the venue to the BadehausWebsiteImporter.
+# The sourceType "BADEHAUS" matches EventSource.BADEHAUS.
+# NOTE: the URL is `/events/` (the listing), not the homepage.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{badehaus_venue_id}},
+    "name": "Badehaus",
+    "url": "https://badehaus-berlin.com/events/",
+    "sourceType": "BADEHAUS",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Badehaus event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Badehaus import ---
+POST {{importer-host}}/api/admin/event-sources/badehaus/import
+Accept: application/json
+
+> {%
+    client.test("Badehaus import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Cassiopeia (Revaler Str. 99, Berlin-Friedrichshain)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Cassiopeia venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Cassiopeia",
+    "address": "Revaler Str. 99",
+    "city": "Berlin",
+    "postalCode": "10245",
+    "district": "friedrichshain-kreuzberg",
+    "latitude": 52.50730,
+    "longitude": 13.45414,
+    "websiteUrl": "https://cassiopeia-berlin.de"
+}
+
+> {%
+    client.global.set("cassiopeia_venue_id", response.body.id);
+    client.test("Cassiopeia venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Cassiopeia event source ---
+# Links the venue to the CassiopeiaWebsiteImporter.
+# The sourceType "CASSIOPEIA" matches EventSource.CASSIOPEIA.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{cassiopeia_venue_id}},
+    "name": "Cassiopeia",
+    "url": "https://cassiopeia-berlin.de/club",
+    "sourceType": "CASSIOPEIA",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Cassiopeia event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Cassiopeia import ---
+POST {{importer-host}}/api/admin/event-sources/cassiopeia/import
+Accept: application/json
+
+> {%
+    client.test("Cassiopeia import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}
 
@@ -252,7 +200,7 @@ Accept: application/json
 ### Lido (Cuvrystr. 7, Berlin-Kreuzberg — on the Spree)
 ### ————————————————————————————————————————————————————————————
 
-### --- Step 13: Create Lido venue ---
+### --- Create Lido venue ---
 POST {{importer-host}}/api/admin/venues
 Content-Type: application/json
 
@@ -274,7 +222,7 @@ Content-Type: application/json
     });
 %}
 
-### --- Step 14: Create Lido event source ---
+### --- Create Lido event source ---
 # Links the venue to the LidoWebsiteImporter.
 # The sourceType "LIDO" matches EventSource.LIDO.
 # NOTE: the URL is the homepage `/` (the program); `/events` is the past archive.
@@ -297,13 +245,189 @@ Content-Type: application/json
     });
 %}
 
-### --- Step 15: Trigger initial Lido import ---
+### --- Trigger initial Lido import ---
 POST {{importer-host}}/api/admin/event-sources/lido/import
 Accept: application/json
 
 > {%
     client.test("Lido import triggered", function () {
-        client.assert(response.status === 200, "Expected 200 but got " + response.status);
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Madame Claude (Lübbener Str. 19, Berlin-Kreuzberg)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Madame Claude venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Madame Claude",
+    "address": "Lübbener Str. 19",
+    "city": "Berlin",
+    "postalCode": "10997",
+    "district": "friedrichshain-kreuzberg",
+    "latitude": 52.49967,
+    "longitude": 13.43714,
+    "websiteUrl": "https://madameclaude.de"
+}
+
+> {%
+    client.global.set("madame_claude_venue_id", response.body.id);
+    client.test("Madame Claude venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Madame Claude event source ---
+# Links the venue to the MadameClaudeWebsiteImporter.
+# The sourceType "MADAME_CLAUDE" matches EventSource.MADAME_CLAUDE.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{madame_claude_venue_id}},
+    "name": "Madame Claude",
+    "url": "https://madameclaude.de/events/",
+    "sourceType": "MADAME_CLAUDE",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Madame Claude event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Madame Claude import ---
+POST {{importer-host}}/api/admin/event-sources/madame-claude/import
+Accept: application/json
+
+> {%
+    client.test("Madame Claude import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Privatclub (Skalitzer Str. 85-86, Berlin-Kreuzberg)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Privatclub venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Privatclub",
+    "address": "Skalitzer Str. 85-86",
+    "city": "Berlin",
+    "postalCode": "10997",
+    "district": "friedrichshain-kreuzberg",
+    "latitude": 52.49985,
+    "longitude": 13.43112,
+    "websiteUrl": "https://privatclub-berlin.de"
+}
+
+> {%
+    client.global.set("privatclub_venue_id", response.body.id);
+    client.test("Privatclub venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Privatclub event source ---
+# Links the venue to the PrivatclubWebsiteImporter.
+# The sourceType "PRIVATCLUB" matches EventSource.PRIVATCLUB.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{privatclub_venue_id}},
+    "name": "Privatclub",
+    "url": "https://privatclub-berlin.de/",
+    "sourceType": "PRIVATCLUB",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Privatclub event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Privatclub import ---
+POST {{importer-host}}/api/admin/event-sources/privatclub/import
+Accept: application/json
+
+> {%
+    client.test("Privatclub import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Roadrunner's Paradise (Saarbrücker Str. 24, Berlin-Prenzlauer Berg)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Roadrunner's Paradise venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Roadrunner's Paradise",
+    "address": "Saarbrücker Str. 24",
+    "city": "Berlin",
+    "postalCode": "10405",
+    "district": "pankow",
+    "latitude": 52.53060,
+    "longitude": 13.41850,
+    "websiteUrl": "http://www.roadrunners-paradise.de"
+}
+
+> {%
+    client.global.set("roadrunner_venue_id", response.body.id);
+    client.test("Roadrunner's Paradise venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Roadrunner's Paradise event source ---
+# Links the venue to the RoadrunnerWebsiteImporter.
+# The sourceType "ROADRUNNER" matches EventSource.ROADRUNNER.
+# NOTE: the URL is `programm.html` (the single-page listing), not the homepage.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{roadrunner_venue_id}},
+    "name": "Roadrunner's Paradise",
+    "url": "http://www.roadrunners-paradise.de/programm.html",
+    "sourceType": "ROADRUNNER",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Roadrunner's Paradise event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Roadrunner's Paradise import ---
+# Slug is derived from the source name: "Roadrunner's Paradise" → roadrunner-s-paradise.
+POST {{importer-host}}/api/admin/event-sources/roadrunner-s-paradise/import
+Accept: application/json
+
+> {%
+    client.test("Roadrunner's Paradise import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}
 
@@ -311,7 +435,7 @@ Accept: application/json
 ### SO36 (Oranienstr. 190, Berlin-Kreuzberg)
 ### ————————————————————————————————————————————————————————————
 
-### --- Step 16: Create SO36 venue ---
+### --- Create SO36 venue ---
 POST {{importer-host}}/api/admin/venues
 Content-Type: application/json
 
@@ -333,7 +457,7 @@ Content-Type: application/json
     });
 %}
 
-### --- Step 17: Create SO36 event source ---
+### --- Create SO36 event source ---
 # Links the venue to the So36WebsiteImporter.
 # The sourceType "SO36" matches EventSource.SO36.
 # NOTE: the URL is `/tickets` (the program listing), NOT the homepage `/` —
@@ -357,72 +481,12 @@ Content-Type: application/json
     });
 %}
 
-### --- Step 18: Trigger initial SO36 import ---
+### --- Trigger initial SO36 import ---
 POST {{importer-host}}/api/admin/event-sources/so36/import
 Accept: application/json
 
 > {%
     client.test("SO36 import triggered", function () {
-        client.assert(response.status === 200, "Expected 200 but got " + response.status);
-    });
-%}
-
-### ————————————————————————————————————————————————————————————
-### Roadrunner's Paradise (Saarbrücker Str. 24, Berlin-Prenzlauer Berg)
-### ————————————————————————————————————————————————————————————
-
-### --- Step 19: Create Roadrunner's Paradise venue ---
-POST {{importer-host}}/api/admin/venues
-Content-Type: application/json
-
-{
-    "name": "Roadrunner's Paradise",
-    "address": "Saarbrücker Str. 24",
-    "city": "Berlin",
-    "postalCode": "10405",
-    "district": "pankow",
-    "latitude": 52.53060,
-    "longitude": 13.41850,
-    "websiteUrl": "http://www.roadrunners-paradise.de"
-}
-
-> {%
-    client.global.set("roadrunner_venue_id", response.body.id);
-    client.test("Roadrunner's Paradise venue created", function () {
-        client.assert(response.status === 201, "Expected 201 but got " + response.status);
-    });
-%}
-
-### --- Step 20: Create Roadrunner's Paradise event source ---
-# Links the venue to the RoadrunnerWebsiteImporter.
-# The sourceType "ROADRUNNER" matches EventSource.ROADRUNNER.
-# NOTE: the URL is `programm.html` (the single-page listing), not the homepage.
-POST {{importer-host}}/api/admin/event-sources
-Content-Type: application/json
-
-{
-    "venueId": {{roadrunner_venue_id}},
-    "name": "Roadrunner's Paradise",
-    "url": "http://www.roadrunners-paradise.de/programm.html",
-    "sourceType": "ROADRUNNER",
-    "enabled": true,
-    "importIntervalMinutes": 1440,
-    "maxRetries": 3
-}
-
-> {%
-    client.test("Roadrunner's Paradise event source created", function () {
-        client.assert(response.status === 201, "Expected 201 but got " + response.status);
-    });
-%}
-
-### --- Step 21: Trigger initial Roadrunner's Paradise import ---
-# Slug is derived from the source name: "Roadrunner's Paradise" → roadrunner-s-paradise.
-POST {{importer-host}}/api/admin/event-sources/roadrunner-s-paradise/import
-Accept: application/json
-
-> {%
-    client.test("Roadrunner's Paradise import triggered", function () {
-        client.assert(response.status === 200, "Expected 200 but got " + response.status);
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}

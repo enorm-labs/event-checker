@@ -109,6 +109,33 @@ Concurrent execution is safe because:
 The manual "import all" endpoint (`POST /api/admin/event-sources/import`) uses the same
 `importConcurrently()` method, benefiting from the same bounded concurrency.
 
+### Manual Triggers Run Fire-and-Forget
+
+Both manual import endpoints — `POST /api/admin/event-sources/import` and
+`POST /api/admin/event-sources/{slug}/import` — are **asynchronous**: they launch the import on
+an application-scoped coroutine and return `202 Accepted` immediately, rather than blocking the
+request until the import finishes.
+
+**Why:** a heavy two-page importer makes one throttled HTTP fetch per event (see ADR-007's per-host
+politeness throttling). Badehaus, for example, fetches ~90 detail pages and runs for over a minute.
+Running that inline in the request means the caller's HTTP read timeout (the IntelliJ HTTP Client /
+`ijhttp` default is 60s) can elapse first; when the client disconnects, WebFlux cancels the
+request-scoped coroutine, which aborts the import **mid-transaction** and leaves the source stuck in
+`RUNNING` with nothing persisted. Decoupling the import from the request removes that failure mode and
+lets triggers scale to any number of sources.
+
+**How:** `ImportJobLauncher` owns a `CoroutineScope(SupervisorJob() + ioDispatcher)` — a `SupervisorJob`
+so one failing import never cancels the scope or sibling imports, and application-scoped so it outlives
+the request (cancelled on shutdown via `DisposableBean`). `{slug}/import` still resolves the source
+synchronously before launching, so an unknown slug returns `404` rather than failing silently in the
+background. Progress and outcome are recorded on the `event_source` row (`RUNNING → SUCCESS/FAILED`) as
+usual, so clients **poll** `GET /api/admin/event-sources[/{slug}]` to observe them instead of reading
+the (now absent) synchronous result. This is a natural fit for a future imports-status dashboard.
+
+The **scheduled** path (`ScheduledImportService.tick()`) was already request-independent — it runs on
+the `@Scheduled` executor and is bounded only by the `staleness-timeout` — so it was never affected by
+this failure mode; this change brings the manual path in line with it.
+
 **Known edge case — REST trigger during a scheduled tick:** A manual `POST /api/admin/event-sources/{slug}/import`
 could overlap with the scheduler processing the same source. Both would read the source as IDLE, both
 would set it to RUNNING, and both would upsert the same events. This is not harmful because:
