@@ -11,6 +11,7 @@
 ###   3. Madame Claude — https://madameclaude.de/events/
 ###   4. Astra         — https://www.astra-berlin.de/
 ###   5. Lido          — https://www.lido-berlin.de/
+###   6. SO36          — https://www.so36.com/tickets
 ### ============================================================
 
 ### ————————————————————————————————————————————————————————————
@@ -301,6 +302,66 @@ Accept: application/json
 
 > {%
     client.test("Lido import triggered", function () {
+        client.assert(response.status === 200, "Expected 200 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### SO36 (Oranienstr. 190, Berlin-Kreuzberg)
+### ————————————————————————————————————————————————————————————
+
+### --- Step 16: Create SO36 venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "SO36",
+    "address": "Oranienstr. 190",
+    "city": "Berlin",
+    "postalCode": "10999",
+    "district": "friedrichshain-kreuzberg",
+    "latitude": 52.50169,
+    "longitude": 13.42256,
+    "websiteUrl": "https://www.so36.com"
+}
+
+> {%
+    client.global.set("so36_venue_id", response.body.id);
+    client.test("SO36 venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Step 17: Create SO36 event source ---
+# Links the venue to the So36WebsiteImporter.
+# The sourceType "SO36" matches EventSource.SO36.
+# NOTE: the URL is `/tickets` (the program listing), NOT the homepage `/` —
+# the homepage 302-redirects there and the scraper's WebClient does not follow redirects.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{so36_venue_id}},
+    "name": "SO36",
+    "url": "https://www.so36.com/tickets",
+    "sourceType": "SO36",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("SO36 event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Step 18: Trigger initial SO36 import ---
+POST {{importer-host}}/api/admin/event-sources/so36/import
+Accept: application/json
+
+> {%
+    client.test("SO36 import triggered", function () {
         client.assert(response.status === 200, "Expected 200 but got " + response.status);
     });
 %}

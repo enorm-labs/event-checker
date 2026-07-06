@@ -59,6 +59,9 @@ Public name is **Event Junkie**; internal/repo name stays **Event Checker**
     - [ ] Strategy to implement the remaining importers fast — but still clean, robust, fully tested
     - [ ] Create a prompt/skill for scaffolding a new importer
     - [ ] Standardize/simplify existing importers + scrapers where it helps
+        - [ ] Multi-artist titles are stored as one headliner (e.g. `TOTAL CHAOS + RUMKICKS + THE DOLLHEADS`,
+          `FLIEHENDE STÜRME / DER FLUCH / …`, `BLACK STAR RIDERS & TYKETTO`). Cross-cutting across importers
+          (SO36, Astra, Lido, …) — decide on a shared title-splitting strategy vs. leaving titles whole.
 - [ ] Housekeeping: policy for when to delete old events from the DB
 
 ## Operations & Hardening
