@@ -9,7 +9,9 @@ const props = defineProps<{ event: EventSummary }>()
 // An event happening today gets a pulsing "live" dot — it stands out in the Upcoming feed and on
 // venue/artist pages, and reinforces liveness in the Tonight feed. Self-contained, so any caller
 // gets it for free.
-const isLive = computed(() => Boolean(props.event.eventDate) && props.event.eventDate === todayIso())
+const isLive = computed(
+  () => Boolean(props.event.eventDate) && props.event.eventDate === todayIso(),
+)
 </script>
 
 <template>
@@ -19,8 +21,8 @@ const isLive = computed(() => Boolean(props.event.eventDate) && props.event.even
   >
     <img
       v-if="event.imageUrl"
-      :src="event.imageUrl"
       :alt="event.title ?? ''"
+      :src="event.imageUrl"
       class="size-20 shrink-0 rounded-lg object-cover grayscale-[0.5] transition duration-300 group-hover:grayscale-0"
       loading="lazy"
     />

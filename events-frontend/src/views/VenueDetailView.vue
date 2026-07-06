@@ -56,8 +56,8 @@ watch(slug, reload)
       <header class="flex gap-4">
         <img
           v-if="venue.imageUrl"
-          :src="venue.imageUrl"
           :alt="venue.name ?? ''"
+          :src="venue.imageUrl"
           class="size-24 shrink-0 rounded-lg border border-border object-cover"
           loading="lazy"
         />

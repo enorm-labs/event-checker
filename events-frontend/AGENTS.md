@@ -218,7 +218,7 @@ The project uses a two-tier linting strategy:
   regressions that only appear on the mobile projects — e.g. a wider header nav overflowing a ~390px screen
   and pushing a control off-screen (a real failure we hit). When touching the **app shell, header/nav, or any
   layout**, run the mobile projects locally before pushing:
-  `npm run test:e2e -- --project="Mobile Chrome" --project="Mobile Safari"`. On CI such a break also *slows*
+  `npm run test:e2e -- --project="Mobile Chrome" --project="Mobile Safari"`. On CI such a break also _slows_
   the run — a failing interaction burns the 30s action timeout × 2 retries × 5 projects.
 
 ## CI/CD

@@ -57,8 +57,8 @@ watch(slug, reload)
       <header class="flex gap-4">
         <img
           v-if="artist.imageUrl"
-          :src="artist.imageUrl"
           :alt="artist.name ?? ''"
+          :src="artist.imageUrl"
           class="size-24 shrink-0 rounded-lg border border-border object-cover"
           loading="lazy"
         />

@@ -1,4 +1,4 @@
-import { expect, test, type Page, type Route } from '@playwright/test'
+import { expect, type Page, type Route, test } from '@playwright/test'
 
 /**
  * Detail-route e2e tests with a fully mocked BFF.

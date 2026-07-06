@@ -14,7 +14,6 @@ import de.norm.events.scraper.parseTime
 import de.norm.events.scraper.textAt
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jsoup.nodes.Document
-import org.jsoup.nodes.Element
 import java.math.BigDecimal
 import java.time.LocalTime
 

@@ -40,7 +40,9 @@ function toggleDark() {
 <template>
   <div class="min-h-screen bg-background text-foreground">
     <!-- Announces route changes to screen readers; visually hidden. -->
-    <div aria-atomic="true" aria-live="polite" class="sr-only" role="status">{{ announcement }}</div>
+    <div aria-atomic="true" aria-live="polite" class="sr-only" role="status">
+      {{ announcement }}
+    </div>
 
     <header class="border-b border-border">
       <nav class="mx-auto flex max-w-5xl items-center gap-4 p-4 text-sm font-medium sm:gap-6">

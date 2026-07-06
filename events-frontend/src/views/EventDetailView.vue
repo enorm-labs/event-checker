@@ -35,7 +35,9 @@ watch(slug, run)
 
     <div v-else-if="notFound" class="space-y-3">
       <h1 class="text-2xl font-bold tracking-tight">Event not found</h1>
-      <p class="text-muted-foreground">This one's gone — like last call. Plenty more nights out there.</p>
+      <p class="text-muted-foreground">
+        This one's gone — like last call. Plenty more nights out there.
+      </p>
       <Button as-child variant="outline">
         <RouterLink to="/">Back to home</RouterLink>
       </Button>
@@ -74,8 +76,8 @@ watch(slug, run)
 
       <img
         v-if="event.imageUrl"
-        :src="event.imageUrl"
         :alt="event.title ?? ''"
+        :src="event.imageUrl"
         class="w-full rounded-lg border border-border object-cover"
         loading="lazy"
       />
@@ -146,13 +148,17 @@ watch(slug, run)
       <section v-if="event.promoters?.length" class="space-y-1">
         <SectionLabel>Promoters</SectionLabel>
         <p class="flex flex-wrap gap-x-1 text-sm">
-          <template v-for="(promoter, index) in event.promoters" :key="promoter.slug ?? promoter.name">
+          <template
+            v-for="(promoter, index) in event.promoters"
+            :key="promoter.slug ?? promoter.name"
+          >
             <RouterLink
               v-if="promoter.slug"
               :to="`/promoters/${promoter.slug}`"
               class="text-primary underline-offset-4 hover:underline"
             >
-              {{ promoter.name }}</RouterLink>
+              {{ promoter.name }}</RouterLink
+            >
             <span v-else>{{ promoter.name }}</span>
             <span v-if="index < event.promoters.length - 1">, </span>
           </template>

@@ -19,7 +19,7 @@ const gradientId = useId()
     xmlns="http://www.w3.org/2000/svg"
   >
     <defs>
-      <linearGradient :id="gradientId" x1="0" y1="0" x2="1" y2="0">
+      <linearGradient :id="gradientId" x1="0" x2="1" y1="0" y2="0">
         <stop offset="0" stop-color="#823feb" />
         <stop offset="0.7" stop-color="#a24df2" />
         <stop offset="1" stop-color="#d528ce" />

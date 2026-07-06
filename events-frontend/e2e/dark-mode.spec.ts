@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test'
+import { expect, type Page, test } from '@playwright/test'
 
 /**
  * The dark-mode toggle lives in the app shell (App.vue), which is not remounted by

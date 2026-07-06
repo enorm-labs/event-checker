@@ -1,4 +1,4 @@
-import { expect, test, type Page, type Route } from '@playwright/test'
+import { expect, type Page, type Route, test } from '@playwright/test'
 
 /**
  * Home page feed e2e tests with a mocked BFF.
@@ -44,11 +44,12 @@ const todayEvents = [
 
 test.beforeEach(async ({ page }) => {
   await page.route(todayFeed, (route) => json(route, todayEvents))
-  await page.route(upcomingFeed, (route) => json(route, eventPage(['Upcoming One', 'Upcoming Two'])))
+  await page.route(upcomingFeed, (route) =>
+    json(route, eventPage(['Upcoming One', 'Upcoming Two'])),
+  )
 })
 
-const eventHeading = (page: Page, name: string) =>
-  page.getByRole('heading', { level: 3, name })
+const eventHeading = (page: Page, name: string) => page.getByRole('heading', { level: 3, name })
 
 test('renders the tonight and upcoming feeds', async ({ page }) => {
   const errors = collectPageErrors(page)
