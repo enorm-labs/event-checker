@@ -11,7 +11,13 @@ import { useEventSearch } from '@/composables/useEvents'
 const route = useRoute()
 const slug = computed(() => String(route.params.slug))
 
-const { data: promoter, error, notFound, loading, run: loadPromoter } = usePromoter(() => slug.value)
+const {
+  data: promoter,
+  error,
+  notFound,
+  loading,
+  run: loadPromoter,
+} = usePromoter(() => slug.value)
 
 usePageTitle(() => (notFound.value ? 'Promoter not found' : (promoter.value?.name ?? 'Promoter')))
 const {
@@ -48,8 +54,8 @@ watch(slug, reload)
       <header class="flex gap-4">
         <img
           v-if="promoter.imageUrl"
-          :src="promoter.imageUrl"
           :alt="promoter.name ?? ''"
+          :src="promoter.imageUrl"
           class="size-24 shrink-0 rounded-lg border border-border object-cover"
           loading="lazy"
         />

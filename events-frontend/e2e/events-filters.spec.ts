@@ -1,4 +1,4 @@
-import { expect, test, type Page, type Route } from '@playwright/test'
+import { expect, type Page, type Route, test } from '@playwright/test'
 
 /**
  * Events list-page filtering e2e tests with a mocked BFF.
@@ -82,8 +82,7 @@ function selectWithOption(page: Page, optionName: string) {
   return page.locator('select', { has: page.getByRole('option', { name: optionName }) })
 }
 
-const eventHeading = (page: Page, name: string) =>
-  page.getByRole('heading', { level: 3, name })
+const eventHeading = (page: Page, name: string) => page.getByRole('heading', { level: 3, name })
 
 test('filters by search query', async ({ page }) => {
   const errors = collectPageErrors(page)

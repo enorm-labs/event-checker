@@ -54,17 +54,20 @@ path to a public launch (hosting, domain, auth, legal) is tracked in [TODO.md](.
 ### Live features
 
 **Discovery frontend** (Vue 3)
+
 - Home, **calendar**, and event **search/list** pages, plus **event / venue / artist / promoter** detail
   pages and an About page.
 - Filtering by event type, district (12 boroughs), genre, price range, free-only and exclude-sold-out,
   with free-text search; "Free" and "Sold Out" badges.
 
 **Public read API — BFF** (`/api/…`, OpenAPI/Swagger documented)
+
 - Event search with the full filter set above **+ venue / artist / promoter** filters, pagination and
   sorting; plus **today** and **date-range calendar** endpoints and per-slug detail.
 - List + detail endpoints for **venues, artists, promoters and genres**.
 
 **Automated data aggregation — Importer**
+
 - **Six Berlin venues live:** Cassiopeia, Privatclub, Madame Claude, Astra Kulturhaus, Lido, and SO36.
 - **Scheduled imports** with **change detection** (ETag / Last-Modified), **per-host politeness
   throttling**, deduplication, and **stale-event cleanup**.
@@ -74,6 +77,7 @@ path to a public launch (hosting, domain, auth, legal) is tracked in [TODO.md](.
 - A **`/scaffold-importer`** skill that turns adding a new venue into a guided, tested workflow.
 
 **Data model**
+
 - Events, venues, artists, promoters, genre tags and import sources, with many-to-many links
   (event↔artist, event↔promoter, event↔genre).
 

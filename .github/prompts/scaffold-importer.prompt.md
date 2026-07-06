@@ -14,9 +14,9 @@ If either is missing, ask for it before starting.
   any code — it is the source of truth for architecture, selector strategy, and scraping ethics. Also skim
   [EVENT_DATA_SOURCES.md](../../docs/EVENT_DATA_SOURCES.md) for the pre-analysed field mapping of the target venue.
 - Use an existing importer as a template. Pick the closest match to the target's page structure:
-  - **Single listing page** (all data on one page): `scraper/privatclub/` — implements `EventImporter` directly.
-  - **List + detail pages** (summaries on a listing, full data on per-event pages): `scraper/cassiopeia/`,
-    `scraper/madameclaude/`, `scraper/astra/`, `scraper/lido/` — extend `AbstractTwoPageWebsiteImporter`.
+    - **Single listing page** (all data on one page): `scraper/privatclub/` — implements `EventImporter` directly.
+    - **List + detail pages** (summaries on a listing, full data on per-event pages): `scraper/cassiopeia/`,
+      `scraper/madameclaude/`, `scraper/astra/`, `scraper/lido/` — extend `AbstractTwoPageWebsiteImporter`.
 - Do **not** reinvent boilerplate. Reuse the shared extension helpers in the `scraper/` package
   (see step 4). New code should look like the code around it.
 
@@ -37,13 +37,13 @@ Before writing anything, learn how the site is built and whether you're allowed 
    (`<venue>-detail-<case>.html`), including edge cases you want regression coverage for
    (cancelled event, sold-out, free entry, missing date).
 3. **Classify the page technology** and pick a strategy (ADR-007 §Decision):
-   - **Server-rendered HTML** (~80%): Jsoup parsing works directly. This is the happy path.
-   - **Structured data present** (`<script type="application/ld+json">` `schema.org/MusicEvent`,
-     Microdata): prefer it — it's the most stable source. See `PrivatclubOverviewPageScraper`'s
-     JSON-LD handling and `AstraWebsiteImporter` for examples.
-   - **JS-rendered SPA / cookie wall**: Playwright is **not** in the project yet (ADR-007 §3). If the
-     content isn't in the raw HTML, stop and flag it — this needs the Playwright dependency added first,
-     which is a separate decision.
+    - **Server-rendered HTML** (~80%): Jsoup parsing works directly. This is the happy path.
+    - **Structured data present** (`<script type="application/ld+json">` `schema.org/MusicEvent`,
+      Microdata): prefer it — it's the most stable source. See `PrivatclubOverviewPageScraper`'s
+      JSON-LD handling and `AstraWebsiteImporter` for examples.
+    - **JS-rendered SPA / cookie wall**: Playwright is **not** in the project yet (ADR-007 §3). If the
+      content isn't in the raw HTML, stop and flag it — this needs the Playwright dependency added first,
+      which is a separate decision.
 4. **Decide the page pattern**: single-page vs. list+detail vs. paginated. ADR-007 §"Single Entry URL"
    and §"Pagination — First Page Only" govern this. Import the **first page only**; if the venue truly
    needs multi-page crawling, loop inside `importEvents()` (do not change the interface).
@@ -67,13 +67,13 @@ New importers live in their own sub-package: `scraper/<venue>/`. Create:
 - **`<Venue>DetailPageScraper.kt`** — *(list+detail sites only)* pure parser returning `ScrapedEvent?`
   for a single detail page.
 - **`<Venue>WebsiteImporter.kt`** — the `@Component` that owns HTTP fetching and wires the scrapers.
-  - **Single-page**: implement `EventImporter` directly (template: `PrivatclubWebsiteImporter`). Fetch via
-    `HtmlFetcher.fetch(url, etag, lastModified)`, handle `FetchResult.NotModified` / `FetchResult.Success`,
-    return `ImportResult.NotModified` / `ImportResult.Success(events, etag, lastModified)`.
-  - **List+detail**: extend `AbstractTwoPageWebsiteImporter` (template: `CassiopeiaWebsiteImporter`) and
-    implement `scrapeOverview`, `scrapeDetail`, and `fillGapsFromOverview` (fill only fields the detail
-    page can't supply, e.g. image URL from the overview). The base class owns fetch orchestration,
-    per-detail-page error fallback, and dropping events with unresolved dates.
+    - **Single-page**: implement `EventImporter` directly (template: `PrivatclubWebsiteImporter`). Fetch via
+      `HtmlFetcher.fetch(url, etag, lastModified)`, handle `FetchResult.NotModified` / `FetchResult.Success`,
+      return `ImportResult.NotModified` / `ImportResult.Success(events, etag, lastModified)`.
+    - **List+detail**: extend `AbstractTwoPageWebsiteImporter` (template: `CassiopeiaWebsiteImporter`) and
+      implement `scrapeOverview`, `scrapeDetail`, and `fillGapsFromOverview` (fill only fields the detail
+      page can't supply, e.g. image URL from the overview). The base class owns fetch orchestration,
+      per-detail-page error fallback, and dropping events with unresolved dates.
 
 Set `override val eventSource = EventSource.<VENUE>`.
 

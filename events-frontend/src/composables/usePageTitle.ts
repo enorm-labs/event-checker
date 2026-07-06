@@ -1,4 +1,4 @@
-import { ref, toValue, watchEffect, type MaybeRefOrGetter } from 'vue'
+import { type MaybeRefOrGetter, ref, toValue, watchEffect } from 'vue'
 
 /** Brand name shown in the browser tab, appended to every interior view's title. */
 export const APP_NAME = 'Event Junkie'

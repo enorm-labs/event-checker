@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref, watch } from 'vue'
-import { useRoute, useRouter, type LocationQueryRaw } from 'vue-router'
+import { type LocationQueryRaw, useRoute, useRouter } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import EventCard from '@/components/EventCard.vue'
 import SectionLabel from '@/components/SectionLabel.vue'
-import { useEventSearch, type EventSearchParams } from '@/composables/useEvents'
+import { type EventSearchParams, useEventSearch } from '@/composables/useEvents'
 import { useGenres } from '@/composables/useGenres'
 
 const PAGE_SIZE = 20
@@ -146,10 +146,7 @@ watch(() => route.query, run, { deep: true })
         </option>
       </select>
 
-      <form
-        class="flex items-center gap-2"
-        @submit.prevent="applyFilters({ minPrice, maxPrice })"
-      >
+      <form class="flex items-center gap-2" @submit.prevent="applyFilters({ minPrice, maxPrice })">
         <input
           v-model="minPrice"
           aria-label="Minimum presale price"
@@ -179,7 +176,11 @@ watch(() => route.query, run, { deep: true })
           :checked="queryString('excludeSoldOut') === 'true'"
           class="size-4 rounded border-border accent-primary outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
           type="checkbox"
-          @change="applyFilters({ excludeSoldOut: ($event.target as HTMLInputElement).checked ? 'true' : '' })"
+          @change="
+            applyFilters({
+              excludeSoldOut: ($event.target as HTMLInputElement).checked ? 'true' : '',
+            })
+          "
         />
         Hide sold out
       </label>
@@ -189,7 +190,9 @@ watch(() => route.query, run, { deep: true })
           :checked="queryString('free') === 'true'"
           class="size-4 rounded border-border accent-primary outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
           type="checkbox"
-          @change="applyFilters({ free: ($event.target as HTMLInputElement).checked ? 'true' : '' })"
+          @change="
+            applyFilters({ free: ($event.target as HTMLInputElement).checked ? 'true' : '' })
+          "
         />
         Free only
       </label>

@@ -87,7 +87,7 @@ Give people a reason to come back.
 
 - Login / profile with **follow/favourite** for artists, venues, districts, promoters and genres —
   used both to filter events and to drive **notifications** (two steps, YouTube-style: 1. follow,
-  2. get notified).
+    2. get notified).
 - Favourites (Merkliste), reminders, RSVP ("interested" / "going"), a customizable start page,
   recommendations.
 - User/venue-submitted events with review-before-publish — needs RBAC (Keycloak).
