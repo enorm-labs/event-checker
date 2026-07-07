@@ -179,9 +179,16 @@ class EventMappingExtensionsTest {
     }
 
     @Test
-    fun `isNonArtistEvent keeps one-word names that merely contain fest`() {
+    fun `isNonArtistEvent returns true for a festival slot or edition with trailing text`() {
+        isNonArtistEvent("Grey City Fest Opener") shouldBe true
+        isNonArtistEvent("Sommer Festival Special") shouldBe true
+    }
+
+    @Test
+    fun `isNonArtistEvent keeps one-word names and compounds that merely contain fest`() {
         isNonArtistEvent("Infest") shouldBe false
         isNonArtistEvent("Manifest") shouldBe false
+        isNonArtistEvent("Sommerfest") shouldBe false
         isNonArtistEvent("Green Lung") shouldBe false
     }
 
@@ -375,6 +382,7 @@ class EventMappingExtensionsTest {
     @Test
     fun `headlinersFromTitle drops festival and ticket titles`() {
         headlinersFromTitle("SHRED FEST").shouldBeEmpty()
+        headlinersFromTitle("Grey City Fest Opener").shouldBeEmpty()
         headlinersFromTitle("GROSSSTADTWAHNSINN 2026 - FESTIVALTICKET").shouldBeEmpty()
     }
 

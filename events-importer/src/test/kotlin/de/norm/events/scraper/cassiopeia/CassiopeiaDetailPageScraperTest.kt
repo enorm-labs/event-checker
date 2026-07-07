@@ -69,12 +69,24 @@ class CassiopeiaDetailPageScraperTest {
     }
 
     @Test
-    fun `scrape does not extract artists from concert without support line`() {
+    fun `scrape extracts title as headliner from concert without support line`() {
+        val html = buildDetailHtml("Pharmakon", descriptionParagraphs = listOf("Bio text, no support line."))
+        val doc = Jsoup.parse(html, "https://cassiopeia-berlin.de/event/pharmakon-123")
+        val event = scraper.scrape(doc, "https://cassiopeia-berlin.de/event/pharmakon-123")
+
+        event shouldNotBe null
+        // CONCERT confirms the title is the headliner, even with no "Support:" line
+        event!!.artists shouldContainExactly listOf(ScrapedArtist(name = "Pharmakon", role = "HEADLINER"))
+    }
+
+    @Test
+    fun `scrape filters an event-name title (festival slot) rather than minting a fake artist`() {
         val html = buildDetailHtml("Grey City Fest Opener", descriptionParagraphs = listOf("A festival event."))
         val doc = Jsoup.parse(html, "https://cassiopeia-berlin.de/event/grey-city-123")
         val event = scraper.scrape(doc, "https://cassiopeia-berlin.de/event/grey-city-123")
 
         event shouldNotBe null
+        // "Grey City Fest Opener" is a festival slot name, filtered by isNonArtistName
         event!!.artists.shouldBeEmpty()
     }
 

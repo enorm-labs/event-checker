@@ -1,12 +1,9 @@
 package de.norm.events.scraper.privatclub
 
-import de.norm.events.event.EventType
 import de.norm.events.scraper.EventSource
-import de.norm.events.scraper.ScrapedArtist
 import de.norm.events.scraper.ScrapedEvent
 import de.norm.events.scraper.attrAt
-import de.norm.events.scraper.buildArtistList
-import de.norm.events.scraper.extractSupportFromSubtitle
+import de.norm.events.scraper.buildArtistsForEventType
 import de.norm.events.scraper.hrefAt
 import de.norm.events.scraper.mapEventType
 import de.norm.events.scraper.parseIsoDate
@@ -169,9 +166,10 @@ class PrivatclubOverviewPageScraper(
         // Promoter name from the "Örtlicher Veranstalter" section
         val promoters = parsePromoterName(detail)?.let { listOf(it) } ?: emptyList()
 
-        // Artists extraction — for concerts, title is typically the headliner.
-        // Support acts are identified from the subtitle pattern "Support: <name>".
-        val artists = parseArtists(title, subtitle, eventType)
+        // Artists extraction — for concerts the title is the headliner (support
+        // acts come from the subtitle's "Support: <name>" pattern); parties and
+        // festivals extract none. See buildArtistsForEventType.
+        val artists = buildArtistsForEventType(title, subtitle, eventType)
 
         return ScrapedEvent(
             title = title,
@@ -488,32 +486,6 @@ class PrivatclubOverviewPageScraper(
         }
 
         return null
-    }
-
-    /**
-     * Extracts artists from a concert event.
-     *
-     * For concerts, the event title is typically the headliner artist name.
-     * Support acts are identified from the subtitle when it contains
-     * "Support: <name>" (e.g. "Liebling(s)tour 2026 | Support: Luana").
-     *
-     * Like Cassiopeia, the **presence** of a "Support:" pattern confirms
-     * the title-as-headliner convention. Without it, the title could be
-     * either an artist name or a generic event name.
-     */
-    @Suppress("ReturnCount") // Guard clauses for non-concert and missing support signal
-    private fun parseArtists(
-        title: String,
-        subtitle: String?,
-        eventType: String?
-    ): List<ScrapedArtist> {
-        // Only extract artists from concert events
-        if (eventType != EventType.CONCERT.name) return emptyList()
-
-        // Look for "Support: <name>" pattern in the subtitle
-        val supportNames = extractSupportFromSubtitle(subtitle)
-
-        return buildArtistList(title, supportNames)
     }
 
     /**

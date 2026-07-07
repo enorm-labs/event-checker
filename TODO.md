@@ -72,10 +72,11 @@ Strategy & sequencing: [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEG
   normalizers, plus a boundary validation gate that flags obviously-bad output
   (empty artist after stripping, artist == non-artist pattern, genre == event title)
   into the curation queue instead of persisting it silently.
-- [ ] **(Pillar 3 — Fix)** Title-as-headliner extraction for venues without a `Support:` signal
-  (Privatclub, Cassiopeia, Badehaus) — recovers the ~40% of concerts currently stored with no
-  artist. Now safe: `isNonArtistName` + `stripArtistSuffix` filter non-artist titles, and
-  Astra/Lido already do this via `buildArtistsForEventType`. Follow with a one-off backfill pass.
+- [x] **(Pillar 3 — Fix)** Title-as-headliner extraction for venues without a `Support:` signal
+  (Privatclub, Cassiopeia, Badehaus) — recovers the ~40% of concerts previously stored with no
+  artist. Done via `buildArtistsForEventType` / `headlinersFromTitle`; Cassiopeia's ambiguous
+  titles are guarded by a widened `isNonArtistName` festival filter. **Still TODO: a one-off
+  backfill re-scrape** — existing rows keep no artist until re-imported.
 - [ ] **(Pillar 4 — Systematize)** AI-assisted data quality in the importer (one capability,
   several uses): detect/extract artist names from titles, validate event types, enrich missing
   fields (genres, event types), and fix bad values (artist names, promoter names, …). Runs

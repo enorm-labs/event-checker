@@ -3,11 +3,12 @@ package de.norm.events.scraper.cassiopeia
 import de.norm.events.scraper.EventSource
 import de.norm.events.scraper.ScrapedArtist
 import de.norm.events.scraper.ScrapedEvent
-import de.norm.events.scraper.buildArtistList
 import de.norm.events.scraper.cassiopeia.CassiopeiaDetailPageScraper.Companion.DATE_FORMAT
 import de.norm.events.scraper.hasVisibleWebflowFlag
+import de.norm.events.scraper.headlinersFromTitle
 import de.norm.events.scraper.hrefAt
 import de.norm.events.scraper.imgSrcAt
+import de.norm.events.scraper.isNonArtistName
 import de.norm.events.scraper.mapEventType
 import de.norm.events.scraper.parseTime
 import de.norm.events.scraper.textAt
@@ -247,48 +248,37 @@ class CassiopeiaDetailPageScraper {
     }
 
     /**
-     * Extracts artists from a concert event's description paragraphs.
+     * Extracts artists from a concert event's title and description paragraphs.
      *
-     * Support acts are identified by paragraphs prefixed with "Support: "
-     * (e.g. `"Support: Aska"`). The **presence** of any "Support:" line —
-     * even one with a placeholder name like "TBA" — confirms the event
-     * follows a "headliner + support" pattern where the [title] is the
-     * headliner artist name.
+     * For a `CONCERT`, the [title] is the headliner (co-bills split out), added
+     * unconditionally — Cassiopeia titles are almost always the act. Genuine
+     * event-name titles (e.g. "Grey City Fest Opener") are filtered structurally
+     * by [isNonArtistName], and placeholders like "TBA" are dropped too. Support
+     * acts come from description paragraphs prefixed "Support: " (e.g.
+     * `"Support: Aska"`), following the headliner in listing order.
      *
-     * When **no** "Support:" lines are found at all, the title could be
-     * either an artist name (e.g. "Döll") or a generic event name (e.g.
-     * "Grey City Fest Opener"). Since we can't reliably distinguish between
-     * the two, no artists are extracted to avoid creating false entries.
-     *
-     * Non-concert events (parties, etc.) never extract artists — their
-     * titles are always event names, not artist names.
-     *
-     * Placeholder names like "TBA" or "N.N." are filtered from the final
-     * artist list but still count as a signal for the headliner pattern.
+     * Non-concert events (parties, etc.) never extract artists — their titles are
+     * event names, not artist names.
      */
     private fun parseArtists(
         title: String,
         eventType: String?,
         content: Element
     ): List<ScrapedArtist> {
-        // Extract all "Support: <name>" lines from description paragraphs.
         // Only concert events use the "title = headliner" naming convention.
-        val supportNames =
-            if (eventType != "CONCERT") {
-                emptyList()
-            } else {
-                content
-                    .select(".paragraph-wrapper .paragraph.events")
-                    .map { it.text().trim() }
-                    .filter { it.startsWith(SUPPORT_PREFIX, ignoreCase = true) }
-                    .map { it.drop(SUPPORT_PREFIX.length).trim() }
-                    .filter { it.isNotBlank() }
-            }
+        if (eventType != "CONCERT") return emptyList()
 
-        // The presence of ANY "Support:" line confirms the headliner + support
-        // pattern — even if the support name is a placeholder like "TBA".
-        // Without this signal, we can't tell if the title is an artist or event name.
-        return buildArtistList(title, supportNames)
+        // Support acts from "Support: <name>" description paragraphs, in listing order.
+        val supportActs =
+            content
+                .select(".paragraph-wrapper .paragraph.events")
+                .map { it.text().trim() }
+                .filter { it.startsWith(SUPPORT_PREFIX, ignoreCase = true) }
+                .map { it.drop(SUPPORT_PREFIX.length).trim() }
+                .filter { it.isNotBlank() && !isNonArtistName(it) }
+                .map { ScrapedArtist(name = it, role = "SUPPORT") }
+
+        return headlinersFromTitle(title) + supportActs
     }
 
     companion object {

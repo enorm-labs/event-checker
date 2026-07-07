@@ -251,25 +251,30 @@ fun isEventSegmentLabel(name: String): Boolean {
 
 /**
  * Event names that are not performers: a festival ("Shred Fest", "Canarias Calling
- * Festival", optionally year-suffixed) or a festival-ticket label ("… Festivalticket").
- * The `fest`/`festival` markers are word-anchored, so one-word names ("Infest",
- * "Manifest") are safe.
+ * Festival"), a festival slot/edition ("Grey City Fest Opener", "Sommer Festival
+ * Special", "Grobes Fest 2026") or a festival-ticket label ("… Festivalticket").
+ * The `fest`/`festival` markers are word-anchored and may carry any trailing content
+ * (a year, an "Opener"/"Special" slot label, …), so a festival titled with a slot or
+ * edition is caught while one-word names ("Infest", "Manifest") and compounds
+ * ("Sommerfest" — no standalone `fest` boundary) stay safe.
  */
 private val NON_ARTIST_EVENT_PATTERN =
-    Regex(""".*\bfest\b(?: \d{4})?|.*\bfestival\b(?: \d{4})?|.*\bfestivalticket\b""", RegexOption.IGNORE_CASE)
+    Regex(""".*\bfest\b.*|.*\bfestival\b.*|.*\bfestivalticket\b.*""", RegexOption.IGNORE_CASE)
 
 /**
- * Checks whether [name] is an event label (a festival or festival-ticket) rather
- * than a performer.
+ * Checks whether [name] is an event label (a festival, a festival slot/edition, or a
+ * festival-ticket) rather than a performer.
  *
- * Matching is **fully anchored** on the whitespace-collapsed value, and the
- * `fest`/`festival` word boundaries keep one-word names safe (`Infest`, `Manifest`
- * are kept). Curated: new event-label families are added to
+ * The whitespace-collapsed value must contain a word-anchored `fest`/`festival`
+ * marker, which may carry any trailing slot/edition text (`Grey City Fest Opener`,
+ * `Grobes Fest 2026`). The word boundaries keep one-word names (`Infest`, `Manifest`)
+ * and compounds (`Sommerfest`) safe. Curated: new event-label families are added to
  * [NON_ARTIST_EVENT_PATTERN] as they appear.
  *
  * Example:
  * ```kotlin
  * isNonArtistEvent("SHRED FEST")                 // true
+ * isNonArtistEvent("Grey City Fest Opener")      // true
  * isNonArtistEvent("CANARIAS CALLING FESTIVAL")  // true
  * isNonArtistEvent("Manifest")                   // false
  * ```

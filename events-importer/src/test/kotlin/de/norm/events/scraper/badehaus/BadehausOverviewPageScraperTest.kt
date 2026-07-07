@@ -2,6 +2,9 @@ package de.norm.events.scraper.badehaus
 
 import de.norm.events.event.EventStatus
 import de.norm.events.event.EventType
+import de.norm.events.scraper.ScrapedArtist
+import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
@@ -62,6 +65,22 @@ class BadehausOverviewPageScraperTest {
         events.first { it.sourceId == "badehaus:call-me-maybe-2000s-2010s-pop-party-8" }.eventType shouldBe
             EventType.PARTY.name
         events.first { it.sourceId == "badehaus:world-cup-2026-live-screening-7" }.eventType shouldBe EventType.OTHER.name
+    }
+
+    @Test
+    fun `extracts the concert title as the headliner artist`() {
+        // Badehaus publishes no roster; for an inferred CONCERT the title is the act.
+        val ela = events().first { it.sourceId == "badehaus:ela" }
+        ela.eventType shouldBe EventType.CONCERT.name
+        ela.artists shouldContainExactly listOf(ScrapedArtist(name = "ela.", role = "HEADLINER"))
+    }
+
+    @Test
+    fun `does not extract artists from non-concert events`() {
+        val events = events()
+        events.first { it.sourceId == "badehaus:pubquiz-with-simply-quiz-162" }.artists.shouldBeEmpty()
+        events.first { it.sourceId == "badehaus:call-me-maybe-2000s-2010s-pop-party-8" }.artists.shouldBeEmpty()
+        events.first { it.sourceId == "badehaus:world-cup-2026-live-screening-7" }.artists.shouldBeEmpty()
     }
 
     @Test

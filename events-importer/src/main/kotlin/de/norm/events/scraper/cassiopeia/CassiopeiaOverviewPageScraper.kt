@@ -3,6 +3,7 @@ package de.norm.events.scraper.cassiopeia
 import de.norm.events.scraper.EventSource
 import de.norm.events.scraper.ScrapedEvent
 import de.norm.events.scraper.hasVisibleWebflowFlag
+import de.norm.events.scraper.headlinersFromTitle
 import de.norm.events.scraper.mapEventType
 import de.norm.events.scraper.parseTime
 import de.norm.events.scraper.resolveUrl
@@ -178,10 +179,11 @@ class CassiopeiaOverviewPageScraper {
             sourceUrl = eventUrl,
             sourceId = "${EventSource.CASSIOPEIA.sourceIdPrefix}$eventSlug",
             soldOut = isSoldOut,
-            status = if (isCancelled) "CANCELLED" else "SCHEDULED"
-            // Artists are only extracted from detail pages, where "Support:" lines
-            // in the description confirm the headliner + support pattern.
-            // The overview page lacks description paragraphs needed for this check.
+            status = if (isCancelled) "CANCELLED" else "SCHEDULED",
+            // For concerts the title is the headliner — extracted here as a fallback
+            // for when the detail-page fetch fails. Support acts (and richer detail
+            // artists) come from the detail page and win in the importer merge.
+            artists = if (eventType == "CONCERT") headlinersFromTitle(title) else emptyList()
         )
     }
 

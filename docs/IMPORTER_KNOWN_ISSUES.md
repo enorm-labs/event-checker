@@ -17,16 +17,16 @@ Legend: **impact** — 🔴 user-visible missing/wrong data · 🟠 data-quality
 
 ## Cross-cutting (affect several/all importers)
 
-- 🔴 **Many concerts have no headliner.** ~40% of `CONCERT` events (a July 2026
-  seed showed 148 of 354, dominated by **Badehaus** ~72 and **Privatclub** ~70)
-  carry no artist at all, because title-as-headliner extraction is deliberately
-  conservative: Privatclub and Cassiopeia only treat the title as an artist when a
-  `Support:` line confirms it, and Badehaus extracts no artist roster at all
-  (see per-importer notes). For these venues the concert title *is* almost always
-  the act, so this is user-visible missing data. → Fix tracked in `TODO.md`
-  (title-as-headliner extraction — now safer since `isNonArtistName` /
-  `stripArtistSuffix` filter non-artist titles; Astra and Lido already do it via
-  `buildArtistsForEventType`).
+- 🟢 **Concerts extract the title as headliner (all venues).** Every venue now
+  treats a `CONCERT` title as the headliner via `buildArtistsForEventType` /
+  `headlinersFromTitle` (Privatclub and Badehaus unconditionally; Cassiopeia too,
+  guarded by the strengthened `isNonArtistName` since its titles are the most
+  ambiguous — see per-importer notes). This recovered the ~40% of concerts (148 of
+  354 in a July 2026 seed) that previously stored no artist. Residual risk is the
+  reactive non-artist denylist (next entry): a title that is really an event name
+  but matches no structural filter is minted as a headliner until denylisted.
+  **Existing rows are unaffected until re-imported** — a one-off backfill re-scrape
+  is still tracked in `TODO.md`.
 - 🟠 **A few non-artist titles still slip through as artists.** The curated
   filters catch festivals/tours/segments/labels, and `stripArtistSuffix` recovers the
   act from tour/live/anniversary tails and performance-format annotations
@@ -98,19 +98,23 @@ Legend: **impact** — 🔴 user-visible missing/wrong data · 🟠 data-quality
 ### Cassiopeia (`scraper/cassiopeia/`) — Webflow, list + detail
 
 - 🟠 **First page only** (Finsweet CMS Load lazy-loads the rest via JS) — ~8 events.
-- 🟠 **Artists rarely extracted.** The title may be an artist *or* an event name
-  (e.g. "Grey City Fest Opener"); without a "Support:" signal it's ambiguous, so
-  no artists are created to avoid false entries.
+- 🟠 **Title-as-headliner, structurally guarded.** For a `CONCERT` the title is
+  taken as the headliner (support acts still come from `Support:` description
+  paragraphs). Cassiopeia titles are the most ambiguous — they may be an artist
+  *or* an event name (e.g. "Grey City Fest Opener") — so the `isNonArtistName`
+  festival filter was widened to catch a festival slot/edition (`… Fest <slot>`),
+  not just a bare/year-suffixed festival name. Residual: an event-name title that
+  matches no structural filter is still minted as a headliner until denylisted.
 - 🟢 Some fields use **positional CSS fallbacks** (`._5`, `._8`) — fragile if the
   Webflow layout changes.
 
 ### Privatclub (`scraper/privatclub/`) — WordPress, single page
 
-- 🔴 **Concerts without a `Support:` line get no artist.** `parseArtists` only
-  builds a lineup for `CONCERT` events, and even then only when the subtitle
-  carries a `Support:` line (the signal that the title is an act) — so a concert
-  titled just `20Tokens` yields no headliner. ~70 concerts were artist-less in a
-  July 2026 seed (see the cross-cutting entry).
+- 🟢 **Concerts extract the title as headliner** via `buildArtistsForEventType`:
+  a `CONCERT` title is the act unconditionally (support acts from the subtitle's
+  `Support:` line), while parties/festivals extract none. A concert titled just
+  `20Tokens` now yields a headliner; the ~70 artist-less concerts in a July 2026
+  seed are recovered (see the cross-cutting entry).
 - 🟢 Complex/conditional pricing is stored as free-form `priceNote` rather than
   structured presale/box-office.
 
@@ -154,10 +158,13 @@ Legend: **impact** — 🔴 user-visible missing/wrong data · 🟠 data-quality
 
 ### Badehaus (`scraper/badehaus/`) — WordPress / Events Manager, list + detail
 
-- 🔴 **No artist roster at all.** The scraper extracts no artists — a concert
-  titled `Anette Olzon` or `El Flecha Negra` yields zero artist entries (~72
-  artist-less concerts in a July 2026 seed). The title is almost always the act,
-  so title-as-headliner extraction would recover them.
+- 🟢 **Title-as-headliner (from the overview).** The overview scraper now extracts
+  the headliner from the title for inferred `CONCERT` events via
+  `buildArtistsForEventType` (the detail page still carries no roster, so the merge
+  falls back to the overview's artists). A concert titled `Anette Olzon` or
+  `El Flecha Negra` yields a headliner; the ~72 artist-less concerts in a July 2026
+  seed are recovered. Depends on the inferred type below — a title mis-inferred as
+  non-`CONCERT` yields no artist.
 - 🔴 **`eventType` is inferred from the title, not scraped.** Badehaus publishes
   no machine-readable category anywhere, so the type is a heuristic
   (quiz / party / screening, else `CONCERT`). Non-matching events may be mislabelled.
