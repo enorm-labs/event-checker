@@ -104,6 +104,17 @@ class BinuuDetailPageScraperTest {
     }
 
     @Test
+    fun `infers CONCERT for a band and PARTY for a known DJ series`() {
+        // A real band with no party signal defaults to the live-music venue's norm.
+        archEnemy.eventType shouldBe "CONCERT"
+
+        // GrooveJet is a curated recurring DJ series (it lists its own name as the act),
+        // so the title match flips it to PARTY.
+        val grooveJet = parseFixture("binuu-detail-groovejet.html", "https://binuu.de/de/events/zf0kroyf2cjolyl")
+        grooveJet.eventType shouldBe "PARTY"
+    }
+
+    @Test
     fun `returns null when the page has no item payload`() {
         val url = "https://binuu.de/de/events/x"
         scraper.scrape(Jsoup.parse("<html><body></body></html>", url), url).shouldBeNull()
