@@ -120,9 +120,12 @@ class BadehausOverviewPageScraper {
      *
      * Badehaus publishes **no machine-readable category** anywhere in its HTML
      * (no taxonomy term, body class or schema field), so the type is a best-effort
-     * heuristic on the event name: pub quizzes, parties and screenings are detected
-     * by keyword, and everything else defaults to `CONCERT` — Badehaus is a live-music
-     * venue where concerts are by far the most common event.
+     * heuristic on the event name: pub quizzes, parties/themed club nights and
+     * screenings are detected by keyword, and everything else defaults to `CONCERT` —
+     * Badehaus is a live-music venue where concerts are by far the most common event.
+     * Getting a themed night classified as `PARTY` matters beyond the label: a `PARTY`
+     * extracts no artists, so the night's event-name title isn't minted as a fake act
+     * (see [buildArtistsForEventType]).
      */
     private fun inferEventType(
         title: String,
@@ -184,7 +187,17 @@ class BadehausOverviewPageScraper {
         private const val RELOCATED_CLASS = "VERLEGT"
 
         private val QUIZ_KEYWORDS = listOf("quiz")
-        private val PARTY_KEYWORDS = listOf("party", "karaoke")
+
+        /**
+         * Party signals in the title/slug. Beyond the obvious `party`/`karaoke`, these
+         * catch Badehaus's themed club nights, whose titles are event names, not acts —
+         * a themed `… Night`, a decade night (`TOP90s …`), and party-décor words
+         * (`Konfetti`, `Glitzer`). Kept deliberately narrow to avoid flipping a real
+         * band to PARTY (which would drop its headliner): e.g. no `jam` (would hit
+         * "Pearl Jam") and no `allstars` (a real act, "Heavy Hands Allstars").
+         */
+        private val PARTY_KEYWORDS =
+            listOf("party", "karaoke", "night", "konfetti", "glitzer", "90s", "2000s", "2010s")
         private val SCREENING_KEYWORDS = listOf("screening", "public viewing", "world cup", "live-screening")
 
         /** Matches a `DD.MM.YYYY` date in the event-info line. */

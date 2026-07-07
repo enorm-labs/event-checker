@@ -40,6 +40,7 @@ class ArtistNormalizerTest {
             // Act names that are themselves initialisms.
             { canonicalArtistName("FKJ") shouldBe "FKJ" },
             { canonicalArtistName("AZ") shouldBe "AZ" },
+            { canonicalArtistName("DBG") shouldBe "DBG" },
             // Short all-caps tokens with digits are acronym-like too.
             { canonicalArtistName("MC5") shouldBe "MC5" },
             { canonicalArtistName("UB40") shouldBe "UB40" }
