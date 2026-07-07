@@ -8,10 +8,11 @@ import PulseMark from '@/components/PulseMark.vue'
 import SectionLabel from '@/components/SectionLabel.vue'
 import { useTodayEvents, useUpcomingEvents } from '@/composables/useEvents'
 import { TAGLINE } from '@/composables/usePageTitle'
-import { todayIso } from '@/lib/format'
+import { tomorrowIso } from '@/lib/format'
 
 const today = useTodayEvents()
-const upcoming = useUpcomingEvents(todayIso())
+// Upcoming starts tomorrow — today's events live in the "Tonight" section above.
+const upcoming = useUpcomingEvents(tomorrowIso())
 
 onMounted(() => {
   today.run()

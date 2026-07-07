@@ -21,7 +21,7 @@ Public name is **Event Junkie**; internal/repo name stays **Event Checker**
 
 ## 🟠 Next
 
-- [ ] Add Authentication & Authorization (best practice for Spring? Keycloak, at least locally for testing?)
+- [ ] Add Authentication & Authorization (best practice for Spring? Keycloak, at least locally for testing? Support Passkey?)
 - [ ] Caching (BFF)
 - [ ] Protect the public BFF API (rate limiting, DDoS; API gateway?)
 - [ ] Create a test data set — reusable as test fixtures **and** to populate the local DB

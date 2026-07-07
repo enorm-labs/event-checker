@@ -35,3 +35,14 @@ export function formatPrice(amount?: number | null, currency?: string | null): s
 export function todayIso(): string {
   return new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Berlin' }).format(new Date())
 }
+
+/**
+ * Tomorrow's date in Berlin as an ISO date string (`YYYY-MM-DD`). Used by the Home "Upcoming"
+ * feed so it starts the day after today — today's events live in the separate "Tonight" section.
+ * Adds a day to the Berlin calendar date (not to `now`), so it's correct across the DST shift.
+ */
+export function tomorrowIso(): string {
+  const next = new Date(`${todayIso()}T00:00:00Z`)
+  next.setUTCDate(next.getUTCDate() + 1)
+  return next.toISOString().slice(0, 10)
+}
