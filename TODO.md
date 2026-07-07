@@ -66,7 +66,7 @@ Public name is **Event Junkie**; internal/repo name stays **Event Checker**
   artist names from titles, validate event types, enrich missing fields (genres, event types),
   and fix bad values (artist names, promoter names, …).
 - [ ] Enrich venues: type (club/bar/concert hall), description, image/photo, genres, event types
-- [ ] Enrich promoters: description, image, and corrected display names (e.g. "Loft Concerts" not "Loft")
+- [ ] Enrich promoters: description, image, and corrected display names
 
 **Admin tooling & maintenance:**
 

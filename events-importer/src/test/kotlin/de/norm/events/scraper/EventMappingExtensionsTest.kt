@@ -7,6 +7,7 @@ import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
+import java.time.LocalTime
 
 class EventMappingExtensionsTest {
     // --- mapEventType ---
@@ -415,5 +416,33 @@ class EventMappingExtensionsTest {
     fun `detectFree is false when nothing is provided`() {
         detectFree() shouldBe false
         detectFree(priceNote = null, title = null) shouldBe false
+    }
+
+    // --- orderDoorsBeforeStart ---
+
+    @Test
+    fun `orderDoorsBeforeStart swaps a transposed doors-after-start pair`() {
+        // SO36's "Einlass: 19:30, Beginn: 19:00" — labels swapped at the source.
+        orderDoorsBeforeStart(LocalTime.of(19, 30), LocalTime.of(19, 0)) shouldBe
+            (LocalTime.of(19, 0) to LocalTime.of(19, 30))
+    }
+
+    @Test
+    fun `orderDoorsBeforeStart leaves an already-valid pair unchanged`() {
+        orderDoorsBeforeStart(LocalTime.of(19, 0), LocalTime.of(20, 0)) shouldBe
+            (LocalTime.of(19, 0) to LocalTime.of(20, 0))
+    }
+
+    @Test
+    fun `orderDoorsBeforeStart leaves equal times unchanged`() {
+        orderDoorsBeforeStart(LocalTime.of(20, 0), LocalTime.of(20, 0)) shouldBe
+            (LocalTime.of(20, 0) to LocalTime.of(20, 0))
+    }
+
+    @Test
+    fun `orderDoorsBeforeStart does not reorder when a time is missing`() {
+        orderDoorsBeforeStart(null, LocalTime.of(20, 0)) shouldBe (null to LocalTime.of(20, 0))
+        orderDoorsBeforeStart(LocalTime.of(19, 0), null) shouldBe (LocalTime.of(19, 0) to null)
+        orderDoorsBeforeStart(null, null) shouldBe (null to null)
     }
 }

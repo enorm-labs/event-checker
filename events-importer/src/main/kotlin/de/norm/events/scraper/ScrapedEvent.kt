@@ -94,11 +94,14 @@ data class ScrapedEvent(
         venueSlug: String,
         eventSourceId: Long,
         existing: EventEntity? = null
-    ): EventEntity =
+    ): EventEntity {
+        // Guard the doors ≤ start invariant: a source that lists them the wrong way round
+        // (e.g. SO36's "Einlass: 19:30, Beginn: 19:00") has transposed the labels — swap back.
+        val (doors, start) = orderDoorsBeforeStart(doorsTime, startTime)
         // priceCurrency is intentionally omitted — all scraped venues are currently in Berlin
         // (EUR). EventEntity defaults to "EUR". If non-EUR venues are added, introduce a
         // priceCurrency field on ScrapedEvent and pass it through here.
-        EventEntity(
+        return EventEntity(
             // Preserve id and sourceId from existing entity on updates; sourceId is the
             // immutable identity key for matching scraped events to persisted rows.
             id = existing?.id,
@@ -115,8 +118,8 @@ data class ScrapedEvent(
             status = EventStatus.parseOrDefault(status).name,
             slug = SlugGenerator.slugify("$eventDate-$venueSlug-$title"),
             eventDate = eventDate,
-            doorsTime = doorsTime,
-            startTime = startTime,
+            doorsTime = doors,
+            startTime = start,
             imageUrl = imageUrl,
             sourceUrl = sourceUrl,
             ticketUrl = ticketUrl,
@@ -128,6 +131,7 @@ data class ScrapedEvent(
             // Honour an explicit scraper flag, otherwise derive from prices/note/title.
             free = free || detectFree(pricePresale, priceBoxOffice, priceNote, title)
         )
+    }
 }
 
 /**

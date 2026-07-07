@@ -15,10 +15,12 @@ class PromoterNormalizerTest {
     @Test
     fun `merges abbreviated and full trading-name variants of the same promoter`() {
         assertAll(
-            { canonicalPromoterName("LOFT") shouldBe "Loft" },
-            { canonicalPromoterName("Loft Concerts") shouldBe "Loft" },
-            { canonicalPromoterName("Loft Concert GmbH") shouldBe "Loft" },
-            { canonicalPromoterName("Loft Concerts GmbH") shouldBe "Loft" },
+            // "Loft" reduces to a single word, then a NAME_CORRECTIONS entry pins the fuller
+            // preferred brand name so every variant resolves to "Loft Concerts".
+            { canonicalPromoterName("LOFT") shouldBe "Loft Concerts" },
+            { canonicalPromoterName("Loft Concerts") shouldBe "Loft Concerts" },
+            { canonicalPromoterName("Loft Concert GmbH") shouldBe "Loft Concerts" },
+            { canonicalPromoterName("Loft Concerts GmbH") shouldBe "Loft Concerts" },
             { canonicalPromoterName("UNDERCOVER") shouldBe "Undercover" },
             { canonicalPromoterName("Undercover GmbH") shouldBe "Undercover" },
             { canonicalPromoterName("TRINITY") shouldBe "Trinity" },
@@ -80,12 +82,24 @@ class PromoterNormalizerTest {
         assertAll(
             // A promoter named purely of descriptor words keeps its single word.
             { canonicalPromoterName("Records") shouldBe "Records" },
-            { canonicalPromoterName("36 Concerts") shouldBe "36" }
+            { canonicalPromoterName("Concerts") shouldBe "Concerts" }
+        )
+    }
+
+    @Test
+    fun `keeps a trailing descriptor when the remaining name has no letters`() {
+        // Stripping "Concerts" off "36 Concerts" would leave the bare number "36",
+        // which is not a usable promoter name — so the descriptor is kept.
+        assertAll(
+            { canonicalPromoterName("36 Concerts") shouldBe "36 Concerts" },
+            { canonicalPromoterName("36 Concerts GmbH") shouldBe "36 Concerts" },
+            // A letter-bearing name still strips its trailing descriptor as before.
+            { canonicalPromoterName("Loft 36 Concerts") shouldBe "Loft 36" }
         )
     }
 
     @Test
     fun `normalizes surrounding and internal whitespace`() {
-        canonicalPromoterName("  Loft   Concerts  ") shouldBe "Loft"
+        canonicalPromoterName("  Loft   Concerts  ") shouldBe "Loft Concerts"
     }
 }

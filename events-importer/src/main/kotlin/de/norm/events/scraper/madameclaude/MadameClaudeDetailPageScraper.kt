@@ -4,6 +4,7 @@ import de.norm.events.scraper.EventSource
 import de.norm.events.scraper.ScrapedArtist
 import de.norm.events.scraper.ScrapedEvent
 import de.norm.events.scraper.UNRESOLVED_EVENT_DATE
+import de.norm.events.scraper.isNonArtistName
 import de.norm.events.scraper.parseShortDate
 import de.norm.events.scraper.parseTime
 import de.norm.events.scraper.stripArtistSuffix
@@ -183,14 +184,21 @@ class MadameClaudeDetailPageScraper {
         val artists = mutableListOf<ScrapedArtist>()
         val descriptionParts = mutableListOf<String>()
 
-        for ((index, h3) in h3Elements.withIndex()) {
+        for (h3 in h3Elements) {
             // Strip decorations (e.g. a "(DJ-Set)" performance-format annotation) to recover the act name.
             val artistName = stripArtistSuffix(h3.text().trim())
             if (artistName.isBlank()) continue
 
-            // First artist is headliner, rest are support
-            val role = if (index == 0) "HEADLINER" else "SUPPORT"
-            artists.add(ScrapedArtist(name = artistName, role = role))
+            // Drop non-artist headings — an h3 mirroring an event title like "Music Quiz" or
+            // "Open Mic L. J. Fox" is the event name, not a performer. Other venues get this via
+            // the shared title→artist helpers; this bespoke h3 path must apply the same filter.
+            // Its description block is still collected below so the event blurb isn't lost.
+            if (!isNonArtistName(artistName)) {
+                // First kept artist is the headliner, the rest are support. Keying off the
+                // accumulator (not the h3 index) keeps this correct when a leading h3 is filtered.
+                val role = if (artists.isEmpty()) "HEADLINER" else "SUPPORT"
+                artists.add(ScrapedArtist(name = artistName, role = role))
+            }
 
             // Collect description paragraphs between this h3 and the next h3
             val artistDesc = collectArtistDescription(h3)
