@@ -7,6 +7,7 @@ limitations of the scrape pipeline as it stands.
 
 Related: [ADR-007 Web Scraping Strategy](adr/ADR-007_WEB_SCRAPING_STRATEGY.md) ·
 [EVENT_DATA_SOURCES.md](EVENT_DATA_SOURCES.md) (per-venue field analysis) ·
+[DATA_QUALITY_STRATEGY.md](DATA_QUALITY_STRATEGY.md) (how these get fixed & prevented) ·
 actionable backlog in [../TODO.md](../TODO.md).
 
 Legend: **impact** — 🔴 user-visible missing/wrong data · 🟠 data-quality/noise ·
@@ -43,12 +44,12 @@ Legend: **impact** — 🔴 user-visible missing/wrong data · 🟠 data-quality
   `Murphy's Law`, `(BLACK KRAY)` → `(Black Kray)`), while keeping digit/dotted stylised
   tokens (`MC5`, `H2O`, `AC/DC`, `HGICH.T`), mixed casing (`DJ Koze`), and a curated
   acronym set (`DJ`, `MC`, `UK`, …). Residual, by design:
-  - a genuine all-caps name not in the acronym set is title-cased like any shouted word,
-    whether letters-only (`MUNA` → `Muna`, `MØ` → `Mø`) or stylised with an interior
-    symbol other than `.`/`/` (`BIGA*RANX` → `Biga*ranx`) — extend `ACRONYMS` to keep one;
-  - 🟢 this only cleans the display name; slugs are case-insensitive, so ALL-CAPS and
-    mixed-case spellings already resolved to one artist row (no fragmentation), and
-    rows created before this fix keep their original casing until re-created.
+    - a genuine all-caps name not in the acronym set is title-cased like any shouted word,
+      whether letters-only (`MUNA` → `Muna`, `MØ` → `Mø`) or stylised with an interior
+      symbol other than `.`/`/` (`BIGA*RANX` → `Biga*ranx`) — extend `ACRONYMS` to keep one;
+    - 🟢 this only cleans the display name; slugs are case-insensitive, so ALL-CAPS and
+      mixed-case spellings already resolved to one artist row (no fragmentation), and
+      rows created before this fix keep their original casing until re-created.
 - 🟢 **Genre tags are normalized through a curated map, stop-list, and gated
   fall-through.** `GenreNormalizer` splits on more separators (now also ` or `,
   ` oder `, ` vs `, so `Tango or NonTango` → `Tango`), resolves tokens against a
@@ -59,11 +60,11 @@ Legend: **impact** — 🔴 user-visible missing/wrong data · 🟠 data-quality
   when it plausibly names a genre (≤2 words, has letters, no stop-listed word),
   so long series labels like `Twenty One Pilots Special` no longer leak. The raw
   genre text is still preserved on the event.
-  - 🟢 Vocabulary is gated, not closed: a genuinely new genre that passes the
-    heuristic is still captured as-is, and everything dropped is logged
-    (`Dropping non-genre token …`) as the curation queue for growing the synonym
-    map / stop-list. `Karaoke` stays a tag (it is in the synonym map and treated
-    as a genre) even where a venue uses it as an event label.
+    - 🟢 Vocabulary is gated, not closed: a genuinely new genre that passes the
+      heuristic is still captured as-is, and everything dropped is logged
+      (`Dropping non-genre token …`) as the curation queue for growing the synonym
+      map / stop-list. `Karaoke` stays a tag (it is in the synonym map and treated
+      as a genre) even where a venue uses it as an event label.
 - 🟠 **`eventType` frequently defaults to `OTHER`.** When a source exposes no
   category, `toEventEntity` maps to `OTHER`. Discovery/filtering by type is
   therefore incomplete for several venues (see per-importer notes).
@@ -78,14 +79,14 @@ Legend: **impact** — 🔴 user-visible missing/wrong data · 🟠 data-quality
 - 🟠 **Promoter fragmentation — mostly fixed, with residual cases.**
   `canonicalPromoterName` now merges abbreviated/full variants (`LOFT` /
   `Loft Concerts GmbH` → `Loft`). Remaining, by design:
-  - a *leading* descriptor isn't stripped (`Konzertbüro Schoneberg` ≠
-    `Schoneberg Konzerte`) unless a curated `NAME_CORRECTIONS` entry is added;
-  - source typos and spelling/spacing variants are folded onto one spelling via
-    a curated map (`Trinty` → `Trinity`, `Allrooms`/`ALLROOMS` → `All Rooms`);
-    only *known* names are corrected — new ones need an entry in
-    `NAME_CORRECTIONS`;
-  - 🟢 de-shout lowercases genuine acronyms in the display name (`TV Noir` →
-    `Tv Noir`, `Bossa FM` → `Bossa Fm`) — display-only, slugs unaffected.
+    - a *leading* descriptor isn't stripped (`Konzertbüro Schoneberg` ≠
+      `Schoneberg Konzerte`) unless a curated `NAME_CORRECTIONS` entry is added;
+    - source typos and spelling/spacing variants are folded onto one spelling via
+      a curated map (`Trinty` → `Trinity`, `Allrooms`/`ALLROOMS` → `All Rooms`);
+      only *known* names are corrected — new ones need an entry in
+      `NAME_CORRECTIONS`;
+    - 🟢 de-shout lowercases genuine acronyms in the display name (`TV Noir` →
+      `Tv Noir`, `Bossa FM` → `Bossa Fm`) — display-only, slugs unaffected.
 - **Coverage gap (not a defect):** JS-rendered / cookie-walled venues aren't
   importable yet (Playwright deferred, ADR-007). See EVENT_DATA_SOURCES.md for
   which venues remain.
@@ -95,6 +96,7 @@ Legend: **impact** — 🔴 user-visible missing/wrong data · 🟠 data-quality
 ## Per-importer
 
 ### Cassiopeia (`scraper/cassiopeia/`) — Webflow, list + detail
+
 - 🟠 **First page only** (Finsweet CMS Load lazy-loads the rest via JS) — ~8 events.
 - 🟠 **Artists rarely extracted.** The title may be an artist *or* an event name
   (e.g. "Grey City Fest Opener"); without a "Support:" signal it's ambiguous, so
@@ -103,6 +105,7 @@ Legend: **impact** — 🔴 user-visible missing/wrong data · 🟠 data-quality
   Webflow layout changes.
 
 ### Privatclub (`scraper/privatclub/`) — WordPress, single page
+
 - 🔴 **Concerts without a `Support:` line get no artist.** `parseArtists` only
   builds a lineup for `CONCERT` events, and even then only when the subtitle
   carries a `Support:` line (the signal that the title is an act) — so a concert
@@ -112,10 +115,12 @@ Legend: **impact** — 🔴 user-visible missing/wrong data · 🟠 data-quality
   structured presale/box-office.
 
 ### Madame Claude (`scraper/madameclaude/`) — WordPress, list + detail
+
 - 🟢 Small venue (~11 events); `DD/MM/YY` dates. No major known gaps beyond the
   cross-cutting ones.
 
 ### Astra Kulturhaus (`scraper/astra/`) — Kulturhäuser platform, list + detail
+
 - 🟠 **Festival-day mislabeling** is only best-effort corrected. Astra tags each
   festival day individually and sometimes labels one "Concert"; normalization
   fixes it only when a correctly-labelled sibling exists on the same page.
@@ -126,9 +131,11 @@ Legend: **impact** — 🔴 user-visible missing/wrong data · 🟠 data-quality
 - The detail page carries no artist roster, so artists come only from the overview.
 
 ### Lido (`scraper/lido/`) — same Kulturhäuser platform as Astra
+
 - Shares Astra's platform limitations (teaser date fallback, artists from overview).
 
 ### SO36 (`scraper/so36/`) — Ticket-Toaster shop, list + detail
+
 - 🔴 **Sold-out is never detected.** The JSON-LD `availability: SoldOut` is
   unreliable — SO36 sells via external shops that report on-platform availability
   as `SoldOut` even when tickets are freely available — so it's ignored and
@@ -137,6 +144,7 @@ Legend: **impact** — 🔴 user-visible missing/wrong data · 🟠 data-quality
   what the `supertitle` label exposes (Konzert/Party), else `OTHER`.
 
 ### Roadrunner's Paradise (`scraper/roadrunner/`) — retro hand-coded, single page
+
 - 🔴 **No artists, promoters, prices, or event type.** The free-text retro HTML
   carries none reliably; `eventType` defaults to `OTHER`.
 - 🟠 **Very sparse & stale.** Currently ~1 event; the site leaves past events
@@ -145,6 +153,7 @@ Legend: **impact** — 🔴 user-visible missing/wrong data · 🟠 data-quality
   today-forward feeds.
 
 ### Badehaus (`scraper/badehaus/`) — WordPress / Events Manager, list + detail
+
 - 🔴 **No artist roster at all.** The scraper extracts no artists — a concert
   titled `Anette Olzon` or `El Flecha Negra` yields zero artist entries (~72
   artist-less concerts in a July 2026 seed). The title is almost always the act,
