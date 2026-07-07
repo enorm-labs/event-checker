@@ -14,6 +14,7 @@ import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.awaitBody
 import org.springframework.web.reactive.function.client.awaitExchange
 import reactor.netty.http.client.HttpClient
+import java.net.URI
 
 /**
  * Reactive HTTP fetcher with conditional-request support and Jsoup parsing.
@@ -77,7 +78,10 @@ class HtmlFetcher(
         logger.info { "Fetching $url (etag=$etag, lastModified=$lastModified)" }
         return webClient
             .get()
-            .uri(url)
+            // Pass a pre-built URI so WebClient uses the (already percent-encoded) URL verbatim.
+            // Passing a String treats it as a URI template and re-encodes '%', double-encoding
+            // already-escaped paths (e.g. non-ASCII slugs) into a 404.
+            .uri(URI.create(url))
             .apply {
                 etag?.let { header("If-None-Match", it) }
                 lastModified?.let { header("If-Modified-Since", it) }
@@ -116,7 +120,9 @@ class HtmlFetcher(
         logger.debug { "Fetching detail page: $url" }
         return webClient
             .get()
-            .uri(url)
+            // Pass a pre-built URI so WebClient uses the (already percent-encoded) URL verbatim
+            // instead of re-encoding '%' and double-encoding non-ASCII slugs into a 404.
+            .uri(URI.create(url))
             .awaitExchange { response ->
                 // Fail fast on HTTP errors to avoid returning error pages as valid HTML
                 if (response.statusCode().isError) {

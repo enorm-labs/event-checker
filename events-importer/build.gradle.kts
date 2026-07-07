@@ -94,6 +94,11 @@ dependencies {
     // See: https://mockk.io/
     testImplementation("io.mockk:mockk:${property("mockk.version")}")
 
+    // MockWebServer – scriptable local HTTP server for exercising the real WebClient
+    // request pipeline (URL encoding, headers, status handling) end to end.
+    // See: https://github.com/square/okhttp/tree/master/mockwebserver
+    testImplementation("com.squareup.okhttp3:mockwebserver:${property("mockwebserver.version")}")
+
     // Testcontainers
     testImplementation("org.springframework.boot:spring-boot-testcontainers")
     testImplementation("org.testcontainers:testcontainers-junit-jupiter")
