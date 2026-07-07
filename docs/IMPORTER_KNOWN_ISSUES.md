@@ -27,17 +27,26 @@ Legend: **impact** — 🔴 user-visible missing/wrong data · 🟠 data-quality
   `stripArtistSuffix` filter non-artist titles; Astra and Lido already do it via
   `buildArtistsForEventType`).
 - 🟠 **A few non-artist titles still slip through as artists.** The curated
-  filters catch festivals/tours/segments/labels, but idiosyncratic event-format
-  titles remain (`Music Quiz`, `Open Mic L. J. Fox`), as do decorated names that
-  keep a suffix/annotation (`Avangelic (DJ-Set)`,
-  `THE BUTLERS - 40 YEARS, SKA & SOULPOWER -`). The curated denylist
-  (`NON_ARTIST_NAMES`) is the maintenance surface; a general fix needs a
-  classifier → tracked in `TODO.md` (AI-assisted data quality).
-- 🟠 **Artist names are not canonicalized.** Unlike promoters (see below),
-  artists are stored as-scraped, so the same act fragments across venues —
-  ALL-CAPS on one site (`GREEN LUNG`, `MUNA`) vs. mixed case on another
-  (`Green Lung`). A de-shout/normalize pass (keeping acronyms) is tracked in
-  `TODO.md`; stripping words from band names is unsafe, so it must be casing-only.
+  filters catch festivals/tours/segments/labels, and `stripArtistSuffix` recovers the
+  act from tour/live/anniversary tails and performance-format annotations
+  (`THE BUTLERS - 40 YEARS, SKA & SOULPOWER -` → `The Butlers`, `Avangelic (DJ-Set)` →
+  `Avangelic`), but idiosyncratic event-format titles remain (`Music Quiz`,
+  `Open Mic L. J. Fox`). The curated denylist (`NON_ARTIST_NAMES`) is the maintenance
+  surface; a general fix needs a classifier → tracked in `TODO.md` (AI-assisted data quality).
+- 🟠 **Artist display names — de-shouted, with residual cases.** `canonicalArtistName`
+  now de-shouts ALL-CAPS act names to a clean display form before they're stored
+  (`GREEN LUNG` → `Green Lung`), so an act isn't frozen SHOUTING by whichever venue
+  imported it first. It's *casing-only* — no words are stripped (unsafe for band
+  names). It de-shouts words with attached punctuation too (`MURPHY'S LAW` →
+  `Murphy's Law`, `(BLACK KRAY)` → `(Black Kray)`), while keeping digit/dotted stylised
+  tokens (`MC5`, `H2O`, `AC/DC`, `HGICH.T`), mixed casing (`DJ Koze`), and a curated
+  acronym set (`DJ`, `MC`, `UK`, …). Residual, by design:
+  - a genuine all-caps name not in the acronym set is title-cased like any shouted word,
+    whether letters-only (`MUNA` → `Muna`, `MØ` → `Mø`) or stylised with an interior
+    symbol other than `.`/`/` (`BIGA*RANX` → `Biga*ranx`) — extend `ACRONYMS` to keep one;
+  - 🟢 this only cleans the display name; slugs are case-insensitive, so ALL-CAPS and
+    mixed-case spellings already resolved to one artist row (no fragmentation), and
+    rows created before this fix keep their original casing until re-created.
 - 🟠 **Genre tags are only partially normalized.** `GenreNormalizer` maps a
   synonym table, but many tokens fall through as-is (`No synonym match for genre
   token …`), creating noisy/duplicated tags — and naive splitting yields

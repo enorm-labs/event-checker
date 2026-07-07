@@ -212,11 +212,26 @@ class EventMappingExtensionsTest {
     }
 
     @Test
-    fun `stripArtistSuffix leaves plain names and a bare Live band untouched`() {
+    fun `stripArtistSuffix recovers the act from an anniversary suffix`() {
+        stripArtistSuffix("THE BUTLERS - 40 YEARS, SKA & SOULPOWER -") shouldBe "THE BUTLERS"
+        stripArtistSuffix("SELIG - 30 JAHRE") shouldBe "SELIG"
+    }
+
+    @Test
+    fun `stripArtistSuffix strips a parenthesized performance-format annotation`() {
+        stripArtistSuffix("Avangelic (DJ-Set)") shouldBe "Avangelic"
+        stripArtistSuffix("Someone (DJ Set)") shouldBe "Someone"
+        stripArtistSuffix("Band (Acoustic)") shouldBe "Band"
+    }
+
+    @Test
+    fun `stripArtistSuffix leaves plain names, a bare Live band and a parenthesized alias untouched`() {
         stripArtistSuffix("The Adicts") shouldBe "The Adicts"
         stripArtistSuffix("Live") shouldBe "Live"
-        // No tour marker in the hyphenated tail, so it is not a tour suffix.
+        // No tour/anniversary marker in the hyphenated tail, so it is not a suffix.
         stripArtistSuffix("BAD COMPANY LEGACY - Dave Colwell") shouldBe "BAD COMPANY LEGACY - Dave Colwell"
+        // The parenthetical is an alias, not a format word, so it is kept.
+        stripArtistSuffix("Sickboyrari (Black Kray)") shouldBe "Sickboyrari (Black Kray)"
     }
 
     // --- buildArtistList ---
@@ -345,6 +360,13 @@ class EventMappingExtensionsTest {
             listOf(ScrapedArtist(name = "DOMINIUM", role = "HEADLINER"))
         headlinersFromTitle("HGICH.T LIVE") shouldContainExactly
             listOf(ScrapedArtist(name = "HGICH.T", role = "HEADLINER"))
+    }
+
+    @Test
+    fun `headlinersFromTitle recovers a single act from an anniversary title`() {
+        // The comma in the tail keeps the title unsplit; the suffix strip then recovers the band.
+        headlinersFromTitle("THE BUTLERS - 40 YEARS, SKA & SOULPOWER -") shouldContainExactly
+            listOf(ScrapedArtist(name = "THE BUTLERS", role = "HEADLINER"))
     }
 
     @Test
