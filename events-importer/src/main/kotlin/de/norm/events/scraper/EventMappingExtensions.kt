@@ -287,12 +287,39 @@ fun stripArtistSuffix(name: String): String {
 }
 
 /**
- * True when [name] must never be stored as an artist: a placeholder ("TBA"), a
- * bare role label ("Special Guest"), an event-segment label ("Acid Aftershow"),
- * or an event label ("Shred Fest"). The single predicate applied wherever scraped
- * headliner/support names are resolved.
+ * Manually curated one-off titles that are not performers but that no structural
+ * rule safely catches — a warm-up slot at a specific room, a package-tour name, a
+ * recurring themed night. Entries are lowercase and whitespace-collapsed; a
+ * trailing edition number is ignored at match time, so a recurring series matches
+ * every edition (`FEMALE-FRONTED IS NOT A GENRE 5`, `… 6`, …). Add exact titles
+ * here as they surface.
  */
-fun isNonArtistName(name: String): Boolean = isPlaceholderName(name) || isNonArtistLabel(name) || isEventSegmentLabel(name) || isNonArtistEvent(name)
+private val NON_ARTIST_NAMES: Set<String> =
+    setOf(
+        "warm up im franken",
+        "the revival tour",
+        "female-fronted is not a genre"
+    )
+
+/** A trailing edition number ("… 5") on a recurring event title, ignored when matching [NON_ARTIST_NAMES]. */
+private val TRAILING_EDITION = Regex("""\s+\d+$""")
+
+private fun isDenylistedNonArtist(name: String): Boolean =
+    name
+        .trim()
+        .replace(WHITESPACE, " ")
+        .lowercase()
+        .replace(TRAILING_EDITION, "") in NON_ARTIST_NAMES
+
+/**
+ * True when [name] must never be stored as an artist: a placeholder ("TBA"), a bare
+ * role label ("Special Guest"), an event-segment label ("Acid Aftershow"), an event
+ * label ("Shred Fest"), or a curated one-off non-artist title ("The Revival Tour").
+ * The single predicate applied wherever scraped headliner/support names are resolved.
+ */
+fun isNonArtistName(name: String): Boolean =
+    isPlaceholderName(name) || isNonArtistLabel(name) || isEventSegmentLabel(name) ||
+        isNonArtistEvent(name) || isDenylistedNonArtist(name)
 
 /**
  * Well-known single acts whose name legitimately contains a conjunction that

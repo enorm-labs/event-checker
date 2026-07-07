@@ -184,6 +184,24 @@ class EventMappingExtensionsTest {
         isNonArtistEvent("Green Lung") shouldBe false
     }
 
+    // --- isNonArtistName curated denylist ---
+
+    @Test
+    fun `isNonArtistName drops curated one-off non-artist titles`() {
+        isNonArtistName("Warm Up im Franken") shouldBe true
+        isNonArtistName("THE REVIVAL TOUR") shouldBe true
+        // Recurring series: any edition number matches.
+        isNonArtistName("FEMALE-FRONTED IS NOT A GENRE 5") shouldBe true
+        isNonArtistName("FEMALE-FRONTED IS NOT A GENRE 6") shouldBe true
+    }
+
+    @Test
+    fun `isNonArtistName keeps real names including those ending in a number`() {
+        isNonArtistName("WEDNESDAY 13") shouldBe false
+        isNonArtistName("OXO86") shouldBe false
+        isNonArtistName("The Adicts") shouldBe false
+    }
+
     // --- stripArtistSuffix ---
 
     @Test

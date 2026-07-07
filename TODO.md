@@ -61,6 +61,8 @@ Public name is **Event Junkie**; internal/repo name stays **Event Checker**
 
 - [x] Detect free events at import (`detectFree`: €0 price or free-entry phrases → `free` flag)
 - [ ] Normalize artists (at least use normal case instead of all upper case, except for acronyms)
+- [ ] Use AI to check if title is an artist name or not? Or if it contains an artist name?
+- [ ] Use AI to check if event type is correct?
 - [ ] Use AI in importer to enrich events with missing data (e.g. genres, event types) and to fix data quality issues (e.g. artist names, promoter names, event types, genres, etc.)
 - [ ] Build Admin tool/frontend to enrich events fast and easy with missing data (e.g. genres, event types) - sort and filter events by missing data
 - [ ] Build Admin tools/frontend to fix data, e.g. artist names, promoter names, event types, genres, etc.
