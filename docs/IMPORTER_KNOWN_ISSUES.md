@@ -174,6 +174,36 @@ Legend: **impact** — 🔴 user-visible missing/wrong data · 🟠 data-quality
   and degrades to overview data — correctly handled, but worth knowing.
 - 🟢 Heaviest importer: ~90 sequential (throttled) detail fetches, ~40s per run.
 
+### Bi Nuu (`scraper/binuu/`) — SvelteKit / PocketBase, list + detail
+
+Event data comes from the SvelteKit SSR payload embedded in each page (a JS object
+literal in the `kit.start(...)` bootstrap script), parsed via `BinuuSvelteKitPayload`
+rather than the rendered DOM — so dates carry full four-digit years and fields are
+structured. Limitations:
+
+- 🟠 **`eventType` is always `OTHER`.** Bi Nuu exposes no category field anywhere on
+  the site, so the type is never set and falls back to `OTHER` at persistence (the
+  cross-cutting `OTHER` default). Discovery/filtering by type is unavailable for this
+  venue, and every artist-extraction path runs in its type-agnostic form.
+- 🟠 **Event/party-series names can slip in as headliner artists.** Artists come from
+  the site's structured `performers` array (a performer also named in the `subtitle_2`
+  support line becomes `SUPPORT`, otherwise `HEADLINER`) — more reliable than
+  title-parsing, but when a recurring club/DJ night lists *its own name* as the sole
+  performer, that name is minted as a headliner. Known series are on the
+  `NON_ARTIST_NAMES` denylist (`GrooveJet Berlin`, `Ultra Night`, `Boheme Sauvage
+  N°<n>`); like every curated denylist this is reactive, so a newly-seen series slips
+  through until added → the general classifier fix is tracked in `TODO.md`
+  (AI-assisted data quality), shared with the cross-cutting reactive-denylist limitation.
+- 🟢 **`eventStatus` is a single-letter code** mapped in `mapBinuuStatus`: `r` →
+  `RELOCATED` (carries `locationNew`), `p` → `POSTPONED` (carries the original date in
+  `startOld`). Any other/unseen code defaults to `SCHEDULED` and is logged, so a new
+  code surfaces rather than being mismapped. A postponed event stores its new date
+  (`start`), not `startOld`.
+- 🟢 **No genre, and occasional missing `ticket_url`.** No genre is exposed anywhere;
+  some events sell only via a link buried in the description, so `ticket_url` is
+  sometimes null. Timestamps carry a spurious `Z` suffix on local Berlin wall-clock
+  times — read as local, no timezone shift (see `parseBinuuDate`/`parseBinuuTime`).
+
 ---
 
 ## How to extend this doc

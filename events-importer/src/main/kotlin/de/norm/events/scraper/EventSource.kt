@@ -15,6 +15,9 @@ enum class EventSource {
     /** Badehaus Berlin – WordPress/Events-Manager single-page `/events/` listing with status classes. */
     BADEHAUS,
 
+    /** Bi Nuu Berlin – SvelteKit/PocketBase site; SSR data embedded as a JS object literal in the page, with per-event detail pages. */
+    BINUU,
+
     /** Cassiopeia Berlin – Webflow-based event listing at `/club`. */
     CASSIOPEIA,
 
