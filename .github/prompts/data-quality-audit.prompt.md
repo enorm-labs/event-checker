@@ -48,6 +48,7 @@ Tables (all in schema `events`): `venue`, `artist`, `promoter`, `event`, `event_
 `event_genre_tag` (join). Full DDL: `events-importer/src/main/resources/db/migration/V001__create_initial_schema.sql`.
 
 Valid enum values (stored as `TEXT`; anything else is a bug — parsers fall back on unknowns):
+
 - `event.event_type`: `CONCERT`, `FESTIVAL`, `PARTY`, `QUIZ`, `CLUB_NIGHT`, `SHOW`, `OTHER`
 - `event.status`: `SCHEDULED`, `RELOCATED`, `CANCELLED`, `POSTPONED`
 - `event_artist.role`: `HEADLINER`, `SUPPORT`, `DJ`
@@ -59,6 +60,7 @@ Break findings down **per venue / per source** where useful — a problem concen
 usually points at that importer.
 
 ### 1. Missing / required data
+
 - Events with no artists (`event` with no `event_artist` row), broken down by venue and `event_type`.
   Compare against the ~40% artist-less-concert baseline in KNOWN_ISSUES before flagging as new.
 - `NULL`/empty `title`, `slug`, `source_id`, `event_date`, `venue_id`.
@@ -70,6 +72,7 @@ usually points at that importer.
 - Whitespace-only or placeholder text values (e.g. `''`, `'-'`, `'TBA'`, `'N/A'`, `'null'`) in name/title fields.
 
 ### 2. Duplicates & entity fragmentation
+
 - Artists / promoters / genre_tags that are almost certainly the same entity under different names:
   same `slug` prefix, case-only differences, punctuation/spacing variants, trailing `Live`/tour
   suffixes, ALL-CAPS vs mixed case. (Slugs are case-insensitive so exact-slug dupes shouldn't exist,
@@ -81,6 +84,7 @@ usually points at that importer.
 - Orphan `artist`/`promoter`/`genre_tag` rows referenced by zero events (dead rows from renames/reparsing).
 
 ### 3. Mis-parsed artist & promoter names
+
 - Non-artist strings sitting in `artist.name`: event-format words (`Quiz`, `Karaoke`, `Open Mic`,
   `Festival`, `Special`, `Tour`, `Support`, `Live`, `Warm Up`, `Aftershow`, `w/`, `presents`, `vs`),
   standalone symbols, pure numbers, or very long strings (a whole title parsed as one artist).
@@ -92,6 +96,7 @@ usually points at that importer.
 - Suspiciously short (1–2 char) or suspiciously long name values in any of `artist`, `promoter`, `venue`, `genre_tag`.
 
 ### 4. Event type & genre correctness
+
 - `event_type` / `status` / `event_artist.role` values outside the valid enum sets above.
 - `genre_tag.name` values that aren't really genres (event-format labels, series names, freeform
   fragments) that leaked past `GenreNormalizer`'s stop-list — cross-check against the `NON_GENRE_TOKENS`
@@ -103,6 +108,7 @@ usually points at that importer.
   or festivals (multi-day, `Festival` in title) typed as `CONCERT`.
 
 ### 5. Dates, times & prices
+
 - `event_date` in the far past (stale listings) or implausibly far future (bad year inference — see
   Roadrunner note in KNOWN_ISSUES). Bucket by how far from today (`2026-07-07`).
 - `start_time` earlier than `doors_time` (doors should be ≤ start).
@@ -111,6 +117,7 @@ usually points at that importer.
 - Many events from one `event_source` sharing the exact same date/time (parsing collapsed to a default).
 
 ### 6. Referential & consistency integrity
+
 - Orphaned events (`event_source_id IS NULL`) — expected only for manually-created events; a scraped
   batch going NULL is a bug.
 - Join rows pointing at non-existent parents (FKs should prevent this, but verify), duplicate
@@ -127,11 +134,11 @@ today's date). Structure it as:
 
 1. **Summary** — total rows per table, and a one-line-per-category verdict (clean / N issues).
 2. **Findings**, grouped by category and ordered by severity:
-   - 🔴 **wrong or missing user-visible data** · 🟠 **data-quality / noise** · 🟢 **cosmetic / edge case**
-     (mirror the impact legend in `IMPORTER_KNOWN_ISSUES.md`).
-   - Each finding: what it is, the SQL that found it, the **count**, 3–5 **sample rows**, the likely
-     **root cause** (which importer / normalizer), and whether it's **NEW** or **KNOWN/accepted**
-     (cite the KNOWN_ISSUES entry).
+    - 🔴 **wrong or missing user-visible data** · 🟠 **data-quality / noise** · 🟢 **cosmetic / edge case**
+      (mirror the impact legend in `IMPORTER_KNOWN_ISSUES.md`).
+    - Each finding: what it is, the SQL that found it, the **count**, 3–5 **sample rows**, the likely
+      **root cause** (which importer / normalizer), and whether it's **NEW** or **KNOWN/accepted**
+      (cite the KNOWN_ISSUES entry).
 3. **Recommended actions** — for NEW findings, point at the specific normalizer or scraper to fix
    (`canonicalArtistName`, `canonicalPromoterName`, `GenreNormalizer`, `isNonArtistName`,
    `stripArtistSuffix`, per-venue parser), or suggest a new `TODO.md` entry / KNOWN_ISSUES note if it's

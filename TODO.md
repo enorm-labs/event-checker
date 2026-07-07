@@ -58,13 +58,36 @@ Public name is **Event Junkie**; internal/repo name stays **Event Checker**
 
 **Data quality — normalize, validate, enrich:**
 
-- [ ] Title-as-headliner extraction for venues without a `Support:` signal (Privatclub,
-  Cassiopeia, Badehaus) — recovers the ~40% of concerts currently stored with no artist. Now
-  safe: `isNonArtistName` + `stripArtistSuffix` filter non-artist titles, and Astra/Lido already
-  do this via `buildArtistsForEventType`.
-- [ ] AI-assisted data quality in the importer (one capability, several uses): detect/extract
-  artist names from titles, validate event types, enrich missing fields (genres, event types),
-  and fix bad values (artist names, promoter names, …).
+Strategy & sequencing: [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEGY.md)
+(Measure → Prevent → Fix → Systematize).
+
+- [ ] **(Pillar 1 — Measure)** Data-quality report: `GET /api/admin/data-quality` +
+  scheduled summary log + Micrometer gauges — per-source counts of artist-less concerts,
+  `OTHER`-typed events, and missing genre/promoter/price/start-time. Plus a `/worklist`
+  endpoint (offending events per metric) so stewards fix via the existing Event API — no
+  bespoke frontend yet. Persist daily metric snapshots (`data_quality_snapshot`) so trends
+  are chartable in an external BI tool (see the *Dashboard* item under Operations).
+  Plan: [docs/DATA_QUALITY_PILLAR_1_PLAN.md](docs/DATA_QUALITY_PILLAR_1_PLAN.md).
+- [ ] **(Pillar 2 — Prevent)** Golden fixture tests from real scraped HTML for all four
+  normalizers, plus a boundary validation gate that flags obviously-bad output
+  (empty artist after stripping, artist == non-artist pattern, genre == event title)
+  into the curation queue instead of persisting it silently.
+- [ ] **(Pillar 3 — Fix)** Title-as-headliner extraction for venues without a `Support:` signal
+  (Privatclub, Cassiopeia, Badehaus) — recovers the ~40% of concerts currently stored with no
+  artist. Now safe: `isNonArtistName` + `stripArtistSuffix` filter non-artist titles, and
+  Astra/Lido already do this via `buildArtistsForEventType`. Follow with a one-off backfill pass.
+- [ ] **(Pillar 4 — Systematize)** AI-assisted data quality in the importer (one capability,
+  several uses): detect/extract artist names from titles, validate event types, enrich missing
+  fields (genres, event types), and fix bad values (artist names, promoter names, …). Runs
+  *after* the deterministic normalizers, human-in-the-loop via the admin review UI.
+  **Needs ADR-012 (AI-Assisted Data Quality)** — new external dependency, cost/latency,
+  non-deterministic output.
+- [ ] **(Decision — ADR candidate)** Curated-vocabulary storage: code vs. data. Move the
+  denylists / synonym maps / corrections (`NON_ARTIST_NAMES`, `NAME_CORRECTIONS`, genre
+  synonyms, `ACRONYMS`) from hardcoded Kotlin to steward-editable DB tables so fixes land
+  without a redeploy — vs. keeping them as tested code fixed via PR. Spike + ADR before
+  Pillar 4's human-in-the-loop needs live editing; blocks nothing in Pillars 1–3.
+  (Strategy §6.)
 - [ ] Enrich venues: type (club/bar/concert hall), description, image/photo, genres, event types
 - [ ] Enrich promoters: description, image, and corrected display names
 
@@ -90,7 +113,10 @@ Public name is **Event Junkie**; internal/repo name stays **Event Checker**
 - [ ] Checkov scan (if it makes sense)
 - [ ] Infra/tooling update checker beyond Dependabot (Renovate?)
 - [ ] Review useful security workflows → https://github.com/enorm-labs/event-checker/actions/new?category=security
-- [ ] Dashboard for analysing the data (Superset, Kibana, Grafana, …?)
+- [ ] Dashboard for analysing the data (Superset, Kibana, Grafana, …?) — also the intended
+  surface for the **data-quality metrics/trends** (Pillar 1 exposes them via a
+  `data_quality_snapshot` table for SQL-based BI and Micrometer/Prometheus for Grafana;
+  see [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEGY.md) §4)
 - [ ] Enable agentic workflows (continuous refactoring/docs) → https://github.github.com/gh-aw/
 
 ## Legal / Compliance (before going live)
