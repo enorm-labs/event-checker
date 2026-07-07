@@ -16,6 +16,24 @@ Legend: **impact** — 🔴 user-visible missing/wrong data · 🟠 data-quality
 
 ## Cross-cutting (affect several/all importers)
 
+- 🔴 **Many concerts have no headliner.** ~40% of `CONCERT` events (a July 2026
+  seed showed 148 of 354, dominated by **Badehaus** ~72 and **Privatclub** ~70)
+  carry no artist at all, because title-as-headliner extraction is deliberately
+  conservative: Privatclub and Cassiopeia only treat the title as an artist when a
+  `Support:` line confirms it, and Badehaus extracts no artist roster at all
+  (see per-importer notes). For these venues the concert title *is* almost always
+  the act, so this is user-visible missing data. Now that non-artist titles are
+  filtered out (festivals/tours/labels/placeholders via `isNonArtistName` +
+  `stripArtistSuffix`), treating a concert title as the headliner — the way Astra
+  and Lido already do via `buildArtistsForEventType` — would be much safer than
+  when the conservative guard was written.
+- 🟠 **A few non-artist titles still slip through as artists.** The curated
+  filters catch festivals/tours/segments/labels, but idiosyncratic event-format
+  titles remain (`Music Quiz`, `Open Mic L. J. Fox`), as do decorated names that
+  keep a suffix/annotation (`Avangelic (DJ-Set)`,
+  `THE BUTLERS - 40 YEARS, SKA & SOULPOWER -`). The curated denylist
+  (`NON_ARTIST_NAMES`) is the maintenance surface; a general fix needs a
+  classifier (see `TODO.md`).
 - 🟠 **Artist names are not canonicalized.** Unlike promoters (see below),
   artists are stored as-scraped, so the same act fragments across venues —
   ALL-CAPS on one site (`GREEN LUNG`, `MUNA`) vs. mixed case on another
@@ -24,8 +42,11 @@ Legend: **impact** — 🔴 user-visible missing/wrong data · 🟠 data-quality
 - 🟠 **Genre tags are only partially normalized.** `GenreNormalizer` maps a
   synonym table, but many tokens fall through as-is (`No synonym match for genre
   token …`), creating noisy/duplicated tags — and naive splitting yields
-  fragments (`Beyond`, `Wave`, `Retro`, `Tango or NonTango`). The raw genre text
-  is preserved, but the structured tags need broader synonyms and better tokenization.
+  fragments (`Beyond`, `Wave`, `Retro`, `Tango or NonTango`). Non-genre event
+  descriptors also leak into `genre_tag` where a venue reuses the genre field for
+  a label (`Immersive Ausstellung`, `Twenty One Pilots Special`, `Karaoke` — all
+  Cassiopeia). The raw genre text is preserved, but the structured tags need
+  broader synonyms, better tokenization, and a non-genre stop-list.
 - 🟠 **`eventType` frequently defaults to `OTHER`.** When a source exposes no
   category, `toEventEntity` maps to `OTHER`. Discovery/filtering by type is
   therefore incomplete for several venues (see per-importer notes).
@@ -63,8 +84,11 @@ Legend: **impact** — 🔴 user-visible missing/wrong data · 🟠 data-quality
   Webflow layout changes.
 
 ### Privatclub (`scraper/privatclub/`) — WordPress, single page
-- 🟠 **Artists only for concerts** (title = headliner + `Support:` line); other
-  event types get none.
+- 🔴 **Concerts without a `Support:` line get no artist.** `parseArtists` only
+  builds a lineup for `CONCERT` events, and even then only when the subtitle
+  carries a `Support:` line (the signal that the title is an act) — so a concert
+  titled just `20Tokens` yields no headliner. ~70 concerts were artist-less in a
+  July 2026 seed (see the cross-cutting entry).
 - 🟢 Complex/conditional pricing is stored as free-form `priceNote` rather than
   structured presale/box-office.
 
@@ -102,6 +126,10 @@ Legend: **impact** — 🔴 user-visible missing/wrong data · 🟠 data-quality
   today-forward feeds.
 
 ### Badehaus (`scraper/badehaus/`) — WordPress / Events Manager, list + detail
+- 🔴 **No artist roster at all.** The scraper extracts no artists — a concert
+  titled `Anette Olzon` or `El Flecha Negra` yields zero artist entries (~72
+  artist-less concerts in a July 2026 seed). The title is almost always the act,
+  so title-as-headliner extraction would recover them.
 - 🔴 **`eventType` is inferred from the title, not scraped.** Badehaus publishes
   no machine-readable category anywhere, so the type is a heuristic
   (quiz / party / screening, else `CONCERT`). Non-matching events may be mislabelled.
