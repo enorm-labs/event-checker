@@ -87,13 +87,13 @@ class PrivatclubOverviewPageScraperTest {
         }
 
         @Test
-        fun `does not extract artists from concert without support line`() {
+        fun `extracts title as headliner from concert without support line`() {
             val document = Jsoup.parse(html, baseUrl)
             val events = scraper.scrape(document, baseUrl)
             val concert = events.first { it.title == "Sean Rowe" }
 
-            // No "Support:" in subtitle → can't confirm title is an artist name
-            concert.artists.shouldBeEmpty()
+            // CONCERT type confirms the title is the headliner, even with no "Support:" line
+            concert.artists shouldContainExactly listOf(ScrapedArtist(name = "Sean Rowe", role = "HEADLINER"))
         }
     }
 

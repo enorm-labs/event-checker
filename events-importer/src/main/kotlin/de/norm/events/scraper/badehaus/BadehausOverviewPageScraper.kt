@@ -4,6 +4,7 @@ import de.norm.events.event.EventStatus
 import de.norm.events.event.EventType
 import de.norm.events.scraper.EventSource
 import de.norm.events.scraper.ScrapedEvent
+import de.norm.events.scraper.buildArtistsForEventType
 import de.norm.events.scraper.parseTime
 import de.norm.events.scraper.resolveUrl
 import de.norm.events.scraper.textAt
@@ -92,11 +93,13 @@ class BadehausOverviewPageScraper {
             }
 
         val status = parseStatus(card.className())
+        val subtitle = parseSubtitle(card)
+        val eventType = inferEventType(title, slug)
 
         return ScrapedEvent(
             title = title,
-            subtitle = parseSubtitle(card),
-            eventType = inferEventType(title, slug),
+            subtitle = subtitle,
+            eventType = eventType,
             eventDate = eventDate,
             doorsTime = parseDoorsTime(eventInfo),
             imageUrl = card.selectFirst(".eventlistimg img")?.absUrl("src")?.takeIf { it.isNotBlank() },
@@ -104,7 +107,11 @@ class BadehausOverviewPageScraper {
             sourceId = "${EventSource.BADEHAUS.sourceIdPrefix}$slug",
             ticketUrl = card.selectFirst(".eventinfo a[href^=http]")?.attr("href"),
             soldOut = card.hasClass(SOLD_OUT_CLASS),
-            status = status
+            status = status,
+            // Badehaus exposes no artist roster; for concerts the title is the act
+            // (support acts come from the subtitle's "Support:" pattern). Non-artist
+            // titles (quiz/screening/festival names) are filtered by isNonArtistName.
+            artists = buildArtistsForEventType(title, subtitle, eventType)
         )
     }
 

@@ -107,13 +107,12 @@ class CassiopeiaWebsiteImporterTest {
         }
 
     @Test
-    fun `importEvents does not extract artists from festival concert without support line`() =
+    fun `importEvents filters an event-name title rather than minting a fake artist`() =
         runTest {
             val result = importer.importEvents(sourceUrl)
             result.shouldBeInstanceOf<ImportResult.Success>()
-            // "Grey City Fest Opener" is a festival event name, not an artist.
-            // Without a "Support:" line in the description, the scraper cannot
-            // confirm the title is an artist name, so no artists are extracted.
+            // "Grey City Fest Opener" is a festival slot name, not an artist. Even though
+            // it is typed CONCERT, isNonArtistName filters it, so no artist is minted.
             val festival = result.events.first { it.title == "Grey City Fest Opener" }
             festival.eventType shouldBe "CONCERT"
             festival.artists.shouldBeEmpty()
@@ -243,10 +242,10 @@ class CassiopeiaWebsiteImporterTest {
             party.description shouldBe null
             party.ticketUrl shouldBe null
 
-            // Without a detail page, no "Support:" lines are available,
-            // so no artists can be confirmed — even for concert events
+            // Without a detail page there are no "Support:" lines, but the overview
+            // still yields the concert headliner from its title as a fallback.
             val concert = result.events.first { it.title == "Pharmakon" }
-            concert.artists.shouldBeEmpty()
+            concert.artists shouldContainExactly listOf(ScrapedArtist(name = "Pharmakon", role = "HEADLINER"))
         }
 
     @Test

@@ -66,6 +66,9 @@ class BadehausWebsiteImporter(
             // Overview-only fields (the detail scraper leaves these unset).
             subtitle = primary.subtitle ?: fallback.subtitle,
             eventType = primary.eventType ?: fallback.eventType,
+            // Artists are extracted from the overview (title + subtitle + type); the
+            // detail page carries no roster, so it falls back to the overview.
+            artists = primary.artists.ifEmpty { fallback.artists },
             doorsTime = primary.doorsTime ?: fallback.doorsTime,
             imageUrl = primary.imageUrl ?: fallback.imageUrl,
             ticketUrl = primary.ticketUrl ?: fallback.ticketUrl,
