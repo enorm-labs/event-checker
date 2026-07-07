@@ -315,7 +315,9 @@ private val NON_ARTIST_NAMES: Set<String> =
     setOf(
         "warm up im franken",
         "the revival tour",
-        "female-fronted is not a genre"
+        "female-fronted is not a genre",
+        "music quiz",
+        "open mic l. j. fox"
     )
 
 /** A trailing edition number ("… 5") on a recurring event title, ignored when matching [NON_ARTIST_NAMES]. */

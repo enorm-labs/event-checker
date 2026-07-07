@@ -37,6 +37,9 @@ class ArtistNormalizerTest {
             { canonicalArtistName("DJ KOZE") shouldBe "DJ Koze" },
             { canonicalArtistName("MC SOLAAR") shouldBe "MC Solaar" },
             { canonicalArtistName("UK SUBS") shouldBe "UK Subs" },
+            // Act names that are themselves initialisms.
+            { canonicalArtistName("FKJ") shouldBe "FKJ" },
+            { canonicalArtistName("AZ") shouldBe "AZ" },
             // Short all-caps tokens with digits are acronym-like too.
             { canonicalArtistName("MC5") shouldBe "MC5" },
             { canonicalArtistName("UB40") shouldBe "UB40" }

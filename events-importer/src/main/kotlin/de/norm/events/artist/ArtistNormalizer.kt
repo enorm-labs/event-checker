@@ -100,5 +100,8 @@ private val ACRONYMS: Set<String> =
         "LA",
         "EDM",
         "DIY",
-        "RIP"
+        "RIP",
+        // Act names that are themselves initialisms — kept in caps so they aren't flattened.
+        "FKJ",
+        "AZ"
     )

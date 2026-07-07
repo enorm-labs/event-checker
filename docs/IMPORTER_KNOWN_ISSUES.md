@@ -30,9 +30,11 @@ Legend: **impact** — 🔴 user-visible missing/wrong data · 🟠 data-quality
   filters catch festivals/tours/segments/labels, and `stripArtistSuffix` recovers the
   act from tour/live/anniversary tails and performance-format annotations
   (`THE BUTLERS - 40 YEARS, SKA & SOULPOWER -` → `The Butlers`, `Avangelic (DJ-Set)` →
-  `Avangelic`), but idiosyncratic event-format titles remain (`Music Quiz`,
-  `Open Mic L. J. Fox`). The curated denylist (`NON_ARTIST_NAMES`) is the maintenance
-  surface; a general fix needs a classifier → tracked in `TODO.md` (AI-assisted data quality).
+  `Avangelic`). Idiosyncratic event-format titles are handled case-by-case as they
+  surface by adding them to the curated denylist (`NON_ARTIST_NAMES`, e.g. `Music Quiz`,
+  `Open Mic L. J. Fox`) — but this is inherently reactive, so newly-seen titles will
+  slip through until denylisted. A general fix needs a classifier → tracked in
+  `TODO.md` (AI-assisted data quality).
 - 🟠 **Artist display names — de-shouted, with residual cases.** `canonicalArtistName`
   now de-shouts ALL-CAPS act names to a clean display form before they're stored
   (`GREEN LUNG` → `Green Lung`), so an act isn't frozen SHOUTING by whichever venue
