@@ -59,6 +59,7 @@ class ImportJobLauncher(
     ) {
         scope.launch {
             try {
+                logger.info { "Background import for $description started" }
                 block()
                 logger.info { "Background import for $description finished" }
             } catch (e: Exception) {

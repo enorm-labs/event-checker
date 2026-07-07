@@ -69,10 +69,12 @@ Legend: **impact** — 🔴 user-visible missing/wrong data · 🟠 data-quality
 - 🟠 **Promoter fragmentation — mostly fixed, with residual cases.**
   `canonicalPromoterName` now merges abbreviated/full variants (`LOFT` /
   `Loft Concerts GmbH` → `Loft`). Remaining, by design:
-  - spacing/abbreviation variants can't merge (`ALLROOMS` vs `All Rooms`);
   - a *leading* descriptor isn't stripped (`Konzertbüro Schoneberg` ≠
-    `Schoneberg Konzerte`);
-  - source typos stay distinct (`Trinty` vs `Trinity`);
+    `Schoneberg Konzerte`) unless a curated `NAME_CORRECTIONS` entry is added;
+  - source typos and spelling/spacing variants are folded onto one spelling via
+    a curated map (`Trinty` → `Trinity`, `Allrooms`/`ALLROOMS` → `All Rooms`);
+    only *known* names are corrected — new ones need an entry in
+    `NAME_CORRECTIONS`;
   - 🟢 de-shout lowercases genuine acronyms in the display name (`TV Noir` →
     `Tv Noir`, `Bossa FM` → `Bossa Fm`) — display-only, slugs unaffected.
 - **Coverage gap (not a defect):** JS-rendered / cookie-walled venues aren't

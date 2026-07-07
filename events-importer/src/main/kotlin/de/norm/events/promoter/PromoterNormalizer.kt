@@ -17,13 +17,19 @@ package de.norm.events.promoter
 //   2. "De-shout" ALL-CAPS words ("SIMPLY QUIZ" → "Simply Quiz") for a clean,
 //      order-independent display name; intentional mixed casing ("GreyZone") is
 //      preserved.
+//   3. Fold known source typos and spelling/spacing variants onto a single
+//      canonical spelling via an explicit, curated map ("Trinty" → "Trinity",
+//      "Allrooms" → "All Rooms"). The lookup key is punctuation- and
+//      space-insensitive, so one entry covers "All Rooms", "Allrooms" and
+//      "ALLROOMS" alike. Only exact (normalized) matches are corrected — no
+//      fuzzy/edit-distance matching, which would risk merging genuinely
+//      distinct promoters.
 // At least one word is always kept, so a promoter named purely of descriptor
 // words (e.g. "Records") is never reduced to nothing.
 //
 // Known limits (accepted): a *leading* descriptor is not stripped, so
-// "Konzertbüro Schoneberg" does not merge with "Schoneberg Konzerte"; and a
-// spacing/abbreviation variant like "ALLROOMS" vs "All Rooms" cannot be merged
-// because the token boundaries differ. Artists are intentionally *not*
+// "Konzertbüro Schoneberg" does not merge with "Schoneberg Konzerte" unless an
+// explicit correction-map entry is added. Artists are intentionally *not*
 // normalized this way — stripping words from band names is unsafe.
 
 /**
@@ -44,8 +50,12 @@ fun canonicalPromoterName(raw: String): String {
         tokens.removeAt(tokens.lastIndex)
     }
 
-    return tokens.joinToString(" ") { it.deshout() }.ifBlank { raw.trim() }
+    val canonical = tokens.joinToString(" ") { it.deshout() }.ifBlank { raw.trim() }
+    return NAME_CORRECTIONS[canonical.normalizedKey()] ?: canonical
 }
+
+/** Lowercased, punctuation-free lookup key for a name (matches [String.isStrippableTrailingWord]'s scheme). */
+private fun String.normalizedKey(): String = lowercase().replace(NON_WORD_REGEX, "")
 
 /** A token is strippable if, stripped of punctuation, it is empty (a connector like "&") or a known word. */
 private fun String.isStrippableTrailingWord(): Boolean {
@@ -103,7 +113,23 @@ private val STRIP_WORDS: Set<String> =
         "promotion",
         "promotions",
         "entertainment",
+        "live",
         "records",
         "production",
         "productions"
+    )
+
+/**
+ * Known name corrections — source typos and spelling/spacing variants — keyed on the
+ * [String.normalizedKey] of the canonicalized name and mapped to the correct display
+ * spelling. The key is punctuation- and space-insensitive, so a single entry folds every
+ * spacing/casing variant with the same letters (e.g. "All Rooms" / "Allrooms" / "ALLROOMS").
+ * Only add entries that are unambiguously the same real promoter — this map merges promoter
+ * entities, so a wrong entry silently collapses two distinct promoters into one.
+ */
+private val NAME_CORRECTIONS: Map<String, String> =
+    mapOf(
+        "trinty" to "Trinity",
+        "radioactve" to "Radioactive",
+        "allrooms" to "All Rooms"
     )
