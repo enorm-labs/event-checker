@@ -200,6 +200,9 @@ class EventMappingExtensionsTest {
         isNonArtistName("THE REVIVAL TOUR") shouldBe true
         isNonArtistName("Music Quiz") shouldBe true
         isNonArtistName("Open Mic L. J. Fox") shouldBe true
+        isNonArtistName("Feinster HipHop") shouldBe true
+        isNonArtistName("Karrera Klub") shouldBe true
+        isNonArtistName("The Swag Jam") shouldBe true
         // Recurring series: any edition number matches.
         isNonArtistName("FEMALE-FRONTED IS NOT A GENRE 5") shouldBe true
         isNonArtistName("FEMALE-FRONTED IS NOT A GENRE 6") shouldBe true
@@ -347,6 +350,11 @@ class EventMappingExtensionsTest {
         splitHeadlinerTitle("Portland") shouldContainExactly listOf("Portland")
         // Comma signals a member-list band name.
         splitHeadlinerTitle("Earth, Wind & Fire") shouldContainExactly listOf("Earth, Wind & Fire")
+        // "& Friends" / "& Guests" collective tail names an unnamed cast, not a second act.
+        splitHeadlinerTitle("Taylor & Friends") shouldContainExactly listOf("Taylor & Friends")
+        splitHeadlinerTitle("Jonny & Guests") shouldContainExactly listOf("Jonny & Guests")
+        // A real co-bill alongside a collective tail still splits at the real boundary.
+        splitHeadlinerTitle("Ann & the Band + Real Act") shouldContainExactly listOf("Ann & the Band", "Real Act")
     }
 
     @Test
@@ -384,6 +392,23 @@ class EventMappingExtensionsTest {
         headlinersFromTitle("SHRED FEST").shouldBeEmpty()
         headlinersFromTitle("Grey City Fest Opener").shouldBeEmpty()
         headlinersFromTitle("GROSSSTADTWAHNSINN 2026 - FESTIVALTICKET").shouldBeEmpty()
+    }
+
+    @Test
+    fun `headlinersFromTitle strips a recurring-series prefix and keeps the billed acts`() {
+        // The series label ("OFF THE RAILS #5:") is dropped; the acts after the colon remain.
+        headlinersFromTitle("OFF THE RAILS #5: Blake Harley & Superior Motive") shouldContainExactly
+            listOf(
+                ScrapedArtist(name = "Blake Harley", role = "HEADLINER"),
+                ScrapedArtist(name = "Superior Motive", role = "HEADLINER")
+            )
+    }
+
+    @Test
+    fun `headlinersFromTitle keeps a name with a colon but no series edition marker`() {
+        // No "#<n>:" marker, so nothing is stripped (guards a real "9:3"-style name).
+        headlinersFromTitle("Bleech 9:3") shouldContainExactly
+            listOf(ScrapedArtist(name = "Bleech 9:3", role = "HEADLINER"))
     }
 
     // --- detectFree ---

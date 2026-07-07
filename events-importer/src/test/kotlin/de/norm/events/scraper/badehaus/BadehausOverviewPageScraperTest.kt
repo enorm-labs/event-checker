@@ -68,6 +68,15 @@ class BadehausOverviewPageScraperTest {
     }
 
     @Test
+    fun `classifies a themed club night as a party, not a concert`() {
+        // "Pop Girly Night" is a themed club night, not a live act — the "night" keyword
+        // classifies it PARTY so its event-name title isn't minted as a fake artist.
+        val night = events().first { it.sourceId == "badehaus:pop-girly-night-7" }
+        night.eventType shouldBe EventType.PARTY.name
+        night.artists.shouldBeEmpty()
+    }
+
+    @Test
     fun `extracts the concert title as the headliner artist`() {
         // Badehaus publishes no roster; for an inferred CONCERT the title is the act.
         val ela = events().first { it.sourceId == "badehaus:ela" }

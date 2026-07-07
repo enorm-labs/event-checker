@@ -346,7 +346,10 @@ private val NON_ARTIST_NAMES: Set<String> =
         "the revival tour",
         "female-fronted is not a genre",
         "music quiz",
-        "open mic l. j. fox"
+        "open mic l. j. fox",
+        "feinster hiphop",
+        "karrera klub",
+        "the swag jam"
     )
 
 /** A trailing edition number ("… 5") on a recurring event title, ignored when matching [NON_ARTIST_NAMES]. */
@@ -396,11 +399,21 @@ private val KNOWN_SINGLE_ACTS: Set<String> =
 
 /**
  * Leading words that mark the right-hand side of a conjunction as a band-name
- * tail ("X & the Ys", "X and his Ys", "X und die Ys") rather than a second act.
- * Used to suppress splitting for the common "frontman & backing band" pattern.
+ * tail rather than a second act, so the boundary is kept joined. Two families,
+ * unioned in [CONJUNCTION_TAIL_MARKERS]:
+ * - articles/possessives opening a backing band ("X & **the** Ys", "X and **his**
+ *   Ys", "X und **die** Ys"); and
+ * - collective nouns naming an unnamed supporting cast ("X & **Friends**", "X &
+ *   **Guests**", "X & **Gäste**"), a billing convention where the act is "X",
+ *   not a separate act literally called "Friends".
  */
 private val CONJUNCTION_TAIL_ARTICLES: Set<String> =
     setOf("the", "his", "her", "their", "los", "las", "die", "der", "das", "el", "la")
+
+private val CONJUNCTION_TAIL_COLLECTIVES: Set<String> = setOf("friends", "guests", "gäste", "freunde")
+
+/** Right-hand-side opener words that keep a conjunction boundary joined — see the two source sets. */
+private val CONJUNCTION_TAIL_MARKERS: Set<String> = CONJUNCTION_TAIL_ARTICLES + CONJUNCTION_TAIL_COLLECTIVES
 
 /** Space-padded `/` or `+` — unambiguous co-bill separators once whitespace is required on both sides. */
 private val SAFE_TITLE_SEPARATOR = Regex("""\s+[/+]\s+""")
@@ -418,9 +431,10 @@ private val CONJUNCTION_SEPARATOR = Regex("""\s+(?:&|and|und)\s+""", RegexOption
  * so a real co-bill still splits even when another conjunction in the same title
  * is a band-name tail. Conservative: a comma anywhere suppresses splitting (the
  * "Earth, Wind & Fire" member-list pattern), and a boundary is kept joined when
- * its right-hand side opens with an article/possessive (the "X and the Ys"
- * pattern) — so `CARL CARLTON & MELANIE WIEGMANN AND THE GREAT BAND` cuts only at
- * the `&`. Each act keeps its original conjunction spelling (no rewrite).
+ * its right-hand side opens with a [tail marker][CONJUNCTION_TAIL_MARKERS] — an
+ * article/possessive (the "X and the Ys" pattern) or a collective like "Friends" —
+ * so `CARL CARLTON & MELANIE WIEGMANN AND THE GREAT BAND` cuts only at the `&`.
+ * Each act keeps its original conjunction spelling (no rewrite).
  */
 @Suppress("ReturnCount") // Guard clauses for the comma and no-cut cases are clearer than nesting
 private fun splitSegmentOnConjunctions(segment: String): List<String> {
@@ -435,7 +449,7 @@ private fun splitSegmentOnConjunctions(segment: String): List<String> {
                     .trimStart()
                     .substringBefore(' ')
                     .lowercase() !in
-                    CONJUNCTION_TAIL_ARTICLES
+                    CONJUNCTION_TAIL_MARKERS
             }.map { it.range }
             .toList()
     if (cuts.isEmpty()) return listOf(segment)
@@ -524,14 +538,34 @@ fun splitHeadlinerTitle(title: String): List<String> {
 }
 
 /**
- * Turns an event title into its headliner artist entries: split co-billed acts via
- * [splitHeadlinerTitle], strip tour/live suffixes via [stripArtistSuffix] to recover
- * the performer, then drop anything that is not an artist ([isNonArtistName] —
+ * A leading recurring-series label ending in an edition marker "#<n>:" —
+ * "OFF THE RAILS #5: …", "Off the Rails #4: …". The series name is not a performer;
+ * the acts follow the colon. Non-greedy up to the first "#<n>:", and requires a
+ * non-blank series name before it, so a plain "9:3" or "H2:O" (no `#`) is untouched.
+ */
+private val SERIES_PREFIX_PATTERN = Regex("""^.+?#\s*\d+\s*:\s*""")
+
+/**
+ * Strips a leading "<series> #<n>:" recurring-series label from a title so the acts
+ * billed after the colon are what remains — `"OFF THE RAILS #5: Blake Harley &
+ * Superior Motive"` → `"Blake Harley & Superior Motive"`. Returns the input unchanged
+ * when there is no such prefix, or when stripping would leave nothing.
+ */
+fun stripSeriesPrefix(title: String): String {
+    val stripped = title.trim().replaceFirst(SERIES_PREFIX_PATTERN, "").trim()
+    return stripped.ifBlank { title.trim() }
+}
+
+/**
+ * Turns an event title into its headliner artist entries: strip a recurring-series
+ * "#<n>:" prefix via [stripSeriesPrefix] so the billed acts remain, split co-billed
+ * acts via [splitHeadlinerTitle], strip tour/live suffixes via [stripArtistSuffix] to
+ * recover the performer, then drop anything that is not an artist ([isNonArtistName] —
  * placeholders, role labels, segments, festivals). Returned in billing order (title
  * order); the caller appends support acts.
  */
 fun headlinersFromTitle(title: String): List<ScrapedArtist> =
-    splitHeadlinerTitle(title)
+    splitHeadlinerTitle(stripSeriesPrefix(title))
         .map { stripArtistSuffix(it) }
         .filterNot { isNonArtistName(it) }
         .map { ScrapedArtist(name = it, role = "HEADLINER") }
