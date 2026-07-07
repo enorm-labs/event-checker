@@ -26,7 +26,9 @@ class PromoterNormalizerTest {
             { canonicalPromoterName("Trinity Music GmbH") shouldBe "Trinity" },
             { canonicalPromoterName("LANDSTREICHER") shouldBe "Landstreicher" },
             { canonicalPromoterName("Landstreicher Konzerte") shouldBe "Landstreicher" },
-            { canonicalPromoterName("Landstreicher Konzerte GmbH") shouldBe "Landstreicher" }
+            { canonicalPromoterName("Landstreicher Konzerte GmbH") shouldBe "Landstreicher" },
+            { canonicalPromoterName("Boese") shouldBe "Boese" },
+            { canonicalPromoterName("Boese Live") shouldBe "Boese" }
         )
     }
 
@@ -39,6 +41,30 @@ class PromoterNormalizerTest {
             // Mixed casing is a deliberate style choice — leave it alone.
             { canonicalPromoterName("GreyZone Concerts") shouldBe "GreyZone" },
             { canonicalPromoterName("Greyzone") shouldBe "Greyzone" }
+        )
+    }
+
+    @Test
+    fun `folds known typos and spelling variants onto their correct spelling`() {
+        assertAll(
+            { canonicalPromoterName("Trinty") shouldBe "Trinity" },
+            { canonicalPromoterName("TRINTY") shouldBe "Trinity" },
+            // The correction applies after descriptor-stripping and de-shouting.
+            { canonicalPromoterName("Trinty Music GmbH") shouldBe "Trinity" },
+            { canonicalPromoterName("Radioactve") shouldBe "Radioactive" },
+            { canonicalPromoterName("Radioactve Events") shouldBe "Radioactive" },
+            // The correctly spelled name is untouched and resolves to the same canonical form.
+            { canonicalPromoterName("Trinity Music") shouldBe "Trinity" }
+        )
+    }
+
+    @Test
+    fun `folds spacing and casing variants of the same name onto one spelling`() {
+        // A single correction-map entry, keyed on the space-insensitive form, merges all three.
+        assertAll(
+            { canonicalPromoterName("All Rooms") shouldBe "All Rooms" },
+            { canonicalPromoterName("Allrooms") shouldBe "All Rooms" },
+            { canonicalPromoterName("ALLROOMS") shouldBe "All Rooms" }
         )
     }
 
