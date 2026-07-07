@@ -113,9 +113,15 @@ class So36DetailPageScraperTest {
         // Labels are stripped, not captured as part of the name.
         supports("+ Special Guest: FUCK") shouldBe listOf("FUCK")
         supports("+ Support: cosmic joke & bad beat") shouldBe listOf("cosmic joke", "bad beat")
+        // "und"/"and" split per boundary: the leading act separates, but a backing-band
+        // tail ("& The Sun Band") stays attached rather than becoming its own artist.
+        supports("+ Earth Tongue und Scott Hepple & The Sun Band") shouldBe
+            listOf("Earth Tongue", "Scott Hepple & The Sun Band")
         // A bare label with no act name is dropped entirely rather than becoming an artist.
         supports("+ div. Supports") shouldBe emptyList()
         supports("+ Support") shouldBe emptyList()
+        // An event-segment label (aftershow slot) is not a performer and is dropped.
+        supports("+ ACID AFTERSHOW") shouldBe emptyList()
     }
 
     @Test

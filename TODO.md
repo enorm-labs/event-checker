@@ -61,8 +61,9 @@ Public name is **Event Junkie**; internal/repo name stays **Event Checker**
 
 - [x] Detect free events at import (`detectFree`: €0 price or free-entry phrases → `free` flag)
 - [ ] Normalize artists (at least use normal case instead of all upper case, except for acronyms)
-- [ ] Use AI in importer to enrich events with missing data (e.g. genres, event types)
+- [ ] Use AI in importer to enrich events with missing data (e.g. genres, event types) and to fix data quality issues (e.g. artist names, promoter names, event types, genres, etc.)
 - [ ] Build Admin tool/frontend to enrich events fast and easy with missing data (e.g. genres, event types) - sort and filter events by missing data
+- [ ] Build Admin tools/frontend to fix data, e.g. artist names, promoter names, event types, genres, etc.
 - [ ] Enrich venues: type (club/bar/concert hall), description, image/photo, genres, event types
 - [ ] Enrich promoters with description and image and fix promoter display names, e.g. show "Loft Concerts" instead "Loft"
 - [ ] Improve importer Swagger UI (match the BFF)

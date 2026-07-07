@@ -3,14 +3,17 @@ package de.norm.events.scraper.so36
 import de.norm.events.event.EventStatus
 import de.norm.events.event.EventType
 import de.norm.events.scraper.EventSource
+import de.norm.events.scraper.ROLE_LABEL_PREFIX
 import de.norm.events.scraper.ScrapedArtist
 import de.norm.events.scraper.ScrapedEvent
 import de.norm.events.scraper.UNRESOLVED_EVENT_DATE
+import de.norm.events.scraper.headlinersFromTitle
 import de.norm.events.scraper.hrefAt
-import de.norm.events.scraper.isPlaceholderName
+import de.norm.events.scraper.isNonArtistName
 import de.norm.events.scraper.mapEventType
 import de.norm.events.scraper.parseIsoDate
 import de.norm.events.scraper.parseTime
+import de.norm.events.scraper.splitSupportActs
 import de.norm.events.scraper.textAt
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jsoup.nodes.Document
@@ -151,32 +154,31 @@ class So36DetailPageScraper {
     ): List<ScrapedArtist> {
         if (eventType != EventType.CONCERT.name) return emptyList()
 
-        val headliner =
-            if (isPlaceholderName(title)) emptyList() else listOf(ScrapedArtist(name = title, role = "HEADLINER"))
         val supportActs =
             parseSupportActs(subtitle).map { ScrapedArtist(name = it, role = "SUPPORT") }
-        return headliner + supportActs
+        return headlinersFromTitle(title) + supportActs
     }
 
     /**
      * Splits a leading-"+" support subtitle into individual act names.
      *
      * SO36 support lines vary: a bare list ("+ GUM + CLAVV") or a labelled one
-     * ("+ Special Guest: FUCK", "+ Support: cosmic joke & bad beat"). Acts are
-     * split on the common separators (`+ / & ,`), each act's leading role label
-     * ("Support:", "Special Guest(s):", "div. Supports", …) is stripped, and any
-     * chunk that was only a label — or a placeholder like "TBA" — is dropped so it
-     * never becomes a bogus artist entry. A subtitle without a leading "+" is a
-     * tagline, not a lineup, and yields nothing.
+     * ("+ Special Guest: FUCK", "+ Support: cosmic joke & bad beat"). Splitting is
+     * delegated to [splitSupportActs], which cuts on commas, `+` and `/` and handles
+     * `&` / `and` / `und` per boundary — so "Earth Tongue und Scott Hepple & The
+     * Sun Band" yields "Earth Tongue" and "Scott Hepple & The Sun Band" rather than
+     * mangling either name. Each act's leading role label ("Support:", "Special
+     * Guest(s):", "div. Supports", …) is stripped, and any chunk that is not a real
+     * act — a bare label, a placeholder like "TBA", or an event-segment label like
+     * "ACID AFTERSHOW" ([isNonArtistName]) — is dropped so it never becomes a bogus
+     * artist entry. A subtitle without a leading "+" is a tagline, not a lineup,
+     * and yields nothing.
      */
     private fun parseSupportActs(subtitle: String?): List<String> {
         if (subtitle == null || !subtitle.trimStart().startsWith("+")) return emptyList()
-        return subtitle
-            .trimStart()
-            .removePrefix("+")
-            .split(*SUPPORT_SEPARATORS)
-            .map { it.trim().replaceFirst(SUPPORT_LABEL_PATTERN, "").trim() }
-            .filter { it.isNotBlank() && !isPlaceholderName(it) }
+        return splitSupportActs(subtitle.trimStart().removePrefix("+"))
+            .map { it.replaceFirst(ROLE_LABEL_PREFIX, "").trim() }
+            .filter { it.isNotBlank() && !isNonArtistName(it) }
     }
 
     /**
@@ -244,22 +246,5 @@ class So36DetailPageScraper {
 
         /** Captures the numeric product id from a `/produkte/<id>-…` path. */
         private val PRODUCT_ID_PATTERN = Regex("""/produkte/(\d+)""")
-
-        /**
-         * Separators between individual support acts in a "+ …" subtitle. The word
-         * conjunctions "und"/"and" are intentionally **excluded**: splitting on them
-         * would break real act names that contain them (e.g. "Frankie and the Witch
-         * Fingers", "James and the Cold Gun"), so a line like "Earth Tongue und Scott
-         * Hepple" is deliberately kept as a single act rather than risk that.
-         */
-        private val SUPPORT_SEPARATORS = charArrayOf('+', '/', '&', ',')
-
-        /**
-         * A leading role label on a support act (e.g. "Special Guest:", "Support:",
-         * "div. Supports:", "w/"), stripped so only the act name remains. A chunk
-         * that is nothing but a label collapses to blank and is then dropped.
-         */
-        private val SUPPORT_LABEL_PATTERN =
-            Regex("""^(?:div\.?\s*supports?|special\s+guests?|supports?|feat\.?|featuring|w/)\s*:?\s*""", RegexOption.IGNORE_CASE)
     }
 }

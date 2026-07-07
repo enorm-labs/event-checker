@@ -1,3 +1,5 @@
+@file:Suppress("TooManyFunctions") // Cohesive collection of small, single-purpose scraped-event mapping utilities.
+
 package de.norm.events.scraper
 
 import de.norm.events.event.EventStatus
@@ -58,10 +60,11 @@ fun mapEventType(
 /**
  * Extracts support act names from a subtitle's `"… + Support: A & B"` pattern.
  *
- * Splits the captured names on `, `, `&`, and `+` so multiple support acts are
- * returned individually. Returns an empty list when no support line is present.
- * Shared across venue scrapers (e.g. Privatclub, Astra) whose subtitles follow
- * this convention.
+ * Delegates to [splitSupportActs], so the captured names are split on commas,
+ * `+` and `/`, with `&` / `and` / `und` handled per boundary — a backing-band
+ * tail stays attached to its act. Returns an empty list when no support line is
+ * present. Shared across venue scrapers (e.g. Privatclub, Astra) whose subtitles
+ * follow this convention.
  *
  * Example:
  * ```kotlin
@@ -74,10 +77,7 @@ fun mapEventType(
 fun extractSupportFromSubtitle(subtitle: String?): List<String> {
     if (subtitle.isNullOrBlank()) return emptyList()
     val match = SUPPORT_PATTERN.find(subtitle) ?: return emptyList()
-    return match.groupValues[1]
-        .split(Regex("[,&+]"))
-        .map { it.trim() }
-        .filter { it.isNotBlank() }
+    return splitSupportActs(match.groupValues[1])
 }
 
 /** Matches "Support: <names>" anywhere in a subtitle, capturing to end of line. */
@@ -129,14 +129,14 @@ fun parseEventStatus(statusText: String): String {
 
 /**
  * Common placeholder names used by venues when the artist has not been
- * announced yet (e.g. "TBA", "TBD", "N.N."). These should not be
+ * announced yet (e.g. "TBA", "TBD", "TBC", "N.N."). These should not be
  * created as artist entries in the database.
  *
  * Comparison is case-insensitive and ignores surrounding whitespace
  * and trailing punctuation (dots).
  */
 private val PLACEHOLDER_NAMES =
-    setOf("tba", "tbd", "tba.", "tbd.", "nn", "n.n.", "nn.")
+    setOf("tba", "tbd", "tbc", "tba.", "tbd.", "tbc.", "nn", "n.n.", "nn.")
 
 /**
  * Checks whether [name] is a placeholder rather than a real artist name.
@@ -160,17 +160,321 @@ fun isPlaceholderName(name: String): Boolean {
 }
 
 /**
+ * A leading lineup **role label** ("Support:", "Special Guest(s):", "div. Supports",
+ * "feat.", "featuring", "w/"), optionally followed by a colon. Used both to strip the
+ * label off an act ("Special Guest: FUCK" → "FUCK") and, when a chunk is nothing but
+ * the label, to recognize it as a non-artist via [isNonArtistLabel]. Shared with the
+ * SO36 detail scraper, whose support subtitles carry these inline.
+ */
+val ROLE_LABEL_PREFIX =
+    Regex("""^(?:div\.?\s*supports?|special\s+guests?|supports?|feat\.?|featuring|w/)\s*:?\s*""", RegexOption.IGNORE_CASE)
+
+/**
+ * Checks whether [name] is a bare lineup role label ("Special Guest", "Support",
+ * "div. Supports", …) rather than a real act name.
+ *
+ * These leak in when a venue lists an unnamed slot (e.g. a subtitle `"Support:
+ * Special Guest"`, where the captured act is just the label). Matching is exact —
+ * the whole trimmed value must be the label — so a real name that merely *contains*
+ * a label word (`"Special Guest Foo"`, `"Support Act X"`) is kept. Filtered out
+ * alongside [isPlaceholderName] wherever support/headliner names are resolved.
+ *
+ * Example:
+ * ```kotlin
+ * isNonArtistLabel("Special Guest") // true
+ * isNonArtistLabel("Support")       // true
+ * isNonArtistLabel("Green Lung")    // false
+ * ```
+ */
+fun isNonArtistLabel(name: String): Boolean {
+    val trimmed = name.trim()
+    return trimmed.isNotEmpty() && trimmed.replaceFirst(ROLE_LABEL_PREFIX, "").isBlank()
+}
+
+private val WHITESPACE = Regex("""\s+""")
+
+/**
+ * Curated event-*segment* labels — an aftershow/afterparty/warm-up slot that a
+ * venue lists in the lineup, which is a part of the night, not a performer. Any
+ * optional leading qualifier is allowed (`ACID AFTERSHOW`, `TECHNO AFTERPARTY`),
+ * and `aftershow`/`after show`/`after-show` spellings are accepted.
+ */
+private val EVENT_SEGMENT_PATTERN =
+    Regex("""(?:\S+ )*after[ -]?show(?: party)?|(?:\S+ )*after[ -]?party|warm[ -]?up""", RegexOption.IGNORE_CASE)
+
+/**
+ * Checks whether [name] is an event-segment label ("Acid Aftershow", "Warm Up")
+ * rather than a performer.
+ *
+ * Matching is **fully anchored** (the whole trimmed, whitespace-collapsed value
+ * must be the segment phrase), so it cannot touch a real band whose name merely
+ * contains or resembles a segment word — `"AFTERHOURS"` (a band) and the venue's
+ * `"Warm Up im Franken"` are both kept. Curated on purpose: there is no structural
+ * signal separating a segment from an act in the flat lineup text, so new families
+ * are added to [EVENT_SEGMENT_PATTERN] as they appear.
+ *
+ * Example:
+ * ```kotlin
+ * isEventSegmentLabel("ACID AFTERSHOW") // true
+ * isEventSegmentLabel("Aftershow Party") // true
+ * isEventSegmentLabel("AFTERHOURS")     // false (real band)
+ * ```
+ */
+fun isEventSegmentLabel(name: String): Boolean {
+    val normalized = name.trim().replace(WHITESPACE, " ")
+    return normalized.isNotEmpty() && EVENT_SEGMENT_PATTERN.matches(normalized)
+}
+
+/**
+ * Event names that are not performers: a festival ("Shred Fest", "Canarias Calling
+ * Festival", optionally year-suffixed) or a festival-ticket label ("… Festivalticket").
+ * The `fest`/`festival` markers are word-anchored, so one-word names ("Infest",
+ * "Manifest") are safe.
+ */
+private val NON_ARTIST_EVENT_PATTERN =
+    Regex(""".*\bfest\b(?: \d{4})?|.*\bfestival\b(?: \d{4})?|.*\bfestivalticket\b""", RegexOption.IGNORE_CASE)
+
+/**
+ * Checks whether [name] is an event label (a festival or festival-ticket) rather
+ * than a performer.
+ *
+ * Matching is **fully anchored** on the whitespace-collapsed value, and the
+ * `fest`/`festival` word boundaries keep one-word names safe (`Infest`, `Manifest`
+ * are kept). Curated: new event-label families are added to
+ * [NON_ARTIST_EVENT_PATTERN] as they appear.
+ *
+ * Example:
+ * ```kotlin
+ * isNonArtistEvent("SHRED FEST")                 // true
+ * isNonArtistEvent("CANARIAS CALLING FESTIVAL")  // true
+ * isNonArtistEvent("Manifest")                   // false
+ * ```
+ */
+fun isNonArtistEvent(name: String): Boolean {
+    val normalized = name.trim().replace(WHITESPACE, " ")
+    return normalized.isNotEmpty() && NON_ARTIST_EVENT_PATTERN.matches(normalized)
+}
+
+/**
+ * Trailing tour/live suffixes that decorate a real act name, stripped by
+ * [stripArtistSuffix] to recover the performer: a hyphen-separated
+ * "… - <tour name> Tour <year>" tail, or a trailing "Live" / "Live in <city>".
+ * A whitespace boundary before the marker is required, so a bare "Live" (the band)
+ * is never matched.
+ */
+private val ARTIST_SUFFIX_PATTERN =
+    Regex("""\s+-\s+\S.*\btour\b.*$|\s+live(?:\s+in\s+\S.*)?$""", RegexOption.IGNORE_CASE)
+
+/**
+ * Strips a trailing tour/live suffix from a title-derived act name to recover the
+ * performer.
+ *
+ * Recovers the band from decorated titles — `"DOMINIUM - NIGHT IS CALLING TOUR
+ * 2026"` → `"DOMINIUM"`, `"AZ LIVE IN BERLIN"` → `"AZ"`, `"HGICH.T LIVE"` →
+ * `"HGICH.T"`. Returns the input unchanged when there is no such suffix, or when
+ * stripping would leave nothing — so a bare `"Live"` (the band) is preserved.
+ *
+ * Example:
+ * ```kotlin
+ * stripArtistSuffix("HGICH.T LIVE")     // "HGICH.T"
+ * stripArtistSuffix("AZ LIVE IN BERLIN") // "AZ"
+ * stripArtistSuffix("Live")             // "Live"
+ * ```
+ */
+fun stripArtistSuffix(name: String): String {
+    val stripped = name.trim().replace(ARTIST_SUFFIX_PATTERN, "").trim()
+    return stripped.ifBlank { name.trim() }
+}
+
+/**
+ * True when [name] must never be stored as an artist: a placeholder ("TBA"), a
+ * bare role label ("Special Guest"), an event-segment label ("Acid Aftershow"),
+ * or an event label ("Shred Fest"). The single predicate applied wherever scraped
+ * headliner/support names are resolved.
+ */
+fun isNonArtistName(name: String): Boolean = isPlaceholderName(name) || isNonArtistLabel(name) || isEventSegmentLabel(name) || isNonArtistEvent(name)
+
+/**
+ * Well-known single acts whose name legitimately contains a conjunction that
+ * [splitHeadlinerTitle] would otherwise read as a co-bill delimiter. Matched
+ * case-insensitively against the whole trimmed title, so such a title is kept
+ * intact as one headliner. `AC/DC` and similar are already protected by the
+ * space-padding requirement and need no entry here — this list is only for the
+ * ambiguous `" & "` / `" and "` / `" und "` cases the heuristics below can't
+ * catch structurally. Entries are written in `&` form; comparison normalizes
+ * the title's conjunctions to `&` first, so an `"… and …"` source spelling of a
+ * listed act still matches.
+ */
+private val KNOWN_SINGLE_ACTS: Set<String> =
+    setOf(
+        "simon & garfunkel",
+        "earth, wind & fire",
+        "blood, sweat & tears",
+        "mumford & sons",
+        "hall & oates",
+        "above & beyond",
+        "sam & dave",
+        "chas & dave",
+        "angus & julia stone",
+        "matt & kim"
+    )
+
+/**
+ * Leading words that mark the right-hand side of a conjunction as a band-name
+ * tail ("X & the Ys", "X and his Ys", "X und die Ys") rather than a second act.
+ * Used to suppress splitting for the common "frontman & backing band" pattern.
+ */
+private val CONJUNCTION_TAIL_ARTICLES: Set<String> =
+    setOf("the", "his", "her", "their", "los", "las", "die", "der", "das", "el", "la")
+
+/** Space-padded `/` or `+` — unambiguous co-bill separators once whitespace is required on both sides. */
+private val SAFE_TITLE_SEPARATOR = Regex("""\s+[/+]\s+""")
+
+/**
+ * Space-padded conjunction (`&`, `and`, `und`) — split only at boundaries that
+ * pass the [splitSegmentOnConjunctions] guardrails. The `and`/`und` word forms
+ * are space-padded so they match only the standalone conjunction, never a
+ * substring (e.g. the "and" in "Portland"), and case-insensitive for `AND`/`UND`.
+ */
+private val CONJUNCTION_SEPARATOR = Regex("""\s+(?:&|and|und)\s+""", RegexOption.IGNORE_CASE)
+
+/**
+ * Splits a title segment into acts at its conjunctions, deciding **per boundary**
+ * so a real co-bill still splits even when another conjunction in the same title
+ * is a band-name tail. Conservative: a comma anywhere suppresses splitting (the
+ * "Earth, Wind & Fire" member-list pattern), and a boundary is kept joined when
+ * its right-hand side opens with an article/possessive (the "X and the Ys"
+ * pattern) — so `CARL CARLTON & MELANIE WIEGMANN AND THE GREAT BAND` cuts only at
+ * the `&`. Each act keeps its original conjunction spelling (no rewrite).
+ */
+@Suppress("ReturnCount") // Guard clauses for the comma and no-cut cases are clearer than nesting
+private fun splitSegmentOnConjunctions(segment: String): List<String> {
+    if (segment.contains(',')) return listOf(segment)
+
+    val cuts =
+        CONJUNCTION_SEPARATOR
+            .findAll(segment)
+            .filter { match ->
+                segment
+                    .substring(match.range.last + 1)
+                    .trimStart()
+                    .substringBefore(' ')
+                    .lowercase() !in
+                    CONJUNCTION_TAIL_ARTICLES
+            }.map { it.range }
+            .toList()
+    if (cuts.isEmpty()) return listOf(segment)
+
+    val acts = mutableListOf<String>()
+    var start = 0
+    for (range in cuts) {
+        acts.add(segment.substring(start, range.first))
+        start = range.last + 1
+    }
+    acts.add(segment.substring(start))
+    return acts
+}
+
+/** Hard separators that always delimit acts in a support/lineup line: comma, plus, slash. */
+private val SUPPORT_HARD_SEPARATOR = Regex("""\s*[,+/]\s*""")
+
+/**
+ * Splits a support/lineup line into individual act names.
+ *
+ * Hard separators (comma, `+`, `/`) always delimit acts; the `&` / `and` / `und`
+ * conjunctions are then split **per boundary** via [splitSegmentOnConjunctions],
+ * the same guardrails [splitHeadlinerTitle] uses — so a backing-band tail stays
+ * attached to its act (`Scott Hepple & The Sun Band` is one act via the article
+ * guard, while `High On Fire & Gnome` is two). Blank fragments are dropped;
+ * role-label stripping and placeholder filtering are left to the caller.
+ *
+ * Example:
+ * ```kotlin
+ * splitSupportActs("High On Fire & Gnome, Aska")                    // ["High On Fire", "Gnome", "Aska"]
+ * splitSupportActs("Earth Tongue und Scott Hepple & The Sun Band")  // ["Earth Tongue", "Scott Hepple & The Sun Band"]
+ * ```
+ */
+fun splitSupportActs(text: String): List<String> =
+    text
+        .split(SUPPORT_HARD_SEPARATOR)
+        .flatMap { splitSegmentOnConjunctions(it) }
+        .map { it.trim() }
+        .filter { it.isNotBlank() }
+
+/**
+ * Splits a headliner title into its individual co-billed acts.
+ *
+ * Titles frequently pack a whole lineup into one string
+ * (`TOTAL CHAOS + RUMKICKS + THE DOLLHEADS`, `LAGWAGON / THE VIRGINMARYS`,
+ * `BLACK STAR RIDERS & TYKETTO`, `Earth Tongue und Scott Hepple`). This splits on
+ * unambiguous, space-padded separators only, so band names that legitimately
+ * contain these characters survive intact:
+ * - `" / "` and `" + "` are treated as co-bill separators (space-padding
+ *   protects `AC/DC`, `dance/electronic`, etc.).
+ * - a `" & "` / `" and "` / `" und "` conjunction is split per boundary via
+ *   [splitSegmentOnConjunctions], and never for a title in [KNOWN_SINGLE_ACTS].
+ *   The article-tail guard keeps `X and the Ys` band names (`James and the Cold
+ *   Gun`, `Melanie Wiegmann and the Great Band`) whole while still splitting a
+ *   real co-bill alongside them.
+ *
+ * A title with no recognized separator (the common single-act case) returns a
+ * singleton list of the trimmed title, so callers see no behavioural change.
+ * Placeholder filtering is left to the caller.
+ *
+ * Example:
+ * ```kotlin
+ * splitHeadlinerTitle("TOTAL CHAOS + RUMKICKS")       // ["TOTAL CHAOS", "RUMKICKS"]
+ * splitHeadlinerTitle("LAGWAGON / THE VIRGINMARYS")   // ["LAGWAGON", "THE VIRGINMARYS"]
+ * splitHeadlinerTitle("Earth Tongue und Scott Hepple") // ["Earth Tongue", "Scott Hepple"]
+ * splitHeadlinerTitle("Simon & Garfunkel")            // ["Simon & Garfunkel"]  (denylist)
+ * splitHeadlinerTitle("James and the Cold Gun")       // ["James and the Cold Gun"]  (article tail)
+ * splitHeadlinerTitle("AC/DC")                         // ["AC/DC"]  (no space padding)
+ * ```
+ */
+@Suppress("ReturnCount") // Guard clauses for blank and denylisted titles are clearer than nesting
+fun splitHeadlinerTitle(title: String): List<String> {
+    val trimmed = title.trim()
+    if (trimmed.isEmpty()) return listOf(title)
+    // Normalize the "and"/"und" word forms to "&" so a title matches the &-spelled denylist.
+    if (trimmed.replace(CONJUNCTION_SEPARATOR, " & ").lowercase() in KNOWN_SINGLE_ACTS) return listOf(trimmed)
+
+    val acts =
+        trimmed
+            .split(SAFE_TITLE_SEPARATOR)
+            .flatMap { splitSegmentOnConjunctions(it) }
+            .map { it.trim() }
+            .filter { it.isNotBlank() }
+
+    return acts.ifEmpty { listOf(trimmed) }
+}
+
+/**
+ * Turns an event title into its headliner artist entries: split co-billed acts via
+ * [splitHeadlinerTitle], strip tour/live suffixes via [stripArtistSuffix] to recover
+ * the performer, then drop anything that is not an artist ([isNonArtistName] —
+ * placeholders, role labels, segments, festivals). Returned in billing order (title
+ * order); the caller appends support acts.
+ */
+fun headlinersFromTitle(title: String): List<ScrapedArtist> =
+    splitHeadlinerTitle(title)
+        .map { stripArtistSuffix(it) }
+        .filterNot { isNonArtistName(it) }
+        .map { ScrapedArtist(name = it, role = "HEADLINER") }
+
+/**
  * Builds an artist list from a headliner title and support act names.
  *
  * This encapsulates the common "title = headliner + Support:" pattern used by
  * multiple venue scrapers. The presence of [supportNames] confirms the
- * title-as-headliner convention. Placeholder names (e.g. "TBA", "tbc") are
- * filtered out from the output but still serve as the signal that the pattern applies.
+ * title-as-headliner convention. The title is split into co-billed headliners
+ * via [headlinersFromTitle]; placeholder names (e.g. "TBA", "tbc") and bare role
+ * labels (e.g. "Special Guest") are filtered out from the output but still serve
+ * as the signal that the pattern applies.
  *
- * @param title the event title, assumed to be the headliner name.
+ * @param title the event title, assumed to be one or more headliner names.
  * @param supportNames support act names extracted from the listing. If empty, returns
  *   an empty list (cannot confirm the title is an artist name).
- * @return ordered list: headliner first, then support acts by appearance order.
+ * @return ordered list: headliner(s) first, then support acts by appearance order.
  */
 fun buildArtistList(
     title: String,
@@ -178,19 +482,12 @@ fun buildArtistList(
 ): List<ScrapedArtist> {
     if (supportNames.isEmpty()) return emptyList()
 
-    val headliner =
-        if (isPlaceholderName(title)) {
-            emptyList()
-        } else {
-            listOf(ScrapedArtist(name = title, role = "HEADLINER"))
-        }
-
     val supportActs =
         supportNames
-            .filterNot { isPlaceholderName(it) }
+            .filterNot { isNonArtistName(it) }
             .map { ScrapedArtist(name = it, role = "SUPPORT") }
 
-    return headliner + supportActs
+    return headlinersFromTitle(title) + supportActs
 }
 
 /**
@@ -217,14 +514,12 @@ fun buildArtistsForEventType(
     val supportNames = extractSupportFromSubtitle(subtitle)
     if (eventType != EventType.CONCERT.name) return buildArtistList(title, supportNames)
 
-    // Concert: the title is the headliner (unless a placeholder), then support acts in listing order.
-    val headliner =
-        if (isPlaceholderName(title)) emptyList() else listOf(ScrapedArtist(name = title, role = "HEADLINER"))
+    // Concert: the title carries the headliner(s) (co-bills split out), then support acts in listing order.
     val supportActs =
         supportNames
-            .filterNot { isPlaceholderName(it) }
+            .filterNot { isNonArtistName(it) }
             .map { ScrapedArtist(name = it, role = "SUPPORT") }
-    return headliner + supportActs
+    return headlinersFromTitle(title) + supportActs
 }
 
 /**
