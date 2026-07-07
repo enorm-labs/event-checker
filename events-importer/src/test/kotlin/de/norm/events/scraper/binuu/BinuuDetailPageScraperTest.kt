@@ -1,0 +1,111 @@
+package de.norm.events.scraper.binuu
+
+import de.norm.events.scraper.ScrapedArtist
+import de.norm.events.scraper.ScrapedEvent
+import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.nulls.shouldBeNull
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldContain
+import org.jsoup.Jsoup
+import org.junit.jupiter.api.Test
+import java.time.LocalDate
+import java.time.LocalTime
+
+/**
+ * Unit tests for [BinuuDetailPageScraper].
+ *
+ * Parses static snapshots of real Bi Nuu detail pages (whose data lives in the
+ * embedded SvelteKit `data.item` payload) for deterministic, offline-safe
+ * testing without HTTP fetching.
+ */
+class BinuuDetailPageScraperTest {
+    private val scraper = BinuuDetailPageScraper()
+
+    private fun parseFixture(
+        fixture: String,
+        sourceUrl: String
+    ): ScrapedEvent {
+        val html =
+            javaClass.classLoader
+                .getResourceAsStream("scraper/binuu/$fixture")!!
+                .bufferedReader()
+                .readText()
+        return scraper.scrape(Jsoup.parse(html, sourceUrl), sourceUrl)!!
+    }
+
+    private val archEnemy: ScrapedEvent by lazy {
+        parseFixture("binuu-detail-arch-enemy.html", "https://binuu.de/de/events/inzpqdgvi1eab2q")
+    }
+
+    @Test
+    fun `parses title, subtitle, date and both times`() {
+        archEnemy.title shouldBe "Arch Enemy"
+        archEnemy.subtitle shouldBe "Back To The Root Of All Evil"
+        archEnemy.eventDate shouldBe LocalDate.of(2026, 7, 19)
+        archEnemy.doorsTime shouldBe LocalTime.of(18, 0)
+        archEnemy.startTime shouldBe LocalTime.of(19, 0)
+    }
+
+    @Test
+    fun `derives sourceId from the event id`() {
+        archEnemy.sourceId shouldBe "binuu:inzpqdgvi1eab2q"
+    }
+
+    @Test
+    fun `parses the ticket URL, sold-out flag, promoters and description`() {
+        archEnemy.ticketUrl shouldBe
+            "https://festsaal.shop/produkte/535-tickets-arch-enemy-bi-nuu-berlin-am-19-07-2026"
+        archEnemy.soldOut shouldBe true
+        archEnemy.promoters shouldContainExactly listOf("Cobra Agency", "Festsaal Kreuzberg Booking")
+        archEnemy.description!! shouldContain "ARCH ENEMY return to small"
+    }
+
+    @Test
+    fun `treats a lone performer as the headliner`() {
+        archEnemy.artists shouldContainExactly listOf(ScrapedArtist("Arch Enemy", "HEADLINER"))
+    }
+
+    @Test
+    fun `tags a performer named in the support line as support`() {
+        val twdy =
+            parseFixture("binuu-detail-this-will-destroy-you.html", "https://binuu.de/de/events/aufm93tii76xvp5")
+        twdy.artists shouldContainExactly
+            listOf(
+                ScrapedArtist("This Will Destroy You", "HEADLINER"),
+                ScrapedArtist("MASCARA", "SUPPORT")
+            )
+        // subtitle_2 ("Support: MASCARA") feeds the roster, not the event subtitle.
+        twdy.subtitle.shouldBeNull()
+    }
+
+    @Test
+    fun `promotes the first performer to headliner when the support line names them all`() {
+        val shadowplay =
+            parseFixture("binuu-detail-shadowplay.html", "https://binuu.de/de/events/41apztb3yeneeef")
+        shadowplay.artists shouldContainExactly
+            listOf(
+                ScrapedArtist("Solar Flake", "HEADLINER"),
+                ScrapedArtist("Black Nail Cabaret", "SUPPORT"),
+                ScrapedArtist("Unify Separate", "SUPPORT")
+            )
+        // No tickets array on this page → no ticket URL.
+        shadowplay.ticketUrl.shouldBeNull()
+    }
+
+    @Test
+    fun `maps the relocated status and strips stray whitespace from the ticket URL`() {
+        val oidorno = parseFixture("binuu-detail-oidorno.html", "https://binuu.de/de/events/fko44tarc3g5wlv")
+        oidorno.status shouldBe "RELOCATED"
+        oidorno.promoters shouldContainExactly listOf("Audiolith Booking")
+
+        val grooveJet = parseFixture("binuu-detail-groovejet.html", "https://binuu.de/de/events/zf0kroyf2cjolyl")
+        // The CMS leaves a rogue space after '?'; it must be stripped to a valid URL.
+        grooveJet.ticketUrl shouldBe "https://groovejet.berlin/tickets/qbfst4q8?utm_source=binuu&utm_medium=organic"
+    }
+
+    @Test
+    fun `returns null when the page has no item payload`() {
+        val url = "https://binuu.de/de/events/x"
+        scraper.scrape(Jsoup.parse("<html><body></body></html>", url), url).shouldBeNull()
+    }
+}

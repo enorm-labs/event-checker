@@ -335,10 +335,12 @@ fun stripArtistSuffix(name: String): String {
 /**
  * Manually curated one-off titles that are not performers but that no structural
  * rule safely catches — a warm-up slot at a specific room, a package-tour name, a
- * recurring themed night. Entries are lowercase and whitespace-collapsed; a
- * trailing edition number is ignored at match time, so a recurring series matches
- * every edition (`FEMALE-FRONTED IS NOT A GENRE 5`, `… 6`, …). Add exact titles
- * here as they surface.
+ * recurring themed night, or a venue's own party/DJ series that its structured
+ * data lists as the "performer" (Bi Nuu). Entries are lowercase and
+ * whitespace-collapsed; a trailing edition number is ignored at match time, so a
+ * recurring series matches every edition — both the plain `… 5` form
+ * (`FEMALE-FRONTED IS NOT A GENRE 5`, `… 6`, …) and the `… N°<n>` form
+ * (`Boheme Sauvage N°141`, `N°142`, …). Add exact titles here as they surface.
  */
 private val NON_ARTIST_NAMES: Set<String> =
     setOf(
@@ -349,11 +351,19 @@ private val NON_ARTIST_NAMES: Set<String> =
         "open mic l. j. fox",
         "feinster hiphop",
         "karrera klub",
-        "the swag jam"
+        "the swag jam",
+        "groovejet berlin",
+        "ultra night",
+        "boheme sauvage"
     )
 
-/** A trailing edition number ("… 5") on a recurring event title, ignored when matching [NON_ARTIST_NAMES]. */
-private val TRAILING_EDITION = Regex("""\s+\d+$""")
+/**
+ * A trailing edition number on a recurring event title, ignored when matching
+ * [NON_ARTIST_NAMES]. Covers both the plain `… 5` form and the `… N°141` form
+ * (optional `n°`/`nº` before the digits), so every edition of a series folds onto
+ * one denylist entry.
+ */
+private val TRAILING_EDITION = Regex("""\s+(?:n[°º]\s*)?\d+$""", RegexOption.IGNORE_CASE)
 
 private fun isDenylistedNonArtist(name: String): Boolean =
     name

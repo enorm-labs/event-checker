@@ -203,9 +203,14 @@ class EventMappingExtensionsTest {
         isNonArtistName("Feinster HipHop") shouldBe true
         isNonArtistName("Karrera Klub") shouldBe true
         isNonArtistName("The Swag Jam") shouldBe true
-        // Recurring series: any edition number matches.
+        // Bi Nuu party/DJ series its structured `performers` list names as the act.
+        isNonArtistName("GrooveJet Berlin") shouldBe true
+        isNonArtistName("Ultra Night") shouldBe true
+        // Recurring series: any edition number matches — both the plain and the N°<n> form.
         isNonArtistName("FEMALE-FRONTED IS NOT A GENRE 5") shouldBe true
         isNonArtistName("FEMALE-FRONTED IS NOT A GENRE 6") shouldBe true
+        isNonArtistName("Boheme Sauvage N°141") shouldBe true
+        isNonArtistName("Boheme Sauvage N°142") shouldBe true
     }
 
     @Test

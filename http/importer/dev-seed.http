@@ -12,6 +12,7 @@
 ### Sources (alphabetical):
 ###   Astra Kulturhaus     — https://www.astra-berlin.de/
 ###   Badehaus             — https://badehaus-berlin.com/events/
+###   Bi Nuu               — https://binuu.de/de/events
 ###   Cassiopeia           — https://cassiopeia-berlin.de/club
 ###   Lido                 — https://www.lido-berlin.de/
 ###   Madame Claude        — https://madameclaude.de/events/
@@ -134,6 +135,68 @@ Accept: application/json
 
 > {%
     client.test("Badehaus import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Bi Nuu (Schlesisches Tor, Skalitzer Str. 134, Berlin-Kreuzberg)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Bi Nuu venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Bi Nuu",
+    "address": "Skalitzer Str. 134",
+    "city": "Berlin",
+    "postalCode": "10999",
+    "district": "friedrichshain-kreuzberg",
+    "latitude": 52.50083,
+    "longitude": 13.44192,
+    "websiteUrl": "https://binuu.de"
+}
+
+> {%
+    client.global.set("binuu_venue_id", response.body.id);
+    client.test("Bi Nuu venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Bi Nuu event source ---
+# Links the venue to the BinuuWebsiteImporter.
+# The sourceType "BINUU" matches EventSource.BINUU.
+# NOTE: the URL is `/de/events` (the full program listing), NOT the homepage `/` —
+# `/` 301-redirects to `/de` (only the next few events) and the scraper's WebClient
+# does not follow redirects.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{binuu_venue_id}},
+    "name": "Bi Nuu",
+    "url": "https://binuu.de/de/events",
+    "sourceType": "BINUU",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Bi Nuu event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Bi Nuu import ---
+# Slug is derived from the source name: "Bi Nuu" → bi-nuu.
+POST {{importer-host}}/api/admin/event-sources/bi-nuu/import
+Accept: application/json
+
+> {%
+    client.test("Bi Nuu import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}
