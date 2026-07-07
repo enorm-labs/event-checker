@@ -65,10 +65,15 @@ class BinuuDetailPageScraper {
         }
 
         val start = item.stringOrNull("start")
+        val subtitle = item.stringOrNull("subtitle")
+        val description = parseDescription(item.stringOrNull("text"))
         return ScrapedEvent(
             title = title,
-            subtitle = item.stringOrNull("subtitle"),
-            description = parseDescription(item.stringOrNull("text")),
+            subtitle = subtitle,
+            description = description,
+            // Bi Nuu carries no category field, so the type is inferred from the
+            // title/subtitle (see inferBinuuEventType).
+            eventType = inferBinuuEventType(title, subtitle),
             // Detail pages carry the real date; sentinel only if absent, then the
             // overview value is adopted via BinuuWebsiteImporter.fillGapsFromOverview.
             eventDate = parseBinuuDate(start) ?: UNRESOLVED_EVENT_DATE,

@@ -181,10 +181,18 @@ literal in the `kit.start(...)` bootstrap script), parsed via `BinuuSvelteKitPay
 rather than the rendered DOM — so dates carry full four-digit years and fields are
 structured. Limitations:
 
-- 🟠 **`eventType` is always `OTHER`.** Bi Nuu exposes no category field anywhere on
-  the site, so the type is never set and falls back to `OTHER` at persistence (the
-  cross-cutting `OTHER` default). Discovery/filtering by type is unavailable for this
-  venue, and every artist-extraction path runs in its type-agnostic form.
+- 🔴 **`eventType` is inferred from the title/subtitle, not scraped.** Bi Nuu exposes
+  no category field anywhere on the site, so — like Badehaus — the type is a best-effort
+  heuristic (`inferBinuuEventType`): `quiz` → `QUIZ`; a curated recurring party/DJ series
+  (`BINUU_PARTY_SERIES`: GrooveJet, Ultra Night, Boheme Sauvage — the same names on the
+  artist `NON_ARTIST_NAMES` denylist, edition number ignored) or a party keyword
+  (`party`/`karaoke`/`dj set`/`club night`/`rave`) → `PARTY`; everything else defaults to
+  `CONCERT` (Bi Nuu is live-music-leaning). It deliberately does **not** sniff the
+  description for genre words: at this metal/rock venue `dancefloor`/`disco` turn up in
+  band tour and album names (e.g. Gutalax's "Shit On The Dancefloor" tour is a
+  death-metal gig), so a description scan mislabels concerts. Being curated it is
+  reactive — a newly-seen series is `CONCERT` until added to both lists. The type does
+  **not** gate artist extraction here (that runs off the structured `performers` list).
 - 🟠 **Event/party-series names can slip in as headliner artists.** Artists come from
   the site's structured `performers` array (a performer also named in the `subtitle_2`
   support line becomes `SUPPORT`, otherwise `HEADLINER`) — more reliable than

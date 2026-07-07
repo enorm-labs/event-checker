@@ -10,7 +10,7 @@ The **Import** column tracks whether an automated importer has been implemented 
 | Badehaus                    | https://badehaus-berlin.com/                | Club         |     ✅      |   ✅    |                                   |
 | Cassiopeia                  | https://cassiopeia-berlin.de/               | Club         |     ✅      |   ✅    |                                   |
 | Privatclub                  | https://privatclub-berlin.de/               | Club         |     ✅      |   ✅    |                                   |
-| Bi Nuu                      | https://binuu.de/                           | Club         |     ✅      |        |                                   |
+| Bi Nuu                      | https://binuu.de/                           | Club         |     ✅      |   ✅    |                                   |
 | Frannz Club                 | https://frannz.eu/                          | Club         |     ✅      |        |                                   |
 | Duncker Club                | https://www.dunckerclub.de/                 | Club         |     ✅      |        |                                   |
 | Gretchen                    | https://www.gretchen-club.de/               | Club         |     ✅      |        |                                   |

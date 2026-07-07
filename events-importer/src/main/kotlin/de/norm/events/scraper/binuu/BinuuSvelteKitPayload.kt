@@ -1,5 +1,6 @@
 package de.norm.events.scraper.binuu
 
+import de.norm.events.event.EventType
 import de.norm.events.scraper.parseTime
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jsoup.nodes.Document
@@ -215,6 +216,63 @@ internal fun mapBinuuStatus(code: String?): String {
         }
     }
 }
+
+/**
+ * Best-effort inference of an event's [EventType][de.norm.events.event.EventType]
+ * from its title/subtitle, since Bi Nuu exposes **no category field anywhere** in
+ * the SvelteKit payload (see the known-issues doc). Bi Nuu is a live-music venue, so
+ * the default is `CONCERT`; only pub quizzes and club/party nights are flipped.
+ *
+ * Signals, in priority order:
+ * 1. `quiz` in the title/subtitle → `QUIZ`.
+ * 2. The title is a **known recurring party/DJ series** ([BINUU_PARTY_SERIES]) → `PARTY`.
+ *    These series (GrooveJet, Ultra Night, Boheme Sauvage) list *their own name* as the
+ *    title and sole performer, so there is no band and no reliable keyword — only the
+ *    curated name identifies them. The trailing edition number (`N°141`, `… 5`) is
+ *    ignored so every edition matches, mirroring the artist denylist.
+ * 3. A party/DJ-night keyword in the title/subtitle (`party`, `karaoke`, `dj set`,
+ *    `club night`, `rave`) → `PARTY`.
+ *
+ * Deliberately does **not** sniff the free-text description for genre words: at this
+ * metal/rock-leaning venue, words like `dancefloor`/`disco` show up in band tour and
+ * album names (e.g. Gutalax's "Shit On The Dancefloor" tour is a death-metal gig, not
+ * a club night), so a description scan mislabels concerts. Like every curated heuristic
+ * this is reactive: a newly-seen series is a `CONCERT` until added to [BINUU_PARTY_SERIES].
+ * Consistent with Badehaus's `inferEventType` and the artist `NON_ARTIST_NAMES` denylist.
+ */
+internal fun inferBinuuEventType(
+    title: String,
+    subtitle: String?
+): String {
+    val nameHaystack = "$title ${subtitle.orEmpty()}".lowercase()
+    return when {
+        "quiz" in nameHaystack -> EventType.QUIZ.name
+        isBinuuPartySeries(title) -> EventType.PARTY.name
+        PARTY_NAME_KEYWORDS.any { it in nameHaystack } -> EventType.PARTY.name
+        else -> EventType.CONCERT.name
+    }
+}
+
+/**
+ * Recurring Bi Nuu party/DJ series that name themselves as the event and its sole
+ * performer. Lowercase, whitespace-collapsed, trailing edition number stripped. These
+ * are also on the artist `NON_ARTIST_NAMES` denylist (so the name isn't minted as an
+ * act); keep the two in sync when a new series surfaces.
+ */
+private val BINUU_PARTY_SERIES = setOf("groovejet berlin", "ultra night", "boheme sauvage")
+
+/** Trailing edition number (`… 5`, `N°141`) ignored when matching [BINUU_PARTY_SERIES]. */
+private val BINUU_TRAILING_EDITION = Regex("""\s+(?:n[°º]\s*)?\d+$""", RegexOption.IGNORE_CASE)
+
+private fun isBinuuPartySeries(title: String): Boolean =
+    title
+        .trim()
+        .replace(Regex("""\s+"""), " ")
+        .lowercase()
+        .replace(BINUU_TRAILING_EDITION, "") in BINUU_PARTY_SERIES
+
+/** Party/DJ-night phrases that, in a title or subtitle, mark a non-concert night. */
+private val PARTY_NAME_KEYWORDS = listOf("party", "karaoke", "dj set", "dj-set", "club night", "clubnight", "rave")
 
 private const val DATE_LENGTH = 10
 private const val HH_MM_LENGTH = 5

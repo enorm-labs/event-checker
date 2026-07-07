@@ -38,4 +38,22 @@ class BinuuFieldMappingTest {
         parseBinuuTime("2026-07-19").shouldBeNull()
         parseBinuuTime(null).shouldBeNull()
     }
+
+    @Test
+    fun `infers the event type from the title and subtitle, defaulting to CONCERT`() {
+        // Live-music venue default: a plain band name is a CONCERT.
+        inferBinuuEventType("Arch Enemy", "Back To The Root Of All Evil") shouldBe "CONCERT"
+        // A pub quiz, detected in the name.
+        inferBinuuEventType("Music Quiz", null) shouldBe "QUIZ"
+        // Known recurring party/DJ series, matched by curated name (edition number ignored).
+        inferBinuuEventType("GrooveJet Berlin", "") shouldBe "PARTY"
+        inferBinuuEventType("Ultra Night", "Depeche Mode Special") shouldBe "PARTY"
+        inferBinuuEventType("Boheme Sauvage N°141", null) shouldBe "PARTY"
+        // Party/DJ-night phrasing in the title/subtitle.
+        inferBinuuEventType("Karaoke Night", null) shouldBe "PARTY"
+        inferBinuuEventType("Some Night", "DJ Set till late") shouldBe "PARTY"
+        // Regression: a genre word in a band's tour name must NOT flip a concert to PARTY
+        // (Gutalax is death metal; "Shit On The Dancefloor" is the tour name).
+        inferBinuuEventType("Gutalax", "Shit On The Dancefloor Mini-Tour 2026") shouldBe "CONCERT"
+    }
 }
