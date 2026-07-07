@@ -190,6 +190,8 @@ class EventMappingExtensionsTest {
     fun `isNonArtistName drops curated one-off non-artist titles`() {
         isNonArtistName("Warm Up im Franken") shouldBe true
         isNonArtistName("THE REVIVAL TOUR") shouldBe true
+        isNonArtistName("Music Quiz") shouldBe true
+        isNonArtistName("Open Mic L. J. Fox") shouldBe true
         // Recurring series: any edition number matches.
         isNonArtistName("FEMALE-FRONTED IS NOT A GENRE 5") shouldBe true
         isNonArtistName("FEMALE-FRONTED IS NOT A GENRE 6") shouldBe true
