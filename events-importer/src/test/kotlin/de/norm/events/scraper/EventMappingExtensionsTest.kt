@@ -61,6 +61,27 @@ class EventMappingExtensionsTest {
             listOf("High On Fire", "Gnome", "Aska")
     }
 
+    @Test
+    fun `extractSupportFromSubtitle keeps a backing-band tail attached to its act`() {
+        extractSupportFromSubtitle("Support: Scott Hepple & The Sun Band") shouldContainExactly
+            listOf("Scott Hepple & The Sun Band")
+    }
+
+    // --- splitSupportActs ---
+
+    @Test
+    fun `splitSupportActs cuts on hard separators and guarded conjunctions`() {
+        splitSupportActs("GUM + CLAVV") shouldContainExactly listOf("GUM", "CLAVV")
+        splitSupportActs("High On Fire & Gnome, Aska") shouldContainExactly
+            listOf("High On Fire", "Gnome", "Aska")
+    }
+
+    @Test
+    fun `splitSupportActs splits the und conjunction but keeps the and-the-Ys tail attached`() {
+        splitSupportActs("Earth Tongue und Scott Hepple & The Sun Band") shouldContainExactly
+            listOf("Earth Tongue", "Scott Hepple & The Sun Band")
+    }
+
     // --- isPlaceholderName ---
 
     @Test
@@ -76,6 +97,13 @@ class EventMappingExtensionsTest {
         isPlaceholderName("TBD") shouldBe true
         isPlaceholderName("tbd") shouldBe true
         isPlaceholderName("TBD.") shouldBe true
+    }
+
+    @Test
+    fun `isPlaceholderName returns true for TBC variants`() {
+        isPlaceholderName("TBC") shouldBe true
+        isPlaceholderName("tbc") shouldBe true
+        isPlaceholderName("TBC.") shouldBe true
     }
 
     @Test
@@ -96,6 +124,81 @@ class EventMappingExtensionsTest {
         isPlaceholderName("Aska") shouldBe false
         isPlaceholderName("The Adicts") shouldBe false
         isPlaceholderName("DJ Shadow") shouldBe false
+    }
+
+    // --- isNonArtistLabel ---
+
+    @Test
+    fun `isNonArtistLabel returns true for bare role labels`() {
+        isNonArtistLabel("Special Guest") shouldBe true
+        isNonArtistLabel("Special Guests") shouldBe true
+        isNonArtistLabel("Support") shouldBe true
+        isNonArtistLabel("div. Supports") shouldBe true
+        isNonArtistLabel("SPECIAL GUEST") shouldBe true
+        isNonArtistLabel("Support:") shouldBe true
+    }
+
+    @Test
+    fun `isNonArtistLabel returns false for real names that merely contain a label word`() {
+        isNonArtistLabel("Green Lung") shouldBe false
+        isNonArtistLabel("Special Guest Stars") shouldBe false
+        isNonArtistLabel("") shouldBe false
+    }
+
+    // --- isEventSegmentLabel ---
+
+    @Test
+    fun `isEventSegmentLabel returns true for aftershow and warm-up segments`() {
+        isEventSegmentLabel("ACID AFTERSHOW") shouldBe true
+        isEventSegmentLabel("Aftershow") shouldBe true
+        isEventSegmentLabel("Aftershow Party") shouldBe true
+        isEventSegmentLabel("Techno Afterparty") shouldBe true
+        isEventSegmentLabel("Warm Up") shouldBe true
+        isEventSegmentLabel("warm-up") shouldBe true
+    }
+
+    @Test
+    fun `isEventSegmentLabel is fully anchored so real names survive`() {
+        // A real band whose name resembles a segment word.
+        isEventSegmentLabel("AFTERHOURS") shouldBe false
+        // A qualified/named slot that carries more than the bare segment phrase.
+        isEventSegmentLabel("Warm Up im Franken") shouldBe false
+        isEventSegmentLabel("The Muppet Show") shouldBe false
+        isEventSegmentLabel("Green Lung") shouldBe false
+    }
+
+    // --- isNonArtistEvent ---
+
+    @Test
+    fun `isNonArtistEvent returns true for festival and festival-ticket labels`() {
+        isNonArtistEvent("SHRED FEST") shouldBe true
+        isNonArtistEvent("GROBES FEST 2026") shouldBe true
+        isNonArtistEvent("CANARIAS CALLING FESTIVAL") shouldBe true
+        isNonArtistEvent("GROSSSTADTWAHNSINN 2026 - FESTIVALTICKET") shouldBe true
+    }
+
+    @Test
+    fun `isNonArtistEvent keeps one-word names that merely contain fest`() {
+        isNonArtistEvent("Infest") shouldBe false
+        isNonArtistEvent("Manifest") shouldBe false
+        isNonArtistEvent("Green Lung") shouldBe false
+    }
+
+    // --- stripArtistSuffix ---
+
+    @Test
+    fun `stripArtistSuffix recovers the act from tour and live suffixes`() {
+        stripArtistSuffix("DOMINIUM - NIGHT IS CALLING TOUR 2026") shouldBe "DOMINIUM"
+        stripArtistSuffix("AZ LIVE IN BERLIN") shouldBe "AZ"
+        stripArtistSuffix("HGICH.T LIVE") shouldBe "HGICH.T"
+    }
+
+    @Test
+    fun `stripArtistSuffix leaves plain names and a bare Live band untouched`() {
+        stripArtistSuffix("The Adicts") shouldBe "The Adicts"
+        stripArtistSuffix("Live") shouldBe "Live"
+        // No tour marker in the hyphenated tail, so it is not a tour suffix.
+        stripArtistSuffix("BAD COMPANY LEGACY - Dave Colwell") shouldBe "BAD COMPANY LEGACY - Dave Colwell"
     }
 
     // --- buildArtistList ---
@@ -134,6 +237,102 @@ class EventMappingExtensionsTest {
         val result = buildArtistList("The Adicts", listOf("TBA", "TBD"))
         result shouldHaveSize 1
         result[0] shouldBe ScrapedArtist(name = "The Adicts", role = "HEADLINER")
+    }
+
+    @Test
+    fun `buildArtistList drops a bare role-label support but keeps the headliner`() {
+        // A "Support: Special Guest" line still signals the title-as-headliner
+        // convention, but the label itself must not become a support artist.
+        val result = buildArtistList("Green Lung", listOf("Special Guest"))
+        result shouldContainExactly listOf(ScrapedArtist(name = "Green Lung", role = "HEADLINER"))
+    }
+
+    @Test
+    fun `buildArtistList splits a multi-artist title into co-headliners`() {
+        val result = buildArtistList("TOTAL CHAOS + RUMKICKS", listOf("The Dollheads"))
+        result shouldContainExactly
+            listOf(
+                ScrapedArtist(name = "TOTAL CHAOS", role = "HEADLINER"),
+                ScrapedArtist(name = "RUMKICKS", role = "HEADLINER"),
+                ScrapedArtist(name = "The Dollheads", role = "SUPPORT")
+            )
+    }
+
+    // --- splitHeadlinerTitle ---
+
+    @Test
+    fun `splitHeadlinerTitle splits space-padded plus and slash co-bills`() {
+        splitHeadlinerTitle("TOTAL CHAOS + RUMKICKS + THE DOLLHEADS") shouldContainExactly
+            listOf("TOTAL CHAOS", "RUMKICKS", "THE DOLLHEADS")
+        splitHeadlinerTitle("LAGWAGON / THE VIRGINMARYS") shouldContainExactly
+            listOf("LAGWAGON", "THE VIRGINMARYS")
+    }
+
+    @Test
+    fun `splitHeadlinerTitle splits a genuine ampersand co-bill`() {
+        splitHeadlinerTitle("BLACK STAR RIDERS & TYKETTO") shouldContainExactly
+            listOf("BLACK STAR RIDERS", "TYKETTO")
+    }
+
+    @Test
+    fun `splitHeadlinerTitle splits guarded and und conjunctions`() {
+        splitHeadlinerTitle("Earth Tongue und Scott Hepple") shouldContainExactly
+            listOf("Earth Tongue", "Scott Hepple")
+        splitHeadlinerTitle("Killswitch Engage and Parkway Drive") shouldContainExactly
+            listOf("Killswitch Engage", "Parkway Drive")
+    }
+
+    @Test
+    fun `splitHeadlinerTitle splits a real co-bill even when another act is an and-the-Ys band`() {
+        // Cuts only at the "&"; the " AND THE GREAT BAND" tail stays joined to its act.
+        splitHeadlinerTitle("CARL CARLTON & MELANIE WIEGMANN AND THE GREAT BAND") shouldContainExactly
+            listOf("CARL CARLTON", "MELANIE WIEGMANN AND THE GREAT BAND")
+    }
+
+    @Test
+    fun `splitHeadlinerTitle keeps single acts whose name contains a separator`() {
+        // No space padding around the slash.
+        splitHeadlinerTitle("AC/DC") shouldContainExactly listOf("AC/DC")
+        // Denylisted ampersand name.
+        splitHeadlinerTitle("Simon & Garfunkel") shouldContainExactly listOf("Simon & Garfunkel")
+        // Denylist matches even when the source spells the conjunction as "and".
+        splitHeadlinerTitle("Simon and Garfunkel") shouldContainExactly listOf("Simon and Garfunkel")
+        // "X & the Ys" band-name tail, in both & and "and" forms.
+        splitHeadlinerTitle("Nick Cave & the Bad Seeds") shouldContainExactly listOf("Nick Cave & the Bad Seeds")
+        splitHeadlinerTitle("James and the Cold Gun") shouldContainExactly listOf("James and the Cold Gun")
+        // A bare "and" inside a single word must not be split (space-padding).
+        splitHeadlinerTitle("Portland") shouldContainExactly listOf("Portland")
+        // Comma signals a member-list band name.
+        splitHeadlinerTitle("Earth, Wind & Fire") shouldContainExactly listOf("Earth, Wind & Fire")
+    }
+
+    @Test
+    fun `splitHeadlinerTitle returns a singleton for a plain single-act title`() {
+        splitHeadlinerTitle("The Adicts") shouldContainExactly listOf("The Adicts")
+        splitHeadlinerTitle("  The Adicts  ") shouldContainExactly listOf("The Adicts")
+    }
+
+    // --- headlinersFromTitle ---
+
+    @Test
+    fun `headlinersFromTitle drops placeholder fragments from a split title`() {
+        headlinersFromTitle("TBA + Real Band") shouldContainExactly
+            listOf(ScrapedArtist(name = "Real Band", role = "HEADLINER"))
+        headlinersFromTitle("TBA").shouldBeEmpty()
+    }
+
+    @Test
+    fun `headlinersFromTitle strips tour and live suffixes to recover the act`() {
+        headlinersFromTitle("DOMINIUM - NIGHT IS CALLING TOUR 2026") shouldContainExactly
+            listOf(ScrapedArtist(name = "DOMINIUM", role = "HEADLINER"))
+        headlinersFromTitle("HGICH.T LIVE") shouldContainExactly
+            listOf(ScrapedArtist(name = "HGICH.T", role = "HEADLINER"))
+    }
+
+    @Test
+    fun `headlinersFromTitle drops festival and ticket titles`() {
+        headlinersFromTitle("SHRED FEST").shouldBeEmpty()
+        headlinersFromTitle("GROSSSTADTWAHNSINN 2026 - FESTIVALTICKET").shouldBeEmpty()
     }
 
     // --- detectFree ---

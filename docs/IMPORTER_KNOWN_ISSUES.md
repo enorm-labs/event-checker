@@ -16,12 +16,6 @@ Legend: **impact** — 🔴 user-visible missing/wrong data · 🟠 data-quality
 
 ## Cross-cutting (affect several/all importers)
 
-- 🔴 **Multi-artist titles are stored as a single headliner.** Titles like
-  `TOTAL CHAOS + RUMKICKS + THE DOLLHEADS`, `LAGWAGON / THE VIRGINMARYS`,
-  `FLIEHENDE STÜRME / DER FLUCH / …`, `BLACK STAR RIDERS & TYKETTO` become one
-  artist entity instead of several. Affects SO36, Astra, Lido and anywhere the
-  source packs a lineup into the title. Needs a shared, safe title-splitting
-  strategy (separators vary; band names legitimately contain `&`/`and`).
 - 🟠 **Artist names are not canonicalized.** Unlike promoters (see below),
   artists are stored as-scraped, so the same act fragments across venues —
   ALL-CAPS on one site (`GREEN LUNG`, `MUNA`) vs. mixed case on another
@@ -96,7 +90,6 @@ Legend: **impact** — 🔴 user-visible missing/wrong data · 🟠 data-quality
   unreliable — SO36 sells via external shops that report on-platform availability
   as `SoldOut` even when tickets are freely available — so it's ignored and
   `soldOut` is always `false`. A reliable sold-out signal has not been found.
-- 🔴 **Multi-artist titles** → single headliner (see cross-cutting).
 - 🟠 No genre, promoter, or structured box-office price. `eventType` is limited to
   what the `supertitle` label exposes (Konzert/Party), else `OTHER`.
 
