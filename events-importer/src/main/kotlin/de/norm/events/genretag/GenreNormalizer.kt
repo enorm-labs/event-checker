@@ -37,24 +37,31 @@ private val GENRE_SYNONYMS: Map<String, String> =
         "deutschrap" to "Hip Hop",
         "urban" to "Hip Hop",
         "experimentalhiphop" to "Hip Hop",
+        "trap" to "Hip Hop",
         // Rock family
         "rock" to "Rock",
         "alternativerock" to "Rock",
+        "poprock" to "Rock",
         "alternative" to "Alternative",
         "alternativeindie" to "Alternative",
         // Indie family
         "indie" to "Indie",
         "indiepop" to "Indie",
         "indierock" to "Indie",
+        "shoegaze" to "Shoegaze",
         // Pop family
         "pop" to "Pop",
+        "deutschpop" to "Pop",
         "poppunk" to "Punk",
         "synthpop" to "Synthpop",
         "synth" to "Synthpop",
         // Punk
         "punk" to "Punk",
-        // Metal
+        "emo" to "Emo",
+        // Metal / heavy
         "metal" to "Metal",
+        "metalcore" to "Metalcore",
+        "melodichardcore" to "Melodic-Hardcore",
         // Electronic family
         "electronic" to "Electronic",
         "electronica" to "Electronic",
@@ -74,9 +81,10 @@ private val GENRE_SYNONYMS: Map<String, String> =
         "boogaloo" to "Funk",
         "r&b" to "R&B",
         "rnb" to "R&B",
-        // Jazz
+        // Jazz / Blues
         "jazz" to "Jazz",
         "jazzfusion" to "Jazz",
+        "blues" to "Blues",
         // Folk
         "folk" to "Folk",
         "americana" to "Americana",
@@ -84,6 +92,8 @@ private val GENRE_SYNONYMS: Map<String, String> =
         "singersongwriterin" to "Singer-Songwriter",
         // Reggae
         "reggae" to "Reggae",
+        // Tango
+        "tango" to "Tango",
         // Latin family
         "cumbia" to "Latin",
         "salsa" to "Latin",
@@ -113,6 +123,50 @@ private val GENRE_SYNONYMS: Map<String, String> =
     )
 
 /**
+ * Non-genre tokens that some venues push into the genre field — event-format
+ * labels, series names, and freeform fragments — which must never become a
+ * genre tag. Cassiopeia in particular reuses the genre field for arbitrary
+ * event labels ("Immersive Ausstellung", "… Special", "Karaoke"-style labels).
+ *
+ * Entries are stored as [lookupKey]-normalized keys and matched per word (see
+ * [looksLikeGenre]), so a single entry drops the word wherever it appears —
+ * "Immersive Ausstellung" and "Ausstellung" both fall out via `ausstellung`.
+ * A word here only vetoes a token that has *no* recognised genre in it: a mixed
+ * label like "Retro Pop" still resolves to Pop via word-level synonym matching,
+ * which runs first. Keep deliberately tight so real genres aren't suppressed;
+ * extend it as new non-genre labels surface in the `Dropping non-genre …` logs.
+ */
+private val NON_GENRE_TOKENS: Set<String> =
+    setOf(
+        // Event-format / listing labels
+        "special",
+        "immersive",
+        "ausstellung",
+        "exhibition",
+        "vernissage",
+        "lesung",
+        "reading",
+        "party",
+        "festival",
+        "show",
+        "konzert",
+        "concert",
+        "presents",
+        "present",
+        "support",
+        "openair",
+        "warmup",
+        "aftershow",
+        "release",
+        "releaseparty",
+        // Freeform fragments observed leaking as standalone tags
+        "beyond",
+        "wave",
+        "retro",
+        "nontango"
+    )
+
+/**
  * Normalizes a raw genre token to a [GENRE_SYNONYMS] lookup key.
  *
  * Lowercases and strips every character that isn't `a-z`, `0-9`, or `&`, so all
@@ -130,11 +184,13 @@ private fun lookupKey(raw: String): String = raw.lowercase().replace(Regex("[^a-
  * - `//` — Cassiopeia floor descriptions (e.g. "80s Floor // Hip Hop Floor")
  * - `&` — compound genres (e.g. "80s, Disco & Hip Hop")
  * - `/` — slash-separated alternatives (e.g. "Alternative / Indie")
+ * - ` or ` / ` oder ` / ` vs ` — freeform alternatives (e.g. "Tango or NonTango")
  *
- * Note: `&` and `/` can appear inside genre names (e.g. "R&B"), so we split
- * on them only when surrounded by spaces to avoid false splits.
+ * Note: `&`, `/`, and the word separators can appear inside genre names (e.g.
+ * "R&B"), so we split on them only when surrounded by spaces to avoid false
+ * splits. The word separators are matched case-insensitively.
  */
-private val GENRE_DELIMITERS = Regex("""[,]|//|\s[&/]\s""")
+private val GENRE_DELIMITERS = Regex("""[,]|//|\s(?:[&/]|or|oder|vs)\s""", RegexOption.IGNORE_CASE)
 
 /**
  * Suffixes commonly appended to genre names in venue listings that should
@@ -219,10 +275,10 @@ private fun stripNoise(token: String): String {
  * 2. Word-level synonym matching — splits the token into words and returns **all**
  *    matched genres. This handles compound freeform labels like "Superheavy Funky
  *    Soul & Boogaloo" → ["Funk", "Soul"] instead of silently discarding matches.
- * 3. No match — returns the original token with title case as a new genre.
+ * 3. No match — kept as a new genre only if it [looksLikeGenre]; otherwise dropped.
  *
- * Tokens that are clearly not genre names (too short, "from …" prefixes) are
- * filtered out by returning an empty list.
+ * Tokens that are clearly not genre names (too short, "from …" prefixes, or that
+ * fail the [looksLikeGenre] gate) are filtered out by returning an empty list.
  */
 @Suppress("ReturnCount") // Multiple early returns improve readability for this cascading lookup
 private fun resolveGenre(token: String): List<String> {
@@ -254,7 +310,13 @@ private fun resolveGenre(token: String): List<String> {
     val matched = words.mapNotNull { GENRE_SYNONYMS[lookupKey(it)] }.distinct()
     if (matched.isNotEmpty()) return matched
 
-    // No match — use the original token with title case as a new genre
+    // No synonym match. Keep the token as a new genre only if it plausibly names
+    // one; otherwise drop it so event-format labels and freeform fragments never
+    // leak into genre_tag (the raw genre text is preserved on the event).
+    if (!looksLikeGenre(token)) {
+        logger.info { "Dropping non-genre token '$token'" }
+        return emptyList()
+    }
     logger.info { "No synonym match for genre token '$token', using as-is" }
     val titleCased =
         token.split(" ").joinToString(" ") { word ->
@@ -262,3 +324,26 @@ private fun resolveGenre(token: String): List<String> {
         }
     return listOf(titleCased)
 }
+
+/**
+ * Heuristic gate for the [resolveGenre] fall-through: whether an unmatched token
+ * plausibly names a genre and may be kept as-is, rather than being dropped as a
+ * non-genre label.
+ *
+ * A token qualifies when it:
+ * - contains at least one letter (rejects bare punctuation/numbers), and
+ * - is at most [MAX_GENRE_WORDS] words long (real genres are short — "Noise",
+ *   "Trip-Hop", "New Wave" — whereas leaked labels like "Twenty One Pilots
+ *   Special" run long), and
+ * - contains no [NON_GENRE_TOKENS] word (drops "Immersive Ausstellung" and the
+ *   like even when short).
+ */
+private fun looksLikeGenre(token: String): Boolean {
+    val words = token.trim().split(Regex("""\s+""")).filter { it.isNotBlank() }
+    return words.size <= MAX_GENRE_WORDS &&
+        words.none { lookupKey(it) in NON_GENRE_TOKENS } &&
+        token.any { it.isLetter() }
+}
+
+/** Maximum word count for a fall-through token to still be treated as a genre name. */
+private const val MAX_GENRE_WORDS = 2
