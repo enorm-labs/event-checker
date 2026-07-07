@@ -34,8 +34,6 @@ Public name is **Event Junkie**; internal/repo name stays **Event Checker**
 - [ ] Improve **branding & UI/visual design** — a dedicated visual pass beyond the UX audit
   (colour, type, spacing, components, logo, iconography, imagery, motion), aligned with [BRANDING.md](docs/BRANDING.md)
 - [ ] Verify responsive design + look on mobile
-- [x] "Sold Out" label + filter to exclude sold-out events (PR #57)
-- [x] Free-events filter + "Free" badge (import-time detection via `detectFree`)
 - [ ] Audit that all **user-facing** surfaces read "Event Junkie" (internal stays "Event Checker")
 - [ ] Decide on a display/hero typeface vs. staying all-Geist (BRANDING §5.3)
 - [ ] "Venue or event missing? Let us know" form (→ GitHub issues?)
@@ -47,7 +45,6 @@ Public name is **Event Junkie**; internal/repo name stays **Event Checker**
 ## Frontend & BFF
 
 - [ ] Venues page (with map) — consumes the existing `GET /venues` list endpoint
-- [x] District filter/feed → `district` on the venue table + `?district=` events filter (explicit per venue; Berlin PLZ→Bezirk is many-to-one so not derivable)
 - [ ] Sitemap (still worthwhile for SEO?)
 - [ ] RSS feed for newly imported events
 - [ ] I18N / L10N + translations
@@ -59,20 +56,12 @@ Public name is **Event Junkie**; internal/repo name stays **Event Checker**
 - Known per-importer gaps & missing-data limitations are catalogued in
   [docs/IMPORTER_KNOWN_ISSUES.md](docs/IMPORTER_KNOWN_ISSUES.md) — pull from there when picking up work.
 
-- [x] Detect free events at import (`detectFree`: €0 price or free-entry phrases → `free` flag)
-
 **Data quality — normalize, validate, enrich:**
 
 - [ ] Title-as-headliner extraction for venues without a `Support:` signal (Privatclub,
   Cassiopeia, Badehaus) — recovers the ~40% of concerts currently stored with no artist. Now
   safe: `isNonArtistName` + `stripArtistSuffix` filter non-artist titles, and Astra/Lido already
   do this via `buildArtistsForEventType`.
-- [x] Normalize artist names — title-case instead of ALL CAPS, preserving acronyms (casing-only;
-  stripping words from band names is unsafe). Done: `canonicalArtistName` de-shouts at import
-  (`GREEN LUNG` → `Green Lung`), keeping a curated acronym set + stylised tokens. Residual cases
-  (all-caps letters-only names not in the set) noted in `IMPORTER_KNOWN_ISSUES.md`.
-- [ ] Improve genre-tag normalization — broader `GenreNormalizer` synonyms, better tokenization,
-  and a non-genre stop-list (raw genre text is already preserved)
 - [ ] AI-assisted data quality in the importer (one capability, several uses): detect/extract
   artist names from titles, validate event types, enrich missing fields (genres, event types),
   and fix bad values (artist names, promoter names, …).
@@ -93,7 +82,6 @@ Public name is **Event Junkie**; internal/repo name stays **Event Checker**
 
 - [ ] Implement more importers/scrapers (see EVENT_DATA_SOURCES.md)
     - [ ] Strategy to implement the remaining importers fast — but still clean, robust, fully tested
-    - [x] Create a prompt/skill for scaffolding a new importer (`/scaffold-importer`)
     - [ ] Standardize/simplify existing importers + scrapers where it helps
 
 ## Operations & Hardening

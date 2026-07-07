@@ -165,6 +165,54 @@ class GenreNormalizerTest {
     }
 
     @Test
+    fun `distinct new genres map to their own canonical tags`() {
+        normalizeGenre("Blues").shouldContainExactly("Blues")
+        normalizeGenre("Shoegaze").shouldContainExactly("Shoegaze")
+        normalizeGenre("Emo").shouldContainExactly("Emo")
+        normalizeGenre("Metalcore").shouldContainExactly("Metalcore")
+        normalizeGenre("Melodic-Hardcore").shouldContainExactly("Melodic-Hardcore")
+    }
+
+    @Test
+    fun `near-duplicate genres merge into existing canonical tags`() {
+        normalizeGenre("Deutschpop").shouldContainExactly("Pop")
+        normalizeGenre("Pop-Rock").shouldContainExactly("Rock")
+        normalizeGenre("Trap").shouldContainExactly("Hip Hop")
+    }
+
+    @Test
+    fun `non-genre event labels are dropped`() {
+        // Cassiopeia reuses the genre field for event-format labels.
+        normalizeGenre("Immersive Ausstellung").shouldBeEmpty()
+        normalizeGenre("Release Party").shouldBeEmpty()
+    }
+
+    @Test
+    fun `long freeform descriptors are dropped`() {
+        // Too many words to plausibly be a genre name — leaks as a series label.
+        normalizeGenre("Twenty One Pilots Special").shouldBeEmpty()
+    }
+
+    @Test
+    fun `non-genre label mixed with a real genre keeps only the genre`() {
+        normalizeGenre("Rock, Immersive Ausstellung")
+            .shouldContainExactly("Rock")
+        normalizeGenre("Twenty One Pilots Special, Pop")
+            .shouldContainExactly("Pop")
+    }
+
+    @Test
+    fun `standalone freeform fragments are dropped`() {
+        normalizeGenre("Beyond, Wave, Retro").shouldBeEmpty()
+    }
+
+    @Test
+    fun `or delimiter splits and drops the non-genre half`() {
+        // "Tango or NonTango" previously fell through whole as one noisy tag.
+        normalizeGenre("Tango or NonTango").shouldContainExactly("Tango")
+    }
+
+    @Test
     fun `punctuation and spacing variants fold into existing canonical tags`() {
         // Variants that previously fell through to as-is, creating duplicate tags
         // (e.g. "World" vs "World Music", "Singer Songwriter" vs "Singer-Songwriter").

@@ -49,14 +49,21 @@ Legend: **impact** — 🔴 user-visible missing/wrong data · 🟠 data-quality
   - 🟢 this only cleans the display name; slugs are case-insensitive, so ALL-CAPS and
     mixed-case spellings already resolved to one artist row (no fragmentation), and
     rows created before this fix keep their original casing until re-created.
-- 🟠 **Genre tags are only partially normalized.** `GenreNormalizer` maps a
-  synonym table, but many tokens fall through as-is (`No synonym match for genre
-  token …`), creating noisy/duplicated tags — and naive splitting yields
-  fragments (`Beyond`, `Wave`, `Retro`, `Tango or NonTango`). Non-genre event
-  descriptors also leak into `genre_tag` where a venue reuses the genre field for
-  a label (`Immersive Ausstellung`, `Twenty One Pilots Special`, `Karaoke` — all
-  Cassiopeia). The raw genre text is preserved; broader synonyms, better
-  tokenization, and a non-genre stop-list are tracked in `TODO.md`.
+- 🟢 **Genre tags are normalized through a curated map, stop-list, and gated
+  fall-through.** `GenreNormalizer` splits on more separators (now also ` or `,
+  ` oder `, ` vs `, so `Tango or NonTango` → `Tango`), resolves tokens against a
+  synonym table, and drops non-genre noise two ways: a `NON_GENRE_TOKENS`
+  stop-list removes event-format labels a venue pushed into the genre field
+  (`Immersive Ausstellung`, `Release Party`, freeform fragments like `Beyond` /
+  `Wave` / `Retro`), and a `looksLikeGenre` gate keeps an unmatched token only
+  when it plausibly names a genre (≤2 words, has letters, no stop-listed word),
+  so long series labels like `Twenty One Pilots Special` no longer leak. The raw
+  genre text is still preserved on the event.
+  - 🟢 Vocabulary is gated, not closed: a genuinely new genre that passes the
+    heuristic is still captured as-is, and everything dropped is logged
+    (`Dropping non-genre token …`) as the curation queue for growing the synonym
+    map / stop-list. `Karaoke` stays a tag (it is in the synonym map and treated
+    as a genre) even where a venue uses it as an event label.
 - 🟠 **`eventType` frequently defaults to `OTHER`.** When a source exposes no
   category, `toEventEntity` maps to `OTHER`. Discovery/filtering by type is
   therefore incomplete for several venues (see per-importer notes).
