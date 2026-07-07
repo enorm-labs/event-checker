@@ -60,26 +60,39 @@ Public name is **Event Junkie**; internal/repo name stays **Event Checker**
   [docs/IMPORTER_KNOWN_ISSUES.md](docs/IMPORTER_KNOWN_ISSUES.md) — pull from there when picking up work.
 
 - [x] Detect free events at import (`detectFree`: €0 price or free-entry phrases → `free` flag)
-- [ ] Normalize artists (at least use normal case instead of all upper case, except for acronyms)
-- [ ] Use AI to check if title is an artist name or not? Or if it contains an artist name?
-- [ ] Use AI to check if event type is correct?
-- [ ] Use AI in importer to enrich events with missing data (e.g. genres, event types) and to fix data quality issues (e.g. artist names, promoter names, event types, genres, etc.)
-- [ ] Build Admin tool/frontend to enrich events fast and easy with missing data (e.g. genres, event types) - sort and filter events by missing data
-- [ ] Build Admin tools/frontend to fix data, e.g. artist names, promoter names, event types, genres, etc.
+
+**Data quality — normalize, validate, enrich:**
+
+- [ ] Title-as-headliner extraction for venues without a `Support:` signal (Privatclub,
+  Cassiopeia, Badehaus) — recovers the ~40% of concerts currently stored with no artist. Now
+  safe: `isNonArtistName` + `stripArtistSuffix` filter non-artist titles, and Astra/Lido already
+  do this via `buildArtistsForEventType`.
+- [ ] Normalize artist names — title-case instead of ALL CAPS, preserving acronyms (casing-only;
+  stripping words from band names is unsafe)
+- [ ] Improve genre-tag normalization — broader `GenreNormalizer` synonyms, better tokenization,
+  and a non-genre stop-list (raw genre text is already preserved)
+- [ ] AI-assisted data quality in the importer (one capability, several uses): detect/extract
+  artist names from titles, validate event types, enrich missing fields (genres, event types),
+  and fix bad values (artist names, promoter names, …).
 - [ ] Enrich venues: type (club/bar/concert hall), description, image/photo, genres, event types
-- [ ] Enrich promoters with description and image and fix promoter display names, e.g. show "Loft Concerts" instead "Loft"
-- [ ] Improve importer Swagger UI (match the BFF)
+- [ ] Enrich promoters: description, image, and corrected display names (e.g. "Loft Concerts" not "Loft")
+
+**Admin tooling & maintenance:**
+
+- [ ] Admin frontend to review, enrich & fix event data in one place — sort/filter events by
+  missing fields; edit artist/promoter names, event types, genres, …
 - [ ] Admin imports-status dashboard — surface import states and especially **failed** imports.
   Start with Importer API endpoints + an admin IntelliJ HTTP Client collection; a proper admin
   frontend later. (`EventSourceController` already exposes per-source status + retry — build on it.)
+- [ ] Improve importer Swagger UI (match the BFF)
+- [ ] Housekeeping: policy for when to delete old events from the DB
+
+**More importers:**
+
 - [ ] Implement more importers/scrapers (see EVENT_DATA_SOURCES.md)
     - [ ] Strategy to implement the remaining importers fast — but still clean, robust, fully tested
-    - [ ] Create a prompt/skill for scaffolding a new importer
+    - [x] Create a prompt/skill for scaffolding a new importer (`/scaffold-importer`)
     - [ ] Standardize/simplify existing importers + scrapers where it helps
-        - [ ] Multi-artist titles are stored as one headliner (e.g. `TOTAL CHAOS + RUMKICKS + THE DOLLHEADS`,
-          `FLIEHENDE STÜRME / DER FLUCH / …`, `BLACK STAR RIDERS & TYKETTO`). Cross-cutting across importers
-          (SO36, Astra, Lido, …) — decide on a shared title-splitting strategy vs. leaving titles whole.
-- [ ] Housekeeping: policy for when to delete old events from the DB
 
 ## Operations & Hardening
 

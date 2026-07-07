@@ -22,31 +22,30 @@ Legend: **impact** — 🔴 user-visible missing/wrong data · 🟠 data-quality
   conservative: Privatclub and Cassiopeia only treat the title as an artist when a
   `Support:` line confirms it, and Badehaus extracts no artist roster at all
   (see per-importer notes). For these venues the concert title *is* almost always
-  the act, so this is user-visible missing data. Now that non-artist titles are
-  filtered out (festivals/tours/labels/placeholders via `isNonArtistName` +
-  `stripArtistSuffix`), treating a concert title as the headliner — the way Astra
-  and Lido already do via `buildArtistsForEventType` — would be much safer than
-  when the conservative guard was written.
+  the act, so this is user-visible missing data. → Fix tracked in `TODO.md`
+  (title-as-headliner extraction — now safer since `isNonArtistName` /
+  `stripArtistSuffix` filter non-artist titles; Astra and Lido already do it via
+  `buildArtistsForEventType`).
 - 🟠 **A few non-artist titles still slip through as artists.** The curated
   filters catch festivals/tours/segments/labels, but idiosyncratic event-format
   titles remain (`Music Quiz`, `Open Mic L. J. Fox`), as do decorated names that
   keep a suffix/annotation (`Avangelic (DJ-Set)`,
   `THE BUTLERS - 40 YEARS, SKA & SOULPOWER -`). The curated denylist
   (`NON_ARTIST_NAMES`) is the maintenance surface; a general fix needs a
-  classifier (see `TODO.md`).
+  classifier → tracked in `TODO.md` (AI-assisted data quality).
 - 🟠 **Artist names are not canonicalized.** Unlike promoters (see below),
   artists are stored as-scraped, so the same act fragments across venues —
   ALL-CAPS on one site (`GREEN LUNG`, `MUNA`) vs. mixed case on another
-  (`Green Lung`). A de-shout/normalize pass (keeping acronyms) is on the backlog;
-  stripping words from band names is unsafe, so it must be casing-only.
+  (`Green Lung`). A de-shout/normalize pass (keeping acronyms) is tracked in
+  `TODO.md`; stripping words from band names is unsafe, so it must be casing-only.
 - 🟠 **Genre tags are only partially normalized.** `GenreNormalizer` maps a
   synonym table, but many tokens fall through as-is (`No synonym match for genre
   token …`), creating noisy/duplicated tags — and naive splitting yields
   fragments (`Beyond`, `Wave`, `Retro`, `Tango or NonTango`). Non-genre event
   descriptors also leak into `genre_tag` where a venue reuses the genre field for
   a label (`Immersive Ausstellung`, `Twenty One Pilots Special`, `Karaoke` — all
-  Cassiopeia). The raw genre text is preserved, but the structured tags need
-  broader synonyms, better tokenization, and a non-genre stop-list.
+  Cassiopeia). The raw genre text is preserved; broader synonyms, better
+  tokenization, and a non-genre stop-list are tracked in `TODO.md`.
 - 🟠 **`eventType` frequently defaults to `OTHER`.** When a source exposes no
   category, `toEventEntity` maps to `OTHER`. Discovery/filtering by type is
   therefore incomplete for several venues (see per-importer notes).
@@ -144,5 +143,7 @@ Legend: **impact** — 🔴 user-visible missing/wrong data · 🟠 data-quality
 ## How to extend this doc
 
 When adding or changing an importer, record any *accepted* limitation here (with an
-impact marker) and, if it's actionable soon, add a matching item to `TODO.md`.
-Prefer linking to the code KDoc that documents the same limitation.
+impact marker) — capture the current state and *why*, not the fix. If it's actionable,
+add the fix to `TODO.md` and point at it (`→ tracked in TODO.md`) rather than describing
+the fix here, so the two files don't drift. Prefer linking to the code KDoc that documents
+the same limitation.
