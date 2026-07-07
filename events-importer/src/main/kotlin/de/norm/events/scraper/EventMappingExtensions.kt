@@ -5,6 +5,7 @@ package de.norm.events.scraper
 import de.norm.events.event.EventStatus
 import de.norm.events.event.EventType
 import java.math.BigDecimal
+import java.time.LocalTime
 
 // Domain-level mapping utilities for scraped event data.
 //
@@ -126,6 +127,29 @@ fun parseEventStatus(statusText: String): String {
         else -> EventStatus.SCHEDULED.name
     }
 }
+
+/**
+ * Returns the (doors, start) pair with doors never later than start.
+ *
+ * Doors open no later than the show begins, so when a source lists the two in the
+ * wrong order — e.g. SO36's `"Einlass: 19:30, Beginn: 19:00"` — the labels were
+ * transposed at the source; swapping them recovers the intended times. Only
+ * reorders when **both** times are present and doors is strictly after start; a
+ * single time, equal times, or an already-valid pair is returned unchanged. Applied
+ * once at the [ScrapedEvent.toEventEntity] persistence boundary, so every venue is
+ * covered without each scraper repeating the check.
+ *
+ * Example:
+ * ```kotlin
+ * orderDoorsBeforeStart(LocalTime.of(19, 30), LocalTime.of(19, 0)) // (19:00, 19:30) — swapped
+ * orderDoorsBeforeStart(LocalTime.of(19, 0), LocalTime.of(20, 0))  // (19:00, 20:00) — unchanged
+ * orderDoorsBeforeStart(null, LocalTime.of(20, 0))                 // (null, 20:00) — unchanged
+ * ```
+ */
+fun orderDoorsBeforeStart(
+    doors: LocalTime?,
+    start: LocalTime?
+): Pair<LocalTime?, LocalTime?> = if (doors != null && start != null && doors > start) start to doors else doors to start
 
 /**
  * Common placeholder names used by venues when the artist has not been

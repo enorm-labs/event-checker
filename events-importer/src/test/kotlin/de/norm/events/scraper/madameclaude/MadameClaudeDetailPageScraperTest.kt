@@ -1,6 +1,7 @@
 package de.norm.events.scraper.madameclaude
 
 import de.norm.events.scraper.ScrapedEvent
+import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
@@ -93,6 +94,35 @@ class MadameClaudeDetailPageScraperTest {
 
             event.artists[2].name shouldBe "Zimmermann / Lienhard"
             event.artists[2].role shouldBe "SUPPORT"
+        }
+    }
+
+    @Nested
+    inner class NonArtistHeadings {
+        private fun scrapeFixture(resource: String): ScrapedEvent {
+            val html =
+                javaClass.classLoader
+                    .getResourceAsStream(resource)!!
+                    .bufferedReader()
+                    .readText()
+            return scraper.scrape(Jsoup.parse(html, sourceUrl), sourceUrl)!!
+        }
+
+        @Test
+        fun `does not create an artist for a denylisted event-title h3`() {
+            // "Music Quiz" appears as both the h2 title and an h3 heading; it is on the
+            // NON_ARTIST_NAMES denylist, so the h3 must not become an artist.
+            val quiz = scrapeFixture("scraper/madameclaude/madameclaude-detail-music-quiz.html")
+
+            quiz.title shouldBe "Music Quiz"
+            quiz.artists.shouldBeEmpty()
+        }
+
+        @Test
+        fun `still collects the description from a filtered non-artist h3`() {
+            val quiz = scrapeFixture("scraper/madameclaude/madameclaude-detail-music-quiz.html")
+
+            quiz.description shouldContain "winning team"
         }
     }
 

@@ -24,8 +24,10 @@ package de.norm.events.promoter
 //      "ALLROOMS" alike. Only exact (normalized) matches are corrected — no
 //      fuzzy/edit-distance matching, which would risk merging genuinely
 //      distinct promoters.
-// At least one word is always kept, so a promoter named purely of descriptor
-// words (e.g. "Records") is never reduced to nothing.
+// At least one word is always kept, and stripping never removes the last
+// letter-bearing word: a promoter named purely of descriptor words (e.g.
+// "Records") keeps its single word, and "36 Concerts" stays "36 Concerts"
+// rather than collapsing to the bare, unusable number "36".
 //
 // Known limits (accepted): a *leading* descriptor is not stripped, so
 // "Konzertbüro Schoneberg" does not merge with "Schoneberg Konzerte" unless an
@@ -45,8 +47,13 @@ fun canonicalPromoterName(raw: String): String {
             .toMutableList()
     if (tokens.isEmpty()) return raw.trim()
 
-    // Drop the trailing run of legal-form / descriptor / connector tokens, keeping >= 1 word.
-    while (tokens.size > 1 && tokens.last().isStrippableTrailingWord()) {
+    // Drop the trailing run of legal-form / descriptor / connector tokens, but always keep at
+    // least one *letter-bearing* word: stripping "Concerts" off "36 Concerts" would otherwise
+    // leave the bare number "36", which is not a usable promoter name.
+    while (tokens.size > 1 &&
+        tokens.last().isStrippableTrailingWord() &&
+        tokens.dropLast(1).any { word -> word.any(Char::isLetter) }
+    ) {
         tokens.removeAt(tokens.lastIndex)
     }
 
@@ -126,10 +133,16 @@ private val STRIP_WORDS: Set<String> =
  * spacing/casing variant with the same letters (e.g. "All Rooms" / "Allrooms" / "ALLROOMS").
  * Only add entries that are unambiguously the same real promoter — this map merges promoter
  * entities, so a wrong entry silently collapses two distinct promoters into one.
+ *
+ * Because the correction runs *after* descriptor-stripping, an entry can also pin a fuller
+ * display form that includes a stripped descriptor: "LOFT", "Loft Concerts" and
+ * "Loft Concerts GmbH" all reduce to "Loft" first, so the single "loft" entry restores the
+ * preferred brand name "Loft Concerts" for every variant.
  */
 private val NAME_CORRECTIONS: Map<String, String> =
     mapOf(
         "trinty" to "Trinity",
         "radioactve" to "Radioactive",
-        "allrooms" to "All Rooms"
+        "allrooms" to "All Rooms",
+        "loft" to "Loft Concerts"
     )
