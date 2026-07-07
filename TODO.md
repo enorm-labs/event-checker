@@ -67,8 +67,10 @@ Public name is **Event Junkie**; internal/repo name stays **Event Checker**
   Cassiopeia, Badehaus) — recovers the ~40% of concerts currently stored with no artist. Now
   safe: `isNonArtistName` + `stripArtistSuffix` filter non-artist titles, and Astra/Lido already
   do this via `buildArtistsForEventType`.
-- [ ] Normalize artist names — title-case instead of ALL CAPS, preserving acronyms (casing-only;
-  stripping words from band names is unsafe)
+- [x] Normalize artist names — title-case instead of ALL CAPS, preserving acronyms (casing-only;
+  stripping words from band names is unsafe). Done: `canonicalArtistName` de-shouts at import
+  (`GREEN LUNG` → `Green Lung`), keeping a curated acronym set + stylised tokens. Residual cases
+  (all-caps letters-only names not in the set) noted in `IMPORTER_KNOWN_ISSUES.md`.
 - [ ] Improve genre-tag normalization — broader `GenreNormalizer` synonyms, better tokenization,
   and a non-genre stop-list (raw genre text is already preserved)
 - [ ] AI-assisted data quality in the importer (one capability, several uses): detect/extract

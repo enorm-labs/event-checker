@@ -6,6 +6,7 @@ import de.norm.events.scraper.ScrapedEvent
 import de.norm.events.scraper.UNRESOLVED_EVENT_DATE
 import de.norm.events.scraper.parseShortDate
 import de.norm.events.scraper.parseTime
+import de.norm.events.scraper.stripArtistSuffix
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
@@ -183,7 +184,8 @@ class MadameClaudeDetailPageScraper {
         val descriptionParts = mutableListOf<String>()
 
         for ((index, h3) in h3Elements.withIndex()) {
-            val artistName = h3.text().trim()
+            // Strip decorations (e.g. a "(DJ-Set)" performance-format annotation) to recover the act name.
+            val artistName = stripArtistSuffix(h3.text().trim())
             if (artistName.isBlank()) continue
 
             // First artist is headliner, rest are support

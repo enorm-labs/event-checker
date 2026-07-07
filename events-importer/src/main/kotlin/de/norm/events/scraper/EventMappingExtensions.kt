@@ -256,29 +256,46 @@ fun isNonArtistEvent(name: String): Boolean {
 }
 
 /**
- * Trailing tour/live suffixes that decorate a real act name, stripped by
- * [stripArtistSuffix] to recover the performer: a hyphen-separated
- * "… - <tour name> Tour <year>" tail, or a trailing "Live" / "Live in <city>".
- * A whitespace boundary before the marker is required, so a bare "Live" (the band)
- * is never matched.
+ * Trailing suffixes that decorate a real act name, stripped by [stripArtistSuffix]
+ * to recover the performer:
+ * - a hyphen-separated "… - <tour name> Tour <year>" tail,
+ * - a hyphen-separated anniversary tail "… - <n> Years/Jahre …" (e.g.
+ *   "THE BUTLERS - 40 YEARS, SKA & SOULPOWER -"),
+ * - a trailing "Live" / "Live in <city>", and
+ * - a trailing parenthesized performance-format annotation "(DJ-Set)", "(Live)",
+ *   "(Acoustic)", "(Solo)", "(Unplugged)".
+ * The hyphen tails require a `<space>-<space>` boundary and a recognized marker
+ * (`tour`, or a number + `years`/`jahre`), so an undecorated hyphenated name like
+ * "BAD COMPANY LEGACY - Dave Colwell" is left intact. A whitespace boundary before
+ * "Live" is likewise required, so a bare "Live" (the band) is never matched. The
+ * parenthetical is keyed on the format word, so an alias in parentheses (e.g.
+ * "Sickboyrari (Black Kray)") is kept.
  */
 private val ARTIST_SUFFIX_PATTERN =
-    Regex("""\s+-\s+\S.*\btour\b.*$|\s+live(?:\s+in\s+\S.*)?$""", RegexOption.IGNORE_CASE)
+    Regex(
+        """\s+-\s+(?:\S.*\btour\b|\d+\s+(?:years?|jahre)\b).*$""" +
+            """|\s+live(?:\s+in\s+\S.*)?$""" +
+            """|\s*\((?:dj[\s-]?set|live|acoustic|akustik|unplugged|solo)\)\s*$""",
+        RegexOption.IGNORE_CASE
+    )
 
 /**
- * Strips a trailing tour/live suffix from a title-derived act name to recover the
- * performer.
+ * Strips a trailing tour/live/anniversary suffix or performance-format annotation from
+ * a scraped act name to recover the performer.
  *
- * Recovers the band from decorated titles — `"DOMINIUM - NIGHT IS CALLING TOUR
- * 2026"` → `"DOMINIUM"`, `"AZ LIVE IN BERLIN"` → `"AZ"`, `"HGICH.T LIVE"` →
- * `"HGICH.T"`. Returns the input unchanged when there is no such suffix, or when
- * stripping would leave nothing — so a bare `"Live"` (the band) is preserved.
+ * Recovers the band from decorated names — `"DOMINIUM - NIGHT IS CALLING TOUR 2026"` →
+ * `"DOMINIUM"`, `"AZ LIVE IN BERLIN"` → `"AZ"`, `"HGICH.T LIVE"` → `"HGICH.T"`,
+ * `"THE BUTLERS - 40 YEARS, SKA & SOULPOWER -"` → `"THE BUTLERS"`,
+ * `"Avangelic (DJ-Set)"` → `"Avangelic"`. Returns the input unchanged when there is no
+ * such suffix, or when stripping would leave nothing — so a bare `"Live"` (the band) and
+ * a parenthesized alias like `"Sickboyrari (Black Kray)"` are preserved.
  *
  * Example:
  * ```kotlin
- * stripArtistSuffix("HGICH.T LIVE")     // "HGICH.T"
- * stripArtistSuffix("AZ LIVE IN BERLIN") // "AZ"
- * stripArtistSuffix("Live")             // "Live"
+ * stripArtistSuffix("HGICH.T LIVE")                     // "HGICH.T"
+ * stripArtistSuffix("THE BUTLERS - 40 YEARS, SKA -")    // "THE BUTLERS"
+ * stripArtistSuffix("Avangelic (DJ-Set)")               // "Avangelic"
+ * stripArtistSuffix("Sickboyrari (Black Kray)")         // "Sickboyrari (Black Kray)"
  * ```
  */
 fun stripArtistSuffix(name: String): String {

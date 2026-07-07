@@ -2,6 +2,7 @@ package de.norm.events.scraper
 
 import de.norm.events.artist.ArtistEntity
 import de.norm.events.artist.ArtistRepository
+import de.norm.events.artist.canonicalArtistName
 import de.norm.events.event.EventArtistEntity
 import de.norm.events.event.EventArtistRepository
 import de.norm.events.event.EventEntity
@@ -93,11 +94,14 @@ class AssociationSyncService(
                 .associateBy { it.slug }
                 .toMutableMap()
 
-        // Auto-create only the artists not already in the database
+        // Auto-create only the artists not already in the database. The stored display
+        // name is de-shouted first (casing-only, see canonicalArtistName) so an act isn't
+        // frozen SHOUTING by whichever venue imported it first; slugs are case-insensitive,
+        // so this never changes which artist row a name resolves to.
         scrapedEvents
             .flatMap { it.artists }
             .distinctBy { SlugGenerator.slugify(it.name) }
-            .forEach { resolveOrCreateArtist(it.name, artistCache) }
+            .forEach { resolveOrCreateArtist(canonicalArtistName(it.name), artistCache) }
 
         return artistCache
     }
