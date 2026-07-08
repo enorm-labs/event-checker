@@ -243,6 +243,15 @@ class EventMappingExtensionsTest {
     }
 
     @Test
+    fun `stripArtistSuffix strips a German Nachholtermin rescheduled-date tail`() {
+        // With a leading dash directly on the marker (Frannz), with a space-dash (Astra) …
+        stripArtistSuffix("The Dear Hunter -Nachholtermin vom 30.09.2025.") shouldBe "The Dear Hunter"
+        stripArtistSuffix("Pohlmann -Nachholtermin vom 10.01.-") shouldBe "Pohlmann"
+        // … and with no dash at all (Astra).
+        stripArtistSuffix("Iggi Kelly Nachholtermin vom 28.04.26-") shouldBe "Iggi Kelly"
+    }
+
+    @Test
     fun `stripArtistSuffix leaves plain names, a bare Live band and a parenthesized alias untouched`() {
         stripArtistSuffix("The Adicts") shouldBe "The Adicts"
         stripArtistSuffix("Live") shouldBe "Live"

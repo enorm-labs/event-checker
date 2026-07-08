@@ -11,7 +11,7 @@ The **Import** column tracks whether an automated importer has been implemented 
 | Cassiopeia                  | https://cassiopeia-berlin.de/               | Club         |     ✅      |   ✅    |                                   |
 | Privatclub                  | https://privatclub-berlin.de/               | Club         |     ✅      |   ✅    |                                   |
 | Bi Nuu                      | https://binuu.de/                           | Club         |     ✅      |   ✅    |                                   |
-| Frannz Club                 | https://frannz.eu/                          | Club         |     ✅      |        |                                   |
+| Frannz Club                 | https://frannz.eu/                          | Club         |     ✅      |   ✅    |                                   |
 | Duncker Club                | https://www.dunckerclub.de/                 | Club         |     ✅      |        |                                   |
 | Gretchen                    | https://www.gretchen-club.de/               | Club         |     ✅      |        |                                   |
 | Zenner                      | https://zenner.berlin/                      | Club         |     ✅      |        |                                   |

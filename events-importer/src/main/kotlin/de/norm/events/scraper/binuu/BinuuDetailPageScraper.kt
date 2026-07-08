@@ -48,7 +48,7 @@ class BinuuDetailPageScraper {
         document: Document,
         sourceUrl: String
     ): ScrapedEvent? {
-        val item = BinuuSvelteKitPayload.dataNode(document, "item:{", "item")
+        val item = BinuuSvelteKitPayload.dataNode(document, "item", '{')
         if (item == null || !item.isObject) {
             logger.warn { "Detail page at $sourceUrl has no Bi Nuu item payload, skipping" }
             return null

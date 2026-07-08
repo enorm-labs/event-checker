@@ -52,9 +52,9 @@ class So36DetailPageScraperTest {
         event.pricePresale shouldBe BigDecimal("22.0")
         event.ticketUrl shouldBe "https://www.greyzone-tickets.de/produkte/1271"
         event.imageUrl.shouldNotBeNull()
-        event.imageUrl!! shouldContain "HP_PoisonRuin"
+        event.imageUrl shouldContain "HP_PoisonRuin"
         event.description.shouldNotBeNull()
-        event.description!! shouldContain "Poison Ruin formed in Philadelphia"
+        event.description shouldContain "Poison Ruin formed in Philadelphia"
         event.status shouldBe EventStatus.SCHEDULED.name
         event.sourceId shouldBe "so36:95201"
         event.soldOut shouldBe false

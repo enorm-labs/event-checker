@@ -21,6 +21,9 @@ enum class EventSource {
     /** Cassiopeia Berlin – Webflow-based event listing at `/club`. */
     CASSIOPEIA,
 
+    /** Frannz Club Berlin – WordPress single-page homepage listing; events server-rendered with `event_typ-*` classes, no detail pages. */
+    FRANNZ,
+
     /** Lido Berlin – same Kulturhäuser platform as Astra (different theme), homepage listing with detail pages. */
     LIDO,
 

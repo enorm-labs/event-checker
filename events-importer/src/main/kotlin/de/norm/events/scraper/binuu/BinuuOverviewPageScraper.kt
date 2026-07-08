@@ -41,7 +41,7 @@ class BinuuOverviewPageScraper {
         document: Document,
         baseUrl: String
     ): List<ScrapedEvent> {
-        val events = BinuuSvelteKitPayload.dataNode(document, "events:[", "events")
+        val events = BinuuSvelteKitPayload.dataNode(document, "events", '[')
         if (events == null || !events.isArray) {
             logger.warn { "No Bi Nuu events payload found on overview page" }
             return emptyList()

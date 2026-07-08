@@ -290,13 +290,17 @@ fun isNonArtistEvent(name: String): Boolean {
  * - a hyphen-separated "… - <tour name> Tour <year>" tail,
  * - a hyphen-separated anniversary tail "… - <n> Years/Jahre …" (e.g.
  *   "THE BUTLERS - 40 YEARS, SKA & SOULPOWER -"),
- * - a trailing "Live" / "Live in <city>", and
+ * - a trailing "Live" / "Live in <city>",
  * - a trailing parenthesized performance-format annotation "(DJ-Set)", "(Live)",
- *   "(Acoustic)", "(Solo)", "(Unplugged)".
+ *   "(Acoustic)", "(Solo)", "(Unplugged)", and
+ * - a trailing German "Nachholtermin vom <date>" (rescheduled-show note that venues
+ *   append to the title, e.g. "The Dear Hunter -Nachholtermin vom 30.09.2025.").
  * The hyphen tails require a `<space>-<space>` boundary and a recognized marker
  * (`tour`, or a number + `years`/`jahre`), so an undecorated hyphenated name like
  * "BAD COMPANY LEGACY - Dave Colwell" is left intact. A whitespace boundary before
  * "Live" is likewise required, so a bare "Live" (the band) is never matched. The
+ * "Nachholtermin" marker is word-anchored and accepts an optional leading dash, so
+ * both "… -Nachholtermin …" and "… Nachholtermin …" spellings are caught. The
  * parenthetical is keyed on the format word, so an alias in parentheses (e.g.
  * "Sickboyrari (Black Kray)") is kept.
  */
@@ -304,7 +308,8 @@ private val ARTIST_SUFFIX_PATTERN =
     Regex(
         """\s+-\s+(?:\S.*\btour\b|\d+\s+(?:years?|jahre)\b).*$""" +
             """|\s+live(?:\s+in\s+\S.*)?$""" +
-            """|\s*\((?:dj[\s-]?set|live|acoustic|akustik|unplugged|solo)\)\s*$""",
+            """|\s*\((?:dj[\s-]?set|live|acoustic|akustik|unplugged|solo)\)\s*$""" +
+            """|\s+-?\s*nachholtermin\b.*$""",
         RegexOption.IGNORE_CASE
     )
 
@@ -321,10 +326,11 @@ private val ARTIST_SUFFIX_PATTERN =
  *
  * Example:
  * ```kotlin
- * stripArtistSuffix("HGICH.T LIVE")                     // "HGICH.T"
- * stripArtistSuffix("THE BUTLERS - 40 YEARS, SKA -")    // "THE BUTLERS"
- * stripArtistSuffix("Avangelic (DJ-Set)")               // "Avangelic"
- * stripArtistSuffix("Sickboyrari (Black Kray)")         // "Sickboyrari (Black Kray)"
+ * stripArtistSuffix("HGICH.T LIVE")                          // "HGICH.T"
+ * stripArtistSuffix("THE BUTLERS - 40 YEARS, SKA -")         // "THE BUTLERS"
+ * stripArtistSuffix("Avangelic (DJ-Set)")                    // "Avangelic"
+ * stripArtistSuffix("The Dear Hunter -Nachholtermin vom …")  // "The Dear Hunter"
+ * stripArtistSuffix("Sickboyrari (Black Kray)")              // "Sickboyrari (Black Kray)"
  * ```
  */
 fun stripArtistSuffix(name: String): String {

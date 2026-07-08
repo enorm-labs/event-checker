@@ -48,15 +48,15 @@ class RoadrunnerOverviewPageScraperTest {
         event.eventDate shouldBe LocalDate.of(2026, 5, 29)
         event.doorsTime shouldBe LocalTime.of(20, 0)
         event.ticketUrl.shouldNotBeNull()
-        event.ticketUrl!! shouldStartWith "https://www.eventbrite.de/e/berlin-freak-burlesque-circus"
+        event.ticketUrl shouldStartWith "https://www.eventbrite.de/e/berlin-freak-burlesque-circus"
         event.imageUrl shouldBe
             "http://www.roadrunners-paradise.de/Images/Programm/651910588_2774061836264243_4989135014726224547_n.jpg"
         event.sourceUrl shouldBe baseUrl
         event.sourceId shouldBe "roadrunner:2026-05-29-berlin-freak-burlesque-circus"
         event.description.shouldNotBeNull()
-        event.description!! shouldContain "LINE-UP"
+        event.description shouldContain "LINE-UP"
         // Header intro and the flyer/ticket lines must not leak into the description.
-        event.description!! shouldContain "Supported by MARIA"
+        event.description shouldContain "Supported by MARIA"
     }
 
     @Test

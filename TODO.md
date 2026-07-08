@@ -45,6 +45,7 @@ Public name is **Event Junkie**; internal/repo name stays **Event Checker**
 ## Frontend & BFF
 
 - [ ] Venues page (with map) — consumes the existing `GET /venues` list endpoint
+- [ ] Filter events and venues by venue type and genre
 - [ ] Sitemap (still worthwhile for SEO?)
 - [ ] RSS feed for newly imported events
 - [ ] I18N / L10N + translations

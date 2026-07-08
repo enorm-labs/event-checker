@@ -49,9 +49,9 @@ class BadehausOverviewPageScraperTest {
         ela.sourceUrl shouldBe "https://badehaus-berlin.com/events/ela/"
         ela.subtitle shouldBe "Pinke Plüschjacke Tour | Deutsch-Pop"
         ela.ticketUrl.shouldNotBeNull()
-        ela.ticketUrl!! shouldStartWith "https://www.eventim-light.com/"
+        ela.ticketUrl shouldStartWith "https://www.eventim-light.com/"
         ela.imageUrl.shouldNotBeNull()
-        ela.imageUrl!! shouldStartWith "https://badehaus-berlin.com/wp-content/uploads/"
+        ela.imageUrl shouldStartWith "https://badehaus-berlin.com/wp-content/uploads/"
         ela.soldOut shouldBe false
         ela.status shouldBe EventStatus.SCHEDULED.name
         // No category is published, so the type is inferred: a plain music event → CONCERT.

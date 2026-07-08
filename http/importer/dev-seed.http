@@ -14,6 +14,7 @@
 ###   Badehaus             — https://badehaus-berlin.com/events/
 ###   Bi Nuu               — https://binuu.de/de/events
 ###   Cassiopeia           — https://cassiopeia-berlin.de/club
+###   Frannz Club          — https://frannz.eu/
 ###   Lido                 — https://www.lido-berlin.de/
 ###   Madame Claude        — https://madameclaude.de/events/
 ###   Privatclub           — https://privatclub-berlin.de/
@@ -255,6 +256,67 @@ Accept: application/json
 
 > {%
     client.test("Cassiopeia import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Frannz Club (Schönhauser Allee 36, Berlin-Prenzlauer Berg — Kulturbrauerei)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Frannz Club venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Frannz Club",
+    "address": "Schönhauser Allee 36",
+    "city": "Berlin",
+    "postalCode": "10435",
+    "district": "pankow",
+    "latitude": 52.53923,
+    "longitude": 13.41266,
+    "websiteUrl": "https://frannz.eu"
+}
+
+> {%
+    client.global.set("frannz_venue_id", response.body.id);
+    client.test("Frannz Club venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Frannz Club event source ---
+# Links the venue to the FrannzWebsiteImporter.
+# The sourceType "FRANNZ" matches EventSource.FRANNZ.
+# NOTE: the URL is the homepage `/` — all events are server-rendered there; the site
+# has no per-event detail pages.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{frannz_venue_id}},
+    "name": "Frannz Club",
+    "url": "https://frannz.eu/",
+    "sourceType": "FRANNZ",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Frannz Club event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Frannz Club import ---
+# Slug is derived from the source name: "Frannz Club" → frannz-club.
+POST {{importer-host}}/api/admin/event-sources/frannz-club/import
+Accept: application/json
+
+> {%
+    client.test("Frannz Club import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}

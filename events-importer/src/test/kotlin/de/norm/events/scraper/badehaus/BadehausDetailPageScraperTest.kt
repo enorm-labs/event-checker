@@ -42,7 +42,7 @@ class BadehausDetailPageScraperTest {
         event.startTime shouldBe LocalTime.of(20, 0)
         event.promoters shouldBe listOf("Greyzone")
         event.description.shouldNotBeNull()
-        event.description!! shouldStartWith "Dominic Donner is an emerging artist"
+        event.description shouldStartWith "Dominic Donner is an emerging artist"
         event.sourceId shouldBe "badehaus:dominic-donner"
         event.sourceUrl shouldBe url
     }
@@ -60,7 +60,7 @@ class BadehausDetailPageScraperTest {
         event.startTime shouldBe null
         event.promoters shouldHaveSize 0
         event.description.shouldNotBeNull()
-        event.description!! shouldContain "ECHOS ALTER TAGE"
+        event.description shouldContain "ECHOS ALTER TAGE"
     }
 
     @Test
