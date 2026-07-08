@@ -19,7 +19,6 @@ import de.norm.events.promoter.canonicalPromoterName
 import de.norm.events.slug.SlugGenerator
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.flow.toList
-import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Service
 
 /**
@@ -123,7 +122,7 @@ class AssociationSyncService(
         resolveOrCreate(
             name = name,
             cache = artistCache,
-            save = { slug -> artistRepository.save(ArtistEntity(name = name, slug = slug)) },
+            insertIfAbsent = { slug -> artistRepository.insertIfAbsent(name, slug) },
             findBySlug = { slug -> artistRepository.findBySlug(slug) }
         )
 
@@ -250,7 +249,7 @@ class AssociationSyncService(
         resolveOrCreate(
             name = name,
             cache = promoterCache,
-            save = { slug -> promoterRepository.save(PromoterEntity(name = name, slug = slug)) },
+            insertIfAbsent = { slug -> promoterRepository.insertIfAbsent(name, slug) },
             findBySlug = { slug -> promoterRepository.findBySlug(slug) }
         )
 
@@ -364,7 +363,7 @@ class AssociationSyncService(
         resolveOrCreate(
             name = name,
             cache = genreTagCache,
-            save = { slug -> genreTagRepository.save(GenreTagEntity(name = name, slug = slug)) },
+            insertIfAbsent = { slug -> genreTagRepository.insertIfAbsent(name, slug) },
             findBySlug = { slug -> genreTagRepository.findBySlug(slug) }
         )
 
@@ -488,42 +487,48 @@ class AssociationSyncService(
     // -- Generic resolve-or-create for slug-based entities --
 
     /**
-     * Generic resolve-or-create logic for slug-based entities (artists, promoters).
+     * Generic resolve-or-create logic for slug-based entities (artists, promoters, genre tags).
      *
-     * Checks the [cache] first, then persists a new entity via [save]. If a concurrent
-     * import already created the same slug (unique constraint violation), falls back to
-     * [findBySlug]. The resolved entity is always added to [cache] for batch reuse.
+     * Checks the [cache] first, then issues a conflict-tolerant `INSERT … ON CONFLICT DO NOTHING`
+     * via [insertIfAbsent] and reads the row back via [findBySlug]. The resolved entity is always
+     * added to [cache] for batch reuse.
      *
-     * The entity type label for log messages is derived from [T]'s class name
-     * (e.g. `ArtistEntity` → `"ArtistEntity"`).
+     * **Why not try-`save`-then-catch-and-reselect:** these resolutions run inside the caller's
+     * single import transaction, and imports run concurrently (`EventImportService.importConcurrently`)
+     * racing to insert the same shared slug (a common genre, a co-billed artist). In PostgreSQL a
+     * failed statement aborts the *whole* transaction, so catching the unique-violation and then
+     * re-querying in the same transaction fails with "current transaction is aborted". `ON CONFLICT
+     * DO NOTHING` never raises, so the transaction stays valid: a lost race becomes a brief
+     * index-lock wait and a `0`-row no-op, after which [findBySlug] returns the winner's row.
+     *
+     * The entity-type label for the log line is taken from the resolved entity's class name.
      *
      * @param T the entity type.
      * @param name the human-readable name to slugify and resolve.
      * @param cache mutable slug → entity map shared across the batch.
-     * @param save persists a new entity given its slug; returns the saved entity.
-     * @param findBySlug fetches an existing entity by slug (fallback after conflict).
+     * @param insertIfAbsent conflict-tolerant insert; returns rows inserted (`1` created, `0` already present).
+     * @param findBySlug fetches the entity by slug (always present after [insertIfAbsent]).
      */
     private suspend fun <T : Any> resolveOrCreate(
         name: String,
         cache: MutableMap<String, T>,
-        save: suspend (slug: String) -> T,
+        insertIfAbsent: suspend (slug: String) -> Int,
         findBySlug: suspend (slug: String) -> T?
     ): T {
         val slug = SlugGenerator.slugify(name)
         cache[slug]?.let { return it }
 
-        val created =
-            try {
-                val saved = save(slug)
-                logger.info { "Auto-created ${saved::class.simpleName} '$name' (slug=$slug)" }
-                saved
-            } catch (_: DataIntegrityViolationException) {
-                // Another concurrent import created this entity — fetch it instead of failing
-                logger.debug { "Slug '$slug' already exists (concurrent creation), falling back to lookup" }
-                findBySlug(slug)
-                    ?: throw IllegalStateException("Entity with slug '$slug' disappeared after conflict")
-            }
-        cache[slug] = created
-        return created
+        val created = insertIfAbsent(slug) == 1
+        val entity =
+            findBySlug(slug)
+                ?: throw IllegalStateException("Entity with slug '$slug' not found after insert-if-absent")
+
+        if (created) {
+            logger.info { "Auto-created ${entity::class.simpleName} '$name' (slug=$slug)" }
+        } else {
+            logger.debug { "Reused existing ${entity::class.simpleName} (slug=$slug)" }
+        }
+        cache[slug] = entity
+        return entity
     }
 }

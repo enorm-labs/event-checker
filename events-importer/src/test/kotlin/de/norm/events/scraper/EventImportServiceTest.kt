@@ -164,8 +164,11 @@ class EventImportServiceTest {
         coEvery { eventSourceRepository.save(any()) } answers {
             firstArg<EventSourceEntity>()
         }
-        coEvery { artistRepository.save(any()) } answers {
-            firstArg<ArtistEntity>().copy(id = 200L)
+        // Artist resolution uses a conflict-tolerant insert + read-back (not save()).
+        coEvery { artistRepository.insertIfAbsent(any(), any()) } returns 1
+        coEvery { artistRepository.findBySlug(any()) } answers {
+            val slug = firstArg<String>()
+            ArtistEntity(id = 200L, name = slug, slug = slug)
         }
         coEvery { eventArtistRepository.saveAll(any<Iterable<EventArtistEntity>>()) } answers {
             firstArg<Iterable<EventArtistEntity>>()
@@ -334,9 +337,9 @@ class EventImportServiceTest {
 
                 service.importFromSource(src)
 
-                // Verify artist was auto-created
+                // Verify artist was auto-created via the conflict-tolerant insert
                 coVerify {
-                    artistRepository.save(match { it.name == "New Band" && it.slug == "new-band" })
+                    artistRepository.insertIfAbsent("New Band", "new-band")
                 }
             }
 
@@ -362,9 +365,9 @@ class EventImportServiceTest {
 
                 service.importFromSource(src)
 
-                // Should NOT create a new artist — reuse existing
+                // Should NOT create a new artist — reuse existing (no insert attempted)
                 coVerify(exactly = 0) {
-                    artistRepository.save(any())
+                    artistRepository.insertIfAbsent(any(), any())
                 }
 
                 // Should create the event-artist association using the existing artist's ID
