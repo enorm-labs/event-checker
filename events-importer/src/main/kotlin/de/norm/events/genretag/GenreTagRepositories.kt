@@ -2,6 +2,8 @@ package de.norm.events.genretag
 
 import kotlinx.coroutines.flow.Flow
 import org.springframework.data.domain.Pageable
+import org.springframework.data.r2dbc.repository.Modifying
+import org.springframework.data.r2dbc.repository.Query
 import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 
 /**
@@ -16,6 +18,21 @@ interface GenreTagRepository : CoroutineCrudRepository<GenreTagEntity, Long> {
 
     /** Batch-fetches genre tags by their slugs. Used by the import pipeline to avoid N+1 queries. */
     fun findBySlugIn(slugs: Collection<String>): Flow<GenreTagEntity>
+
+    /**
+     * Inserts a genre tag only if its [slug] is not already taken, returning the number of rows
+     * inserted (`1` if created, `0` if it already existed).
+     *
+     * `ON CONFLICT DO NOTHING` makes a duplicate slug a no-op instead of raising, so a concurrent
+     * import inserting the same tag first does not abort the caller's transaction.
+     * `created_at`/`updated_at` fall back to their `DEFAULT now()`.
+     */
+    @Modifying
+    @Query("INSERT INTO events.genre_tag (name, slug) VALUES (:name, :slug) ON CONFLICT (slug) DO NOTHING")
+    suspend fun insertIfAbsent(
+        name: String,
+        slug: String
+    ): Int
 }
 
 /**
