@@ -42,14 +42,19 @@ internal object BinuuSvelteKitPayload {
             .build()
 
     /**
-     * Parses the object literal wrapping [marker] from the page's SvelteKit
-     * bootstrap script and returns the node at [key], or `null` if it is absent
-     * or unparseable.
+     * Parses the object literal wrapping the `key: openBracket` property from the
+     * page's SvelteKit bootstrap script and returns the node at [key], or `null` if
+     * it is absent or unparseable.
+     *
+     * The marker is matched whitespace-tolerantly (`key\s*:\s*openBracket`), since
+     * the site emits the literal both minified (`events:[`) and pretty-printed
+     * (`events: [`).
      *
      * @param document the parsed Jsoup document of the listing or detail page.
-     * @param marker the key + opening bracket anchoring the wrapping object,
-     *   e.g. `"events:["` for the listing or `"item:{"` for a detail page.
-     * @param key the property to return from the parsed object (`"events"` / `"item"`).
+     * @param key the property that opens the wrapping object and is returned from it
+     *   (`"events"` for the listing, `"item"` for a detail page).
+     * @param openBracket the bracket opening that property's value (`'['` / `'{'`),
+     *   used to disambiguate the marker from other mentions of the key.
      */
     @Suppress(
         "TooGenericExceptionCaught", // A malformed/absent payload must degrade to null, never abort the import
@@ -57,12 +62,13 @@ internal object BinuuSvelteKitPayload {
     )
     fun dataNode(
         document: Document,
-        marker: String,
-        key: String
+        key: String,
+        openBracket: Char
     ): JsonNode? {
-        val script = document.select("script").map { it.data() }.firstOrNull { it.contains(marker) }
+        val marker = Regex(Regex.escape(key) + """\s*:\s*""" + Regex.escape(openBracket.toString()))
+        val script = document.select("script").map { it.data() }.firstOrNull { marker.containsMatchIn(it) }
         if (script == null) {
-            logger.warn { "No Bi Nuu SvelteKit bootstrap script containing '$marker' found" }
+            logger.warn { "No Bi Nuu SvelteKit bootstrap script containing '$key' payload found" }
             return null
         }
         val json = extractObjectLiteral(script, marker) ?: return null
@@ -78,10 +84,9 @@ internal object BinuuSvelteKitPayload {
     @Suppress("ReturnCount") // Sequential null-guards for each extraction step are clearer than nesting
     private fun extractObjectLiteral(
         script: String,
-        marker: String
+        marker: Regex
     ): String? {
-        val markerIndex = script.indexOf(marker)
-        if (markerIndex < 0) return null
+        val markerIndex = marker.find(script)?.range?.first ?: return null
         val objectStart = script.lastIndexOf('{', markerIndex)
         if (objectStart < 0) return null
         val objectEnd = matchClosingBrace(script, objectStart)
