@@ -11,6 +11,12 @@ spring:
   flyway:
     schemas: events
   r2dbc:
+    pool:
+      # Sized above app.import.max-concurrency so every in-flight import can hold a connection
+      # for its upsert transaction while leaving headroom for the out-of-transaction status
+      # writes (markRunning/markSuccess/markFailed) and the scheduler's own queries.
+      initial-size: 5
+      max-size: 12
     properties:
       schema: events
 

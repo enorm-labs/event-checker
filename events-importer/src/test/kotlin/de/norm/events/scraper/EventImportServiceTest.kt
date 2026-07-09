@@ -13,10 +13,14 @@ import de.norm.events.promoter.PromoterRepository
 import de.norm.events.venue.VenueEntity
 import de.norm.events.venue.VenueRepository
 import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.matchers.ints.shouldBeLessThanOrEqual
 import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.runTest
@@ -27,6 +31,7 @@ import org.springframework.dao.OptimisticLockingFailureException
 import org.springframework.transaction.reactive.TransactionalOperator
 import reactor.core.publisher.Flux
 import java.time.LocalDate
+import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * Unit tests for [EventImportService].
@@ -872,5 +877,81 @@ class EventImportServiceTest {
                 result.error shouldBe "Network timeout"
                 coVerify { eventSourceRepository.findById(1L) }
             }
+    }
+
+    @Nested
+    inner class GlobalConcurrencyBound {
+        /**
+         * The concurrency limit must be *global*, not per-batch: a scheduled batch
+         * ([EventImportService.importConcurrently]) running at the same time as a manual
+         * fire-and-forget trigger ([EventImportService.importFromSource], as used by
+         * `ImportJobLauncher`) must together never exceed `maxConcurrency` in-flight imports.
+         */
+        @Test
+        fun `scheduled batch and manual trigger together never exceed maxConcurrency`() =
+            runTest {
+                val active = AtomicInteger(0)
+                val maxObserved = AtomicInteger(0)
+                val maxConcurrency = 2
+
+                val boundedService =
+                    EventImportService(
+                        eventSourceRepository = eventSourceRepository,
+                        eventUpsertService = eventUpsertService,
+                        eventImporters = listOf(ConcurrencyTrackingImporter(active, maxObserved)),
+                        venueRepository = venueRepository,
+                        transactionalOperator = transactionalOperator,
+                        maxConcurrency = maxConcurrency
+                    )
+
+                val batchSources = (1..4).map { source(id = it.toLong(), slug = "batch-$it") }
+                val manualSource = source(id = 99L, slug = "manual")
+
+                // Run a scheduled batch of 4 concurrently with a manual single-source import.
+                coroutineScope {
+                    val batch = async { boundedService.importConcurrently(batchSources) }
+                    val manual = async { boundedService.importFromSource(manualSource) }
+
+                    batch.await().size shouldBe 4
+                    manual.await().sourceSlug shouldBe "manual"
+                }
+
+                // Never exceeded the global bound — the manual path did not stack on top of the batch...
+                maxObserved.get() shouldBeLessThanOrEqual maxConcurrency
+                // ...and the bound was actually reached, proving the two paths shared one permit pool.
+                maxObserved.get() shouldBe maxConcurrency
+            }
+    }
+}
+
+/**
+ * Test [EventImporter] that records the peak number of concurrent [importEvents] calls,
+ * used to assert the global concurrency bound in [EventImportServiceTest.GlobalConcurrencyBound].
+ * It suspends (via [delay]) while "in flight" so overlapping imports are observable under
+ * `runTest`'s virtual time.
+ */
+private class ConcurrencyTrackingImporter(
+    private val active: AtomicInteger,
+    private val maxObserved: AtomicInteger
+) : EventImporter {
+    override val eventSource = EventSource.CASSIOPEIA
+
+    override suspend fun importEvents(
+        url: String,
+        etag: String?,
+        lastModified: String?
+    ): ImportResult {
+        val current = active.incrementAndGet()
+        maxObserved.updateAndGet { maxOf(it, current) }
+        try {
+            delay(IN_FLIGHT_MILLIS)
+        } finally {
+            active.decrementAndGet()
+        }
+        return ImportResult.Success(events = emptyList(), etag = null, lastModified = null)
+    }
+
+    private companion object {
+        const val IN_FLIGHT_MILLIS = 50L
     }
 }
