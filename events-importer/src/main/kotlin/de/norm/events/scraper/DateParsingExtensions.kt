@@ -1,9 +1,13 @@
 package de.norm.events.scraper
 
+import java.time.Clock
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.MonthDay
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
+import kotlin.math.abs
 
 // Shared date and time parsing utilities for venue scrapers.
 //
@@ -153,4 +157,41 @@ fun parseShortDate(text: String?): LocalDate? {
     } catch (_: DateTimeParseException) {
         null
     }
+}
+
+/**
+ * Picks the calendar year for a year-less [monthDay], using a known [weekday] as
+ * the disambiguator.
+ *
+ * Retro venue listings render dates without a year (e.g. "Fr 03.07." or
+ * "Freitag, 29. Mai") and often leave recently-passed events on the page, so the
+ * naive "assume this year, roll to next if already past" rule guesses wrong for a
+ * stale event. Instead, among the candidate years in `today ± [yearWindow]`, only
+ * those whose date lands on the stated [weekday] qualify, and the one **closest to
+ * today** wins — so a just-passed event resolves to this year rather than a distant
+ * future repeat. When [weekday] is `null` (unparseable), the nearest occurrence to
+ * today across all candidate years is used. Shared by the retro single-page
+ * scrapers (Roadrunner, Duncker).
+ *
+ * Example:
+ * ```kotlin
+ * // today = 2026-07-09; 3 July falls on a Friday in 2026
+ * inferYearForWeekday(MonthDay.of(7, 3), DayOfWeek.FRIDAY, clock)  // 2026-07-03
+ * ```
+ */
+fun inferYearForWeekday(
+    monthDay: MonthDay,
+    weekday: DayOfWeek?,
+    clock: Clock,
+    yearWindow: Int = 2
+): LocalDate {
+    val today = LocalDate.now(clock)
+    val candidates =
+        ((today.year - yearWindow)..(today.year + yearWindow)).mapNotNull { year ->
+            // MonthDay.atYear normalises 29 Feb to 28 Feb in common years, which is acceptable here.
+            runCatching { monthDay.atYear(year) }.getOrNull()
+        }
+    val eligible = if (weekday != null) candidates.filter { it.dayOfWeek == weekday } else candidates
+    val pool = eligible.ifEmpty { candidates }
+    return pool.minByOrNull { abs(it.toEpochDay() - today.toEpochDay()) } ?: monthDay.atYear(today.year)
 }
