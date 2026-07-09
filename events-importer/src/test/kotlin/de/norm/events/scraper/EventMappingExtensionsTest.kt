@@ -220,6 +220,36 @@ class EventMappingExtensionsTest {
         isNonArtistName("The Adicts") shouldBe false
     }
 
+    // --- isDjSetFormatLabel ---
+
+    @Test
+    fun `isDjSetFormatLabel drops a bare DJ-set format label, with or without a slash-origin tail`() {
+        isDjSetFormatLabel("DJ-Set") shouldBe true
+        isDjSetFormatLabel("DJ Set") shouldBe true
+        isDjSetFormatLabel("DJ-Set / Berlin") shouldBe true
+        isDjSetFormatLabel("dj-set / london, uk") shouldBe true
+        isNonArtistName("DJ-Set / Berlin") shouldBe true
+    }
+
+    @Test
+    fun `isDjSetFormatLabel keeps a real DJ act whose name only starts with DJ Set`() {
+        // Anchored: a name that merely starts with the label, or any "DJ <handle>", survives.
+        isDjSetFormatLabel("DJ Koze") shouldBe false
+        isDjSetFormatLabel("DJ Set Sail") shouldBe false
+        isNonArtistName("DJ Koze") shouldBe false
+    }
+
+    // --- splitSegmentOnConjunctions ---
+
+    @Test
+    fun `splitSegmentOnConjunctions splits guarded conjunctions but never a slash`() {
+        splitSegmentOnConjunctions("Lichene & Neue K") shouldBe listOf("Lichene", "Neue K")
+        // A "/" inside a single act name is preserved (not a co-bill separator here).
+        splitSegmentOnConjunctions("Morimoto / Wong duo") shouldBe listOf("Morimoto / Wong duo")
+        // Backing-band article tail stays joined.
+        splitSegmentOnConjunctions("Scott Hepple & The Sun Band") shouldBe listOf("Scott Hepple & The Sun Band")
+    }
+
     // --- stripArtistSuffix ---
 
     @Test

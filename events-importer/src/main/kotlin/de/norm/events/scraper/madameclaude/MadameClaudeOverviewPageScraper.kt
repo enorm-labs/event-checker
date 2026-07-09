@@ -2,11 +2,15 @@ package de.norm.events.scraper.madameclaude
 
 import de.norm.events.event.EventType
 import de.norm.events.scraper.EventSource
+import de.norm.events.scraper.ScrapedArtist
 import de.norm.events.scraper.ScrapedEvent
 import de.norm.events.scraper.imgSrcAt
+import de.norm.events.scraper.isNonArtistName
 import de.norm.events.scraper.mapEventType
 import de.norm.events.scraper.parseShortDate
 import de.norm.events.scraper.resolveUrl
+import de.norm.events.scraper.splitSegmentOnConjunctions
+import de.norm.events.scraper.stripArtistSuffix
 import de.norm.events.scraper.textAt
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jsoup.nodes.Document
@@ -111,8 +115,10 @@ class MadameClaudeOverviewPageScraper(
         // Subtitle/category from p.day-name (e.g. "Experimontag / Concert")
         val dayNameText = eventCard.textAt("p.day-name")
 
-        // Map category to event type
-        val eventType = mapMadameClaudeCategory(category, dayNameText)
+        // A "(DJ-Set)" title marker denotes a DJ party — take precedence over the CSS
+        // category (which labels these Experimontag/Live → CONCERT). See mapMadameClaudeCategory.
+        val eventType =
+            if (isDjSetTitle(title)) EventType.PARTY.name else mapMadameClaudeCategory(category, dayNameText)
 
         return ScrapedEvent(
             title = title,
@@ -207,6 +213,45 @@ internal fun mapMadameClaudeCategory(
     if (dayNameText?.lowercase()?.contains("concert") == true) return EventType.CONCERT.name
     return mapEventType(cssCategory, MADAME_CLAUDE_CATEGORY_SYNONYMS)
 }
+
+/** Matches the "(DJ-Set)" / "(DJ Set)" marker Madame Claude appends to a DJ-night title. */
+private val DJ_SET_TITLE_MARKER = Regex("""\(\s*dj[\s-]?set\s*\)""", RegexOption.IGNORE_CASE)
+
+/** "+" separator between co-billed DJs in a Madame Claude title (a "/" belongs to a single duo name). */
+private val DJ_ACT_SEPARATOR = Regex("""\s*\+\s*""")
+
+/**
+ * Whether [title] carries Madame Claude's "(DJ-Set)" marker, identifying a DJ-set night.
+ *
+ * Used by both scrapers to type the event [PARTY][EventType.PARTY] and (on the detail
+ * page) to source its lineup from the title rather than the sparse per-artist `<h3>`
+ * headings those pages lack. Shared so the overview-only degraded path types the event
+ * the same way the detail page would.
+ */
+internal fun isDjSetTitle(title: String): Boolean = DJ_SET_TITLE_MARKER.containsMatchIn(title)
+
+/**
+ * Derives the DJ lineup from a "(DJ-Set)" [title].
+ *
+ * DJ-set detail pages are sparse — no per-artist `<h3>`, so the h3 heuristic yields
+ * nothing, a stray heading, or an unsplit co-bill. The title is the reliable source:
+ * Madame Claude bills co-DJs with `+` and uses `/` **inside** a single act name
+ * (`Morimoto / Wong duo`). So the "(DJ-Set)" suffix is stripped, acts are split on `+`
+ * then on guarded `&`/`and`/`und` ([splitSegmentOnConjunctions]) — never on `/` —
+ * per-act tour/format suffixes are stripped, and non-artists (placeholders, `Open Mic
+ * L. J. Fox`, `DJ-Set / Berlin`) are dropped. All are role `DJ`, in billing order.
+ *
+ * Example: `"Lichene & Neue K (DJ-Set)"` → `[Lichene(DJ), Neue K(DJ)]`;
+ * `"Matthew Ryals + Morimoto / Wong duo (DJ-Set)"` → `[Matthew Ryals(DJ), Morimoto / Wong duo(DJ)]`.
+ */
+internal fun djSetArtistsFromTitle(title: String): List<ScrapedArtist> =
+    stripArtistSuffix(title)
+        .split(DJ_ACT_SEPARATOR)
+        .flatMap { splitSegmentOnConjunctions(it) }
+        .map { stripArtistSuffix(it.trim()) }
+        .filterNot { it.isBlank() || isNonArtistName(it) }
+        .distinct()
+        .map { ScrapedArtist(name = it, role = "DJ") }
 
 /** Madame Claude's WordPress CSS class names mapped to [EventType] values. */
 private val MADAME_CLAUDE_CATEGORY_SYNONYMS: Map<String, String> =
