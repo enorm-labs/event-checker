@@ -1,5 +1,6 @@
 package de.norm.events.scraper.madameclaude
 
+import de.norm.events.event.EventType
 import de.norm.events.scraper.EventSource
 import de.norm.events.scraper.ScrapedArtist
 import de.norm.events.scraper.ScrapedEvent
@@ -75,18 +76,24 @@ class MadameClaudeDetailPageScraper {
         val dateText = primaryInfo.selectFirst(".date p.numbers font")?.text()?.trim()
         val eventDate = parseShortDate(dateText)
 
+        // A "(DJ-Set)" title marks a DJ party — override the category (which maps these to CONCERT).
+        val isDjSet = isDjSetTitle(title)
+
         // Category from .date p.days font or p.jumpe font
         val categoryText =
             primaryInfo.selectFirst(".date p.days font")?.text()?.trim()
                 ?: primaryInfo.selectFirst(".date p.jumpe font")?.text()?.trim()
-        val eventType = mapMadameClaudeCategory(categoryText, categoryText)
+        val eventType = if (isDjSet) EventType.PARTY.name else mapMadameClaudeCategory(categoryText, categoryText)
 
         // Times and price from the .info section
         val infoSection = primaryInfo.selectFirst(".info")
         val (doorsTime, startTime, priceNote) = parseTimesAndPrice(infoSection)
 
-        // Description and artists from the content area
-        val (description, artists) = parseArtistsAndDescription(infoSection)
+        // Description (and, for non-DJ-set events, artists) from the per-artist h3 sections.
+        val (description, h3Artists) = parseArtistsAndDescription(infoSection)
+
+        // DJ-set pages carry no reliable per-artist h3s — source the DJ lineup from the title instead.
+        val artists = if (isDjSet) djSetArtistsFromTitle(title) else h3Artists
 
         val slug = extractSlug(sourceUrl)
 

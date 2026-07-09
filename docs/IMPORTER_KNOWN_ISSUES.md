@@ -122,6 +122,17 @@ Legend: **impact** — 🔴 user-visible missing/wrong data · 🟠 data-quality
 
 - 🟢 Small venue (~11 events); `DD/MM/YY` dates. No major known gaps beyond the
   cross-cutting ones.
+- 🟢 **DJ-set nights are detected from the "(DJ-Set)" title marker.** Such events are
+  typed `PARTY` (the CSS category maps them to `CONCERT`) and their DJ lineup is sourced
+  from the title, because the detail pages carry no reliable per-artist `<h3>` (see
+  `isDjSetTitle` / `djSetArtistsFromTitle`). The title is split on `+` and guarded
+  `&`/`and`/`und` but **not** on `/`, since Madame Claude uses `/` inside a single act
+  name (`Morimoto / Wong duo`). Residual, by design:
+    - a `DJ <handle>` name is **not** de-prefixed (`DJ Lichene` stays `DJ Lichene`), so it
+      can fragment from the same DJ listed elsewhere without the prefix. A blanket strip is
+      unsafe — it would maim real acts whose name includes "DJ" (`DJ Koze`, `DJ Shadow`) —
+      and there is no reliable structural signal to tell a role label from a stage name.
+      The general entity-resolution fix is tracked in `TODO.md` (AI-assisted data quality).
 
 ### Astra Kulturhaus (`scraper/astra/`) — Kulturhäuser platform, list + detail
 

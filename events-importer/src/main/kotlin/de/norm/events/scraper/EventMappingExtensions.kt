@@ -379,14 +379,32 @@ private fun isDenylistedNonArtist(name: String): Boolean =
         .replace(TRAILING_EDITION, "") in NON_ARTIST_NAMES
 
 /**
+ * A bare "DJ set" performance-format label, optionally carrying a `/ <origin>` tail
+ * — `DJ-Set`, `DJ Set`, `DJ-Set / Berlin`. Venues occasionally push this format/city
+ * descriptor into a performer slot (e.g. a Madame Claude detail-page heading), where
+ * it must not be minted as an artist. Anchored: the whole trimmed value must be the
+ * label (± origin), so a real act whose name merely starts with "DJ Set…" — or any
+ * `DJ <handle>` name like `DJ Koze` — is untouched.
+ */
+private val DJ_SET_LABEL_PATTERN = Regex("""dj[\s-]?set(?:\s*/.*)?""", RegexOption.IGNORE_CASE)
+
+/**
+ * Checks whether [name] is a bare `DJ set` format label ("DJ-Set", "DJ-Set / Berlin")
+ * rather than a performer. See [DJ_SET_LABEL_PATTERN]; matching is fully anchored so
+ * `DJ Koze` / `DJ Set Sail` are kept.
+ */
+fun isDjSetFormatLabel(name: String): Boolean = DJ_SET_LABEL_PATTERN.matches(name.trim().replace(WHITESPACE, " "))
+
+/**
  * True when [name] must never be stored as an artist: a placeholder ("TBA"), a bare
  * role label ("Special Guest"), an event-segment label ("Acid Aftershow"), an event
- * label ("Shred Fest"), or a curated one-off non-artist title ("The Revival Tour").
- * The single predicate applied wherever scraped headliner/support names are resolved.
+ * label ("Shred Fest"), a bare "DJ set" format label ("DJ-Set / Berlin"), or a curated
+ * one-off non-artist title ("The Revival Tour"). The single predicate applied wherever
+ * scraped headliner/support names are resolved.
  */
 fun isNonArtistName(name: String): Boolean =
     isPlaceholderName(name) || isNonArtistLabel(name) || isEventSegmentLabel(name) ||
-        isNonArtistEvent(name) || isDenylistedNonArtist(name)
+        isNonArtistEvent(name) || isDjSetFormatLabel(name) || isDenylistedNonArtist(name)
 
 /**
  * Well-known single acts whose name legitimately contains a conjunction that
@@ -451,9 +469,22 @@ private val CONJUNCTION_SEPARATOR = Regex("""\s+(?:&|and|und)\s+""", RegexOption
  * article/possessive (the "X and the Ys" pattern) or a collective like "Friends" —
  * so `CARL CARLTON & MELANIE WIEGMANN AND THE GREAT BAND` cuts only at the `&`.
  * Each act keeps its original conjunction spelling (no rewrite).
+ *
+ * Splits **only** on `&`/`and`/`und` — never on `/` or `+` — so a venue that uses
+ * `/` inside a single act name (e.g. Madame Claude's `Morimoto / Wong duo`) can
+ * pre-split its co-bills on its own separator and hand each segment here to safely
+ * break just the conjunctions. Public for that reuse; [splitSupportActs] and
+ * [splitHeadlinerTitle] apply it after their own hard-separator split.
+ *
+ * Example:
+ * ```kotlin
+ * splitSegmentOnConjunctions("Lichene & Neue K")            // ["Lichene", "Neue K"]
+ * splitSegmentOnConjunctions("Scott Hepple & The Sun Band") // ["Scott Hepple & The Sun Band"] (article tail)
+ * splitSegmentOnConjunctions("Morimoto / Wong duo")         // ["Morimoto / Wong duo"] (no "/" split)
+ * ```
  */
 @Suppress("ReturnCount") // Guard clauses for the comma and no-cut cases are clearer than nesting
-private fun splitSegmentOnConjunctions(segment: String): List<String> {
+fun splitSegmentOnConjunctions(segment: String): List<String> {
     if (segment.contains(',')) return listOf(segment)
 
     val cuts =

@@ -137,6 +137,62 @@ class MadameClaudeDetailPageScraperTest {
         }
     }
 
+    @Nested
+    inner class DjSetEvents {
+        private fun scrapeDjSet(
+            title: String,
+            infoInner: String
+        ): ScrapedEvent {
+            val html =
+                """
+                <html><body><main>
+                    <div class="primary-info-single-event">
+                        <div class="date"><p class="numbers"><font>31/07/26</font></p>
+                                          <p class="days"><font>Experimontag</font></p></div>
+                        <h2>$title</h2>
+                        <div class="info">$infoInner</div>
+                    </div>
+                </main></body></html>
+                """.trimIndent()
+            return scraper.scrape(Jsoup.parse(html, sourceUrl), sourceUrl)!!
+        }
+
+        @Test
+        fun `a DJ-Set title is typed PARTY, not CONCERT`() {
+            // The "Experimontag" category maps to CONCERT; the "(DJ-Set)" marker must win.
+            val event = scrapeDjSet("Keikee (DJ-Set)", "<p>Doors 22:00</p>")
+            event.eventType shouldBe "PARTY"
+        }
+
+        @Test
+        fun `sources the DJ lineup from the title, ignoring a stray non-artist h3`() {
+            // The sparse page's only h3 is the format/origin label; the title is authoritative.
+            val event = scrapeDjSet("Keikee (DJ-Set)", "<p>Doors 22:00</p><h3>DJ-Set / Berlin</h3>")
+            event.artists.map { it.name } shouldBe listOf("Keikee")
+            event.artists.map { it.role } shouldBe listOf("DJ")
+        }
+
+        @Test
+        fun `splits co-billed DJs joined by an ampersand`() {
+            val event = scrapeDjSet("Lichene &amp; Neue K (DJ-Set)", "<h3>Lichene &amp; Neue K</h3>")
+            event.artists.map { it.name } shouldBe listOf("Lichene", "Neue K")
+            event.artists.map { it.role } shouldBe listOf("DJ", "DJ")
+        }
+
+        @Test
+        fun `splits on plus but keeps a slash inside a single act name`() {
+            val event = scrapeDjSet("Matthew Ryals + Morimoto / Wong duo (DJ-Set)", "")
+            event.artists.map { it.name } shouldBe listOf("Matthew Ryals", "Morimoto / Wong duo")
+        }
+
+        @Test
+        fun `drops placeholder and denylisted acts from an open-mic DJ night`() {
+            val event = scrapeDjSet("Open Mic L. J. Fox + TBA (DJ-Set)", "")
+            event.eventType shouldBe "PARTY"
+            event.artists.shouldBeEmpty()
+        }
+    }
+
     @Test
     fun `returns null for page without primary-info-single-event`() {
         val emptyHtml = "<html><body><main></main></body></html>"
