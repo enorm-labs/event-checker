@@ -47,6 +47,17 @@ class EventImportService(
 ) {
     private val logger = KotlinLogging.logger {}
 
+    /**
+     * Global permit pool bounding the number of in-flight source imports.
+     *
+     * Because this service is a singleton and **every** import path funnels through
+     * [importFromSource] — the scheduler's [importConcurrently], [importBySlug], and both
+     * fire-and-forget triggers in `ImportJobLauncher` — acquiring a permit here caps total
+     * concurrency across *all* callers. A burst of manual admin triggers can no longer stack
+     * on top of a scheduled tick and overwhelm the R2DBC connection pool.
+     */
+    private val importSemaphore = Semaphore(maxConcurrency)
+
     /** Index of event importers by their event source for O(1) dispatch. */
     private val importersBySource: Map<EventSource, EventImporter> by lazy {
         eventImporters.associateBy { it.eventSource }
@@ -78,8 +89,9 @@ class EventImportService(
     /**
      * Imports multiple sources concurrently, bounded by [maxConcurrency].
      *
-     * Each source runs in its own coroutine, with a [Semaphore] limiting how many
-     * execute simultaneously. This is safe because:
+     * Each source runs in its own coroutine; the shared [importSemaphore] acquired inside
+     * [importFromSource] limits how many execute simultaneously (globally, not just within
+     * this batch). This is safe because:
      * - The artist cache in [EventUpsertService] is local to each [importFromSource] call.
      * - Concurrent artist creation is handled via [DataIntegrityViolationException] fallback.
      * - Per-host HTTP politeness is enforced by [PerHostThrottlingFilter].
@@ -87,14 +99,11 @@ class EventImportService(
      */
     internal suspend fun importConcurrently(sources: List<EventSourceEntity>): List<ImportResultResponse> =
         coroutineScope {
-            val semaphore = Semaphore(maxConcurrency)
             sources
                 .map { source ->
                     async {
-                        semaphore.withPermit {
-                            logger.info { "Importing source '${source.slug}' (interval=${source.importIntervalMinutes}min, retries=${source.retryCount})" }
-                            importFromSource(source)
-                        }
+                        logger.info { "Importing source '${source.slug}' (interval=${source.importIntervalMinutes}min, retries=${source.retryCount})" }
+                        importFromSource(source)
                     }
                 }.awaitAll()
         }
@@ -112,11 +121,18 @@ class EventImportService(
      * **Precondition**: The [source] must be a persisted entity fetched from the repository.
      * This method manages the source's import lifecycle status (RUNNING → SUCCESS/FAILED),
      * so callers must not manipulate the source's status independently.
+     *
+     * Acquires a permit from the global [importSemaphore] for the full duration of the import,
+     * so the total number of concurrent imports never exceeds [maxConcurrency] regardless of the
+     * caller. The (fail-fast) persisted-id precondition is checked *before* taking a permit.
      */
-    @Suppress("TooGenericExceptionCaught", "ReturnCount") // Intentional: record any failure; multiple early returns for error paths
     internal suspend fun importFromSource(source: EventSourceEntity): ImportResultResponse {
         requireNotNull(source.id) { "Event source must be persisted (have a non-null id) before importing" }
+        return importSemaphore.withPermit { runImportPipeline(source) }
+    }
 
+    @Suppress("TooGenericExceptionCaught", "ReturnCount") // Intentional: record any failure; multiple early returns for error paths
+    private suspend fun runImportPipeline(source: EventSourceEntity): ImportResultResponse {
         val eventSourceEnum =
             try {
                 EventSource.valueOf(source.sourceType)
