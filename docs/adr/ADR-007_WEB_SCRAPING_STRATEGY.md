@@ -417,12 +417,13 @@ organized as the number of utilities grows with new venue scrapers.
 
 **`DateParsingExtensions.kt`** — date and time parsing for the two common formats on venue websites:
 
-| Extension / Function                           | Purpose                                                          |
-|------------------------------------------------|------------------------------------------------------------------|
-| `HH_MM_FORMATTER`                              | Shared `DateTimeFormatter` for 24-hour time (`HH:mm`)            |
-| `parseTime(text, formatter = HH_MM_FORMATTER)` | Null-safe `LocalTime` parsing — returns null instead of throwing |
-| `parseIsoDate(dateTimeStr)`                    | Extract date from ISO 8601 datetime (e.g. `"2026-05-16T20:00"`)  |
-| `parseIsoTime(dateTimeStr)`                    | Extract time from ISO 8601 datetime, delegates to `parseTime`    |
+| Extension / Function                            | Purpose                                                                           |
+|-------------------------------------------------|-----------------------------------------------------------------------------------|
+| `HH_MM_FORMATTER`                               | Shared `DateTimeFormatter` for 24-hour time (`HH:mm`)                             |
+| `parseTime(text, formatter = HH_MM_FORMATTER)`  | Null-safe `LocalTime` parsing — returns null instead of throwing                  |
+| `parseIsoDate(dateTimeStr)`                     | Extract date from ISO 8601 datetime (e.g. `"2026-05-16T20:00"`)                   |
+| `parseIsoTime(dateTimeStr)`                     | Extract time from ISO 8601 datetime, delegates to `parseTime`                     |
+| `inferYearForWeekday(monthDay, weekday, clock)` | Pick the year for a year-less date using its weekday (retro single-page listings) |
 
 **`EventMappingExtensions.kt`** — domain-level mapping of scraped text to model constants:
 

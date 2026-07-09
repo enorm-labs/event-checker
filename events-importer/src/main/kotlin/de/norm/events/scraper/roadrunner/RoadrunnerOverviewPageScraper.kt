@@ -2,6 +2,7 @@ package de.norm.events.scraper.roadrunner
 
 import de.norm.events.scraper.EventSource
 import de.norm.events.scraper.ScrapedEvent
+import de.norm.events.scraper.inferYearForWeekday
 import de.norm.events.scraper.parseTime
 import de.norm.events.scraper.resolveUrl
 import de.norm.events.slug.SlugGenerator
@@ -16,7 +17,6 @@ import java.time.MonthDay
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatterBuilder
 import java.util.Locale
-import kotlin.math.abs
 
 /**
  * Pure HTML parser for Roadrunner's Paradise' retro `programm.html` event page.
@@ -204,7 +204,7 @@ class RoadrunnerOverviewPageScraper(
         val match = DATE_PATTERN.find(text) ?: return null
         val (weekdayName, day, month) = match.destructured
         val weekday = GERMAN_WEEKDAYS[weekdayName.lowercase()]
-        return parseGermanMonthDay(day, month)?.let { inferYear(it, weekday) }
+        return parseGermanMonthDay(day, month)?.let { inferYearForWeekday(it, weekday, clock) }
     }
 
     /** Parses "29" + "Mai" into a [MonthDay], or `null` when unparseable. */
@@ -212,29 +212,6 @@ class RoadrunnerOverviewPageScraper(
         day: String,
         month: String
     ): MonthDay? = runCatching { MonthDay.parse("$day. $month", GERMAN_DAY_MONTH_FORMATTER) }.getOrNull()
-
-    /**
-     * Picks the calendar year for a year-less [monthDay].
-     *
-     * When a [weekday] is known, only candidate years whose date lands on that
-     * weekday qualify — and among those the one **closest to today** wins, so a
-     * recently-passed event resolves to this year rather than a distant future
-     * repeat. Without a weekday, the nearest occurrence to today is used.
-     */
-    private fun inferYear(
-        monthDay: MonthDay,
-        weekday: DayOfWeek?
-    ): LocalDate {
-        val today = LocalDate.now(clock)
-        val candidates =
-            ((today.year - YEAR_WINDOW)..(today.year + YEAR_WINDOW)).mapNotNull { year ->
-                // MonthDay.atYear normalises 29 Feb to 28 Feb in common years, which is acceptable here.
-                runCatching { monthDay.atYear(year) }.getOrNull()
-            }
-        val eligible = if (weekday != null) candidates.filter { it.dayOfWeek == weekday } else candidates
-        val pool = eligible.ifEmpty { candidates }
-        return pool.minByOrNull { abs(it.toEpochDay() - today.toEpochDay()) } ?: monthDay.atYear(today.year)
-    }
 
     // -- Line classification ----------------------------------------------
 
@@ -249,9 +226,6 @@ class RoadrunnerOverviewPageScraper(
     }
 
     companion object {
-        /** Search window (± years) around today for weekday-based year inference. */
-        private const val YEAR_WINDOW = 2
-
         /**
          * Matches a German date line: "<Weekday>, <day>. <Month>", capturing the
          * weekday, day number and month name. The trailing colon and any following

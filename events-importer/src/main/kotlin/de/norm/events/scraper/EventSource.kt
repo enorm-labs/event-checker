@@ -21,6 +21,9 @@ enum class EventSource {
     /** Cassiopeia Berlin – Webflow-based event listing at `/club`. */
     CASSIOPEIA,
 
+    /** Duncker Club Berlin – retro hand-coded single-page `start.html` programme table (goth/wave/indie DJ nights), German `DD.MM.` dates without a year. */
+    DUNCKER,
+
     /** Frannz Club Berlin – WordPress single-page homepage listing; events server-rendered with `event_typ-*` classes, no detail pages. */
     FRANNZ,
 
