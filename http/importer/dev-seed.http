@@ -16,6 +16,7 @@
 ###   Cassiopeia           — https://cassiopeia-berlin.de/club
 ###   Duncker Club         — https://www.dunckerclub.de/start.html
 ###   Frannz Club          — https://frannz.eu/
+###   Gretchen             — https://www.gretchen-club.de/
 ###   Lido                 — https://www.lido-berlin.de/
 ###   Madame Claude        — https://madameclaude.de/events/
 ###   Privatclub           — https://privatclub-berlin.de/
@@ -378,6 +379,64 @@ Accept: application/json
 
 > {%
     client.test("Frannz Club import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Gretchen (Obentrautstr. 19-21, Berlin-Kreuzberg)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Gretchen venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Gretchen",
+    "address": "Obentrautstr. 19-21",
+    "city": "Berlin",
+    "postalCode": "10963",
+    "district": "friedrichshain-kreuzberg",
+    "latitude": 52.49483,
+    "longitude": 13.38387,
+    "websiteUrl": "https://www.gretchen-club.de"
+}
+
+> {%
+    client.global.set("gretchen_venue_id", response.body.id);
+    client.test("Gretchen venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Gretchen event source ---
+# Links the venue to the GretchenWebsiteImporter.
+# The sourceType "GRETCHEN" matches EventSource.GRETCHEN.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{gretchen_venue_id}},
+    "name": "Gretchen",
+    "url": "https://www.gretchen-club.de/",
+    "sourceType": "GRETCHEN",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Gretchen event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Gretchen import ---
+POST {{importer-host}}/api/admin/event-sources/gretchen/import
+Accept: application/json
+
+> {%
+    client.test("Gretchen import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}

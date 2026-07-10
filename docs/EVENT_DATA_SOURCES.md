@@ -13,7 +13,7 @@ The **Import** column tracks whether an automated importer has been implemented 
 | Bi Nuu                      | https://binuu.de/                           | Club         |     ✅      |   ✅    |                                   |
 | Frannz Club                 | https://frannz.eu/                          | Club         |     ✅      |   ✅    |                                   |
 | Duncker Club                | https://www.dunckerclub.de/                 | Club         |     ✅      |   ✅    |                                   |
-| Gretchen                    | https://www.gretchen-club.de/               | Club         |     ✅      |        |                                   |
+| Gretchen                    | https://www.gretchen-club.de/               | Club         |     ✅      |   ✅    |                                   |
 | Zenner                      | https://zenner.berlin/                      | Club         |     ✅      |        |                                   |
 | Reset Club                  |                                             | Club         |            |        |                                   |
 | Prince Charles              | https://princecharlesberlin.com/            | Club         |            |        | No own listings; links to RA only |

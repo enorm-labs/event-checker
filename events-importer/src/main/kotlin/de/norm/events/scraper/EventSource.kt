@@ -27,6 +27,9 @@ enum class EventSource {
     /** Frannz Club Berlin – WordPress single-page homepage listing; events server-rendered with `event_typ-*` classes, no detail pages. */
     FRANNZ,
 
+    /** Gretchen Berlin – retro hand-coded single-page homepage listing; each event a `.gig` block with a `.lineup` performer list. */
+    GRETCHEN,
+
     /** Lido Berlin – same Kulturhäuser platform as Astra (different theme), homepage listing with detail pages. */
     LIDO,
 
