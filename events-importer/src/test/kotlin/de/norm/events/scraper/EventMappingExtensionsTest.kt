@@ -264,6 +264,17 @@ class EventMappingExtensionsTest {
         isNonArtistName("The Adicts") shouldBe false
     }
 
+    @Test
+    fun `isNonArtistName normalizes accents and a trailing Berlin before denylist matching`() {
+        // Accented, city-suffixed editions of the same series fold onto one entry ("boheme sauvage").
+        isNonArtistName("Bohème Sauvage Berlin") shouldBe true
+        isNonArtistName("BOHÈME SAUVAGE BERLIN") shouldBe true
+        // The city suffix is likewise stripped for GrooveJet (entry is city-free "groovejet").
+        isNonArtistName("GrooveJet Berlin") shouldBe true
+        // Matching-only: a real act merely ending in "Berlin" loses the suffix too but isn't denylisted.
+        isNonArtistName("Isolation Berlin") shouldBe false
+    }
+
     // --- isDjSetFormatLabel ---
 
     @Test

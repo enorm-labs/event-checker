@@ -5,6 +5,7 @@ package de.norm.events.scraper
 import de.norm.events.event.EventStatus
 import de.norm.events.event.EventType
 import java.math.BigDecimal
+import java.text.Normalizer
 import java.time.LocalTime
 
 // Domain-level mapping utilities for scraped event data.
@@ -423,11 +424,13 @@ fun cleanEventTitle(title: String): String {
  * Manually curated one-off titles that are not performers but that no structural
  * rule safely catches — a warm-up slot at a specific room, a package-tour name, a
  * recurring themed night, or a venue's own party/DJ series that its structured
- * data lists as the "performer" (Bi Nuu). Entries are lowercase and
- * whitespace-collapsed; a trailing edition number is ignored at match time, so a
- * recurring series matches every edition — both the plain `… 5` form
- * (`FEMALE-FRONTED IS NOT A GENRE 5`, `… 6`, …) and the `… N°<n>` form
- * (`Boheme Sauvage N°141`, `N°142`, …). Add exact titles here as they surface.
+ * data lists as the "performer" (Bi Nuu). Entries are lowercase, accent-free, and
+ * whitespace-collapsed; before matching, a title is normalized the same way
+ * ([isDenylistedNonArtist]) — diacritics stripped, and a trailing edition number
+ * or `Berlin` locality ignored — so one entry folds every surface form of a series:
+ * the plain `… 5` form (`FEMALE-FRONTED IS NOT A GENRE 5`), the `… N°<n>` form
+ * (`Boheme Sauvage N°141`), and the accented, city-suffixed form
+ * (`Bohème Sauvage Berlin`). Add exact titles here as they surface.
  */
 private val NON_ARTIST_NAMES: Set<String> =
     setOf(
@@ -439,7 +442,7 @@ private val NON_ARTIST_NAMES: Set<String> =
         "feinster hiphop",
         "karrera klub",
         "the swag jam",
-        "groovejet berlin",
+        "groovejet",
         "ultra night",
         "boheme sauvage"
     )
@@ -452,12 +455,25 @@ private val NON_ARTIST_NAMES: Set<String> =
  */
 private val TRAILING_EDITION = Regex("""\s+(?:n[°º]\s*)?\d+$""", RegexOption.IGNORE_CASE)
 
+/**
+ * A trailing `Berlin` locality on a recurring-series title (`GrooveJet Berlin`,
+ * `Bohème Sauvage Berlin`), ignored when matching [NON_ARTIST_NAMES] so a series
+ * folds onto one city-free entry. Matching-only — a real act merely ending in
+ * `Berlin` (`Isolation Berlin`) drops the suffix too but is still absent from the
+ * denylist, so it is kept.
+ */
+private val TRAILING_CITY = Regex("""\s+berlin$""")
+
+/** Combining diacritical marks left by NFD normalization; stripped so accents can't defeat a denylist match. */
+private val DIACRITICS = Regex("""\p{Mn}+""")
+
 private fun isDenylistedNonArtist(name: String): Boolean =
-    name
-        .trim()
-        .replace(WHITESPACE, " ")
-        .lowercase()
-        .replace(TRAILING_EDITION, "") in NON_ARTIST_NAMES
+    Normalizer
+        .normalize(name.trim().replace(WHITESPACE, " ").lowercase(), Normalizer.Form.NFD)
+        .replace(DIACRITICS, "")
+        .replace(TRAILING_EDITION, "")
+        .replace(TRAILING_CITY, "")
+        .trim() in NON_ARTIST_NAMES
 
 /**
  * A bare "DJ set" performance-format label, optionally carrying a `/ <origin>` tail

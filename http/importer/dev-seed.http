@@ -15,6 +15,7 @@
 ###   Bi Nuu               — https://binuu.de/de/events
 ###   Cassiopeia           — https://cassiopeia-berlin.de/club
 ###   Duncker Club         — https://www.dunckerclub.de/start.html
+###   Festsaal Kreuzberg   — https://festsaal-kreuzberg.de/de/programm/ (Wagtail CMS JSON API)
 ###   Frannz Club          — https://frannz.eu/
 ###   Gretchen             — https://www.gretchen-club.de/
 ###   Lido                 — https://www.lido-berlin.de/
@@ -318,6 +319,68 @@ Accept: application/json
 
 > {%
     client.test("Duncker Club import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Festsaal Kreuzberg (Am Flutgraben 2, Berlin-Kreuzberg)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Festsaal Kreuzberg venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Festsaal Kreuzberg",
+    "address": "Am Flutgraben 2",
+    "city": "Berlin",
+    "postalCode": "12435",
+    "district": "friedrichshain-kreuzberg",
+    "latitude": 52.49660,
+    "longitude": 13.44980,
+    "websiteUrl": "https://festsaal-kreuzberg.de"
+}
+
+> {%
+    client.global.set("festsaal_venue_id", response.body.id);
+    client.test("Festsaal Kreuzberg venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Festsaal Kreuzberg event source ---
+# Links the venue to the FestsaalWebsiteImporter.
+# The sourceType "FESTSAAL" matches EventSource.FESTSAAL.
+# NOTE: the public site (festsaal-kreuzberg.de) is a Nuxt.js SPA that renders no event
+# data server-side. The URL is therefore the entry point of its Wagtail headless-CMS
+# JSON REST API; the importer appends the EventPage query (type/fields/order) itself.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{festsaal_venue_id}},
+    "name": "Festsaal Kreuzberg",
+    "url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/",
+    "sourceType": "FESTSAAL",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Festsaal Kreuzberg event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Festsaal Kreuzberg import ---
+# Slug is derived from the source name: "Festsaal Kreuzberg" → festsaal-kreuzberg.
+POST {{importer-host}}/api/admin/event-sources/festsaal-kreuzberg/import
+Accept: application/json
+
+> {%
+    client.test("Festsaal Kreuzberg import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}

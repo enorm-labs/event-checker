@@ -26,6 +26,12 @@ import java.net.URI
  * Jsoup's `parse()` is a CPU-bound blocking call, so it runs on an
  * injected IO dispatcher to avoid blocking the coroutine event loop.
  *
+ * Besides HTML, the shared throttled WebClient is also reused for the occasional
+ * venue whose events come from a JSON REST API rather than a scrapeable page
+ * (e.g. Festsaal Kreuzberg's Wagtail CMS): [fetchString] returns the raw response
+ * body verbatim, so those importers get the same politeness throttling and
+ * identifying User-Agent for free without any HTML parsing.
+ *
  * Per-host politeness throttling is handled transparently by
  * [PerHostThrottlingFilter], which is registered as a WebClient filter
  * and enforces a minimum delay between consecutive requests to the same host.
@@ -116,15 +122,29 @@ class HtmlFetcher(
      * @param url the page URL to fetch.
      * @return the raw HTML body as a string.
      */
-    suspend fun fetchHtml(url: String): String {
-        logger.debug { "Fetching detail page: $url" }
+    suspend fun fetchHtml(url: String): String = fetchString(url)
+
+    /**
+     * Fetches the raw response body from [url] without conditional-request headers.
+     *
+     * The content-type–agnostic counterpart to [fetchHtml] / [fetchDocument]: it returns
+     * the body verbatim, so importers whose data comes from a JSON REST API rather than a
+     * scrapeable HTML page (e.g. Festsaal Kreuzberg's Wagtail CMS) can reuse the shared,
+     * politeness-throttled WebClient and identifying User-Agent. Fails fast with
+     * [HttpFetchException] on any 4xx/5xx so error payloads are never mistaken for data.
+     *
+     * @param url the URL to fetch.
+     * @return the raw response body as a string.
+     */
+    suspend fun fetchString(url: String): String {
+        logger.debug { "Fetching raw body: $url" }
         return webClient
             .get()
             // Pass a pre-built URI so WebClient uses the (already percent-encoded) URL verbatim
             // instead of re-encoding '%' and double-encoding non-ASCII slugs into a 404.
             .uri(URI.create(url))
             .awaitExchange { response ->
-                // Fail fast on HTTP errors to avoid returning error pages as valid HTML
+                // Fail fast on HTTP errors to avoid returning error pages as valid data
                 if (response.statusCode().isError) {
                     throw HttpFetchException(response.statusCode().value(), url)
                 }

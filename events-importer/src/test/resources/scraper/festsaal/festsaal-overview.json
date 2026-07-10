@@ -1,0 +1,2891 @@
+{
+    "meta": {
+        "total_count": 77
+    },
+    "items": [
+        {
+            "id": 770,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/770/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/elena-rose-2026/",
+                "slug": "elena-rose-2026",
+                "first_published_at": "2026-03-06T11:16:54.524231Z",
+                "locale": "de"
+            },
+            "title": "ELENA ROSE",
+            "url": "/de/programm/elena-rose-2026/",
+            "preview_image": {
+                "id": 1215,
+                "title": "Elena Rose",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/ELENA-ROSE-EUROPA-TOUR_1920x1005_event_fb.jpg"
+            },
+            "preview_text": "",
+            "sub_title": "EUROPE TOUR 2026",
+            "date": "2026-07-10",
+            "doors": "19:30:00",
+            "start": "20:30:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://ticket.deputamadreclub.eu/elena26bln/",
+            "price": null,
+            "genre": {
+                "id": 22,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/22/"
+                },
+                "title": "Pop"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 853,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/853/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/temry-and-friends-july27/",
+                "slug": "temry-and-friends-july27",
+                "first_published_at": "2026-07-03T15:57:40.074054Z",
+                "locale": "de"
+            },
+            "title": "TEMRY & FRIENDS - GARDEN SESSION",
+            "url": "/de/programm/temry-and-friends-july27/",
+            "preview_image": {
+                "id": 1322,
+                "title": "Temry.jpeg",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/Temry.jpeg.png"
+            },
+            "preview_text": "",
+            "sub_title": null,
+            "date": "2026-07-11",
+            "doors": "15:00:00",
+            "start": "15:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://temry.ticket.io/4bxThFnP/",
+            "price": null,
+            "genre": {
+                "id": 16,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/16/"
+                },
+                "title": "Hip-Hop/Rap"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 851,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/851/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/Die-Toten-Hosen-Afterparty/",
+                "slug": "Die-Toten-Hosen-Afterparty",
+                "first_published_at": "2026-07-02T17:23:51.617250Z",
+                "locale": "de"
+            },
+            "title": "Die Toten Hosen - Offizielle Afterparty",
+            "url": "/de/programm/Die-Toten-Hosen-Afterparty/",
+            "preview_image": {
+                "id": 1320,
+                "title": "Toten Hosen Afterparty Banner",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/TotenHosenAfterpartyBanner.png"
+            },
+            "preview_text": "",
+            "sub_title": null,
+            "date": "2026-07-11",
+            "doors": "23:00:00",
+            "start": "23:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": null,
+            "price": null,
+            "genre": {
+                "id": 1,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/1/"
+                },
+                "title": "Rock"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 806,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/806/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/live-wrestling-07-2026/",
+                "slug": "live-wrestling-07-2026",
+                "first_published_at": "2026-04-16T15:27:50.027545Z",
+                "locale": "de"
+            },
+            "title": "Wrestling",
+            "url": "/de/programm/live-wrestling-07-2026/",
+            "preview_image": {
+                "id": 1262,
+                "title": "juli",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/juli.webp"
+            },
+            "preview_text": "",
+            "sub_title": "GWF SUMMER SMASH 2026",
+            "date": "2026-07-12",
+            "doors": "17:30:00",
+            "start": "18:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.eventbrite.com/e/gwf-summer-smash-2026-tickets-1984876234248?aff=ebdsoporgprofile",
+            "price": null,
+            "genre": {
+                "id": 30,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/30/"
+                },
+                "title": "Wrestling Show"
+            },
+            "status": "transferred",
+            "support": null
+        },
+        {
+            "id": 843,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/843/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/daniela-mercury/",
+                "slug": "daniela-mercury",
+                "first_published_at": "2026-06-04T11:22:30.158263Z",
+                "locale": "de"
+            },
+            "title": "Daniela Mercury",
+            "url": "/de/programm/daniela-mercury/",
+            "preview_image": {
+                "id": 1310,
+                "title": "Daniela Mercury",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/Daniela_Mercury.webp"
+            },
+            "preview_text": "",
+            "sub_title": "Openning Act: Oxa",
+            "date": "2026-07-19",
+            "doors": "17:00:00",
+            "start": "17:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.bossafm.com/concerts-berlin/festsaal-kreuzberg/daniela-mercury/2026/07/19",
+            "price": null,
+            "genre": {
+                "id": 89,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/89/"
+                },
+                "title": "Forró"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 837,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/837/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/hudcon-berlin-juli-2026/",
+                "slug": "hudcon-berlin-juli-2026",
+                "first_published_at": "2026-05-29T12:34:37.190891Z",
+                "locale": "de"
+            },
+            "title": "Hudcon",
+            "url": "/de/programm/hudcon-berlin-juli-2026/",
+            "preview_image": {
+                "id": 1192,
+                "title": "Hudcon",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/image.webp"
+            },
+            "preview_text": "",
+            "sub_title": "The Heated Rivalry Night",
+            "date": "2026-07-24",
+            "doors": "22:00:00",
+            "start": "22:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.eventbrite.de/e/hudcon-the-heated-rivalry-night-festsaal-kreuzberg-tickets-1985505432196?aff=odcleoeventsincollection",
+            "price": null,
+            "genre": {
+                "id": 82,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/82/"
+                },
+                "title": "Party"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 842,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/842/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/kaizoku-july/",
+                "slug": "kaizoku-july",
+                "first_published_at": "2026-06-04T11:10:26.937404Z",
+                "locale": "de"
+            },
+            "title": "Kaizoku",
+            "url": "/de/programm/kaizoku-july/",
+            "preview_image": {
+                "id": 1155,
+                "title": "Kaizoku 2026",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/Kaizoku_ASeTbRC.png"
+            },
+            "preview_text": "",
+            "sub_title": "ANIME, GAMES & COSPLAY",
+            "date": "2026-07-25",
+            "doors": "21:00:00",
+            "start": "21:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.dreamlight-labs.com/de/concert/6a15e2d1cc5d2b26228ef975?utm_term=kaizoku",
+            "price": null,
+            "genre": {
+                "id": 82,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/82/"
+                },
+                "title": "Party"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 833,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/833/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/festa-junina-26/",
+                "slug": "festa-junina-26",
+                "first_published_at": "2026-05-26T15:33:29.154026Z",
+                "locale": "de"
+            },
+            "title": "Festa Junina",
+            "url": "/de/programm/festa-junina-26/",
+            "preview_image": {
+                "id": 1297,
+                "title": "Festa Junina",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/Festa_Junina.webp"
+            },
+            "preview_text": "",
+            "sub_title": "Arraiá da Bossa",
+            "date": "2026-06-27",
+            "doors": "13:00:00",
+            "start": "13:00:00",
+            "changed_date": "2026-08-01",
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.bossafm.com/events/berlin/festa-junina-arraia-da-bossa/festsaal-kreuzberg/2026-08-01",
+            "price": null,
+            "genre": {
+                "id": 89,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/89/"
+                },
+                "title": "Forró"
+            },
+            "status": "moved_date",
+            "support": null
+        },
+        {
+            "id": 847,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/847/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/Just-Taylor-Open-Air/",
+                "slug": "Just-Taylor-Open-Air",
+                "first_published_at": "2026-06-17T10:51:45.430049Z",
+                "locale": "de"
+            },
+            "title": "Just Taylor Open Air",
+            "url": "/de/programm/Just-Taylor-Open-Air/",
+            "preview_image": {
+                "id": 1315,
+                "title": "Just Taylor",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/Bildschirmfoto_2026-06-17_um_10.48.18.png"
+            },
+            "preview_text": "",
+            "sub_title": null,
+            "date": "2026-08-02",
+            "doors": "17:00:00",
+            "start": "17:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.eventbrite.de/e/taylor-friends-just-taylor-open-air-festsaal-kreuzberg-berlin-tickets-1982276708998",
+            "price": null,
+            "genre": {
+                "id": 22,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/22/"
+                },
+                "title": "Pop"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 807,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/807/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/live-wrestling-08-2026/",
+                "slug": "live-wrestling-08-2026",
+                "first_published_at": "2026-04-16T15:32:58.897587Z",
+                "locale": "de"
+            },
+            "title": "Wrestling",
+            "url": "/de/programm/live-wrestling-08-2026/",
+            "preview_image": {
+                "id": 1263,
+                "title": "BB",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/BB.webp"
+            },
+            "preview_text": "",
+            "sub_title": "GWF BLOCKBUSTER 2026",
+            "date": "2026-08-08",
+            "doors": "17:30:00",
+            "start": "18:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.eventbrite.com/e/gwf-blockbuster-2026-tickets-1985041873680?aff=ebdsoporgprofile",
+            "price": null,
+            "genre": {
+                "id": 30,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/30/"
+                },
+                "title": "Wrestling Show"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 836,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/836/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/wepa-bunny/",
+                "slug": "wepa-bunny",
+                "first_published_at": "2026-05-29T12:31:12.985841Z",
+                "locale": "de"
+            },
+            "title": "¡Wepa! Bunny",
+            "url": "/de/programm/wepa-bunny/",
+            "preview_image": {
+                "id": 1301,
+                "title": "Bad Bunny 08.08.2026",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/Bad_Bunny_08.08.2026.png"
+            },
+            "preview_text": "",
+            "sub_title": "Open Air",
+            "date": "2026-08-08",
+            "doors": "17:00:00",
+            "start": "18:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://rausgegangen.de/events/wepa-bunny-open-air-festsaal-kreuzberg-berlin-0/",
+            "price": null,
+            "genre": {
+                "id": 84,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/84/"
+                },
+                "title": "Open Air"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 838,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/838/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/indie-open-air-2026/",
+                "slug": "indie-open-air-2026",
+                "first_published_at": "2026-05-29T12:38:02.737451Z",
+                "locale": "de"
+            },
+            "title": "BERLIN INDIE Open Air",
+            "url": "/de/programm/indie-open-air-2026/",
+            "preview_image": {
+                "id": 1303,
+                "title": "Berlin Indie OA",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/Berlin_Indie_OA.webp"
+            },
+            "preview_text": "",
+            "sub_title": null,
+            "date": "2026-08-16",
+            "doors": "17:00:00",
+            "start": "18:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.eventbrite.de/e/berlin-indie-open-air-festsaal-kreuzberg-berlin-tickets-1983606832433?aff=odcleoeventsincollection",
+            "price": null,
+            "genre": {
+                "id": 84,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/84/"
+                },
+                "title": "Open Air"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 818,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/818/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/INTERNATIONAL-MUSIC/",
+                "slug": "INTERNATIONAL-MUSIC",
+                "first_published_at": "2026-05-04T11:39:49.057292Z",
+                "locale": "de"
+            },
+            "title": "INTERNATIONAL MUSIC",
+            "url": "/de/programm/INTERNATIONAL-MUSIC/",
+            "preview_image": {
+                "id": 1274,
+                "title": "International-Music",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/International-Music_1-Credit-Lukas-Vogt-dq.jpg"
+            },
+            "preview_text": "",
+            "sub_title": null,
+            "date": "2026-08-22",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.greyzone-tickets.de/produkte/1285",
+            "price": null,
+            "genre": {
+                "id": 108,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/108/"
+                },
+                "title": "Krautrock"
+            },
+            "status": null,
+            "support": "Gregor"
+        },
+        {
+            "id": 844,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/844/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/popkultur-festsaal26/",
+                "slug": "popkultur-festsaal26",
+                "first_published_at": "2026-06-04T11:33:03.795165Z",
+                "locale": "de"
+            },
+            "title": "Popkultur Festival 2026",
+            "url": "/de/programm/popkultur-festsaal26/",
+            "preview_image": {
+                "id": 1311,
+                "title": "Labelmarkt",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/Labelmarkt.jpg"
+            },
+            "preview_text": "",
+            "sub_title": "Free Entry",
+            "date": "2026-08-27",
+            "doors": "16:00:00",
+            "start": "16:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://tickets.pop-kultur.berlin/",
+            "price": null,
+            "genre": {
+                "id": 79,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/79/"
+                },
+                "title": "Festival"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 779,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/779/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/Oidorno/",
+                "slug": "Oidorno",
+                "first_published_at": "2026-03-16T17:33:08.482918Z",
+                "locale": "de"
+            },
+            "title": "Oidorno",
+            "url": "/de/programm/Oidorno/",
+            "preview_image": {
+                "id": 1230,
+                "title": "Oidorno_2026_Credit_Paul-Kummer",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/Presse_Oidorno_2026_Credit_Paul-Kummer-768x513.jpg"
+            },
+            "preview_text": "",
+            "sub_title": "10 jahre Oidorno!",
+            "date": "2026-08-28",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.festsaal.shop/produkte/547-tickets-oidorno-festsaal-kreuzberg-berlin-am-28-08-2026",
+            "price": null,
+            "genre": {
+                "id": 21,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/21/"
+                },
+                "title": "Punk Rock"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 702,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/702/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/moka-efti/",
+                "slug": "moka-efti",
+                "first_published_at": "2025-11-12T09:56:57.458771Z",
+                "locale": "de"
+            },
+            "title": "Moka Efti Orchestra",
+            "url": "/de/programm/moka-efti/",
+            "preview_image": {
+                "id": 1112,
+                "title": "Moka Efti",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/MEO_JOACHIM_GERN_08gr.jpg"
+            },
+            "preview_text": "",
+            "sub_title": "Live 2026 - Special Guest: Candy Hammerschmidt",
+            "date": "2026-08-28",
+            "doors": "18:00:00",
+            "start": "19:30:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.festsaal.shop/produkte/520-tickets-moka-efti-orchestra-freilichtbuehne-weissensee-berlin-am-28-08-2026",
+            "price": "51,80",
+            "genre": {
+                "id": 63,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/63/"
+                },
+                "title": "Jazz"
+            },
+            "status": "custom",
+            "support": null
+        },
+        {
+            "id": 724,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/724/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/Die-H%C3%B6chste-Eisenbahn/",
+                "slug": "Die-Höchste-Eisenbahn",
+                "first_published_at": "2025-12-02T15:51:26.866793Z",
+                "locale": "de"
+            },
+            "title": "Die Höchste Eisenbahn",
+            "url": "/de/programm/Die-H%C3%B6chste-Eisenbahn/",
+            "preview_image": {
+                "id": 1128,
+                "title": "Die Höchste Eisenbahn 2025_Credit_AnkeFichtner",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/DieHoechsteEisenbahn2025_Credit_AnkeFichtner.jpg"
+            },
+            "preview_text": "",
+            "sub_title": null,
+            "date": "2026-08-29",
+            "doors": "17:30:00",
+            "start": "18:30:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.festsaal.shop/produkte/523-tickets-die-hoechste-eisenbahn-freilichtbuehne-weissensee-berlin-am-29-08-2026",
+            "price": null,
+            "genre": {
+                "id": 5,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/5/"
+                },
+                "title": "German Pop"
+            },
+            "status": "custom",
+            "support": "Jo The Man The Music"
+        },
+        {
+            "id": 808,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/808/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/live-wrestling-09-2026/",
+                "slug": "live-wrestling-09-2026",
+                "first_published_at": "2026-04-16T15:37:00.420724Z",
+                "locale": "de"
+            },
+            "title": "Wrestling",
+            "url": "/de/programm/live-wrestling-09-2026/",
+            "preview_image": {
+                "id": 1264,
+                "title": "BF",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/BF.webp"
+            },
+            "preview_text": "",
+            "sub_title": "GWF BATTLEFIELD 2026",
+            "date": "2026-09-06",
+            "doors": "17:30:00",
+            "start": "18:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.eventbrite.com/e/gwf-battlefield-2026-tickets-1985042858626?aff=ebdsoporgprofile",
+            "price": null,
+            "genre": {
+                "id": 30,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/30/"
+                },
+                "title": "Wrestling Show"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 760,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/760/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/the-gardener/",
+                "slug": "the-gardener",
+                "first_published_at": "2026-02-19T13:00:04.946384Z",
+                "locale": "de"
+            },
+            "title": "THE GARDENER & THE TREE",
+            "url": "/de/programm/the-gardener/",
+            "preview_image": {
+                "id": 1199,
+                "title": "TGATT_BenLupini",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/TGATT_BenLupini.jpeg"
+            },
+            "preview_text": "",
+            "sub_title": "SOLE TOUR",
+            "date": "2026-09-13",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.eventim.de/event/the-gardener-the-tree-sole-tour-festsaal-kreuzberg-21339493/",
+            "price": null,
+            "genre": {
+                "id": 6,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/6/"
+                },
+                "title": "Indie Pop"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 766,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/766/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/Ty-Segall-14-09-26/",
+                "slug": "Ty-Segall-14-09-26",
+                "first_published_at": "2026-03-04T12:39:11.233370Z",
+                "locale": "de"
+            },
+            "title": "Ty Segall",
+            "url": "/de/programm/Ty-Segall-14-09-26/",
+            "preview_image": {
+                "id": 1206,
+                "title": "Ty Segall",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/IMG_9178.jpeg"
+            },
+            "preview_text": "",
+            "sub_title": null,
+            "date": "2026-09-14",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.tixforgigs.com/Event/72281",
+            "price": null,
+            "genre": {
+                "id": 1,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/1/"
+                },
+                "title": "Rock"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 687,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/687/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/lotte-26/",
+                "slug": "lotte-26",
+                "first_published_at": "2025-10-23T15:35:13.686012Z",
+                "locale": "de"
+            },
+            "title": "Lotte",
+            "url": "/de/programm/lotte-26/",
+            "preview_image": {
+                "id": 1084,
+                "title": "LOTTE_c_Nat_Traxe_1025",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/LOTTE_c_Nat_Traxe_1025.jpg"
+            },
+            "preview_text": "",
+            "sub_title": "Wenn du tanzen willst Tour 2026",
+            "date": "2026-09-25",
+            "doors": "18:30:00",
+            "start": "19:30:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://loveyourartist.com/de/profiles/lotte-TPTIEY/events/lotte-wenn-du-tanzen-berlin-Q08UU6?ref=sbcd88rfqcok",
+            "price": null,
+            "genre": {
+                "id": 5,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/5/"
+                },
+                "title": "German Pop"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 784,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/784/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/holly-humberstone-2026/",
+                "slug": "holly-humberstone-2026",
+                "first_published_at": "2026-03-24T12:51:50.122340Z",
+                "locale": "de"
+            },
+            "title": "Holly Humberstone",
+            "url": "/de/programm/holly-humberstone-2026/",
+            "preview_image": {
+                "id": 1236,
+                "title": "CW_Lead Image 1 (credit_ Silken Weinberg)",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/CW_Lead_Image_1_credit__Silken_Weinberg_.jpg"
+            },
+            "preview_text": "",
+            "sub_title": "Cruel World European Tour",
+            "date": "2026-09-27",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://tickets.loft.de/event/holly-humberstone-jd9nl2",
+            "price": null,
+            "genre": {
+                "id": 6,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/6/"
+                },
+                "title": "Indie Pop"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 819,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/819/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/Dirk-von-Lowtzow/",
+                "slug": "Dirk-von-Lowtzow",
+                "first_published_at": "2026-05-05T13:22:22.669159Z",
+                "locale": "de"
+            },
+            "title": "Dirk von Lowtzow",
+            "url": "/de/programm/Dirk-von-Lowtzow/",
+            "preview_image": {
+                "id": 1277,
+                "title": "DirkvonLowtzow(c)NoelRichter",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/DirkvonLowtzowcNoelRichter.jpeg"
+            },
+            "preview_text": "",
+            "sub_title": "Detektive - Lesung & Konzert",
+            "date": "2026-09-28",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://vvk.link/x3pb1",
+            "price": null,
+            "genre": {
+                "id": 32,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/32/"
+                },
+                "title": "Lesung"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 815,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/815/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/Christiane-R%C3%B6singer/",
+                "slug": "Christiane-Rösinger",
+                "first_published_at": "2026-04-27T15:32:20.488882Z",
+                "locale": "de"
+            },
+            "title": "Christiane Rösinger",
+            "url": "/de/programm/Christiane-R%C3%B6singer/",
+            "preview_image": {
+                "id": 1270,
+                "title": "christiane-roesinger-2026-1080x1350-leer",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/christiane-roesinger-2026-1080x1350-leer.png"
+            },
+            "preview_text": "",
+            "sub_title": "musikalische Lesung aus „The Joy of Ageing\"",
+            "date": "2026-09-29",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.festsaal.shop/catalog/tickets/555-tickets-christiane-roesinger-festsaal-kreuzberg-berlin-am-29-09-2026",
+            "price": null,
+            "genre": {
+                "id": 32,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/32/"
+                },
+                "title": "Lesung"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 780,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/780/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/Ok-kid-2026/",
+                "slug": "Ok-kid-2026",
+                "first_published_at": "2026-03-17T12:03:34.775027Z",
+                "locale": "de"
+            },
+            "title": "OK KID",
+            "url": "/de/programm/Ok-kid-2026/",
+            "preview_image": {
+                "id": 1231,
+                "title": "okkid_pressefoto_3_by_kristina_wolf",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/okkid_pressefoto_3_by_kristina_wolf.png"
+            },
+            "preview_text": "",
+            "sub_title": "\"Komm, wir bleiben stehen\" Tour 2026",
+            "date": "2026-09-30",
+            "doors": "18:30:00",
+            "start": "19:30:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://landstreicher-konzerte.de/konzerte/ok-kid-b-26",
+            "price": null,
+            "genre": {
+                "id": 104,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/104/"
+                },
+                "title": "German Hip Hop"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 763,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/763/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/NEONSCHWARZ/",
+                "slug": "NEONSCHWARZ",
+                "first_published_at": "2026-02-25T17:01:38.581135Z",
+                "locale": "de"
+            },
+            "title": "NEONSCHWARZ",
+            "url": "/de/programm/NEONSCHWARZ/",
+            "preview_image": {
+                "id": 1203,
+                "title": "Neonschwarz",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/neonschwarz_presspic1_malteschmidt.JPG"
+            },
+            "preview_text": "",
+            "sub_title": "FOREVER",
+            "date": "2026-10-02",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.tixforgigs.com/Event/71955",
+            "price": null,
+            "genre": {
+                "id": 33,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/33/"
+                },
+                "title": "Rap"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 809,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/809/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/live-wrestling-10-2026/",
+                "slug": "live-wrestling-10-2026",
+                "first_published_at": "2026-04-16T15:39:04.706659Z",
+                "locale": "de"
+            },
+            "title": "Wrestling",
+            "url": "/de/programm/live-wrestling-10-2026/",
+            "preview_image": {
+                "id": 1264,
+                "title": "BF",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/BF.webp"
+            },
+            "preview_text": "",
+            "sub_title": "GWF/OTT DOUBLE IMPACT 2026",
+            "date": "2026-10-04",
+            "doors": "17:30:00",
+            "start": "18:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.eventbrite.com/e/gwfott-double-impact-2026-tickets-1985044633936?aff=ebdsoporgprofile",
+            "price": null,
+            "genre": {
+                "id": 30,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/30/"
+                },
+                "title": "Wrestling Show"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 854,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/854/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/Pomplamoose/",
+                "slug": "Pomplamoose",
+                "first_published_at": "2026-07-09T15:31:48.056879Z",
+                "locale": "de"
+            },
+            "title": "Pomplamoose",
+            "url": "/de/programm/Pomplamoose/",
+            "preview_image": {
+                "id": 1323,
+                "title": "Pomplamoose",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/_MC_2089_HiRes.jpg"
+            },
+            "preview_text": "",
+            "sub_title": "Pomplamoose European Premiere",
+            "date": "2026-10-07",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://loft.de/x/ozuo2",
+            "price": null,
+            "genre": {
+                "id": 3,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/3/"
+                },
+                "title": "Indie Rock"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 782,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/782/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/blood-red-shoes/",
+                "slug": "blood-red-shoes",
+                "first_published_at": "2026-03-20T16:58:03.285563Z",
+                "locale": "de"
+            },
+            "title": "Blood Red Shoes",
+            "url": "/de/programm/blood-red-shoes/",
+            "preview_image": {
+                "id": 1240,
+                "title": "BLOOD RED SHOES",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/BLOOD_RED_SHOES_photo_credit_Steve_Gullick.jpg"
+            },
+            "preview_text": "",
+            "sub_title": null,
+            "date": "2026-10-13",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.eventim.de/event/blood-red-shoes-festsaal-kreuzberg-21476556/?affiliate=SZ3",
+            "price": null,
+            "genre": {
+                "id": 7,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/7/"
+                },
+                "title": "Alternative"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 802,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/802/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/yard-act-2026/",
+                "slug": "yard-act-2026",
+                "first_published_at": "2026-04-14T12:39:34.019600Z",
+                "locale": "de"
+            },
+            "title": "Yard Act",
+            "url": "/de/programm/yard-act-2026/",
+            "preview_image": {
+                "id": 1256,
+                "title": "Yard-Act",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/Yard-Act_c_1_Jamie-Macmillian_0426.jpeg"
+            },
+            "preview_text": "",
+            "sub_title": "Live 2026",
+            "date": "2026-10-14",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.eventim.de/noapp/event/yard-act-festsaal-kreuzberg-21548549/?affiliate=AAG&utm_campaign=allartistsagency&utm_source=AAG&utm_medium=dp",
+            "price": null,
+            "genre": {
+                "id": 3,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/3/"
+                },
+                "title": "Indie Rock"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 681,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/681/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/bluthund-festsaal/",
+                "slug": "bluthund-festsaal",
+                "first_published_at": "2025-10-16T15:10:46.778754Z",
+                "locale": "de"
+            },
+            "title": "Bluthund",
+            "url": "/de/programm/bluthund-festsaal/",
+            "preview_image": {
+                "id": 848,
+                "title": "Bluthund",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/Bluthund.jpg"
+            },
+            "preview_text": "",
+            "sub_title": "MODUS MOSHPIT TOUR 2026 | SUPPORT: ZOMBIEZ",
+            "date": "2026-10-16",
+            "doors": "18:30:00",
+            "start": "19:30:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://tickets.undercover.de/app.php?view=artist&id=739",
+            "price": null,
+            "genre": null,
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 701,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/701/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/future-palace/",
+                "slug": "future-palace",
+                "first_published_at": "2025-12-03T11:06:10.436906Z",
+                "locale": "de"
+            },
+            "title": "Future Palace",
+            "url": "/de/programm/future-palace/",
+            "preview_image": {
+                "id": 1131,
+                "title": "FuturePalace_Tour_1_HelloBipo",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/FuturePalace_Tour_1_HelloBipo.jpg"
+            },
+            "preview_text": "",
+            "sub_title": "Deep Blue Tour 2026",
+            "date": "2026-10-17",
+            "doors": "19:00:00",
+            "start": "19:45:00",
+            "changed_date": "2025-12-02",
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.eventim.de/event/future-palace-deep-blue-tour-2026-festsaal-kreuzberg-21014613/",
+            "price": null,
+            "genre": {
+                "id": 68,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/68/"
+                },
+                "title": "post-hardcore"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 840,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/840/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/Drink-The-Sea/",
+                "slug": "Drink-The-Sea",
+                "first_published_at": "2026-06-02T11:18:29.025137Z",
+                "locale": "de"
+            },
+            "title": "Drink The Sea",
+            "url": "/de/programm/Drink-The-Sea/",
+            "preview_image": {
+                "id": 1308,
+                "title": "Pressshot20261_Drink The Sea_Credit Jakki Pransky",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/Pressshot20261_Drink_The_Sea_Credit_Jakki_Pransky.jpeg"
+            },
+            "preview_text": "",
+            "sub_title": null,
+            "date": "2026-10-18",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://tickets.loft.de/event/drink-the-sea-tif6et",
+            "price": null,
+            "genre": null,
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 672,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/672/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/Mal-Eleve/",
+                "slug": "Mal-Eleve",
+                "first_published_at": "2025-09-30T15:10:59.552875Z",
+                "locale": "de"
+            },
+            "title": "Mal Élevé",
+            "url": "/de/programm/Mal-Eleve/",
+            "preview_image": {
+                "id": 1063,
+                "title": "MalÉlevé2025_(c)_JamilaGrote2_quer",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/MalEleve2025_c_JamilaGrote2_quer.jpg"
+            },
+            "preview_text": "",
+            "sub_title": "„Résilience“-Tour 2026",
+            "date": "2026-10-21",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.ticket-heart.de/ticket-shop/mal-eleve/",
+            "price": null,
+            "genre": null,
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 790,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/790/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/nand-2026/",
+                "slug": "nand-2026",
+                "first_published_at": "2026-03-26T17:46:11.105092Z",
+                "locale": "de"
+            },
+            "title": "nand",
+            "url": "/de/programm/nand-2026/",
+            "preview_image": {
+                "id": 1244,
+                "title": "nand_drei-kreuze-gemacht_bts_013",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/nand_drei-kreuze-gemacht_bts_013.JPG"
+            },
+            "preview_text": "",
+            "sub_title": "\"Es wäre schön\" - Tour",
+            "date": "2026-10-22",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://shop.nand-music.de/produkte/94727-tickets-nand-festsaal-kreuzberg-berlin-am-22-10-2026",
+            "price": null,
+            "genre": {
+                "id": 6,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/6/"
+                },
+                "title": "Indie Pop"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 735,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/735/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/Tiavo/",
+                "slug": "Tiavo",
+                "first_published_at": "2025-12-10T15:57:52.523444Z",
+                "locale": "de"
+            },
+            "title": "Tiavo",
+            "url": "/de/programm/Tiavo/",
+            "preview_image": {
+                "id": 1147,
+                "title": "Tiavo",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/Pressebild_2_Mehmet_Akbas.JPG"
+            },
+            "preview_text": "",
+            "sub_title": "HOTEL TIAVO TOUR 2026",
+            "date": "2026-10-23",
+            "doors": "18:00:00",
+            "start": "19:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://tickets.eskapaden.net/produkte",
+            "price": null,
+            "genre": null,
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 749,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/749/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/leftovers-2026/",
+                "slug": "leftovers-2026",
+                "first_published_at": "2026-02-03T10:59:31.391338Z",
+                "locale": "de"
+            },
+            "title": "Leftovers",
+            "url": "/de/programm/leftovers-2026/",
+            "preview_image": {
+                "id": 1184,
+                "title": "Leftovers",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/Leftovers.jpeg"
+            },
+            "preview_text": "",
+            "sub_title": "STADION TOUR",
+            "date": "2026-10-24",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://tickets.loft.de/event/leftovers-0wg5vt",
+            "price": null,
+            "genre": {
+                "id": 25,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/25/"
+                },
+                "title": "Alternative/Indie"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 827,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/827/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/wa22ermann/",
+                "slug": "wa22ermann",
+                "first_published_at": "2026-05-12T12:57:49.167280Z",
+                "locale": "de"
+            },
+            "title": "Wa22ermann",
+            "url": "/de/programm/wa22ermann/",
+            "preview_image": {
+                "id": 1287,
+                "title": "02_Wa22ermann_Credit Rosa Lotta",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/02_Wa22ermann_Credit_Rosa_Lotta.jpg"
+            },
+            "preview_text": "",
+            "sub_title": "KNAX TOUR 2026",
+            "date": "2026-10-25",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://landstreicher-konzerte.de/konzerte/wa22ermann-b-26",
+            "price": null,
+            "genre": {
+                "id": 104,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/104/"
+                },
+                "title": "German Hip Hop"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 793,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/793/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/angine-de-poitrine/",
+                "slug": "angine-de-poitrine",
+                "first_published_at": "2026-03-31T15:08:38.472645Z",
+                "locale": "de"
+            },
+            "title": "Angine De Poitrine",
+            "url": "/de/programm/angine-de-poitrine/",
+            "preview_image": {
+                "id": 1248,
+                "title": "ANGINE_Credit_ConstantinMonfilliette2",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/ANGINE_Credit_ConstantinMonfilliette2_fq0H9VC.jpg"
+            },
+            "preview_text": "",
+            "sub_title": null,
+            "date": "2026-10-27",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.tixforgigs.com/Event/73101",
+            "price": null,
+            "genre": {
+                "id": 106,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/106/"
+                },
+                "title": "Rock"
+            },
+            "status": "transferred",
+            "support": null
+        },
+        {
+            "id": 789,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/789/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/Unterwelt/",
+                "slug": "Unterwelt",
+                "first_published_at": "2026-03-26T16:55:19.409452Z",
+                "locale": "de"
+            },
+            "title": "Unterwelt Festival",
+            "url": "/de/programm/Unterwelt/",
+            "preview_image": {
+                "id": 1242,
+                "title": "UNTERWELT",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/Bildschirmfoto_2026-03-26_um_17.03.36.png"
+            },
+            "preview_text": "",
+            "sub_title": "+ Klub Nacht",
+            "date": "2026-10-31",
+            "doors": "15:00:00",
+            "start": "16:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.festsaal.shop/catalog/tickets/548-tickets-unterwelt-festsaal-kreuzberg-berlin-am-31-10-2026",
+            "price": null,
+            "genre": {
+                "id": 55,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/55/"
+                },
+                "title": "Darkwave"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 810,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/810/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/live-wrestling-11-2026/",
+                "slug": "live-wrestling-11-2026",
+                "first_published_at": "2026-04-16T15:44:55.472285Z",
+                "locale": "de"
+            },
+            "title": "Wrestling",
+            "url": "/de/programm/live-wrestling-11-2026/",
+            "preview_image": {
+                "id": 1265,
+                "title": "LC",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/LC.webp"
+            },
+            "preview_text": "",
+            "sub_title": "GWF LEGACY 2026",
+            "date": "2026-11-01",
+            "doors": "17:30:00",
+            "start": "18:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.eventbrite.com/e/gwf-legacy-31-jahre-berlin-wrestling-tickets-1985044867635?aff=ebdsoporgprofile",
+            "price": null,
+            "genre": {
+                "id": 30,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/30/"
+                },
+                "title": "Wrestling Show"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 774,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/774/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/eli-preiss-2026/",
+                "slug": "eli-preiss-2026",
+                "first_published_at": "2026-03-09T14:30:52.463702Z",
+                "locale": "de"
+            },
+            "title": "Eli Preiss",
+            "url": "/de/programm/eli-preiss-2026/",
+            "preview_image": {
+                "id": 1220,
+                "title": "ELI PREISS_Pressefoto2_cred Simon Rajchl_2026_00550716 SM",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/ELI_PREISS_Pressefoto2_cred_Simon_Rajchl_2026_00550716_SM.jpg"
+            },
+            "preview_text": "",
+            "sub_title": "(Selbst)bewusst Tour 2026",
+            "date": "2026-11-02",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://landstreicher-konzerte.de/konzerte/eli-preiss-b-26",
+            "price": null,
+            "genre": {
+                "id": 104,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/104/"
+                },
+                "title": "German Hip Hop"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 734,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/734/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/Gloryhammer/",
+                "slug": "Gloryhammer",
+                "first_published_at": "2025-12-10T09:59:38.525064Z",
+                "locale": "de"
+            },
+            "title": "Gloryhammer",
+            "url": "/de/programm/Gloryhammer/",
+            "preview_image": {
+                "id": 1133,
+                "title": "gloryhammer",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/gloryhammer.jpg"
+            },
+            "preview_text": "",
+            "sub_title": "5th Album Release Tour 2026 | Support: Majestica & Arion",
+            "date": "2026-11-03",
+            "doors": "18:00:00",
+            "start": "19:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://landstreicher-konzerte.de/konzerte/gloryhammer-b-26",
+            "price": null,
+            "genre": {
+                "id": 99,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/99/"
+                },
+                "title": "Power Metal"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 822,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/822/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/fat-dog-2026/",
+                "slug": "fat-dog-2026",
+                "first_published_at": "2026-05-05T15:27:13.808101Z",
+                "locale": "de"
+            },
+            "title": "Fat Dog",
+            "url": "/de/programm/fat-dog-2026/",
+            "preview_image": {
+                "id": 1280,
+                "title": "FATDOG_PC_EMMATOMA_21",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/FATDOG_PC_EMMATOMA_21.jpg"
+            },
+            "preview_text": "",
+            "sub_title": null,
+            "date": "2026-11-06",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.tixforgigs.com/Event/73639",
+            "price": null,
+            "genre": {
+                "id": 7,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/7/"
+                },
+                "title": "Alternative"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 707,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/707/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/Mariybu/",
+                "slug": "Mariybu",
+                "first_published_at": "2025-11-21T14:41:06.513958Z",
+                "locale": "de"
+            },
+            "title": "Mariybu",
+            "url": "/de/programm/Mariybu/",
+            "preview_image": {
+                "id": 1107,
+                "title": "IMG_8067",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/IMG_8067.webp"
+            },
+            "preview_text": "",
+            "sub_title": "FRECH Tour",
+            "date": "2026-11-07",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://mariybu-shop.de/search?sSearch=berlin",
+            "price": null,
+            "genre": {
+                "id": 98,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/98/"
+                },
+                "title": "Hyperpop"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 792,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/792/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/bohniger-wachmacher-2026/",
+                "slug": "bohniger-wachmacher-2026",
+                "first_published_at": "2026-03-30T14:26:00.336418Z",
+                "locale": "de"
+            },
+            "title": "BOHNIGER WACHMACHER",
+            "url": "/de/programm/bohniger-wachmacher-2026/",
+            "preview_image": {
+                "id": 1104,
+                "title": "BoWa-Logo",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/BoWa-Logo.jpg"
+            },
+            "preview_text": "",
+            "sub_title": "DAX WERNER & MORITZ HÜRTGEN",
+            "date": "2026-11-07",
+            "doors": "10:00:00",
+            "start": "11:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.festsaal.shop/catalog/tickets/549-tickets-bohniger-wachmacher-live-festsaal-kreuzberg-berlin-am-07-11-2026",
+            "price": null,
+            "genre": {
+                "id": 105,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/105/"
+                },
+                "title": "LIVE PODCAST"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 703,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/703/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/kytes-2026/",
+                "slug": "kytes-2026",
+                "first_published_at": "2025-11-13T12:12:24.415066Z",
+                "locale": "de"
+            },
+            "title": "Kytes",
+            "url": "/de/programm/kytes-2026/",
+            "preview_image": {
+                "id": 1102,
+                "title": "Kytes",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/Kytes.png"
+            },
+            "preview_text": "",
+            "sub_title": "Indie Rave Tour 2026",
+            "date": "2026-11-13",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.eventim.de/event/kytes-indie-rave-tour-festsaal-kreuzberg-20930021/",
+            "price": null,
+            "genre": {
+                "id": 20,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/20/"
+                },
+                "title": "Indie"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 693,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/693/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/sonos-cliq/",
+                "slug": "sonos-cliq",
+                "first_published_at": "2025-10-27T12:06:37.971871Z",
+                "locale": "de"
+            },
+            "title": "$ONO$ CLIQ",
+            "url": "/de/programm/sonos-cliq/",
+            "preview_image": {
+                "id": 1089,
+                "title": "$ONO$ CLIQ - credit Manuel Lossau",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/ONO_CLIQ_-_credit_Manuel_Lossau.jpg"
+            },
+            "preview_text": "",
+            "sub_title": "Planet Kumpel Tour 2026",
+            "date": "2026-04-02",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": "2026-11-14",
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://landstreicher-konzerte.de/konzerte/sonos-cliq-b-26",
+            "price": null,
+            "genre": {
+                "id": 15,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/15/"
+                },
+                "title": "Hip-Hop"
+            },
+            "status": "moved_date",
+            "support": null
+        },
+        {
+            "id": 828,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/828/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/20-Years-F-Cat-Festival/",
+                "slug": "20-Years-F-Cat-Festival",
+                "first_published_at": "2026-05-15T11:14:01.280127Z",
+                "locale": "de"
+            },
+            "title": "20 Years F-Cat Festival",
+            "url": "/de/programm/20-Years-F-Cat-Festival/",
+            "preview_image": {
+                "id": 1290,
+                "title": "20 years F-Cat",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/banner.jpg"
+            },
+            "preview_text": "",
+            "sub_title": null,
+            "date": "2026-11-14",
+            "doors": "17:00:00",
+            "start": "17:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://dice.fm/partner/tickets/event/wwdkrp-20-years-f-cat-festival-14th-nov-festsaal-kreuzberg-berlin-tickets?dice_id=9326358&dice_channel=web&dice_tags=organic&dice_campaign=Festsaal+Kreuzberg&dice",
+            "price": null,
+            "genre": null,
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 798,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/798/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/DENNIS-ESKO-BAND/",
+                "slug": "DENNIS-ESKO-BAND",
+                "first_published_at": "2026-04-09T11:53:34.802560Z",
+                "locale": "de"
+            },
+            "title": "DENNIS & JESKO BAND",
+            "url": "/de/programm/DENNIS-ESKO-BAND/",
+            "preview_image": {
+                "id": 1254,
+                "title": "DuJB-Pressefoto3-Stadion-Print-Vertikal-JPG_Lutz Westphal",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/DuJB-Pressefoto3-Stadion-Print-Vertikal-JPG_Lutz_Westphal.jpg"
+            },
+            "preview_text": "",
+            "sub_title": null,
+            "date": "2026-11-15",
+            "doors": "10:00:00",
+            "start": "11:30:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.festsaal.shop/produkte/551-tickets-dennis-jesko-band-festsaal-kreuzberg-berlin-am-15-11-2026",
+            "price": null,
+            "genre": null,
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 713,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/713/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/stoppok-2026/",
+                "slug": "stoppok-2026",
+                "first_published_at": "2025-11-27T13:06:20.697690Z",
+                "locale": "de"
+            },
+            "title": "Stoppok",
+            "url": "/de/programm/stoppok-2026/",
+            "preview_image": {
+                "id": 1113,
+                "title": "STOPPOK mit Band 2026 - Foto Martin Huch_klein",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/STOPPOK_mit_Band_2026_-_Foto_Martin_Huch_klein.jpg"
+            },
+            "preview_text": "",
+            "sub_title": "RUND-Reise – die Band-Tour 2026",
+            "date": "2026-11-15",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://konsum.buschfunk.com/konzertkarten/konzertkarten-stoppok-berlin-rund-reise-die-band-tour-2026.html",
+            "price": null,
+            "genre": {
+                "id": 91,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/91/"
+                },
+                "title": "Folk"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 652,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/652/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/BURNOUT-OSTWEST/",
+                "slug": "BURNOUT-OSTWEST",
+                "first_published_at": "2025-08-21T12:50:48.904750Z",
+                "locale": "de"
+            },
+            "title": "BURNOUT OSTWEST",
+            "url": "/de/programm/BURNOUT-OSTWEST/",
+            "preview_image": {
+                "id": 1029,
+                "title": "burnout ostwest",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/Bildschirmfoto_2025-08-21_um_12.28.57.png"
+            },
+            "preview_text": "",
+            "sub_title": null,
+            "date": "2026-11-21",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.tixforgigs.com/Event/67516",
+            "price": null,
+            "genre": {
+                "id": 92,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/92/"
+                },
+                "title": "Electropunk"
+            },
+            "status": null,
+            "support": "AG PLASTE"
+        },
+        {
+            "id": 714,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/714/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/fatoumata-diawara/",
+                "slug": "fatoumata-diawara",
+                "first_published_at": "2025-11-27T14:02:54.209331Z",
+                "locale": "de"
+            },
+            "title": "Fatoumata Diawara",
+            "url": "/de/programm/fatoumata-diawara/",
+            "preview_image": {
+                "id": 1114,
+                "title": "FATOUMATA_DSC03352_retouched copie",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/FATOUMATA_DSC03352_retouched_copie.jpg"
+            },
+            "preview_text": "",
+            "sub_title": null,
+            "date": "2026-11-22",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.festsaal.shop/produkte/524-tickets-fatoumata-diawara-festsaal-kreuzberg-berlin-am-22-11-2026",
+            "price": null,
+            "genre": {
+                "id": 91,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/91/"
+                },
+                "title": "Folk"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 715,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/715/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/any-given-day-26/",
+                "slug": "any-given-day-26",
+                "first_published_at": "2025-12-01T12:12:04.495225Z",
+                "locale": "de"
+            },
+            "title": "Any Given Day",
+            "url": "/de/programm/any-given-day-26/",
+            "preview_image": {
+                "id": 1130,
+                "title": "AGD_BleedToShine_Promo_(c)MarkusTertocha_04",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/AGD_BleedToShine_Promo_cMarkusTertocha_04.jpg"
+            },
+            "preview_text": "",
+            "sub_title": "EUROPEAN TOUR 2026",
+            "date": "2026-11-23",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": null,
+            "price": null,
+            "genre": {
+                "id": 39,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/39/"
+                },
+                "title": "Post-Hardcore/ Metalcore"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 764,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/764/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/Afrob-and-ferrismc/",
+                "slug": "Afrob-and-ferrismc",
+                "first_published_at": "2026-03-03T10:28:47.932913Z",
+                "locale": "de"
+            },
+            "title": "Afrob & Ferris MC",
+            "url": "/de/programm/Afrob-and-ferrismc/",
+            "preview_image": {
+                "id": 1204,
+                "title": "9 - Afrob & Ferris MC (Fotocredit: Sebastian Madej) - 13.09.25",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/9_-_Afrob__Ferris_MC_Fotocredit_Sebastian_Madej_-_13.09.25.jpg"
+            },
+            "preview_text": "",
+            "sub_title": "REIMEMONSTER TOUR 2026",
+            "date": "2026-11-25",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://tickets.loft.de/event/afrob-ferris-mc-smf6t9",
+            "price": null,
+            "genre": {
+                "id": 15,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/15/"
+                },
+                "title": "Hip-Hop"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 752,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/752/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/Muff-Potter/",
+                "slug": "Muff-Potter",
+                "first_published_at": "2026-02-09T15:40:16.357094Z",
+                "locale": "de"
+            },
+            "title": "Muff Potter",
+            "url": "/de/programm/Muff-Potter/",
+            "preview_image": {
+                "id": 1187,
+                "title": "Muff Potter",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/MuffPotter_2026_Credit_ErikWeiss_VerenaBruning.jpg"
+            },
+            "preview_text": "",
+            "sub_title": "KLEPTO TOUR 2026",
+            "date": "2026-11-28",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://tickets.loft.de/event/muff-potter-rant4o",
+            "price": null,
+            "genre": {
+                "id": 1,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/1/"
+                },
+                "title": "Rock"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 850,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/850/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/Mach-One/",
+                "slug": "Mach-One",
+                "first_published_at": "2026-07-01T16:00:19.487672Z",
+                "locale": "de"
+            },
+            "title": "Mach One",
+            "url": "/de/programm/Mach-One/",
+            "preview_image": {
+                "id": 1319,
+                "title": "Mach One",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/Mach_One.jpg"
+            },
+            "preview_text": "",
+            "sub_title": "und Freunde. 29 Jahre.",
+            "date": "2026-11-29",
+            "doors": "19:00:00",
+            "start": "20:30:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.machi361.de/event-details/mach-one-und-freunde-29-jahre",
+            "price": null,
+            "genre": {
+                "id": 15,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/15/"
+                },
+                "title": "Hip-Hop"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 846,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/846/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/bosse-2026/",
+                "slug": "bosse-2026",
+                "first_published_at": "2026-06-09T14:48:57.849864Z",
+                "locale": "de"
+            },
+            "title": "Bosse",
+            "url": "/de/programm/bosse-2026/",
+            "preview_image": {
+                "id": 1313,
+                "title": "Bosse",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/Bosse.webp"
+            },
+            "preview_text": "",
+            "sub_title": "Stabile Poesie Clubtour 2026",
+            "date": "2026-11-30",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://tickets.loft.de/event/bosse-w2jiax",
+            "price": null,
+            "genre": {
+                "id": 6,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/6/"
+                },
+                "title": "Indie Pop"
+            },
+            "status": "sold_out",
+            "support": null
+        },
+        {
+            "id": 826,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/826/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/endless-wellness-2026/",
+                "slug": "endless-wellness-2026",
+                "first_published_at": "2026-05-08T14:55:52.354995Z",
+                "locale": "de"
+            },
+            "title": "Endless Wellness",
+            "url": "/de/programm/endless-wellness-2026/",
+            "preview_image": {
+                "id": 1286,
+                "title": "Endless Wellness",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/Endless_Wellness.jpg"
+            },
+            "preview_text": "",
+            "sub_title": "Ein Konzert kommt selten alleine: Tour",
+            "date": "2026-12-01",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.eventim.de/noapp/event/endless-wellness-festsaal-kreuzberg-21681661/?affiliate=SZ3&utm_campaign=SzeneTickets+GmbH&utm_source=SZ3&utm_medium=dp",
+            "price": null,
+            "genre": {
+                "id": 20,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/20/"
+                },
+                "title": "Indie"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 773,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/773/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/Japanmarkt-Dezember-26/",
+                "slug": "Japanmarkt-Dezember-26",
+                "first_published_at": "2026-03-06T17:27:52.272926Z",
+                "locale": "de"
+            },
+            "title": "24. Japanmarkt",
+            "url": "/de/programm/Japanmarkt-Dezember-26/",
+            "preview_image": {
+                "id": 1218,
+                "title": "JM24",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/JM24.jpg"
+            },
+            "preview_text": "",
+            "sub_title": "SOMMERFEST",
+            "date": "2026-12-06",
+            "doors": "12:00:00",
+            "start": "12:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.japanevents.shop/details-registrierung/24-japanmarkt-berlin-japanischer-weihnachtsmarkt",
+            "price": null,
+            "genre": {
+                "id": 29,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/29/"
+                },
+                "title": "Markt"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 659,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/659/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/herrenmagazin-26/",
+                "slug": "herrenmagazin-26",
+                "first_published_at": "2025-09-10T11:04:40.303764Z",
+                "locale": "de"
+            },
+            "title": "Herrenmagazin",
+            "url": "/de/programm/herrenmagazin-26/",
+            "preview_image": {
+                "id": 1038,
+                "title": "Herrenmagazin-8_LucjaRomanowska",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/Herrenmagazin-8_LucjaRomanowska.jpg"
+            },
+            "preview_text": "",
+            "sub_title": "Aus gegebenem Anlass",
+            "date": "2026-12-09",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.festsaal.shop/produkte/504-tickets-herrenmagazin-festsaal-kreuzberg-berlin-am-09-12-2026",
+            "price": null,
+            "genre": {
+                "id": 5,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/5/"
+                },
+                "title": "German Pop"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 824,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/824/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/montreal-2026-12-12/",
+                "slug": "montreal-2026-12-12",
+                "first_published_at": "2026-05-08T12:42:38.215612Z",
+                "locale": "de"
+            },
+            "title": "Montreal",
+            "url": "/de/programm/montreal-2026-12-12/",
+            "preview_image": {
+                "id": 683,
+                "title": "MONTREAL_2023_Copyright_Ania_Sudbin-002",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/MONTREAL_2023_Copyright_Ania_Sudbin-002.jpg"
+            },
+            "preview_text": "",
+            "sub_title": "1000. Konzert - Mini Countdown Tour",
+            "date": "2026-12-12",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.eventim.de/event/montreal-1000-konzert-mini-countdown-tour-festsaal-kreuzberg-21628501/?affiliate=TUG#tab=",
+            "price": null,
+            "genre": {
+                "id": 21,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/21/"
+                },
+                "title": "Punk Rock"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 811,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/811/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/live-wrestling-12-2026/",
+                "slug": "live-wrestling-12-2026",
+                "first_published_at": "2026-04-16T15:51:09.178565Z",
+                "locale": "de"
+            },
+            "title": "Wrestling",
+            "url": "/de/programm/live-wrestling-12-2026/",
+            "preview_image": {
+                "id": 1266,
+                "title": "CD",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/CD.webp"
+            },
+            "preview_text": "",
+            "sub_title": "GWF COUNTDOWN 2026",
+            "date": "2026-12-13",
+            "doors": "17:30:00",
+            "start": "18:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.eventbrite.com/e/gwf-final-countdown-2026-tickets-1985045167532?aff=ebdsoporgprofile",
+            "price": null,
+            "genre": {
+                "id": 30,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/30/"
+                },
+                "title": "Wrestling Show"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 762,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/762/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/mika-noe/",
+                "slug": "mika-noe",
+                "first_published_at": "2026-02-24T16:19:05.551534Z",
+                "locale": "de"
+            },
+            "title": "MIKA NOÉ",
+            "url": "/de/programm/mika-noe/",
+            "preview_image": {
+                "id": 1202,
+                "title": "Mika Noé Pressefoto_(c)Malu Ebenau1 (1)",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/Mika_Noe_Pressefoto_cMalu_Ebenau1_1.jpg"
+            },
+            "preview_text": "",
+            "sub_title": "LIVE 2026",
+            "date": "2026-12-16",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://landstreicher-konzerte.de/konzerte/mika-no%C3%A9-b-26-2",
+            "price": null,
+            "genre": {
+                "id": 5,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/5/"
+                },
+                "title": "German Pop"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 737,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/737/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/frittenbude/",
+                "slug": "frittenbude",
+                "first_published_at": "2025-12-12T17:01:35.480721Z",
+                "locale": "de"
+            },
+            "title": "FRITTENBUDE",
+            "url": "/de/programm/frittenbude/",
+            "preview_image": {
+                "id": 1152,
+                "title": "bastianbochinski_frittenbude_press_2025-1",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/bastianbochinski_frittenbude_press_2025-1.jpeg"
+            },
+            "preview_text": "",
+            "sub_title": "20 Jahre Filmriss - Tour",
+            "date": "2026-12-19",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.tixforgigs.com/Event/70244",
+            "price": null,
+            "genre": {
+                "id": 101,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/101/"
+                },
+                "title": "Electropunk"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 739,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/739/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/mola/",
+                "slug": "mola",
+                "first_published_at": "2025-12-18T16:43:50.381729Z",
+                "locale": "de"
+            },
+            "title": "MOLA",
+            "url": "/de/programm/mola/",
+            "preview_image": {
+                "id": 1156,
+                "title": "Presse MOLA Weihnachten Brutal _Andre Beiler",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/Presse_MOLA_Weihnachten_Brutal__Andre_Beiler.jpg"
+            },
+            "preview_text": "",
+            "sub_title": "Weihnachten Brutal - Die große Mola Weihnachtsshow & Friends | Support: JUGO ÜRDENS",
+            "date": "2026-12-22",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://landstreicher-konzerte.de/konzerte/mola-b-26",
+            "price": null,
+            "genre": {
+                "id": 5,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/5/"
+                },
+                "title": "German Pop"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 832,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/832/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/alexander-scheer-andreas-dresen-2026/",
+                "slug": "alexander-scheer-andreas-dresen-2026",
+                "first_published_at": "2026-05-26T15:26:28.439012Z",
+                "locale": "de"
+            },
+            "title": "Alexander Scheer | Andreas Dresen & Band",
+            "url": "/de/programm/alexander-scheer-andreas-dresen-2026/",
+            "preview_image": {
+                "id": 1103,
+                "title": "Dresen-Scheer-Band_2025_Foto Peter Hartwig_quer_web",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/Dresen-Scheer-Band_2025_Foto_Peter_Hartwig_quer_web.jpg"
+            },
+            "preview_text": "",
+            "sub_title": "FERNSEHER AUS, STERNSCHNUPPEN AN!",
+            "date": "2026-12-27",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.eventim.de/event/alexander-scheer-andreas-dresen-band-spielen-nicht-nur-gundermann-festsaal-kreuzberg-21571635/",
+            "price": null,
+            "genre": {
+                "id": 3,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/3/"
+                },
+                "title": "Indie Rock"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 848,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/848/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/Boh%C3%A8me-Sauvage-Berlin/",
+                "slug": "Bohème-Sauvage-Berlin",
+                "first_published_at": "2026-06-19T18:16:09.856067Z",
+                "locale": "de"
+            },
+            "title": "Bohème Sauvage Berlin",
+            "url": "/de/programm/Boh%C3%A8me-Sauvage-Berlin/",
+            "preview_image": {
+                "id": 1321,
+                "title": "Boheme Sauvage",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/Boheme_Sauvage.jpg"
+            },
+            "preview_text": "",
+            "sub_title": "Nº 143 - SILVESTERBALL",
+            "date": "2026-12-31",
+            "doors": "19:00:00",
+            "start": "19:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.boheme-sauvage.com/events/boheme-sauvage-berlin-n-143-silvesterball",
+            "price": null,
+            "genre": {
+                "id": 110,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/110/"
+                },
+                "title": "20er Jahre Party"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 768,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/768/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/buster-shuffle2026/",
+                "slug": "buster-shuffle2026",
+                "first_published_at": "2026-03-05T17:02:23.604456Z",
+                "locale": "de"
+            },
+            "title": "Buster Shuffle",
+            "url": "/de/programm/buster-shuffle2026/",
+            "preview_image": {
+                "id": 1210,
+                "title": "Buster Shuffle Press Horizontal No effect",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/Buster_Shuffle_Press_Horizontal_No_effect.jpg"
+            },
+            "preview_text": "",
+            "sub_title": "Don't get used to this Tour 2027",
+            "date": "2027-01-23",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.festsaal.shop/catalog/articles/544-tickets-buster-shuffle-festsaal-kreuzberg-berlin-am-23-01-2027",
+            "price": null,
+            "genre": {
+                "id": 64,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/64/"
+                },
+                "title": "Ska"
+            },
+            "status": null,
+            "support": "ERECTION"
+        },
+        {
+            "id": 753,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/753/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/anna/",
+                "slug": "anna",
+                "first_published_at": "2026-02-10T10:59:15.272260Z",
+                "locale": "de"
+            },
+            "title": "ANNA",
+            "url": "/de/programm/anna/",
+            "preview_image": {
+                "id": 1189,
+                "title": "anna berlin",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/anna_berlin.jpg"
+            },
+            "preview_text": "",
+            "sub_title": "Lass es Liebe sein",
+            "date": "2027-01-28",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.eventim.de/event/anna-lass-es-liebe-sein-die-lieder-von-rosenstolz-und-anna-r-festsaal-kreuzberg-21330234/?affiliate=TUG&srsltid=AfmBOopHwdVan-IVVFoarYtahyWiXNsMLhH5FiVZVv2TxbeS01CXEi5T",
+            "price": null,
+            "genre": {
+                "id": 5,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/5/"
+                },
+                "title": "German Pop"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 845,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/845/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/ELDER/",
+                "slug": "ELDER",
+                "first_published_at": "2026-06-10T09:59:55.525356Z",
+                "locale": "de"
+            },
+            "title": "ELDER",
+            "url": "/de/programm/ELDER/",
+            "preview_image": {
+                "id": 1312,
+                "title": "Elder 2 by Leon de Backer",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/Elder_2_by_Leon_de_Backer.jpg"
+            },
+            "preview_text": "",
+            "sub_title": null,
+            "date": "2027-02-13",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.greyzone-tickets.de/produkte/1316",
+            "price": null,
+            "genre": {
+                "id": 109,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/109/"
+                },
+                "title": "Stoner Rock"
+            },
+            "status": null,
+            "support": "Temple Fang"
+        },
+        {
+            "id": 834,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/834/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/julia-jacklin/",
+                "slug": "julia-jacklin",
+                "first_published_at": "2026-05-28T14:01:03.653966Z",
+                "locale": "de"
+            },
+            "title": "Julia Jacklin",
+            "url": "/de/programm/julia-jacklin/",
+            "preview_image": {
+                "id": 1299,
+                "title": "JuliaJacklin_1_c_NickMckk_0422",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/JuliaJacklin_1_c_NickMckk_0422.jpg"
+            },
+            "preview_text": "",
+            "sub_title": "2027 On Tour",
+            "date": "2027-02-22",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": null,
+            "price": null,
+            "genre": {
+                "id": 7,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/7/"
+                },
+                "title": "Alternative"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 733,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/733/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/karate-andi/",
+                "slug": "karate-andi",
+                "first_published_at": "2025-12-09T18:27:13.726399Z",
+                "locale": "de"
+            },
+            "title": "Karate Andi",
+            "url": "/de/programm/karate-andi/",
+            "preview_image": {
+                "id": 1145,
+                "title": "karate andi",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/PR_BILD_ANDI_2_1.jpeg"
+            },
+            "preview_text": "",
+            "sub_title": null,
+            "date": "2026-04-10",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": "2027-03-05",
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://landstreicher-konzerte.de/konzerte/karate-andi-b-26",
+            "price": null,
+            "genre": {
+                "id": 16,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/16/"
+                },
+                "title": "Hip-Hop/Rap"
+            },
+            "status": "moved_date",
+            "support": null
+        },
+        {
+            "id": 740,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/740/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/hinterlandgang-27/",
+                "slug": "hinterlandgang-27",
+                "first_published_at": "2025-12-18T18:00:21.540596Z",
+                "locale": "de"
+            },
+            "title": "Hinterlandgang",
+            "url": "/de/programm/hinterlandgang-27/",
+            "preview_image": {
+                "id": 1157,
+                "title": "HLG",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/HLG.jpeg"
+            },
+            "preview_text": "",
+            "sub_title": "Tour 2027",
+            "date": "2027-03-06",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.tixforgigs.com/Event/70555",
+            "price": null,
+            "genre": {
+                "id": 16,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/16/"
+                },
+                "title": "Hip-Hop/Rap"
+            },
+            "status": "custom",
+            "support": null
+        },
+        {
+            "id": 849,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/849/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/turnover-2027/",
+                "slug": "turnover-2027",
+                "first_published_at": "2026-06-23T10:56:39.671611Z",
+                "locale": "de"
+            },
+            "title": "Turnover",
+            "url": "/de/programm/turnover-2027/",
+            "preview_image": {
+                "id": 1317,
+                "title": "Turnover",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/Turnover.jpg"
+            },
+            "preview_text": "",
+            "sub_title": null,
+            "date": "2027-03-09",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": null,
+            "price": null,
+            "genre": {
+                "id": 3,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/3/"
+                },
+                "title": "Indie Rock"
+            },
+            "status": null,
+            "support": "Nothing"
+        },
+        {
+            "id": 831,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/831/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/ami-warning-2027/",
+                "slug": "ami-warning-2027",
+                "first_published_at": "2026-05-22T15:38:19.040266Z",
+                "locale": "de"
+            },
+            "title": "Ami Warning",
+            "url": "/de/programm/ami-warning-2027/",
+            "preview_image": {
+                "id": 1296,
+                "title": "01 Ami Warning by Joel Heyd",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/01_Ami_Warning_by_Joel_Heyd.jpg"
+            },
+            "preview_text": "",
+            "sub_title": "Wellen Tour 2027",
+            "date": "2027-03-11",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.eventim.de/event/ami-warning-wellen-tour-2027-festsaal-kreuzberg-21707790/",
+            "price": null,
+            "genre": {
+                "id": 85,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/85/"
+                },
+                "title": "Soul"
+            },
+            "status": null,
+            "support": null
+        },
+        {
+            "id": 839,
+            "meta": {
+                "type": "home.EventPage",
+                "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/pages/839/",
+                "html_url": "https://admin.festsaal-kreuzberg.de/de/programm/elaekelaeset-2027/",
+                "slug": "elaekelaeset-2027",
+                "first_published_at": "2026-05-29T16:37:37.832649Z",
+                "locale": "de"
+            },
+            "title": "ELÄKELÄISET",
+            "url": "/de/programm/elaekelaeset-2027/",
+            "preview_image": {
+                "id": 1304,
+                "title": "Eläkeläiset-3-©_Laiska_Lajunen",
+                "download_url": "https://v2.files.funkhaus.io/fsk-1170-media/original_images/Elakelaiset-3-_Laiska_Lajunen.jpg"
+            },
+            "preview_text": "",
+            "sub_title": "Der Humppagenerator 2027",
+            "date": "2027-04-10",
+            "doors": "19:00:00",
+            "start": "20:00:00",
+            "changed_date": null,
+            "changed_doors": null,
+            "changed_start": null,
+            "ticket": "https://www.greyzone-tickets.de/produkte/1309",
+            "price": null,
+            "genre": {
+                "id": 22,
+                "meta": {
+                    "type": "home.Genre",
+                    "detail_url": "https://admin.festsaal-kreuzberg.de/api/v2/genre/22/"
+                },
+                "title": "Pop"
+            },
+            "status": null,
+            "support": null
+        }
+    ]
+}
