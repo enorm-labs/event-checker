@@ -285,31 +285,69 @@ fun isNonArtistEvent(name: String): Boolean {
 }
 
 /**
+ * A title that unambiguously names a festival: a word-anchored `festival` /
+ * `festivalticket` marker *anywhere* in the title ("Canarias Calling Festival",
+ * "Grossstadtwahnsinn 2026 - Festivalticket"). Deliberately tighter than
+ * [NON_ARTIST_EVENT_PATTERN] — it does **not** match a bare `fest`, so an event
+ * merely titled "… Fest" is not promoted on this weak signal.
+ */
+private val FESTIVAL_TITLE_PATTERN =
+    Regex("""\bfestivaltickets?\b|\bfestivals?\b""", RegexOption.IGNORE_CASE)
+
+/**
+ * Whether [title] unambiguously names a festival (see [FESTIVAL_TITLE_PATTERN]).
+ *
+ * Used at the persistence boundary ([ScrapedEvent.toEventEntity]) to promote an
+ * event whose source under-classified it as `CONCERT`/`OTHER` — a festival day the
+ * venue labelled "Konzert", or a title with no source category at all — to
+ * `FESTIVAL`. A source that already typed the event `PARTY`/`QUIZ`/`FESTIVAL` is
+ * trusted and left unchanged.
+ *
+ * Example:
+ * ```kotlin
+ * isFestivalTitle("CANARIAS CALLING FESTIVAL")               // true
+ * isFestivalTitle("GROSSSTADTWAHNSINN 2026 - FESTIVALTICKET") // true
+ * isFestivalTitle("Manifest")                                 // false
+ * ```
+ */
+fun isFestivalTitle(title: String): Boolean = FESTIVAL_TITLE_PATTERN.containsMatchIn(title)
+
+/**
  * Trailing suffixes that decorate a real act name, stripped by [stripArtistSuffix]
  * to recover the performer:
  * - a hyphen-separated "… - <tour name> Tour <year>" tail,
  * - a hyphen-separated anniversary tail "… - <n> Years/Jahre …" (e.g.
  *   "THE BUTLERS - 40 YEARS, SKA & SOULPOWER -"),
  * - a trailing "Live" / "Live in <city>",
- * - a trailing parenthesized performance-format annotation "(DJ-Set)", "(Live)",
- *   "(Acoustic)", "(Solo)", "(Unplugged)", and
- * - a trailing German "Nachholtermin vom <date>" (rescheduled-show note that venues
- *   append to the title, e.g. "The Dear Hunter -Nachholtermin vom 30.09.2025.").
+ * - a trailing performance-format annotation, either parenthesized — "(DJ-Set)",
+ *   "(Live)", "(Acoustic)", "(Solo)", "(Unplugged)" — or a bare, whitespace-preceded
+ *   "DJ-Set" / "DJ Set" tail ("Acid Arab DJ-Set" → "Acid Arab"),
+ * - a trailing German relocation/reschedule note — "Nachholtermin vom <date>" or
+ *   "Hochverlegung" (e.g. "The Dear Hunter -Nachholtermin vom 30.09.2025.",
+ *   "OCT (On Company Time) – Hochverlegung" → "OCT (On Company Time)"),
+ * - a trailing "singt <repertoire>" tribute framing ("Tex singt Leonard Cohen" → "Tex"), and
+ * - a trailing "<Album/EP/…> Release" / "Release Party" promo tag ("Hawt Coco Album
+ *   Release" → "Hawt Coco").
  * The hyphen tails require a `<space>-<space>` boundary and a recognized marker
  * (`tour`, or a number + `years`/`jahre`), so an undecorated hyphenated name like
  * "BAD COMPANY LEGACY - Dave Colwell" is left intact. A whitespace boundary before
  * "Live" is likewise required, so a bare "Live" (the band) is never matched. The
- * "Nachholtermin" marker is word-anchored and accepts an optional leading dash, so
- * both "… -Nachholtermin …" and "… Nachholtermin …" spellings are caught. The
- * parenthetical is keyed on the format word, so an alias in parentheses (e.g.
- * "Sickboyrari (Black Kray)") is kept.
+ * relocation/reschedule marker is word-anchored and accepts an optional leading dash
+ * (`-`/`–`/`—`), so both "… -Nachholtermin …" and "… Nachholtermin …" spellings are
+ * caught. The bare "Release" tag requires a preceding format word (Album/EP/…) or a
+ * "Party"/"Show" tail, so a band named just "Release" survives. The parenthetical is
+ * keyed on the format word, so an alias in parentheses (e.g. "Sickboyrari (Black Kray)") is kept.
  */
 private val ARTIST_SUFFIX_PATTERN =
     Regex(
         """\s+-\s+(?:\S.*\btour\b|\d+\s+(?:years?|jahre)\b).*$""" +
             """|\s+live(?:\s+in\s+\S.*)?$""" +
             """|\s*\((?:dj[\s-]?set|live|acoustic|akustik|unplugged|solo)\)\s*$""" +
-            """|\s+-?\s*nachholtermin\b.*$""",
+            """|\s+dj[\s-]?set$""" +
+            """|\s+[-–—]?\s*(?:nachholtermin|hochverlegung)\b.*$""" +
+            """|\s+singt\s+\S.*$""" +
+            """|\s+(?:album|ep|single|mixtape|record|tape)\s+release(?:\s+(?:party|show|special))?$""" +
+            """|\s+release\s+(?:party|show)$""",
         RegexOption.IGNORE_CASE
     )
 
@@ -329,13 +367,56 @@ private val ARTIST_SUFFIX_PATTERN =
  * stripArtistSuffix("HGICH.T LIVE")                          // "HGICH.T"
  * stripArtistSuffix("THE BUTLERS - 40 YEARS, SKA -")         // "THE BUTLERS"
  * stripArtistSuffix("Avangelic (DJ-Set)")                    // "Avangelic"
+ * stripArtistSuffix("Acid Arab DJ-Set")                      // "Acid Arab"
  * stripArtistSuffix("The Dear Hunter -Nachholtermin vom …")  // "The Dear Hunter"
+ * stripArtistSuffix("OCT (On Company Time) – Hochverlegung") // "OCT (On Company Time)"
+ * stripArtistSuffix("Tex singt Leonard Cohen")               // "Tex"
+ * stripArtistSuffix("Hawt Coco Album Release")               // "Hawt Coco"
  * stripArtistSuffix("Sickboyrari (Black Kray)")              // "Sickboyrari (Black Kray)"
  * ```
  */
 fun stripArtistSuffix(name: String): String {
     val stripped = name.trim().replace(ARTIST_SUFFIX_PATTERN, "").trim()
     return stripped.ifBlank { name.trim() }
+}
+
+/**
+ * Trailing noise venues append to an *event title* that must not become part of the stored
+ * title (nor of a title-derived headliner artist):
+ * - a "Nachholtermin vom <date>" reschedule note or a "Hochverlegung" relocation note,
+ * - a "(ausverkauft)" / "ausverkauft" sold-out annotation — a status, not a name; Frannz in
+ *   particular never derives sold-out from prose, so it is pure noise here, and stripping it
+ *   keeps "… (ausverkauft)" and its non-sold-out twin from splitting into two artists,
+ * - any stray trailing dash.
+ *
+ * Each alternative is word-/end-anchored, so mid-title text (e.g. an "ausverkauften" mention
+ * that only ever reaches descriptions) is never touched. This is the title-level counterpart
+ * of the tail [ARTIST_SUFFIX_PATTERN] strips off an artist name.
+ */
+private val TITLE_NOISE_PATTERN =
+    Regex(
+        """\s+[-–—]?\s*(?:nachholtermin|hochverlegung)\b.*$""" +
+            """|\s+[-–—(]*\s*ausverkauft!?\s*\)?\s*$""" +
+            """|\s+[-–—]\s*$""",
+        RegexOption.IGNORE_CASE
+    )
+
+/**
+ * Strips a trailing rescheduled-show note and stray trailing dash from an event title
+ * so the stored, user-visible title stays clean — "Iggi Kelly Nachholtermin vom
+ * 28.04.26-" → "Iggi Kelly". Returns the input unchanged when there is no such tail, or
+ * when stripping would leave nothing.
+ *
+ * Example:
+ * ```kotlin
+ * cleanEventTitle("Iggi Kelly Nachholtermin vom 28.04.26-")     // "Iggi Kelly"
+ * cleanEventTitle("Singalong -Das Mitsing-Event (ausverkauft)") // "Singalong -Das Mitsing-Event"
+ * cleanEventTitle("The Adicts")                                 // "The Adicts"
+ * ```
+ */
+fun cleanEventTitle(title: String): String {
+    val stripped = title.trim().replace(TITLE_NOISE_PATTERN, "").trim()
+    return stripped.ifBlank { title.trim() }
 }
 
 /**
@@ -604,16 +685,33 @@ fun stripSeriesPrefix(title: String): String {
 }
 
 /**
+ * A leading "A night with" / "An evening with" / "Ein Abend mit" event-framing phrase,
+ * stripped from a title-derived headliner so the billed act remains ("A night with
+ * GULVØSS II" → "GULVØSS II"). Title-scoped (see [headlinersFromTitle]): these phrases
+ * frame a whole event, never appear inside a lineup entry, and the stored event title is
+ * left untouched — only the derived artist name is recovered.
+ */
+private val ARTIST_FRAMING_PREFIX =
+    Regex("""^(?:a\s+night\s+with|an\s+evening\s+with|ein\s+abend\s+mit)\s+""", RegexOption.IGNORE_CASE)
+
+/** Strips a leading [ARTIST_FRAMING_PREFIX], keeping the input when stripping would leave nothing. */
+private fun stripFramingPrefix(name: String): String {
+    val stripped = name.replaceFirst(ARTIST_FRAMING_PREFIX, "").trim()
+    return stripped.ifBlank { name.trim() }
+}
+
+/**
  * Turns an event title into its headliner artist entries: strip a recurring-series
  * "#<n>:" prefix via [stripSeriesPrefix] so the billed acts remain, split co-billed
- * acts via [splitHeadlinerTitle], strip tour/live suffixes via [stripArtistSuffix] to
- * recover the performer, then drop anything that is not an artist ([isNonArtistName] —
- * placeholders, role labels, segments, festivals). Returned in billing order (title
- * order); the caller appends support acts.
+ * acts via [splitHeadlinerTitle], strip an "A night with …" framing prefix and any
+ * tour/live/note suffix ([stripArtistSuffix]) to recover the performer, then drop
+ * anything that is not an artist ([isNonArtistName] — placeholders, role labels,
+ * segments, festivals). Returned in billing order (title order); the caller appends
+ * support acts.
  */
 fun headlinersFromTitle(title: String): List<ScrapedArtist> =
     splitHeadlinerTitle(stripSeriesPrefix(title))
-        .map { stripArtistSuffix(it) }
+        .map { stripFramingPrefix(stripArtistSuffix(it)) }
         .filterNot { isNonArtistName(it) }
         .map { ScrapedArtist(name = it, role = "HEADLINER") }
 

@@ -16,6 +16,7 @@ import de.norm.events.genretag.normalizeGenre
 import de.norm.events.promoter.PromoterEntity
 import de.norm.events.promoter.PromoterRepository
 import de.norm.events.promoter.canonicalPromoterName
+import de.norm.events.promoter.isNonPromoterName
 import de.norm.events.slug.SlugGenerator
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.flow.toList
@@ -211,9 +212,14 @@ class AssociationSyncService(
      *   promoters referenced by the scraped events.
      */
     private suspend fun resolveAllPromoters(scrapedEvents: List<ScrapedEvent>): Map<String, PromoterEntity> {
-        // Canonicalize names first so variants of the same promoter ("LOFT",
-        // "Loft Concerts GmbH") resolve to one entity (see canonicalPromoterName).
-        val canonicalNames = scrapedEvents.flatMap { it.promoters }.map { canonicalPromoterName(it) }
+        // Drop bare generic labels ("Event.") first, then canonicalize so variants of the
+        // same promoter ("LOFT", "Loft Concerts GmbH") resolve to one entity — see
+        // isNonPromoterName / canonicalPromoterName.
+        val canonicalNames =
+            scrapedEvents
+                .flatMap { it.promoters }
+                .filterNot { isNonPromoterName(it) }
+                .map { canonicalPromoterName(it) }
         val allPromoterSlugs = canonicalNames.map { SlugGenerator.slugify(it) }.toSet()
         if (allPromoterSlugs.isEmpty()) return emptyMap()
 
@@ -273,9 +279,16 @@ class AssociationSyncService(
                 EventPromoterEntity::eventId
             ) ?: return
 
-        // Build the desired associations from scraped data, canonicalizing names so the
-        // slug lookup matches the (canonical) keys used when the cache was populated.
-        val promotersBySourceId = scrapedEvents.associate { it.sourceId to it.promoters.map { p -> canonicalPromoterName(p) } }
+        // Build the desired associations from scraped data, dropping bare generic labels and
+        // canonicalizing names so the slug lookup matches the (canonical) keys used when the
+        // cache was populated (must mirror resolveAllPromoters' filtering exactly).
+        val promotersBySourceId =
+            scrapedEvents.associate { event ->
+                event.sourceId to
+                    event.promoters
+                        .filterNot { isNonPromoterName(it) }
+                        .map { canonicalPromoterName(it) }
+            }
         val toInsert = mutableListOf<EventPromoterEntity>()
         val toDeleteIds = mutableListOf<Long>()
 

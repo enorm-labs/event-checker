@@ -13,9 +13,12 @@ import java.time.LocalTime
 class ScrapedEventTest {
     private fun scrapedEvent(
         doorsTime: LocalTime? = null,
-        startTime: LocalTime? = null
+        startTime: LocalTime? = null,
+        title: String = "Berliner Weisse",
+        eventType: String? = null
     ) = ScrapedEvent(
-        title = "Berliner Weisse",
+        title = title,
+        eventType = eventType,
         eventDate = LocalDate.of(2026, 12, 30),
         sourceId = "so36:98223",
         sourceUrl = "https://www.so36.com/produkte/98223",
@@ -40,5 +43,23 @@ class ScrapedEventTest {
 
         entity.doorsTime shouldBe LocalTime.of(19, 0)
         entity.startTime shouldBe LocalTime.of(20, 0)
+    }
+
+    @Test
+    fun `toEventEntity promotes an under-classified festival title to FESTIVAL`() {
+        // Category-less "… Festival" (defaults to OTHER) and a "Konzert"-labelled festival day.
+        scrapedEvent(title = "CANARIAS CALLING FESTIVAL").toEntity().eventType shouldBe "FESTIVAL"
+        scrapedEvent(title = "GROSSSTADTWAHNSINN 2026 - FESTIVALTICKET", eventType = "CONCERT")
+            .toEntity()
+            .eventType shouldBe "FESTIVAL"
+    }
+
+    @Test
+    fun `toEventEntity does not override an explicit non-festival type or a plain title`() {
+        // A source that says PARTY is trusted even with "festival" in the title …
+        scrapedEvent(title = "Freedom Festival Party", eventType = "PARTY").toEntity().eventType shouldBe "PARTY"
+        // … and a plain concert title keeps its type.
+        scrapedEvent(title = "Berliner Weisse", eventType = "CONCERT").toEntity().eventType shouldBe "CONCERT"
+        scrapedEvent(title = "Manifest").toEntity().eventType shouldBe "OTHER"
     }
 }

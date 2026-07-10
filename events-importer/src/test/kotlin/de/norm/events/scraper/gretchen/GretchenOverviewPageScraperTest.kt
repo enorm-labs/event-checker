@@ -179,6 +179,77 @@ class GretchenOverviewPageScraperTest {
                 name shouldNotContain "Opening DJ-Set"
             }
         }
+
+        @Test
+        fun `strips a bare trailing DJ-Set suffix off a performer name`() {
+            // "Acid Arab DJ-Set" / "Paty Vapor DJ-Set" are the acts "Acid Arab" / "Paty Vapor".
+            eventWithId("3550").artists.first() shouldBe ScrapedArtist("Acid Arab", "HEADLINER")
+            eventWithId("3560").artists shouldContainExactly
+                listOf(
+                    ScrapedArtist("System Olympia", "HEADLINER"),
+                    ScrapedArtist("Paty Vapor", "SUPPORT")
+                )
+        }
+
+        @Test
+        fun `splits an inline feat credit into separate acts`() {
+            // "Mop Mop ft. Anthony Joseph" → the main act plus its featured guest.
+            eventWithId("3518").artists shouldContainExactly
+                listOf(
+                    ScrapedArtist("Mop Mop", "HEADLINER"),
+                    ScrapedArtist("Anthony Joseph", "SUPPORT"),
+                    ScrapedArtist("Phat Fred", "SUPPORT")
+                )
+            // A feat credit on a mid-lineup line splits too ("The Bug ft. Dis Fig").
+            eventWithId("3519").artists.map { it.name } shouldContainExactly
+                listOf("Tikiman w/Scion", "JK Flesh", "The Bug", "Dis Fig", "Ghost Dubs", "Gorgonn")
+        }
+
+        @Test
+        fun `drops a trailing plus-tag stylisation`() {
+            // "Okvsho +experience" is the act "Okvsho"; "+experience" is a stylisation, not a second act.
+            eventWithId("3453").artists shouldContainExactly
+                listOf(
+                    ScrapedArtist("Okvsho", "HEADLINER"),
+                    ScrapedArtist("Sean Steinfeger", "SUPPORT")
+                )
+        }
+    }
+
+    @Nested
+    inner class TitleCleaning {
+        @Test
+        fun `strips the anniversary-series banner from the title`() {
+            // "15 Years GRETCHEN: RYMDEN" → the act "RYMDEN"; artists are unaffected.
+            val event = eventWithId("3468")
+            event.title shouldBe "RYMDEN"
+            event.artists.first() shouldBe ScrapedArtist("Rymden", "HEADLINER")
+        }
+
+        @Test
+        fun `leaves a non-Gretchen NN-Years title intact`() {
+            // The strip is anchored on "Gretchen", so "Recycle: 15 Years FLEXOUT AUDIO" is kept.
+            eventWithId("3532").title shouldBe "Recycle: 15 Years FLEXOUT AUDIO"
+        }
+    }
+
+    @Nested
+    inner class EventTypeInference {
+        @Test
+        fun `defaults a live-music listing to CONCERT`() {
+            eventWithId("3492").eventType shouldBe "CONCERT"
+        }
+
+        @Test
+        fun `types a festival title as FESTIVAL`() {
+            eventWithId("3537").eventType shouldBe "FESTIVAL"
+        }
+
+        @Test
+        fun `types club-night and DJ-set titles as PARTY`() {
+            eventWithId("3530").eventType shouldBe "PARTY" // "… CLUB NIGHT"
+            eventWithId("3511").eventType shouldBe "PARTY" // "BALKANBEATS - Robert Soko DJ-Set"
+        }
     }
 
     @Nested

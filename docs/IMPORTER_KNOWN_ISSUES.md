@@ -223,6 +223,43 @@ structured. Limitations:
   sometimes null. Timestamps carry a spurious `Z` suffix on local Berlin wall-clock
   times — read as local, no timezone shift (see `parseBinuuDate`/`parseBinuuTime`).
 
+### Gretchen (`scraper/gretchen/`) — retro hand-coded, single page
+
+- 🟠 **`eventType` is inferred from the title, not scraped.** Gretchen exposes no
+  category anywhere, so — like Badehaus and Bi Nuu — the type is a best-effort
+  heuristic (`inferEventType`): `quiz` → `QUIZ`; a word-anchored `festival` →
+  `FESTIVAL`; a party/club keyword (`party`/`club night`/`rave`/`karaoke`/`dj set`) →
+  `PARTY`; everything else defaults to `CONCERT` (Gretchen is live-music-leaning). Only
+  the **title** is scanned, never the genre list (a literal `90's Rave`/`House` token
+  would otherwise mislabel a concert). Reactive: a party that names itself without a
+  keyword (`AFRO HAUS`, `TESTOSTERONE`, `GIRLS TOWN`) stays `CONCERT` until a signal is
+  added → shares the reactive-heuristic limitation tracked in `TODO.md`.
+- 🟢 **Artists come from the `.lineup` stages, not the title** (titles are frequently a
+  party/series name). Inline `feat.`/`ft.` credits are split into main + guest, a bare
+  `DJ-Set` suffix and a `+<tag>` stylisation are stripped, and floor/section headers,
+  credit lines and prose notes are dropped. Residual: a conjunction-joined pair on a
+  *single* lineup line (`Prezident & Jay Baez`) is kept as one act — Gretchen lists
+  genuine co-bills on separate `<br>` lines, so a `&` *within* one line is as often a
+  duo's name as two acts, and there is no reliable signal to tell them apart.
+- 🟢 **The `NN Years GRETCHEN:` anniversary-series banner is stripped from the display
+  title** (`15 Years GRETCHEN: BOTTICELLI BABY` → `BOTTICELLI BABY`); the act name is
+  what remains. Other `NN Years <act>` titles (`Recycle: 15 Years FLEXOUT AUDIO`) are
+  left intact — the strip is anchored on "Gretchen".
+
+### Duncker Club (`scraper/duncker/`) — retro hand-coded, single page
+
+- 🟢 **Every night is typed `PARTY`.** Duncker is a resident-DJ dance club with no other
+  event kind, so the type is a constant, not a scraped/inferred signal.
+- 🟢 **No structured genre.** The free-text style line ("Rock, Indie, Alternative,
+  Punk") is kept as the `subtitle`, deliberately **not** the genre field, so it never
+  seeds bogus genre tags.
+- 🟢 **No show time.** The programme lists only an opening-hour range (`21h-05h`); the
+  opening hour is stored as `doorsTime` and there is no separate start time.
+- 🟢 **Year inferred from the German weekday** (the `DD.MM.` date omits it), which also
+  resolves the recently-passed events the venue leaves listed — like Roadrunner. DJ
+  names are prefixed `DJ`/`Djs` and split on separators; a `DJ <handle>` is **not**
+  de-prefixed (shared with Madame Claude's limitation).
+
 ---
 
 ## How to extend this doc

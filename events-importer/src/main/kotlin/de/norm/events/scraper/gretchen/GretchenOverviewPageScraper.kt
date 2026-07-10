@@ -1,14 +1,17 @@
 package de.norm.events.scraper.gretchen
 
+import de.norm.events.event.EventType
 import de.norm.events.scraper.EventSource
 import de.norm.events.scraper.ScrapedArtist
 import de.norm.events.scraper.ScrapedEvent
+import de.norm.events.scraper.gretchen.GretchenOverviewPageScraper.Companion.PARTY_TITLE_KEYWORDS
 import de.norm.events.scraper.hrefAt
 import de.norm.events.scraper.isNonArtistName
 import de.norm.events.scraper.parseEventStatus
 import de.norm.events.scraper.parsePriceValue
 import de.norm.events.scraper.parseTime
 import de.norm.events.scraper.resolveUrl
+import de.norm.events.scraper.stripArtistSuffix
 import de.norm.events.scraper.textAt
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jsoup.nodes.Document
@@ -113,7 +116,9 @@ class GretchenOverviewPageScraper {
         }
 
         // The headline may carry a "// CANCELLED" / "// verlegt …" status tail — split it off.
-        val title = rawTitle.substringBefore("//").trim().ifBlank { rawTitle }
+        val titleWithoutStatus = rawTitle.substringBefore("//").trim().ifBlank { rawTitle }
+        // Drop the recurring "NN Years GRETCHEN:" anniversary-series banner so the act name remains.
+        val title = titleWithoutStatus.replaceFirst(SERIES_PREFIX, "").trim().ifBlank { titleWithoutStatus }
         val statusTail = rawTitle.substringAfter("//", "")
         val status = parseStatus(gig, statusTail)
 
@@ -122,7 +127,7 @@ class GretchenOverviewPageScraper {
 
         return ScrapedEvent(
             title = title,
-            eventType = null,
+            eventType = inferEventType(title),
             eventDate = eventDate,
             doorsTime = doorsTime,
             startTime = startTime,
@@ -144,6 +149,34 @@ class GretchenOverviewPageScraper {
             artists = parseArtists(gig),
             promoters = parsePromoters(gig)
         )
+    }
+
+    /**
+     * Best-effort inference of an event's [EventType] from its title, since Gretchen
+     * exposes **no machine-readable category** anywhere on the overview (like Bi Nuu
+     * and Badehaus). Gretchen is a live-music-leaning club, so the default is
+     * `CONCERT`; only the signals that clearly mark a non-concert flip it:
+     * 1. `quiz` in the title → `QUIZ`.
+     * 2. A word-anchored `festival` → `FESTIVAL` (`AFRO LATIN FESTIVAL`, `Berlin Folk
+     *    Festival …`); the `fest` boundary keeps compounds like `WRESTLEFEST` out.
+     * 3. A party/club-night keyword ([PARTY_TITLE_KEYWORDS]: `party`, `club night`,
+     *    `rave`, `karaoke`, `dj set`) → `PARTY` — catches the DJ nights
+     *    (`… CLUB NIGHT`, `BALKANBEATS - Robert Soko DJ-Set`).
+     *
+     * Only the **title** is scanned, never the genre list: at this venue the genre
+     * field carries literal genre tokens (`90's Rave`, `House`) that would mislabel a
+     * concert as a party. Like every curated heuristic this is reactive — a party that
+     * names itself without a keyword (`AFRO HAUS`, `TESTOSTERONE`) stays `CONCERT`
+     * until a signal is added. Consistent with `inferBinuuEventType` and Badehaus.
+     */
+    private fun inferEventType(title: String): String {
+        val haystack = title.lowercase()
+        return when {
+            "quiz" in haystack -> EventType.QUIZ.name
+            FESTIVAL_MARKER.containsMatchIn(haystack) -> EventType.FESTIVAL.name
+            PARTY_TITLE_KEYWORDS.any { it in haystack } -> EventType.PARTY.name
+            else -> EventType.CONCERT.name
+        }
     }
 
     /**
@@ -260,8 +293,11 @@ class GretchenOverviewPageScraper {
      * ([isCreditOrNoteLine] — "Hosted by …", "Live Visuals by …", "Ersatztermin
      * vom …", an instrument-credited member list, a bare "+ guests"); stripped of a
      * leading role prefix ([stripCreditPrefix] — "Support:", "+ Show:", "Opening
-     * DJ-Set by") to recover the real name; cleaned of its country/`*live*`
-     * decorations; and finally dropped if it is a placeholder/label ([isNonArtistName])
+     * DJ-Set by") to recover the real name; split on an inline `feat.`/`ft.` credit
+     * ([splitFeaturedActs] — "Mop Mop ft. Anthony Joseph" → "Mop Mop" + "Anthony
+     * Joseph"); cleaned of its country/`*live*`/`+tag` decorations; stripped of a
+     * trailing performance-format suffix ([stripArtistSuffix] — "Acid Arab DJ-Set" →
+     * "Acid Arab"); and finally dropped if it is a placeholder/label ([isNonArtistName])
      * or prose ([isProseNote]). The first surviving act is billed as headliner, the
      * rest as support.
      */
@@ -279,7 +315,9 @@ class GretchenOverviewPageScraper {
                     work.wholeText().split(LINE_BREAK)
                 }.map { it.trim() }
                 .filterNot { it.isBlank() || isCreditOrNoteLine(it) }
-                .map { cleanArtistName(stripCreditPrefix(it)) }
+                .map { stripCreditPrefix(it) }
+                .flatMap { splitFeaturedActs(it) }
+                .map { stripArtistSuffix(cleanArtistName(it)) }
                 .filter { it.isNotBlank() && !isNonArtistName(it) && !isProseNote(it) }
                 .distinct()
 
@@ -289,15 +327,33 @@ class GretchenOverviewPageScraper {
     }
 
     /**
+     * Splits a lineup line on an inline `feat.` / `ft.` / `featuring` credit into the
+     * main act followed by the featured guest(s) — "MOP MOP ft. ANTHONY JOSEPH" →
+     * ["MOP MOP", "ANTHONY JOSEPH"], "NORLYZ feat. MALIKA ALAOUI" → ["NORLYZ", "MALIKA
+     * ALAOUI"]. Both halves are billed as separate acts (the caller orders them so the
+     * main act keeps the higher billing). A line with no such credit is returned
+     * unchanged as a singleton, and a credit that would leave an empty half (a leading
+     * "feat." handled earlier by [stripCreditPrefix]) collapses back to the whole line.
+     */
+    private fun splitFeaturedActs(line: String): List<String> {
+        val parts = line.split(FEAT_SEPARATOR).map { it.trim() }.filter { it.isNotBlank() }
+        return parts.ifEmpty { listOf(line) }
+    }
+
+    /**
      * Strips a scraped lineup line down to the performer name.
      *
      * Removes `*…*` markers (e.g. `*live*`), a trailing `(country)` / `(label)`
-     * annotation, and collapses whitespace.
+     * annotation, a trailing `+<tag>` stylisation (`OKVSHO +experience` → `OKVSHO`),
+     * and collapses whitespace. The `+<tag>` strip is safe here because Gretchen lists
+     * every co-billed act on its own `<br>` line, so a `+` *within* a line is a
+     * decoration, never a second act.
      */
     private fun cleanArtistName(line: String): String =
         line
             .replace(STAR_MARKER, " ")
             .replace(TRAILING_PARENS, "")
+            .replace(TRAILING_PLUS_TAG, "")
             .replace(WHITESPACE, " ")
             .trim()
 
@@ -369,6 +425,25 @@ class GretchenOverviewPageScraper {
 
         /** A trailing `(country)` / `(label/country)` annotation on a lineup line. */
         private val TRAILING_PARENS = Regex("""\s*\([^)]*\)\s*$""")
+
+        /** A trailing `+<tag>` stylisation on a lineup line (e.g. `OKVSHO +experience`). */
+        private val TRAILING_PLUS_TAG = Regex("""\s*\+\s*\S+\s*$""")
+
+        /** A word-anchored `festival` marker in a title → a festival (keeps `WRESTLEFEST` out). */
+        private val FESTIVAL_MARKER = Regex("""\bfestival\b""", RegexOption.IGNORE_CASE)
+
+        /** Party/club-night phrases that, in a title, mark a non-concert night. */
+        private val PARTY_TITLE_KEYWORDS = listOf("party", "club night", "clubnight", "rave", "karaoke", "dj set", "dj-set")
+
+        /** An inline `feat.` / `ft.` / `featuring` credit joining a main act to its guest(s). */
+        private val FEAT_SEPARATOR = Regex("""\s+(?:feat\.?|ft\.?|featuring)\s+""", RegexOption.IGNORE_CASE)
+
+        /**
+         * The recurring "NN Years GRETCHEN:" anniversary-series banner prefixing an act title
+         * ("15 Years GRETCHEN: BOTTICELLI BABY"). Anchored on "gretchen" so a different
+         * "NN Years <act>" title (e.g. "Recycle: 15 Years FLEXOUT AUDIO") is left intact.
+         */
+        private val SERIES_PREFIX = Regex("""^\d+\s+years\s+gretchen\s*:\s*""", RegexOption.IGNORE_CASE)
 
         /** Collapses runs of whitespace to a single space. */
         private val WHITESPACE = Regex("""\s+""")
