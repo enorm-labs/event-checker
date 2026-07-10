@@ -192,6 +192,50 @@ class EventMappingExtensionsTest {
         isNonArtistEvent("Green Lung") shouldBe false
     }
 
+    // --- isFestivalTitle ---
+
+    @Test
+    fun `isFestivalTitle matches word-anchored festival and festival-ticket markers`() {
+        isFestivalTitle("CANARIAS CALLING FESTIVAL") shouldBe true
+        isFestivalTitle("TANGO OR NONTANGO FESTIVAL") shouldBe true
+        isFestivalTitle("GROSSSTADTWAHNSINN 2026 - FESTIVALTICKET") shouldBe true
+    }
+
+    @Test
+    fun `isFestivalTitle ignores a bare fest and plain titles`() {
+        // Tighter than isNonArtistEvent: a bare "Fest" is too weak a signal to retype an event.
+        isFestivalTitle("GROBES FEST 2026") shouldBe false
+        isFestivalTitle("Manifest") shouldBe false
+        isFestivalTitle("Berliner Weisse") shouldBe false
+    }
+
+    // --- cleanEventTitle ---
+
+    @Test
+    fun `cleanEventTitle strips a trailing reschedule note and stray dash`() {
+        cleanEventTitle("Iggi Kelly Nachholtermin vom 28.04.26-") shouldBe "Iggi Kelly"
+        cleanEventTitle("The Dear Hunter -Nachholtermin vom 30.09.2025.") shouldBe "The Dear Hunter"
+        cleanEventTitle("Some Show -") shouldBe "Some Show"
+    }
+
+    @Test
+    fun `cleanEventTitle strips a trailing sold-out annotation`() {
+        // The status suffix is dropped so "… (ausverkauft)" and its non-sold-out twin
+        // collapse to the same title (and the same title-derived headliner artist).
+        cleanEventTitle("Singalong -Das große Mitsing-Event (ausverkauft)") shouldBe "Singalong -Das große Mitsing-Event"
+        cleanEventTitle("Singalong -Das große Mitsing-Event") shouldBe "Singalong -Das große Mitsing-Event"
+        cleanEventTitle("Some Show ausverkauft") shouldBe "Some Show"
+        cleanEventTitle("Some Show - AUSVERKAUFT!") shouldBe "Some Show"
+    }
+
+    @Test
+    fun `cleanEventTitle leaves a clean title and mid-title dash untouched`() {
+        cleanEventTitle("Freshlyground") shouldBe "Freshlyground"
+        cleanEventTitle("Tannz im Frannz -auf 2 Floors") shouldBe "Tannz im Frannz -auf 2 Floors"
+        // "ausverkauft" only mid-title (never a real case, but proves the end-anchor) is kept.
+        cleanEventTitle("Ausverkauft Tour Show") shouldBe "Ausverkauft Tour Show"
+    }
+
     // --- isNonArtistName curated denylist ---
 
     @Test
@@ -273,12 +317,38 @@ class EventMappingExtensionsTest {
     }
 
     @Test
+    fun `stripArtistSuffix strips a bare non-parenthesized DJ-Set tail`() {
+        stripArtistSuffix("Acid Arab DJ-Set") shouldBe "Acid Arab"
+        stripArtistSuffix("Paty Vapor DJ Set") shouldBe "Paty Vapor"
+        // A bare "DJ-Set" with no preceding name is left for the non-artist filter to drop.
+        stripArtistSuffix("DJ-Set") shouldBe "DJ-Set"
+        // "DJ <handle>" acts are not a DJ-Set tail and stay intact.
+        stripArtistSuffix("DJ Koze") shouldBe "DJ Koze"
+    }
+
+    @Test
     fun `stripArtistSuffix strips a German Nachholtermin rescheduled-date tail`() {
         // With a leading dash directly on the marker (Frannz), with a space-dash (Astra) …
         stripArtistSuffix("The Dear Hunter -Nachholtermin vom 30.09.2025.") shouldBe "The Dear Hunter"
         stripArtistSuffix("Pohlmann -Nachholtermin vom 10.01.-") shouldBe "Pohlmann"
         // … and with no dash at all (Astra).
         stripArtistSuffix("Iggi Kelly Nachholtermin vom 28.04.26-") shouldBe "Iggi Kelly"
+    }
+
+    @Test
+    fun `stripArtistSuffix strips a German Hochverlegung relocation tail`() {
+        // en-dash (Frannz) — the parenthetical alias before the note is preserved.
+        stripArtistSuffix("OCT (On Company Time) – Hochverlegung") shouldBe "OCT (On Company Time)"
+        stripArtistSuffix("Some Act Hochverlegung") shouldBe "Some Act"
+    }
+
+    @Test
+    fun `stripArtistSuffix strips a singt tribute framing and a release promo tag`() {
+        stripArtistSuffix("Tex singt Leoanard Cohen") shouldBe "Tex"
+        stripArtistSuffix("Max Raabe singt Weihnachtslieder") shouldBe "Max Raabe"
+        stripArtistSuffix("Hawt Coco Album Release") shouldBe "Hawt Coco"
+        stripArtistSuffix("Some Band EP Release Show") shouldBe "Some Band"
+        stripArtistSuffix("Some Band Release Party") shouldBe "Some Band"
     }
 
     @Test
@@ -289,6 +359,8 @@ class EventMappingExtensionsTest {
         stripArtistSuffix("BAD COMPANY LEGACY - Dave Colwell") shouldBe "BAD COMPANY LEGACY - Dave Colwell"
         // The parenthetical is an alias, not a format word, so it is kept.
         stripArtistSuffix("Sickboyrari (Black Kray)") shouldBe "Sickboyrari (Black Kray)"
+        // "Release" without a format word / Party·Show tail is a plausible band name — kept.
+        stripArtistSuffix("Release") shouldBe "Release"
     }
 
     // --- buildArtistList ---
@@ -422,6 +494,17 @@ class EventMappingExtensionsTest {
             listOf(ScrapedArtist(name = "DOMINIUM", role = "HEADLINER"))
         headlinersFromTitle("HGICH.T LIVE") shouldContainExactly
             listOf(ScrapedArtist(name = "HGICH.T", role = "HEADLINER"))
+    }
+
+    @Test
+    fun `headlinersFromTitle strips an event-framing prefix to recover the act`() {
+        headlinersFromTitle("A night with GULVØSS II") shouldContainExactly
+            listOf(ScrapedArtist(name = "GULVØSS II", role = "HEADLINER"))
+        headlinersFromTitle("An Evening with Nick Cave") shouldContainExactly
+            listOf(ScrapedArtist(name = "Nick Cave", role = "HEADLINER"))
+        // The framing phrase must be a leading whole prefix — a band with "night" mid-name is untouched.
+        headlinersFromTitle("Last Night With You") shouldContainExactly
+            listOf(ScrapedArtist(name = "Last Night With You", role = "HEADLINER"))
     }
 
     @Test

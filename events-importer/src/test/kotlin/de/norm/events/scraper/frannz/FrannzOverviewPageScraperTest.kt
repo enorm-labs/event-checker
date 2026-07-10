@@ -2,6 +2,7 @@ package de.norm.events.scraper.frannz
 
 import de.norm.events.scraper.ScrapedArtist
 import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.nulls.shouldBeNull
@@ -122,6 +123,37 @@ class FrannzOverviewPageScraperTest {
             quiz.startTime shouldBe LocalTime.of(19, 0)
             quiz.promoters.shouldBeEmpty()
             quiz.artists.shouldBeEmpty()
+        }
+    }
+
+    @Nested
+    inner class TitleCleaning {
+        @Test
+        fun `strips the trailing Nachholtermin reschedule note from titles`() {
+            val titles = scrape().map { it.title }
+            // The three rescheduled shows keep only the act name.
+            titles shouldContainAll listOf("Iggi Kelly", "The Dear Hunter", "Pohlmann")
+            titles.forEach { it shouldNotContain "Nachholtermin" }
+        }
+
+        @Test
+        fun `drops a trailing sold-out annotation from the title and its derived headliner`() {
+            // A "(ausverkauft)" suffix must not fork the act into a second artist row.
+            val html =
+                """
+                <article id="post-1" class="events event_typ-konzert">
+                    <h2 class="event-title">Singalong -Das große Mitsing-Event (ausverkauft)</h2>
+                    <div class="event-day">10</div>
+                    <div class="event-month">Dezember</div>
+                </article>
+                """.trimIndent()
+
+            val event = scraper.scrape(Jsoup.parse(html, baseUrl), baseUrl).single()
+
+            event.title shouldBe "Singalong -Das große Mitsing-Event"
+            event.title shouldNotContain "ausverkauft"
+            event.artists shouldContainExactly
+                listOf(ScrapedArtist(name = "Singalong -Das große Mitsing-Event", role = "HEADLINER"))
         }
     }
 

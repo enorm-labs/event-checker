@@ -4,6 +4,7 @@ import de.norm.events.event.EventType
 import de.norm.events.scraper.EventSource
 import de.norm.events.scraper.ScrapedEvent
 import de.norm.events.scraper.buildArtistsForEventType
+import de.norm.events.scraper.cleanEventTitle
 import de.norm.events.scraper.hrefAt
 import de.norm.events.scraper.imgSrcAt
 import de.norm.events.scraper.mapEventType
@@ -103,11 +104,13 @@ class FrannzOverviewPageScraper(
         article: Element,
         baseUrl: String
     ): ScrapedEvent? {
-        val title = article.textAt("h2.event-title")
-        if (title.isNullOrBlank()) {
+        val rawTitle = article.textAt("h2.event-title")
+        if (rawTitle.isNullOrBlank()) {
             logger.warn { "Frannz event article has no title, skipping" }
             return null
         }
+        // Strip a trailing "Nachholtermin vom …" reschedule note the venue appends to moved shows.
+        val title = cleanEventTitle(rawTitle)
 
         val eventDate = parseEventDate(article)
         if (eventDate == null) {

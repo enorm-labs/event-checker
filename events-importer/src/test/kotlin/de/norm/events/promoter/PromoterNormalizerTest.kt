@@ -102,4 +102,28 @@ class PromoterNormalizerTest {
     fun `normalizes surrounding and internal whitespace`() {
         canonicalPromoterName("  Loft   Concerts  ") shouldBe "Loft Concerts"
     }
+
+    @Test
+    fun `strips a trailing parenthetical annotation before descriptor-stripping`() {
+        assertAll(
+            // The "(wf)" annotation shielded "GmbH" from the trailing-descriptor strip.
+            { canonicalPromoterName("MIND Enterprises GmbH (wf)") shouldBe "Mind Enterprises" },
+            { canonicalPromoterName("Live Nation (GSA)") shouldBe "Live Nation" }
+        )
+    }
+
+    @Test
+    fun `flags bare generic labels as non-promoter names`() {
+        assertAll(
+            // Pure descriptor labels a source drops into the promoter slot — not real promoters.
+            { isNonPromoterName("Event.") shouldBe true },
+            { isNonPromoterName("Konzert") shouldBe true },
+            { isNonPromoterName("Concerts GmbH") shouldBe true },
+            { isNonPromoterName("   ") shouldBe true },
+            // Anything with a distinctive word is a real promoter and kept.
+            { isNonPromoterName("Concert Concept") shouldBe false },
+            { isNonPromoterName("Loft Concerts GmbH") shouldBe false },
+            { isNonPromoterName("MIND Enterprises GmbH (wf)") shouldBe false }
+        )
+    }
 }

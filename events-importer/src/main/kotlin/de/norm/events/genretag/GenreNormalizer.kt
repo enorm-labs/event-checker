@@ -42,6 +42,8 @@ private val GENRE_SYNONYMS: Map<String, String> =
         "rock" to "Rock",
         "alternativerock" to "Rock",
         "poprock" to "Rock",
+        "bluesrock" to "Rock",
+        "experimentalrock" to "Rock",
         "alternative" to "Alternative",
         "alternativeindie" to "Alternative",
         // Indie family
@@ -52,6 +54,9 @@ private val GENRE_SYNONYMS: Map<String, String> =
         // Pop family
         "pop" to "Pop",
         "deutschpop" to "Pop",
+        "altpop" to "Pop",
+        "elektropop" to "Pop",
+        "queerpop" to "Pop",
         "poppunk" to "Punk",
         "synthpop" to "Synthpop",
         "synth" to "Synthpop",
@@ -69,6 +74,11 @@ private val GENRE_SYNONYMS: Map<String, String> =
         "synthesizerinstrumental&melodicelectronica" to "Electronic",
         "techno" to "Techno",
         "house" to "House",
+        "afrohouse" to "House",
+        "latinhouse" to "House",
+        // Drum & Bass (delimiter-embedding name; see DRUM_AND_BASS_REGEX pre-pass)
+        "drumnbass" to "Drum & Bass",
+        "dnb" to "Drum & Bass",
         // Post-punk / dark wave family
         "postpunk" to "Post-Punk",
         "newwave" to "New Wave",
@@ -77,13 +87,17 @@ private val GENRE_SYNONYMS: Map<String, String> =
         "gothicrock" to "Gothic Rock",
         // Soul / Funk / R&B family
         "soul" to "Soul",
+        "neosoul" to "Soul",
+        "indiesoul" to "Soul",
         "funk" to "Funk",
         "boogaloo" to "Funk",
         "r&b" to "R&B",
         "rnb" to "R&B",
+        "altrnb" to "R&B",
         // Jazz / Blues
         "jazz" to "Jazz",
         "jazzfusion" to "Jazz",
+        "latinjazz" to "Jazz",
         "blues" to "Blues",
         // Folk
         "folk" to "Folk",
@@ -101,10 +115,12 @@ private val GENRE_SYNONYMS: Map<String, String> =
         "latinroots" to "Latin",
         // Afrobeats
         "afro" to "Afrobeats",
+        "afrobeat" to "Afrobeats",
         "afrobeats" to "Afrobeats",
         // World Music
         "world" to "World Music",
         "worldmusic" to "World Music",
+        "global" to "World Music",
         "indian" to "World Music",
         "urdurock" to "World Music",
         // Disco
@@ -163,7 +179,14 @@ private val NON_GENRE_TOKENS: Set<String> =
         "beyond",
         "wave",
         "retro",
-        "nontango"
+        "nontango",
+        // Audience / theme / series labels Gretchen pushes into the genre field.
+        // Keys are [lookupKey]-normalized: it strips non-ASCII letters, so
+        // "Männerparty" → "mnnerparty" (the ä is dropped) and "FLINTA*" → "flinta".
+        "flinta",
+        "mnnerparty",
+        "fetish",
+        "berbenautika"
     )
 
 /**
@@ -191,6 +214,21 @@ private fun lookupKey(raw: String): String = raw.lowercase().replace(Regex("[^a-
  * splits. The word separators are matched case-insensitively.
  */
 private val GENRE_DELIMITERS = Regex("""[,]|//|\s(?:[&/]|or|oder|vs)\s""", RegexOption.IGNORE_CASE)
+
+/**
+ * Genre names whose canonical spelling embeds a [GENRE_DELIMITERS] character (the
+ * " & " in "Drum & Bass", the "'n'" in "Drum'n'Bass") and would otherwise be torn
+ * into "Drum" + "Bass". Collapsed to a single delimiter-free token *before* the
+ * split so the whole name survives and resolves via [GENRE_SYNONYMS] ("drumnbass").
+ */
+private val DRUM_AND_BASS_REGEX =
+    Regex(
+        """\bdrum\s*['’]?\s*n\s*['’]?\s*bass\b|\bdrum\s*&\s*bass\b|\bdrum\s+and\s+bass\b|\bd\s*&\s*b\b|\bdnb\b""",
+        RegexOption.IGNORE_CASE
+    )
+
+/** Collapses delimiter-embedding genre names to a split-safe spelling before tokenization. */
+private fun preNormalize(rawGenre: String): String = rawGenre.replace(DRUM_AND_BASS_REGEX, "Drum'n'Bass")
 
 /**
  * Suffixes commonly appended to genre names in venue listings that should
@@ -230,7 +268,7 @@ private val NOISE_SUFFIXES = listOf("disco floor", "floor")
 fun normalizeGenre(rawGenre: String?): List<String> {
     if (rawGenre.isNullOrBlank()) return emptyList()
 
-    return rawGenre
+    return preNormalize(rawGenre)
         .split(GENRE_DELIMITERS)
         .map { it.trim() }
         .filter { it.isNotBlank() }

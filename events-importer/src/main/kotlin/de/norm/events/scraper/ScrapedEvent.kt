@@ -113,8 +113,10 @@ data class ScrapedEvent(
             subtitle = subtitle,
             description = description,
             // Fall back to OTHER (not CONCERT) when the source provided no category,
-            // so unclassifiable events aren't silently labelled as concerts.
-            eventType = EventType.parseOrDefault(eventType ?: "OTHER").name,
+            // so unclassifiable events aren't silently labelled as concerts; then
+            // promote an under-classified festival title (a "Konzert"-labelled festival
+            // day, or a category-less "… Festival") to FESTIVAL.
+            eventType = resolveEventType(eventType, title).name,
             status = EventStatus.parseOrDefault(status).name,
             slug = SlugGenerator.slugify("$eventDate-$venueSlug-$title"),
             eventDate = eventDate,
@@ -132,6 +134,25 @@ data class ScrapedEvent(
             free = free || detectFree(pricePresale, priceBoxOffice, priceNote, title)
         )
     }
+}
+
+/**
+ * Resolves the stored [EventType] from a scraped [rawType] and event [title].
+ *
+ * The source's own category wins, defaulting to `OTHER` when it provided none. The
+ * one override: a title that unambiguously names a festival ([isFestivalTitle])
+ * promotes a `CONCERT` or `OTHER` classification to `FESTIVAL`, recovering festival
+ * days a venue mislabelled "Konzert" (Astra) and category-less "… Festival" titles
+ * (SO36, Privatclub). An explicit `PARTY`/`QUIZ`/`FESTIVAL` from the source is trusted
+ * and never overridden.
+ */
+private fun resolveEventType(
+    rawType: String?,
+    title: String
+): EventType {
+    val resolved = EventType.parseOrDefault(rawType ?: EventType.OTHER.name)
+    val promotable = resolved == EventType.CONCERT || resolved == EventType.OTHER
+    return if (promotable && isFestivalTitle(title)) EventType.FESTIVAL else resolved
 }
 
 /**

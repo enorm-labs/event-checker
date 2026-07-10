@@ -207,6 +207,62 @@ class GenreNormalizerTest {
     }
 
     @Test
+    fun `Afrobeat folds onto the Afrobeats canonical tag`() {
+        // Both spellings resolve to one tag, so "Afrobeat" and "Afrobeats" don't fragment.
+        normalizeGenre("Afrobeat").shouldContainExactly("Afrobeats")
+        normalizeGenre("HipHop, Afrobeat").shouldContainExactly("Hip Hop", "Afrobeats")
+    }
+
+    @Test
+    fun `Drum and Bass spelling variants fold onto one canonical tag`() {
+        // The name embeds a delimiter (" & ", "'n'"), so it must survive the split
+        // and collapse to a single tag rather than fragmenting into "Drum" + "Bass".
+        normalizeGenre("Drum'n'Bass").shouldContainExactly("Drum & Bass")
+        normalizeGenre("Drum & Bass").shouldContainExactly("Drum & Bass")
+        normalizeGenre("DnB").shouldContainExactly("Drum & Bass")
+        normalizeGenre("D&B").shouldContainExactly("Drum & Bass")
+        normalizeGenre("Techno, Drum & Bass, House")
+            .shouldContainExactlyInAnyOrder("Techno", "Drum & Bass", "House")
+    }
+
+    @Test
+    fun `compound sub-genres fold into their parent tag`() {
+        // camelCase / hyphenated sub-genres collapse to the head genre so they don't
+        // fragment against their spaced twins from other venues.
+        normalizeGenre("AfroHouse").shouldContainExactly("House")
+        normalizeGenre("LatinHouse").shouldContainExactly("House")
+        normalizeGenre("ElektroPop").shouldContainExactly("Pop")
+        normalizeGenre("AltPop").shouldContainExactly("Pop")
+        normalizeGenre("Queer-Pop").shouldContainExactly("Pop")
+        normalizeGenre("NeoSoul").shouldContainExactly("Soul")
+        normalizeGenre("IndieSoul").shouldContainExactly("Soul")
+        normalizeGenre("AltRnB").shouldContainExactly("R&B")
+        normalizeGenre("BluesRock").shouldContainExactly("Rock")
+        normalizeGenre("ExperimentalRock").shouldContainExactly("Rock")
+        normalizeGenre("Latin-Jazz").shouldContainExactly("Jazz")
+        normalizeGenre("Global").shouldContainExactly("World Music")
+    }
+
+    @Test
+    fun `genuinely distinct genres are still kept as their own tag`() {
+        // Moderate folding must not swallow standalone genres that have no parent tag.
+        normalizeGenre("Amapiano").shouldContainExactly("Amapiano")
+        normalizeGenre("Grime").shouldContainExactly("Grime")
+        normalizeGenre("Dub").shouldContainExactly("Dub")
+    }
+
+    @Test
+    fun `Gretchen audience and theme labels are dropped`() {
+        // Audience/theme/series labels Gretchen drops into the genre field, split on
+        // "//" and "," — the real genres survive, the labels do not.
+        normalizeGenre("FLINTA*// Pop, HipHop, House")
+            .shouldContainExactly("Pop", "Hip Hop", "House")
+        normalizeGenre("Männerparty // Fetish").shouldBeEmpty()
+        normalizeGenre("Berbenautika, Cumbia, Breaks, HipHop")
+            .shouldContainExactly("Latin", "Breaks", "Hip Hop")
+    }
+
+    @Test
     fun `or delimiter splits and drops the non-genre half`() {
         // "Tango or NonTango" previously fell through whole as one noisy tag.
         normalizeGenre("Tango or NonTango").shouldContainExactly("Tango")

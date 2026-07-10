@@ -39,9 +39,17 @@ package de.norm.events.promoter
  * back to the trimmed input when normalization would leave nothing.
  */
 fun canonicalPromoterName(raw: String): String {
-    val tokens =
+    // Drop a trailing parenthetical annotation ("Mind Enterprises GmbH (wf)" → "Mind
+    // Enterprises GmbH") before tokenizing, so the descriptor-strip below can reach the
+    // real legal-form/descriptor words that the annotation was shielding.
+    val withoutAnnotation =
         raw
             .trim()
+            .replace(TRAILING_PAREN_REGEX, "")
+            .trim()
+            .ifBlank { raw.trim() }
+    val tokens =
+        withoutAnnotation
             .split(WHITESPACE_REGEX)
             .filter { it.isNotBlank() }
             .toMutableList()
@@ -59,6 +67,24 @@ fun canonicalPromoterName(raw: String): String {
 
     val canonical = tokens.joinToString(" ") { it.deshout() }.ifBlank { raw.trim() }
     return NAME_CORRECTIONS[canonical.normalizedKey()] ?: canonical
+}
+
+/**
+ * Whether [raw] is not a real promoter but a bare generic label — a name that, once a
+ * trailing parenthetical is dropped, consists *entirely* of legal-form and descriptor
+ * words ([STRIP_WORDS]) or punctuation, with no distinctive token left. Filters junk
+ * like "Event." or "Konzert" that a source drops into the promoter slot, before
+ * [canonicalPromoterName] (which always keeps one word and so can't drop them itself).
+ * A name with any distinctive word ("Concert Concept", "Loft Concerts GmbH") is kept.
+ */
+fun isNonPromoterName(raw: String): Boolean {
+    val tokens =
+        raw
+            .trim()
+            .replace(TRAILING_PAREN_REGEX, "")
+            .split(WHITESPACE_REGEX)
+            .filter { it.isNotBlank() }
+    return tokens.isEmpty() || tokens.all { it.isStrippableTrailingWord() }
 }
 
 /** Lowercased, punctuation-free lookup key for a name (matches [String.isStrippableTrailingWord]'s scheme). */
@@ -79,6 +105,9 @@ private fun String.deshout(): String =
     }
 
 private val WHITESPACE_REGEX = Regex("""\s+""")
+
+/** A trailing parenthetical annotation (" (wf)", " (GSA)") appended to a promoter name. */
+private val TRAILING_PAREN_REGEX = Regex("""\s*\([^)]*\)\s*$""")
 
 /** Everything except letters (incl. German umlauts) and digits — used to normalize a token for lookup. */
 private val NON_WORD_REGEX = Regex("""[^a-z0-9äöüß]""")
