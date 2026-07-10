@@ -80,6 +80,33 @@ class HtmlFetcherTest {
     }
 
     @Nested
+    inner class RawBodyFetching {
+        @Test
+        fun `fetchString returns the response body verbatim for a JSON payload`() =
+            runTest {
+                val body = """{"items":[{"title":"ok"}]}"""
+                server.enqueue(MockResponse().setResponseCode(200).setBody(body))
+
+                fetcher.fetchString(baseUrl() + "/api") shouldBe body
+            }
+
+        @Test
+        fun `fetchString throws HttpFetchException on a 404`() =
+            runTest {
+                server.enqueue(MockResponse().setResponseCode(404))
+
+                val url = baseUrl() + "/missing"
+                val exception =
+                    shouldThrow<HttpFetchException> {
+                        fetcher.fetchString(url)
+                    }
+
+                exception.message!! shouldContain "HTTP 404"
+                exception.message!! shouldContain url
+            }
+    }
+
+    @Nested
     inner class ErrorHandling {
         @Test
         fun `fetchHtml throws HttpFetchException on a 404`() =
