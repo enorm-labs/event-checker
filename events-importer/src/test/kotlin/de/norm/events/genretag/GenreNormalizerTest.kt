@@ -188,6 +188,25 @@ class GenreNormalizerTest {
     }
 
     @Test
+    fun `Festsaal event-format labels in the genre field are dropped`() {
+        // Festsaal pushes event-kind / venue-type labels into its genre.title field.
+        // "Open Air" and "Release Party" survive the per-word check (no single word is
+        // stop-listed) but their normalized whole-token form is, so they still drop.
+        normalizeGenre("LIVE PODCAST").shouldBeEmpty()
+        normalizeGenre("Markt").shouldBeEmpty()
+        normalizeGenre("Open Air").shouldBeEmpty()
+    }
+
+    @Test
+    fun `unspaced slash alternatives are split so they don't fragment`() {
+        // "Hip-Hop/Rap" (no spaces around the slash) must split to fold onto Hip Hop
+        // rather than mint a distinct "Hip-Hop/Rap" tag.
+        normalizeGenre("Hip-Hop/Rap").shouldContainExactly("Hip Hop")
+        normalizeGenre("Techno/House")
+            .shouldContainExactlyInAnyOrder("Techno", "House")
+    }
+
+    @Test
     fun `long freeform descriptors are dropped`() {
         // Too many words to plausibly be a genre name — leaks as a series label.
         normalizeGenre("Twenty One Pilots Special").shouldBeEmpty()
@@ -204,6 +223,15 @@ class GenreNormalizerTest {
     @Test
     fun `standalone freeform fragments are dropped`() {
         normalizeGenre("Beyond, Wave, Retro").shouldBeEmpty()
+    }
+
+    @Test
+    fun `Kraut folds onto the Krautrock canonical tag`() {
+        // The bare "Kraut" fragment must not fragment against its full "Krautrock" twin.
+        normalizeGenre("Kraut").shouldContainExactly("Krautrock")
+        normalizeGenre("Krautrock").shouldContainExactly("Krautrock")
+        normalizeGenre("Kraut, ExperimentalRock, Electronica")
+            .shouldContainExactlyInAnyOrder("Krautrock", "Rock", "Electronic")
     }
 
     @Test

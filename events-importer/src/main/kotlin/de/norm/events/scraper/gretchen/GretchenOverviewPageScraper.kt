@@ -4,7 +4,10 @@ import de.norm.events.event.EventType
 import de.norm.events.scraper.EventSource
 import de.norm.events.scraper.ScrapedArtist
 import de.norm.events.scraper.ScrapedEvent
+import de.norm.events.scraper.gretchen.GretchenOverviewPageScraper.Companion.COLLAB_SEPARATOR
 import de.norm.events.scraper.gretchen.GretchenOverviewPageScraper.Companion.PARTY_TITLE_KEYWORDS
+import de.norm.events.scraper.gretchen.GretchenOverviewPageScraper.Companion.PRESENTS_PREFIX
+import de.norm.events.scraper.gretchen.GretchenOverviewPageScraper.Companion.RESIDUAL_DASH
 import de.norm.events.scraper.hrefAt
 import de.norm.events.scraper.isNonArtistName
 import de.norm.events.scraper.parseEventStatus
@@ -146,7 +149,7 @@ class GretchenOverviewPageScraper {
             priceBoxOffice = priceBoxOffice,
             priceNote = priceNote,
             status = status,
-            artists = parseArtists(gig),
+            artists = parseArtists(gig).ifEmpty { headlinerFromPresentsTitle(title) },
             promoters = parsePromoters(gig)
         )
     }
@@ -327,16 +330,48 @@ class GretchenOverviewPageScraper {
     }
 
     /**
-     * Splits a lineup line on an inline `feat.` / `ft.` / `featuring` credit into the
-     * main act followed by the featured guest(s) — "MOP MOP ft. ANTHONY JOSEPH" →
-     * ["MOP MOP", "ANTHONY JOSEPH"], "NORLYZ feat. MALIKA ALAOUI" → ["NORLYZ", "MALIKA
-     * ALAOUI"]. Both halves are billed as separate acts (the caller orders them so the
-     * main act keeps the higher billing). A line with no such credit is returned
-     * unchanged as a singleton, and a credit that would leave an empty half (a leading
-     * "feat." handled earlier by [stripCreditPrefix]) collapses back to the whole line.
+     * Fallback headliner recovery for a concert whose `.lineup` carries no performer
+     * names — used only when [parseArtists] returns empty.
+     *
+     * A handful of promoter-booked shows list the act *only* in a `<promoter> presents:`
+     * title while the lineup block holds nothing but the pricing `<em>` (e.g.
+     * "Landstreicher presents: XAVI - Sorgenfrei Tour 2027", whose lineup is price-only).
+     * Here the title's remainder after `presents:` *is* the headliner, so it is recovered:
+     * the prefix is dropped ([PRESENTS_PREFIX]), the tour/live tail is stripped
+     * ([stripArtistSuffix] → "XAVI"), and the result is billed as the sole HEADLINER.
+     *
+     * Kept deliberately narrow so it can't mint event/party names as artists (the venue's
+     * lineup-not-title rule exists precisely because titles are often party names): it fires
+     * only on an empty lineup, requires the `presents:` prefix, and rejects a candidate that
+     * still contains a spaced dash ([RESIDUAL_DASH]) — the signature of a compound event
+     * label rather than a clean act, so "MIND Enterprises GmbH presents: WRESTLEFEST Europa
+     * - Opening Night" is left artist-less while "XAVI" is recovered — as well as the usual
+     * [isNonArtistName] / [isProseNote] guards.
+     */
+    private fun headlinerFromPresentsTitle(title: String): List<ScrapedArtist> {
+        if (!PRESENTS_PREFIX.containsMatchIn(title)) return emptyList()
+        val act = stripArtistSuffix(cleanArtistName(title.replaceFirst(PRESENTS_PREFIX, "")))
+        val isCleanAct =
+            act.isNotBlank() &&
+                !RESIDUAL_DASH.containsMatchIn(act) &&
+                !isNonArtistName(act) &&
+                !isProseNote(act)
+        return if (isCleanAct) listOf(ScrapedArtist(name = act, role = "HEADLINER")) else emptyList()
+    }
+
+    /**
+     * Splits a lineup line on an inline collaboration credit ([COLLAB_SEPARATOR]) into the
+     * main act followed by its guest/partner(s) — "MOP MOP ft. ANTHONY JOSEPH" → ["MOP MOP",
+     * "ANTHONY JOSEPH"], "NORLYZ feat. MALIKA ALAOUI" → ["NORLYZ", "MALIKA ALAOUI"], "Tikiman
+     * w/Scion" → ["Tikiman", "Scion"]. Both halves are billed as separate acts (the caller
+     * orders them so the main act keeps the higher billing). A line with no such credit is
+     * returned unchanged as a singleton, and a credit that would leave an empty half (a
+     * leading "feat." handled earlier by [stripCreditPrefix]) collapses back to the whole
+     * line. Unlike the ambiguous single-line `&` co-bill (kept as one act, see class KDoc),
+     * `feat.`/`with`/`w/` unambiguously mark a guest, so splitting is safe.
      */
     private fun splitFeaturedActs(line: String): List<String> {
-        val parts = line.split(FEAT_SEPARATOR).map { it.trim() }.filter { it.isNotBlank() }
+        val parts = line.split(COLLAB_SEPARATOR).map { it.trim() }.filter { it.isNotBlank() }
         return parts.ifEmpty { listOf(line) }
     }
 
@@ -435,8 +470,26 @@ class GretchenOverviewPageScraper {
         /** Party/club-night phrases that, in a title, mark a non-concert night. */
         private val PARTY_TITLE_KEYWORDS = listOf("party", "club night", "clubnight", "rave", "karaoke", "dj set", "dj-set")
 
-        /** An inline `feat.` / `ft.` / `featuring` credit joining a main act to its guest(s). */
-        private val FEAT_SEPARATOR = Regex("""\s+(?:feat\.?|ft\.?|featuring)\s+""", RegexOption.IGNORE_CASE)
+        /**
+         * An inline collaboration credit joining a main act to its guest/partner: a
+         * `feat.` / `ft.` / `featuring` guest, or a `with` / `w/` collaborator
+         * ("Tikiman w/Scion" → "Tikiman" + "Scion"). The `feat.`/`ft.`/`featuring`/`with`
+         * word forms require surrounding whitespace so a real name is untouched; the `w/`
+         * shorthand needs no trailing space (the source writes it flush: "…w/Scion").
+         */
+        private val COLLAB_SEPARATOR =
+            Regex("""\s+(?:feat\.?|ft\.?|featuring|with)\s+|\s+w/\s*""", RegexOption.IGNORE_CASE)
+
+        /**
+         * A `<promoter> presents:` / `… präsentiert:` prefix on a title, whose *remainder*
+         * is the booked act ("Landstreicher presents: XAVI …" → "XAVI …"). Non-greedy from
+         * the line start so it stops at the first `presents:` colon.
+         */
+        private val PRESENTS_PREFIX =
+            Regex("""^.*?\bpr(?:e|ä)sent(?:s|ed|iert|ieren)?\s*:\s*""", RegexOption.IGNORE_CASE)
+
+        /** A residual spaced dash in a fallback act name — the signature of a compound event label, not an act. */
+        private val RESIDUAL_DASH = Regex("""\s[-–—]\s""")
 
         /**
          * The recurring "NN Years GRETCHEN:" anniversary-series banner prefixing an act title

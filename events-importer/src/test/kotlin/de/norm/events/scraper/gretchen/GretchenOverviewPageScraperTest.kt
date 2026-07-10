@@ -200,9 +200,26 @@ class GretchenOverviewPageScraperTest {
                     ScrapedArtist("Anthony Joseph", "SUPPORT"),
                     ScrapedArtist("Phat Fred", "SUPPORT")
                 )
-            // A feat credit on a mid-lineup line splits too ("The Bug ft. Dis Fig").
+            // A feat credit on a mid-lineup line splits too ("The Bug ft. Dis Fig"), and the
+            // "w/" collaboration shorthand splits as well ("Tikiman w/Scion" → "Tikiman" + "Scion").
             eventWithId("3519").artists.map { it.name } shouldContainExactly
-                listOf("Tikiman w/Scion", "JK Flesh", "The Bug", "Dis Fig", "Ghost Dubs", "Gorgonn")
+                listOf("Tikiman", "Scion", "JK Flesh", "The Bug", "Dis Fig", "Ghost Dubs", "Gorgonn")
+        }
+
+        @Test
+        fun `recovers the headliner from a presents-title when the lineup is empty`() {
+            // "Landstreicher presents: XAVI - Sorgenfrei Tour 2027" has a price-only lineup, so
+            // the act is taken from the title: the "<promoter> presents:" prefix and the tour
+            // tail are stripped down to "XAVI".
+            eventWithId("3496").artists shouldContainExactly listOf(ScrapedArtist("XAVI", "HEADLINER"))
+        }
+
+        @Test
+        fun `does not mint a compound event label as the fallback headliner`() {
+            // "MIND Enterprises GmbH presents: WRESTLEFEST Europa - Opening Night" also has an
+            // empty lineup, but the title remainder keeps a spaced dash (a compound event label,
+            // not a clean act), so no artist is recovered.
+            eventWithId("3546").artists.shouldBeEmpty()
         }
 
         @Test
