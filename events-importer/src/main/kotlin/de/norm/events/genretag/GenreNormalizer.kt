@@ -44,6 +44,8 @@ private val GENRE_SYNONYMS: Map<String, String> =
         "poprock" to "Rock",
         "bluesrock" to "Rock",
         "experimentalrock" to "Rock",
+        "kraut" to "Krautrock",
+        "krautrock" to "Krautrock",
         "alternative" to "Alternative",
         "alternativeindie" to "Alternative",
         // Indie family
@@ -169,6 +171,8 @@ private val NON_GENRE_TOKENS: Set<String> =
         "concert",
         "presents",
         "present",
+        "podcast",
+        "markt",
         "support",
         "openair",
         "warmup",
@@ -204,16 +208,17 @@ private fun lookupKey(raw: String): String = raw.lowercase().replace(Regex("[^a-
  *
  * Handles the variety of separators observed in venue data:
  * - `, ` — most common (e.g. "Pop, Rock, Indie")
- * - `//` — Cassiopeia floor descriptions (e.g. "80s Floor // Hip Hop Floor")
+ * - `/` — slash-separated alternatives, spaced or not (e.g. "Alternative / Indie",
+ *   "Hip-Hop/Rap", "80s Floor // Hip Hop Floor")
  * - `&` — compound genres (e.g. "80s, Disco & Hip Hop")
- * - `/` — slash-separated alternatives (e.g. "Alternative / Indie")
  * - ` or ` / ` oder ` / ` vs ` — freeform alternatives (e.g. "Tango or NonTango")
  *
- * Note: `&`, `/`, and the word separators can appear inside genre names (e.g.
- * "R&B"), so we split on them only when surrounded by spaces to avoid false
- * splits. The word separators are matched case-insensitively.
+ * Note: `/` always splits (no genre name embeds a bare slash, whereas venues write
+ * unspaced alternatives like "Hip-Hop/Rap" that must be torn apart). `&` and the word
+ * separators *can* appear inside genre names (e.g. "R&B"), so those split only when
+ * surrounded by spaces to avoid false splits. Separators are matched case-insensitively.
  */
-private val GENRE_DELIMITERS = Regex("""[,]|//|\s(?:[&/]|or|oder|vs)\s""", RegexOption.IGNORE_CASE)
+private val GENRE_DELIMITERS = Regex("""[,/]|\s(?:&|or|oder|vs)\s""", RegexOption.IGNORE_CASE)
 
 /**
  * Genre names whose canonical spelling embeds a [GENRE_DELIMITERS] character (the
@@ -374,12 +379,16 @@ private fun resolveGenre(token: String): List<String> {
  *   "Trip-Hop", "New Wave" — whereas leaked labels like "Twenty One Pilots
  *   Special" run long), and
  * - contains no [NON_GENRE_TOKENS] word (drops "Immersive Ausstellung" and the
- *   like even when short).
+ *   like even when short), and
+ * - does not itself *normalize* to a [NON_GENRE_TOKENS] entry (drops the two-word
+ *   spellings of a listed label — "Open Air" → `openair`, "Release Party" →
+ *   `releaseparty` — that survive the per-word check because no single word is listed).
  */
 private fun looksLikeGenre(token: String): Boolean {
     val words = token.trim().split(Regex("""\s+""")).filter { it.isNotBlank() }
     return words.size <= MAX_GENRE_WORDS &&
         words.none { lookupKey(it) in NON_GENRE_TOKENS } &&
+        lookupKey(token) !in NON_GENRE_TOKENS &&
         token.any { it.isLetter() }
 }
 
