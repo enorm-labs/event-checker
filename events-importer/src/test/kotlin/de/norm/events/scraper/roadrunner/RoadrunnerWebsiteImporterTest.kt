@@ -13,21 +13,27 @@ import kotlinx.coroutines.test.runTest
 import org.jsoup.Jsoup
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.time.Clock
+import java.time.Instant
+import java.time.ZoneOffset
 
 /**
  * Unit tests for [RoadrunnerWebsiteImporter].
  *
  * Uses the static programme fixture and a mocked [HtmlFetcher] for deterministic,
- * offline-safe testing without real HTTP requests.
+ * offline-safe testing without real HTTP requests. The clock is pinned to 2026-05-01 —
+ * before the fixture's single event (29 May 2026) — so the scraper's past-event cutoff
+ * keeps it and weekday-based year inference stays deterministic.
  */
 class RoadrunnerWebsiteImporterTest {
     private lateinit var importer: RoadrunnerWebsiteImporter
     private val htmlFetcher: HtmlFetcher = mockk()
+    private val clock: Clock = Clock.fixed(Instant.parse("2026-05-01T10:00:00Z"), ZoneOffset.UTC)
     private val sourceUrl = "http://www.roadrunners-paradise.de/programm.html"
 
     @BeforeEach
     fun setUp() {
-        importer = RoadrunnerWebsiteImporter(htmlFetcher)
+        importer = RoadrunnerWebsiteImporter(htmlFetcher, clock)
         val html =
             javaClass.classLoader
                 .getResourceAsStream("scraper/roadrunner/roadrunner-programm.html")!!

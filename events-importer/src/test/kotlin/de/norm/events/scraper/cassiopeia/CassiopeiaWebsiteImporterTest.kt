@@ -16,8 +16,11 @@ import kotlinx.coroutines.test.runTest
 import org.jsoup.Jsoup
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.time.Clock
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.ZoneOffset
 
 /**
  * Unit tests for [CassiopeiaWebsiteImporter].
@@ -28,13 +31,15 @@ import java.time.LocalTime
  * page fixtures serve as the primary data source — matching the production
  * data flow where [CassiopeiaDetailPageScraper] is the primary extractor.
  *
- * [HtmlFetcher] is mocked so the importer returns fixture content
- * without making real HTTP requests.
+ * [HtmlFetcher] is mocked so the importer returns fixture content without making real
+ * HTTP requests. The clock is pinned to 2026-05-01 — before every fixture event — so the
+ * scraper's past-event cutoff keeps all of them.
  */
 class CassiopeiaWebsiteImporterTest {
     private lateinit var importer: CassiopeiaWebsiteImporter
     private lateinit var html: String
     private val htmlFetcher: HtmlFetcher = mockk()
+    private val clock: Clock = Clock.fixed(Instant.parse("2026-05-01T00:00:00Z"), ZoneOffset.UTC)
 
     private val sourceUrl = "https://cassiopeia-berlin.de/club"
 
@@ -46,7 +51,7 @@ class CassiopeiaWebsiteImporterTest {
 
     @BeforeEach
     fun setUp() {
-        importer = CassiopeiaWebsiteImporter(htmlFetcher)
+        importer = CassiopeiaWebsiteImporter(htmlFetcher, clock)
         html = loadFixture("scraper/cassiopeia/cassiopeia-club.html")
 
         // Mock the overview page fetch to return the fixture HTML as a Success result

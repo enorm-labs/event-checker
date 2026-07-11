@@ -13,21 +13,27 @@ import kotlinx.coroutines.test.runTest
 import org.jsoup.Jsoup
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.time.Clock
+import java.time.Instant
+import java.time.ZoneOffset
 
 /**
  * Unit tests for [DunckerWebsiteImporter].
  *
  * Uses the static programme fixture and a mocked [HtmlFetcher] for deterministic,
- * offline-safe testing without real HTTP requests.
+ * offline-safe testing without real HTTP requests. The clock is pinned to 2026-07-01 —
+ * before the fixture's earliest date (03.07.) — so the scraper's past-event cutoff keeps
+ * all of them and weekday-based year inference stays deterministic.
  */
 class DunckerWebsiteImporterTest {
     private lateinit var importer: DunckerWebsiteImporter
     private val htmlFetcher: HtmlFetcher = mockk()
+    private val clock: Clock = Clock.fixed(Instant.parse("2026-07-01T10:00:00Z"), ZoneOffset.UTC)
     private val sourceUrl = "https://www.dunckerclub.de/start.html"
 
     @BeforeEach
     fun setUp() {
-        importer = DunckerWebsiteImporter(htmlFetcher)
+        importer = DunckerWebsiteImporter(htmlFetcher, clock)
         val html =
             javaClass.classLoader
                 .getResourceAsStream("scraper/duncker/duncker-overview.html")!!

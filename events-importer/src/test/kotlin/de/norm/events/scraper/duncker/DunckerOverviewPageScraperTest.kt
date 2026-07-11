@@ -17,15 +17,16 @@ import java.time.ZoneOffset
 /**
  * Unit tests for [DunckerOverviewPageScraper].
  *
- * Uses a fixed clock (2026-07-09, the snapshot date) so weekday-based year
- * inference is deterministic, and parses the real `start.html` snapshot.
+ * Uses a fixed clock (2026-07-01) — before the snapshot's earliest date (03.07.) — so every
+ * fixture event counts as upcoming and weekday-based year inference stays deterministic. The
+ * past-event cutoff is verified separately with a later clock.
  */
 class DunckerOverviewPageScraperTest {
     private val baseUrl = "https://www.dunckerclub.de/start.html"
 
-    // The snapshot was taken while today was 2026-07-09; pin the clock so the year
-    // inferred from the year-less "DD.MM." dates (via their weekday) is deterministic.
-    private val clock: Clock = Clock.fixed(Instant.parse("2026-07-09T10:00:00Z"), ZoneOffset.UTC)
+    // Pin the clock before the snapshot's earliest date (03.07.2026) so every event counts as
+    // upcoming and the year inferred from the year-less "DD.MM." dates (via weekday) is deterministic.
+    private val clock: Clock = Clock.fixed(Instant.parse("2026-07-01T10:00:00Z"), ZoneOffset.UTC)
     private val scraper = DunckerOverviewPageScraper(clock)
 
     private fun programme() =
@@ -92,6 +93,20 @@ class DunckerOverviewPageScraperTest {
         val independent = events.first { it.eventDate == LocalDate.of(2026, 7, 25) }
         independent.title shouldBe "Independent Tanzmusik"
         independent.artists shouldContainExactly listOf(ScrapedArtist(name = "Spy", role = "DJ"))
+    }
+
+    @Test
+    fun `drops past nights the venue still lists, keeping upcoming ones`() {
+        // Today is 2026-07-15: the 03–13 July nights are past and must be dropped, leaving 17 July onward.
+        val cutoff = LocalDate.of(2026, 7, 15)
+        val scraperMidJuly =
+            DunckerOverviewPageScraper(Clock.fixed(Instant.parse("2026-07-15T10:00:00Z"), ZoneOffset.UTC))
+
+        val upcoming = scraperMidJuly.scrape(programme(), baseUrl)
+
+        upcoming shouldHaveSize events.count { !it.eventDate.isBefore(cutoff) }
+        upcoming.none { it.eventDate.isBefore(cutoff) } shouldBe true
+        upcoming.none { it.eventDate == LocalDate.of(2026, 7, 3) } shouldBe true
     }
 
     @Test

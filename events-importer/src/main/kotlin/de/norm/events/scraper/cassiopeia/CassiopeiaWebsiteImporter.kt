@@ -7,6 +7,7 @@ import de.norm.events.scraper.HtmlFetcher
 import de.norm.events.scraper.ScrapedEvent
 import org.jsoup.nodes.Document
 import org.springframework.stereotype.Component
+import java.time.Clock
 
 /**
  * Website importer for Cassiopeia Berlin's Webflow-based event listing.
@@ -26,11 +27,13 @@ import org.springframework.stereotype.Component
  */
 @Component
 class CassiopeiaWebsiteImporter(
-    htmlFetcher: HtmlFetcher
+    htmlFetcher: HtmlFetcher,
+    /** Clock for the overview scraper's past-event cutoff. Defaults to the system clock; override in tests. */
+    clock: Clock = Clock.systemDefaultZone()
 ) : AbstractTwoPageWebsiteImporter(htmlFetcher) {
     override val eventSource: EventSource = EventSource.CASSIOPEIA
 
-    private val overviewPageScraper = CassiopeiaOverviewPageScraper()
+    private val overviewPageScraper = CassiopeiaOverviewPageScraper(clock)
     private val detailPageScraper = CassiopeiaDetailPageScraper()
 
     override fun scrapeOverview(

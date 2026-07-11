@@ -16,16 +16,17 @@ import java.time.ZoneOffset
 /**
  * Unit tests for [RoadrunnerOverviewPageScraper].
  *
- * Uses a fixed clock (2026-07-06) so weekday-based year inference is deterministic,
- * and parses the real retro `programm.html` snapshot plus a synthetic multi-event
- * fragment to exercise the dotted-separator splitting.
+ * Uses a fixed clock (2026-05-01) so weekday-based year inference is deterministic and
+ * every fixture event is upcoming, and parses the real retro `programm.html` snapshot plus
+ * a synthetic multi-event fragment to exercise the dotted-separator splitting. The
+ * past-event cutoff is verified separately with a later clock.
  */
 class RoadrunnerOverviewPageScraperTest {
     private val baseUrl = "http://www.roadrunners-paradise.de/programm.html"
 
-    // The real snapshot was taken while today was 2026-07-06; pin the clock so the
-    // year inferred from "Freitag, 29. Mai" is deterministic (29 May 2026 = Friday).
-    private val clock: Clock = Clock.fixed(Instant.parse("2026-07-06T10:00:00Z"), ZoneOffset.UTC)
+    // Pin the clock before every fixture date so the year inferred from "Freitag, 29. Mai"
+    // is deterministic (29 May 2026 = Friday) and the event counts as upcoming, not dropped.
+    private val clock: Clock = Clock.fixed(Instant.parse("2026-05-01T10:00:00Z"), ZoneOffset.UTC)
     private val scraper = RoadrunnerOverviewPageScraper(clock)
 
     private fun programme() =
@@ -90,6 +91,34 @@ class RoadrunnerOverviewPageScraperTest {
         events[1].title shouldBe "BLUES EXPLOSION"
         events[1].eventDate shouldBe LocalDate.of(2026, 8, 14) // Friday
         events[1].description shouldBe null
+    }
+
+    @Test
+    fun `drops past events the venue still lists, keeping upcoming ones`() {
+        val html =
+            """
+            <html><body>
+              <p class="Stil62">. . . . . . . . . . . . . . . . . . . .</p>
+              <p class="Stil62">Samstag, 4. Juli:</p>
+              <p class="Stil62"><span class="Stil11">THE ROCKABILLY KINGS</span></p>
+              <p class="Stil62">Einlass: 21:00 Uhr</p>
+              <p class="Stil62">. . . . . . . . . . . . . . . . . . . .</p>
+              <p class="Stil62">Freitag, 14. August:</p>
+              <p class="Stil62"><span class="Stil11">BLUES EXPLOSION</span></p>
+              <p class="Stil62">Einlass: 20:00 Uhr</p>
+            </body></html>
+            """.trimIndent()
+
+        // Today is 2026-07-20: the 4 July show is already past and must be dropped, leaving
+        // only the 14 August one.
+        val scraperMidSeason =
+            RoadrunnerOverviewPageScraper(Clock.fixed(Instant.parse("2026-07-20T10:00:00Z"), ZoneOffset.UTC))
+
+        val events = scraperMidSeason.scrape(Jsoup.parse(html, baseUrl), baseUrl)
+
+        events shouldHaveSize 1
+        events.single().title shouldBe "BLUES EXPLOSION"
+        events.single().eventDate shouldBe LocalDate.of(2026, 8, 14)
     }
 
     @Test

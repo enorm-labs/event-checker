@@ -34,8 +34,9 @@ import java.util.Locale
  *
  * Dates carry a weekday but **no year**, so the year is inferred from the weekday:
  * among nearby candidate years, the one whose 29 May actually falls on the stated
- * Friday and lands closest to today (see [inferYear]). This resolves both upcoming
- * events and the stale past events the venue often leaves listed.
+ * Friday and lands closest to today (see [inferYear]). The venue often leaves stale
+ * past events listed; those are dropped so imports never resurrect them (persistence
+ * prunes only future events no longer listed, never past ones — see `EventUpsertService`).
  *
  * This class performs **no I/O** — it operates solely on a pre-fetched Jsoup
  * [Document], making it easy to test with static HTML fixtures.
@@ -56,7 +57,8 @@ class RoadrunnerOverviewPageScraper(
      * @param document the parsed Jsoup document of `programm.html`.
      * @param baseUrl the URL the document was fetched from, used to resolve the
      *   relative flyer image path and as each event's `sourceUrl`.
-     * @return a list of [ScrapedEvent] instances, one per dated block.
+     * @return a list of upcoming [ScrapedEvent] instances (today onward), one per dated block;
+     *   past shows the venue still lists are dropped.
      */
     fun scrape(
         document: Document,
@@ -66,14 +68,24 @@ class RoadrunnerOverviewPageScraper(
         logger.info { "Found ${blocks.size} event block(s) on Roadrunner programme" }
 
         @Suppress("TooGenericExceptionCaught") // Intentional: skip individual malformed blocks without aborting the whole import
-        return blocks.mapNotNull { block ->
-            try {
-                parseBlock(block, baseUrl)
-            } catch (e: Exception) {
-                logger.warn(e) { "Failed to parse event block, skipping" }
-                null
+        val parsed =
+            blocks.mapNotNull { block ->
+                try {
+                    parseBlock(block, baseUrl)
+                } catch (e: Exception) {
+                    logger.warn(e) { "Failed to parse event block, skipping" }
+                    null
+                }
             }
+
+        // The venue often leaves past shows listed; keep only today onward so stale events
+        // are never (re-)imported. Same-day events are kept — the venue may still run them.
+        val today = LocalDate.now(clock)
+        val (upcoming, past) = parsed.partition { !it.eventDate.isBefore(today) }
+        if (past.isNotEmpty()) {
+            logger.info { "Dropped ${past.size} past event(s) from Roadrunner programme" }
         }
+        return upcoming
     }
 
     /**
