@@ -8,7 +8,7 @@ extra["kotest.version"] = "6.1.11"
 extra["kotlin-logging.version"] = "8.0.4"
 extra["mockk.version"] = "1.14.9"
 extra["mockwebserver.version"] = "4.12.0"
-extra["slugify.version"] = "4.0.0"
+extra["slugify.version"] = "4.0.1"
 extra["spring-modulith.version"] = "2.1.0"
 extra["springdoc.version"] = "3.0.3"
 
