@@ -447,31 +447,44 @@ fun isEventSegmentLabel(name: String): Boolean {
 /**
  * Event names that are not performers: a festival ("Shred Fest", "Canarias Calling
  * Festival"), a festival slot/edition ("Grey City Fest Opener", "Sommer Festival
- * Special", "Grobes Fest 2026") or a festival-ticket label ("… Festivalticket").
- * The `fest`/`festival` markers are word-anchored and may carry any trailing content
- * (a year, an "Opener"/"Special" slot label, …), so a festival titled with a slot or
- * edition is caught while one-word names ("Infest", "Manifest") and compounds
- * ("Sommerfest" — no standalone `fest` boundary) stay safe.
+ * Special", "Grobes Fest 2026"), a festival-ticket label ("… Festivalticket"), a
+ * `Hoffest` (courtyard festival — `hof` prefix defeats the `\bfest\b` boundary, so it
+ * needs its own marker), or a leading "<n> Jahre/Years …" anniversary celebration
+ * ("36 Jahre Schokoladen - Hoffest"). The `fest`/`festival` markers are word-anchored
+ * and may carry any trailing content (a year, an "Opener"/"Special" slot label, …), so
+ * a festival titled with a slot or edition is caught while one-word names ("Infest",
+ * "Manifest") and compounds ("Sommerfest" — no standalone `fest` boundary) stay safe.
+ * The anniversary marker is anchored to the title start, so a real act carrying an
+ * "… - 30 Jahre" tour tail (already trimmed by [stripArtistSuffix] before this runs) is
+ * never mistaken for one.
  */
 private val NON_ARTIST_EVENT_PATTERN =
-    Regex(""".*\bfest\b.*|.*\bfestival\b.*|.*\bfestivalticket\b.*""", RegexOption.IGNORE_CASE)
+    Regex(
+        """.*\bfest\b.*|.*\bfestival\b.*|.*\bfestivalticket\b.*""" +
+            """|.*\bhoffest\b.*""" +
+            """|\d+\.?\s+(?:jahre|jahr|years?)\b.*""",
+        RegexOption.IGNORE_CASE
+    )
 
 /**
- * Checks whether [name] is an event label (a festival, a festival slot/edition, or a
- * festival-ticket) rather than a performer.
+ * Checks whether [name] is an event label (a festival, a festival slot/edition, a
+ * festival-ticket, a `Hoffest`, or an "<n> Jahre/Years …" anniversary) rather than a
+ * performer.
  *
- * The whitespace-collapsed value must contain a word-anchored `fest`/`festival`
- * marker, which may carry any trailing slot/edition text (`Grey City Fest Opener`,
- * `Grobes Fest 2026`). The word boundaries keep one-word names (`Infest`, `Manifest`)
- * and compounds (`Sommerfest`) safe. Curated: new event-label families are added to
- * [NON_ARTIST_EVENT_PATTERN] as they appear.
+ * The whitespace-collapsed value must match a word-anchored `fest`/`festival`/`hoffest`
+ * marker (which may carry any trailing slot/edition text — `Grey City Fest Opener`,
+ * `Grobes Fest 2026`) or open with an "<n> Jahre" anniversary phrase. The word
+ * boundaries keep one-word names (`Infest`, `Manifest`) and compounds (`Sommerfest`)
+ * safe. Curated: new event-label families are added to [NON_ARTIST_EVENT_PATTERN] as
+ * they appear.
  *
  * Example:
  * ```kotlin
- * isNonArtistEvent("SHRED FEST")                 // true
- * isNonArtistEvent("Grey City Fest Opener")      // true
- * isNonArtistEvent("CANARIAS CALLING FESTIVAL")  // true
- * isNonArtistEvent("Manifest")                   // false
+ * isNonArtistEvent("SHRED FEST")                     // true
+ * isNonArtistEvent("Grey City Fest Opener")          // true
+ * isNonArtistEvent("CANARIAS CALLING FESTIVAL")      // true
+ * isNonArtistEvent("36 Jahre Schokoladen - Hoffest") // true
+ * isNonArtistEvent("Manifest")                       // false
  * ```
  */
 fun isNonArtistEvent(name: String): Boolean {
@@ -513,6 +526,8 @@ fun isFestivalTitle(title: String): Boolean = FESTIVAL_TITLE_PATTERN.containsMat
  * - a hyphen-separated "… - <tour name> Tour <year>" tail,
  * - a hyphen-separated anniversary tail "… - <n> Years/Jahre …" (e.g.
  *   "THE BUTLERS - 40 YEARS, SKA & SOULPOWER -"),
+ * - a hyphen-separated set-count note "… - <n> Set(s)…" ("Toshìn & The Teleporters - 2 Sets!"
+ *   → "Toshìn & The Teleporters"),
  * - a trailing "Live" / "Live in <city>",
  * - a trailing performance-format annotation, either parenthesized — "(DJ-Set)",
  *   "(Live)", "(Acoustic)", "(Solo)", "(Unplugged)" — or a bare, whitespace-preceded
@@ -524,7 +539,7 @@ fun isFestivalTitle(title: String): Boolean = FESTIVAL_TITLE_PATTERN.containsMat
  * - a trailing "<Album/EP/…> Release" / "Release Party" promo tag ("Hawt Coco Album
  *   Release" → "Hawt Coco").
  * The hyphen tails require a `<space>-<space>` boundary and a recognized marker
- * (`tour`, or a number + `years`/`jahre`), so an undecorated hyphenated name like
+ * (`tour`, or a number + `years`/`jahre`/`sets`), so an undecorated hyphenated name like
  * "BAD COMPANY LEGACY - Dave Colwell" is left intact. A whitespace boundary before
  * "Live" is likewise required, so a bare "Live" (the band) is never matched. The
  * relocation/reschedule marker is word-anchored and accepts an optional leading dash
@@ -535,7 +550,7 @@ fun isFestivalTitle(title: String): Boolean = FESTIVAL_TITLE_PATTERN.containsMat
  */
 private val ARTIST_SUFFIX_PATTERN =
     Regex(
-        """\s+-\s+(?:\S.*\btour\b|\d+\s+(?:years?|jahre)\b).*$""" +
+        """\s+-\s+(?:\S.*\btour\b|\d+\s+(?:years?|jahre|sets?)\b).*$""" +
             """|\s+live(?:\s+in\s+\S.*)?$""" +
             """|\s*\((?:dj[\s-]?set|live|acoustic|akustik|unplugged|solo)\)\s*$""" +
             """|\s+dj[\s-]?set$""" +
