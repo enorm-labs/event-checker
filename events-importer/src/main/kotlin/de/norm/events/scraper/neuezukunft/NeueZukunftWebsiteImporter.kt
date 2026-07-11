@@ -1,8 +1,8 @@
 package de.norm.events.scraper.neuezukunft
 
+import de.norm.events.scraper.ApiClient
 import de.norm.events.scraper.EventImporter
 import de.norm.events.scraper.EventSource
-import de.norm.events.scraper.HtmlFetcher
 import de.norm.events.scraper.ImportResult
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Component
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component
  * but the widget's public boot API returns every event as clean structured JSON — the
  * most stable possible source (ADR-007 §"Selector Strategy" — structured data is
  * priority 1), reachable without a headless browser. This importer:
- * 1. Fetches the widget boot JSON via [HtmlFetcher.fetchString] (shared politeness
+ * 1. Fetches the widget boot JSON via [ApiClient.fetchJson] (shared politeness
  *    throttle and identifying User-Agent). The configured `url` is the boot endpoint
  *    carrying the widget id (`core.service.elfsight.com/p/boot/?w=<widgetId>`) and is
  *    used verbatim — all events come back in the single response (ADR-007 first-page-only).
@@ -32,7 +32,7 @@ import org.springframework.stereotype.Component
  */
 @Component
 class NeueZukunftWebsiteImporter(
-    private val htmlFetcher: HtmlFetcher
+    private val apiClient: ApiClient
 ) : EventImporter {
     private val logger = KotlinLogging.logger {}
 
@@ -45,7 +45,7 @@ class NeueZukunftWebsiteImporter(
         etag: String?,
         lastModified: String?
     ): ImportResult {
-        val json = htmlFetcher.fetchString(url)
+        val json = apiClient.fetchJson(url)
         val events = overviewPageScraper.scrape(json)
         logger.info { "Scraped ${events.size} event(s) from Neue Zukunft" }
 

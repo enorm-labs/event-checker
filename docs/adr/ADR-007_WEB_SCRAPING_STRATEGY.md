@@ -58,6 +58,39 @@ It provides a modern headless browser API with Chromium/Firefox/WebKit support.
 Playwright is **not added in this initial implementation** to keep the footprint minimal. It will be
 introduced when the first JS-rendered venue is targeted for import.
 
+### Prefer a JSON / API Source over HTML
+
+Before writing any HTML scraper, **check whether the venue exposes its events as structured JSON** —
+either a public/internal REST or GraphQL API, or an embedded third-party calendar widget with its own
+data endpoint. A structured feed is the single most stable source (see [Selector Strategy](#selector-strategy--prefer-semantic-selectors),
+priority 1): it is an explicit machine-readable contract that survives site redesigns, needs no CSS
+selectors, and often requires no headless browser even for otherwise JS-rendered SPAs. Many "JS-only"
+venues turn out to be a thin front-end over a JSON API discoverable in the browser Network tab.
+
+Two implemented importers already take this path and skip HTML entirely:
+
+- **Festsaal Kreuzberg** — a Nuxt.js SPA renders nothing server-side, but it is backed by a **Wagtail
+  headless CMS** whose public JSON REST API returns every upcoming event as clean structured data.
+- **Neue Zukunft** — a static landing page whose concert programme lives only in an embedded **Elfsight
+  "Event Calendar" widget**; the widget's public JSON boot API (`core.service.elfsight.com/p/boot/?w=<id>`)
+  returns every event, no client-side rendering or OCR of the PDF flyer required.
+
+JSON/API importers use **`ApiClient`** (below) instead of `HtmlFetcher`, but are otherwise identical:
+they implement `EventImporter` directly and delegate parsing to a pure `*OverviewPageScraper` that takes
+the raw JSON string (rather than a Jsoup `Document`) and returns `List<ScrapedEvent>`. Keeping the parser
+I/O-free preserves snapshot-based testability exactly as for HTML scrapers.
+
+**`ApiClient` reuses the reactive `WebClient`, not Spring's blocking `RestClient`.** `RestClient` (the
+synchronous client from the [Spring REST clients](https://docs.spring.io/spring-framework/reference/integration/rest-clients.html)
+docs) was considered because its imperative `.body(T::class)` API is ergonomic, but it is **blocking** —
+dropping it into a coroutine importer would stall the WebFlux event loop and violate the non-blocking
+stack mandated by [ADR-001](ADR-001_REACTIVE_STACK.md). `WebClient` integrates natively with coroutines
+via `awaitBody()`, so it stays the client for both HTML and JSON. `ApiClient` returns the raw body as a
+`String` (parsing happens in the pure scraper) rather than deserializing in the fetch layer, which keeps
+it decoupled from the global WebClient codec configuration and lets each scraper use its own Jackson mapper.
+
+Only when there is genuinely **no** usable structured source does an HTML scraper (Jsoup, priority 2+) apply.
+
 ### Architecture
 
 A new `scraper` Spring Modulith module (`de.norm.events.scraper`) encapsulates all scraping
@@ -205,10 +238,18 @@ Key components:
   mapping of scraped text to model constants (German categories, placeholder detection, artist lists).
   See [Shared Scraping Utilities](#shared-scraping-utilities) below. New venue scrapers should use
   these utilities to avoid reinventing boilerplate and ensure consistent handling of blank/missing values.
-- **`HtmlFetcher`** — WebClient wrapper handling conditional requests (ETag / Last-Modified) and
-  returning either the parsed HTML document or a "not modified" signal. Per-host politeness throttling
-  is applied transparently via a `PerHostThrottlingFilter` registered as a WebClient
+- **`HtmlFetcher`** — WebClient wrapper for **HTML** venues handling conditional requests (ETag /
+  Last-Modified) and returning either the parsed HTML document or a "not modified" signal. Per-host
+  politeness throttling is applied transparently via a `PerHostThrottlingFilter` registered as a WebClient
   `ExchangeFilterFunction` (see [Per-Host Politeness Throttling](#per-host-politeness-throttling) below).
+- **`ApiClient`** — the JSON/API counterpart to `HtmlFetcher` (see
+  [Prefer a JSON / API Source over HTML](#prefer-a-json--api-source-over-html)). `fetchJson(url)` returns
+  the raw response body verbatim for venues whose events come from a REST/GraphQL API or a calendar-widget
+  boot endpoint. Both fetchers inject the **same** shared `WebClient` bean (`ScraperHttpClientConfig`), so
+  they share one `PerHostThrottlingFilter` instance — HTML and API requests to the same host are throttled
+  together, and JSON importers get the identifying User-Agent for free.
+- **`ScraperHttpClientConfig`** — builds the single shared, throttled scraper `WebClient` bean
+  (`SCRAPER_WEB_CLIENT`) injected by both `HtmlFetcher` and `ApiClient`.
 - **`PerHostThrottlingFilter`** — WebClient `ExchangeFilterFunction` that enforces a configurable
   minimum delay between consecutive HTTP requests to the same host. Throttling is transparent to
   callers — scraper implementations do not need to manage delays themselves.
@@ -452,20 +493,23 @@ ones because the meaning of the content rarely changes even when styling does.
 
 **Selector preference order** (most to least stable):
 
-| Priority | Selector type                        | Example                                          | Why stable                                              |
-|----------|--------------------------------------|--------------------------------------------------|---------------------------------------------------------|
-| 1        | Structured data (JSON-LD, Microdata) | `<script type="application/ld+json">`            | Explicit machine-readable contract; rarely changed      |
-| 2        | Semantic HTML5 elements              | `article`, `time[datetime]`, `h2`, `address`     | Reflects content meaning, not layout                    |
-| 3        | ARIA roles & landmarks               | `[role="listitem"]`, `[aria-label="Event date"]` | Accessibility attributes tied to purpose, not design    |
-| 4        | Data attributes                      | `[data-event-id]`, `[data-date]`                 | Often stable internal identifiers used by the site's JS |
-| 5        | Meaningful CSS classes               | `.event-title`, `.event-date`                    | Semantic class names tied to content, not styling       |
-| 6        | Positional / presentational          | `div > div:nth-child(3) > span`                  | **Avoid** — breaks on any structural change             |
+| Priority | Selector type                        | Example                                                        | Why stable                                              |
+|----------|--------------------------------------|----------------------------------------------------------------|---------------------------------------------------------|
+| 1        | JSON / API source or structured data | REST/GraphQL/widget API; `<script type="application/ld+json">` | Explicit machine-readable contract; rarely changed      |
+| 2        | Semantic HTML5 elements              | `article`, `time[datetime]`, `h2`, `address`                   | Reflects content meaning, not layout                    |
+| 3        | ARIA roles & landmarks               | `[role="listitem"]`, `[aria-label="Event date"]`               | Accessibility attributes tied to purpose, not design    |
+| 4        | Data attributes                      | `[data-event-id]`, `[data-date]`                               | Often stable internal identifiers used by the site's JS |
+| 5        | Meaningful CSS classes               | `.event-title`, `.event-date`                                  | Semantic class names tied to content, not styling       |
+| 6        | Positional / presentational          | `div > div:nth-child(3) > span`                                | **Avoid** — breaks on any structural change             |
 
 **Concrete guidelines for `EventImporter` implementations:**
 
-1. **Structured data first**: If the venue embeds `schema.org/MusicEvent` JSON-LD or Microdata (e.g.
-   Astra Kulturhaus), extract from that — it is the most stable and self-documenting source. Use
-   Jsoup to select `script[type=application/ld+json]` and parse the JSON payload.
+1. **Structured data first**: Prefer a JSON source over rendered HTML wherever one exists (see
+   [Prefer a JSON / API Source over HTML](#prefer-a-json--api-source-over-html)). A standalone REST/GraphQL
+   or calendar-widget API (fetched via `ApiClient`, e.g. Festsaal, Neue Zukunft) is best; failing that,
+   `schema.org/MusicEvent` JSON-LD or Microdata embedded in the page (e.g. Astra Kulturhaus) — select
+   `script[type=application/ld+json]` with Jsoup and parse the JSON payload. Both are the most stable and
+   self-documenting sources.
 2. **Target semantic HTML elements**: Prefer `article`, `section`, `time[datetime]`, `h1`–`h6`,
    `a[href]` over generic `div`/`span`. For example, select `time[datetime]` to extract event dates
    rather than parsing text from a styled `<span class="small-text">`.

@@ -1,7 +1,7 @@
 package de.norm.events.scraper.neuezukunft
 
+import de.norm.events.scraper.ApiClient
 import de.norm.events.scraper.EventSource
-import de.norm.events.scraper.HtmlFetcher
 import de.norm.events.scraper.ImportResult
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.nulls.shouldBeNull
@@ -18,12 +18,12 @@ import org.junit.jupiter.api.Test
 /**
  * Unit tests for [NeueZukunftWebsiteImporter].
  *
- * Uses a saved JSON fixture and a mocked [HtmlFetcher] for deterministic,
+ * Uses a saved JSON fixture and a mocked [ApiClient] for deterministic,
  * offline-safe testing without real HTTP requests.
  */
 class NeueZukunftWebsiteImporterTest {
     private lateinit var importer: NeueZukunftWebsiteImporter
-    private val htmlFetcher: HtmlFetcher = mockk()
+    private val apiClient: ApiClient = mockk()
     private val bootUrl = "https://core.service.elfsight.com/p/boot/?w=e767cbbe-0026-4173-a511-5aaa105ed563"
 
     private val fixtureJson: String =
@@ -34,8 +34,8 @@ class NeueZukunftWebsiteImporterTest {
 
     @BeforeEach
     fun setUp() {
-        importer = NeueZukunftWebsiteImporter(htmlFetcher)
-        coEvery { htmlFetcher.fetchString(any()) } returns fixtureJson
+        importer = NeueZukunftWebsiteImporter(apiClient)
+        coEvery { apiClient.fetchJson(any()) } returns fixtureJson
     }
 
     @Test
@@ -50,11 +50,11 @@ class NeueZukunftWebsiteImporterTest {
     fun `importEvents fetches the configured boot URL verbatim`() =
         runTest {
             val requestUrl = slot<String>()
-            coEvery { htmlFetcher.fetchString(capture(requestUrl)) } returns fixtureJson
+            coEvery { apiClient.fetchJson(capture(requestUrl)) } returns fixtureJson
 
             importer.importEvents(bootUrl)
 
-            coVerify { htmlFetcher.fetchString(any()) }
+            coVerify { apiClient.fetchJson(any()) }
             requestUrl.captured shouldBe bootUrl
         }
 
@@ -70,7 +70,7 @@ class NeueZukunftWebsiteImporterTest {
     @Test
     fun `importEvents returns an empty success for a payload without events`() =
         runTest {
-            coEvery { htmlFetcher.fetchString(any()) } returns """{"status":1,"data":{"widgets":{}}}"""
+            coEvery { apiClient.fetchJson(any()) } returns """{"status":1,"data":{"widgets":{}}}"""
 
             val result = importer.importEvents(bootUrl)
             result.shouldBeInstanceOf<ImportResult.Success>()
