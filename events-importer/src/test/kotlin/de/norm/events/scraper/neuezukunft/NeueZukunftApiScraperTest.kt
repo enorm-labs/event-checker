@@ -14,19 +14,19 @@ import java.time.LocalDate
 import java.time.LocalTime
 
 /**
- * Unit tests for [NeueZukunftOverviewPageScraper].
+ * Unit tests for [NeueZukunftApiScraper].
  *
  * Parses a saved snapshot of Neue Zukunft's Elfsight Event Calendar boot response
  * (`core.service.elfsight.com/p/boot/?w=<widgetId>`) for deterministic, offline-safe
  * testing without HTTP fetching.
  */
-class NeueZukunftOverviewPageScraperTest {
-    private val scraper = NeueZukunftOverviewPageScraper()
+class NeueZukunftApiScraperTest {
+    private val scraper = NeueZukunftApiScraper()
 
     private val events: List<ScrapedEvent> by lazy {
         val json =
             javaClass.classLoader
-                .getResourceAsStream("scraper/neuezukunft/neuezukunft-overview.json")!!
+                .getResourceAsStream("scraper/neuezukunft/neuezukunft-api.json")!!
                 .bufferedReader()
                 .readText()
         scraper.scrape(json)

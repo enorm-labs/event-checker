@@ -13,19 +13,19 @@ import java.time.LocalDate
 import java.time.LocalTime
 
 /**
- * Unit tests for [FestsaalOverviewPageScraper].
+ * Unit tests for [FestsaalApiScraper].
  *
  * Parses a saved snapshot of Festsaal Kreuzberg's Wagtail CMS API response
  * (`/api/v2/pages/?type=home.EventPage`) for deterministic, offline-safe testing
  * without HTTP fetching.
  */
-class FestsaalOverviewPageScraperTest {
-    private val scraper = FestsaalOverviewPageScraper()
+class FestsaalApiScraperTest {
+    private val scraper = FestsaalApiScraper()
 
     private val events: List<ScrapedEvent> by lazy {
         val json =
             javaClass.classLoader
-                .getResourceAsStream("scraper/festsaal/festsaal-overview.json")!!
+                .getResourceAsStream("scraper/festsaal/festsaal-api.json")!!
                 .bufferedReader()
                 .readText()
         scraper.scrape(json)

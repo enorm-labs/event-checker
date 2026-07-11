@@ -20,7 +20,7 @@ import java.net.URI
  * importers no longer depend on an HTML-named class.
  *
  * [fetchJson] returns the response **body verbatim** rather than deserializing it here.
- * Parsing stays in the venue's pure `*OverviewPageScraper` (no I/O), which keeps it trivially
+ * Parsing stays in the venue's pure `*ApiScraper` (no I/O), which keeps it trivially
  * testable against a saved JSON snapshot and lets each scraper use its own configured
  * Jackson mapper — consistent with the HTML scrapers, which parse a pre-fetched `Document`.
  *

@@ -30,7 +30,7 @@ class FestsaalWebsiteImporterTest {
 
     private val fixtureJson: String =
         javaClass.classLoader
-            .getResourceAsStream("scraper/festsaal/festsaal-overview.json")!!
+            .getResourceAsStream("scraper/festsaal/festsaal-api.json")!!
             .bufferedReader()
             .readText()
 
