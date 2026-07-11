@@ -47,6 +47,13 @@ class EventMappingExtensionsTest {
         mapEventType("Public Viewing") shouldBe "SCREENING"
     }
 
+    @Test
+    fun `mapEventType maps reading and exhibition labels`() {
+        mapEventType("Lesung") shouldBe "READING"
+        mapEventType("Ausstellung") shouldBe "EXHIBITION"
+        mapEventType("Vernissage") shouldBe "EXHIBITION"
+    }
+
     // --- inferConcertVenueType ---
 
     @Test
@@ -78,9 +85,27 @@ class EventMappingExtensionsTest {
     }
 
     @Test
+    fun `inferConcertVenueType maps readings and poetry slams to READING`() {
+        inferConcertVenueType("DAV JURA SLAM") shouldBe "READING"
+        inferConcertVenueType("LESEDÜNE") shouldBe "READING"
+        inferConcertVenueType("Lesung mit Autor") shouldBe "READING"
+    }
+
+    @Test
+    fun `inferConcertVenueType keeps a songslam out of READING`() {
+        // "slam" is a whole-word reading marker, so a musical "Songslam" is not a reading.
+        inferConcertVenueType("Songslam Kreuzberg") shouldBe "CONCERT"
+    }
+
+    @Test
+    fun `inferConcertVenueType maps art exhibitions to EXHIBITION`() {
+        inferConcertVenueType("VERNISSAGE: NEW WORKS") shouldBe "EXHIBITION"
+        inferConcertVenueType("Ausstellungseröffnung") shouldBe "EXHIBITION"
+    }
+
+    @Test
     fun `inferConcertVenueType maps other non-music formats to OTHER`() {
-        inferConcertVenueType("DAV JURA SLAM") shouldBe "OTHER"
-        inferConcertVenueType("LESEDÜNE") shouldBe "OTHER"
+        inferConcertVenueType("Flohmarkt im Hof") shouldBe "OTHER"
     }
 
     @Test
@@ -110,6 +135,23 @@ class EventMappingExtensionsTest {
     fun `inferConcertVenueType detects a party or club night`() {
         inferConcertVenueType("THE CURE AFTERSHOW PARTY") shouldBe "PARTY"
         inferConcertVenueType("P ▲ R ▲ N ● I ► (PARANOID CLUB)") shouldBe "PARTY"
+    }
+
+    // --- classifyByGenreKeyword ---
+
+    @Test
+    fun `classifyByGenreKeyword recovers reading exhibition and screening format cues`() {
+        classifyByGenreKeyword("Lesung") shouldBe "READING"
+        classifyByGenreKeyword("Immersive Ausstellung") shouldBe "EXHIBITION"
+        classifyByGenreKeyword("Public Viewing") shouldBe "SCREENING"
+    }
+
+    @Test
+    fun `classifyByGenreKeyword ignores genuine music genres`() {
+        classifyByGenreKeyword("Spoken Word, Electronica, Jazz, Fusion") shouldBe null
+        classifyByGenreKeyword("Indie Rock, Pop") shouldBe null
+        // The whole-word guards keep a "slam"/"kino" substring in a genre from matching.
+        classifyByGenreKeyword("Songslam Pop") shouldBe null
     }
 
     // --- refineConcertVenueType ---

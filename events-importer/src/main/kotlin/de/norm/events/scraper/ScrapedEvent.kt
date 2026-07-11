@@ -115,8 +115,9 @@ data class ScrapedEvent(
             // Fall back to OTHER (not CONCERT) when the source provided no category,
             // so unclassifiable events aren't silently labelled as concerts; then
             // promote an under-classified festival title (a "Konzert"-labelled festival
-            // day, or a category-less "… Festival") to FESTIVAL.
-            eventType = resolveEventType(eventType, title).name,
+            // day, or a category-less "… Festival") to FESTIVAL, or recover a
+            // reading/exhibition/screening a venue filed under the genre field.
+            eventType = resolveEventType(eventType, title, genre).name,
             status = EventStatus.parseOrDefault(status).name,
             slug = SlugGenerator.slugify("$eventDate-$venueSlug-$title"),
             eventDate = eventDate,
@@ -137,22 +138,37 @@ data class ScrapedEvent(
 }
 
 /**
- * Resolves the stored [EventType] from a scraped [rawType] and event [title].
+ * Resolves the stored [EventType] from a scraped [rawType], event [title], and raw
+ * [genre] text.
  *
- * The source's own category wins, defaulting to `OTHER` when it provided none. The
- * one override: a title that unambiguously names a festival ([isFestivalTitle])
- * promotes a `CONCERT` or `OTHER` classification to `FESTIVAL`, recovering festival
- * days a venue mislabelled "Konzert" (Astra) and category-less "… Festival" titles
- * (SO36, Privatclub). An explicit `PARTY`/`QUIZ`/`FESTIVAL` from the source is trusted
- * and never overridden.
+ * The source's own category wins, defaulting to `OTHER` when it provided none. Two
+ * overrides apply, but only to an under-classified `CONCERT`/`OTHER` (an explicit
+ * `PARTY`/`QUIZ`/`FESTIVAL`/… from the source is trusted and never overridden):
+ *  1. a title that unambiguously names a festival ([isFestivalTitle]) → `FESTIVAL`,
+ *     recovering festival days a venue mislabelled "Konzert" (Astra) and
+ *     category-less "… Festival" titles (SO36, Privatclub);
+ *  2. otherwise, a non-musical format cue in the genre field
+ *     ([classifyByGenreKeyword]) → the matching `READING`/`EXHIBITION`/`SCREENING`,
+ *     recovering a reading/exhibition/screening a venue filed under `genre` while
+ *     leaving the title cue-less (Festsaal `Lesung`, Cassiopeia `Immersive
+ *     Ausstellung`).
+ *
+ * The title-based festival signal takes precedence over the noisier genre field.
  */
 private fun resolveEventType(
     rawType: String?,
-    title: String
+    title: String,
+    genre: String?
 ): EventType {
     val resolved = EventType.parseOrDefault(rawType ?: EventType.OTHER.name)
-    val promotable = resolved == EventType.CONCERT || resolved == EventType.OTHER
-    return if (promotable && isFestivalTitle(title)) EventType.FESTIVAL else resolved
+    if (resolved != EventType.CONCERT && resolved != EventType.OTHER) return resolved
+    // Title-based festival signal first (stronger), then a format cue in the noisier genre field.
+    val override =
+        when {
+            isFestivalTitle(title) -> EventType.FESTIVAL
+            else -> genre?.let { classifyByGenreKeyword(it) }?.let { EventType.parseOrDefault(it) }
+        }
+    return override ?: resolved
 }
 
 /**

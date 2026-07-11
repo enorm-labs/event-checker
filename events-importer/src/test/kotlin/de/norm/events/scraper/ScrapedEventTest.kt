@@ -15,10 +15,12 @@ class ScrapedEventTest {
         doorsTime: LocalTime? = null,
         startTime: LocalTime? = null,
         title: String = "Berliner Weisse",
-        eventType: String? = null
+        eventType: String? = null,
+        genre: String? = null
     ) = ScrapedEvent(
         title = title,
         eventType = eventType,
+        genre = genre,
         eventDate = LocalDate.of(2026, 12, 30),
         sourceId = "so36:98223",
         sourceUrl = "https://www.so36.com/produkte/98223",
@@ -61,5 +63,31 @@ class ScrapedEventTest {
         // … and a plain concert title keeps its type.
         scrapedEvent(title = "Berliner Weisse", eventType = "CONCERT").toEntity().eventType shouldBe "CONCERT"
         scrapedEvent(title = "Manifest").toEntity().eventType shouldBe "OTHER"
+    }
+
+    @Test
+    fun `toEventEntity recovers a reading or exhibition from a genre-field cue`() {
+        // Festsaal files a book reading under genre "Lesung"; the title is just the author.
+        scrapedEvent(title = "Dirk von Lowtzow", eventType = "CONCERT", genre = "Lesung")
+            .toEntity()
+            .eventType shouldBe "READING"
+        // Cassiopeia files an immersive show under genre "Immersive Ausstellung"; the title has no cue.
+        scrapedEvent(title = "Rising Spaces - Immersive Club Experience", genre = "Immersive Ausstellung")
+            .toEntity()
+            .eventType shouldBe "EXHIBITION"
+    }
+
+    @Test
+    fun `toEventEntity does not let a genre cue override a trusted type or a music genre`() {
+        // An explicit PARTY is trusted even if the genre text mentions a reading.
+        scrapedEvent(title = "Poetry Slam Afterparty", eventType = "PARTY", genre = "Lesung")
+            .toEntity()
+            .eventType shouldBe "PARTY"
+        // A festival title still wins over the genre field.
+        scrapedEvent(title = "CANARIAS CALLING FESTIVAL", genre = "Lesung").toEntity().eventType shouldBe "FESTIVAL"
+        // A genuine music genre never reclassifies a concert (no format cue to match).
+        scrapedEvent(title = "Berliner Weisse", eventType = "CONCERT", genre = "Spoken Word, Jazz, Fusion")
+            .toEntity()
+            .eventType shouldBe "CONCERT"
     }
 }

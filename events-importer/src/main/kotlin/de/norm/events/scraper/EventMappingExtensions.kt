@@ -31,6 +31,12 @@ private val BASE_EVENT_TYPE_SYNONYMS: Map<String, String> =
         "show" to EventType.SHOW.name,
         // A football/match screening (Lido labels these "Public Viewing") is a SCREENING, not a concert.
         "public viewing" to EventType.SCREENING.name,
+        // A literary reading / spoken-word evening, and a gallery exhibition / opening.
+        "lesung" to EventType.READING.name,
+        "reading" to EventType.READING.name,
+        "ausstellung" to EventType.EXHIBITION.name,
+        "exhibition" to EventType.EXHIBITION.name,
+        "vernissage" to EventType.EXHIBITION.name,
         "sonstiges" to EventType.OTHER.name,
         "other" to EventType.OTHER.name
     )
@@ -102,16 +108,43 @@ fun isScreeningTitle(title: String): Boolean {
 }
 
 /**
+ * Title keywords marking a literary reading / spoken-word evening (mapped to
+ * [EventType.READING]) — the audience listens to a text being read, not a musical
+ * act. `lesedüne` is a recurring Berlin reading series. These are distinctive enough
+ * for a safe substring test; the shorter `slam` marker lives in
+ * [READING_TITLE_WORD_PATTERN].
+ */
+private val READING_TITLE_KEYWORDS =
+    listOf(
+        "lesung",
+        "lesedüne"
+    )
+
+/**
+ * Whole-word reading keyword too short for a safe substring test: `slam` (poetry
+ * slam) is a substring of a *song* slam ("Songslam Kreuzberg") — a musical format,
+ * not a reading — so it is matched only as a standalone word: "DAV JURA SLAM" reads,
+ * "Songslam" does not.
+ */
+private val READING_TITLE_WORD_PATTERN = Regex("""\bslam\b""", RegexOption.IGNORE_CASE)
+
+/**
+ * Title keywords marking a visual-art exhibition or gallery opening (mapped to
+ * [EventType.EXHIBITION]): `vernissage` is the opening night of an `ausstellung`.
+ */
+private val EXHIBITION_TITLE_KEYWORDS =
+    listOf(
+        "ausstellung",
+        "exhibition",
+        "vernissage"
+    )
+
+/**
  * Title keywords marking a clearly non-musical format with no more specific type
- * (mapped to [EventType.OTHER]): readings/poetry slams and markets.
+ * (mapped to [EventType.OTHER]): markets.
  */
 private val NON_CONCERT_TITLE_KEYWORDS =
     listOf(
-        // Readings / poetry slams / spoken word
-        "lesung",
-        "lesedüne",
-        "slam",
-        // Markets
         "markt"
     )
 
@@ -123,18 +156,29 @@ private val PARTY_TITLE_KEYWORDS =
  * Classifies an event by unambiguous keywords in its [title], or `null` when none
  * match. Curated and reactive: a quiz keyword → [QUIZ][EventType.QUIZ]; a
  * wrestling/burlesque/circus show → [SHOW][EventType.SHOW]; a football screening or
- * cinema night → [SCREENING][EventType.SCREENING]; another non-music format
- * (reading/slam, market) → [OTHER][EventType.OTHER]; a party/club-night keyword →
- * [PARTY][EventType.PARTY].
+ * cinema night → [SCREENING][EventType.SCREENING]; a reading/poetry slam →
+ * [READING][EventType.READING]; an art exhibition/vernissage →
+ * [EXHIBITION][EventType.EXHIBITION]; another non-music format (market) →
+ * [OTHER][EventType.OTHER]; a party/club-night keyword → [PARTY][EventType.PARTY].
  */
 private fun classifyByTitleKeyword(title: String): String? {
     val haystack = title.lowercase()
     return when {
         "quiz" in haystack -> EventType.QUIZ.name
+
         SHOW_TITLE_KEYWORDS.any { it in haystack } -> EventType.SHOW.name
+
         isScreeningTitle(title) -> EventType.SCREENING.name
+
+        READING_TITLE_KEYWORDS.any { it in haystack } ||
+            READING_TITLE_WORD_PATTERN.containsMatchIn(haystack) -> EventType.READING.name
+
+        EXHIBITION_TITLE_KEYWORDS.any { it in haystack } -> EventType.EXHIBITION.name
+
         NON_CONCERT_TITLE_KEYWORDS.any { it in haystack } -> EventType.OTHER.name
+
         PARTY_TITLE_KEYWORDS.any { it in haystack } -> EventType.PARTY.name
+
         else -> null
     }
 }
@@ -151,6 +195,35 @@ private fun classifyByTitleKeyword(title: String): String? {
  * flips it (keeping quiz/screening/party event-names out of the lineup).
  */
 fun inferConcertVenueType(title: String): String = classifyByTitleKeyword(title) ?: EventType.CONCERT.name
+
+/**
+ * Classifies an event by an unambiguous non-musical **format** cue in its raw
+ * [genre] text, or `null` when none match. A venue occasionally files the format in
+ * the genre/category field rather than the title: Festsaal tags a book reading
+ * `genre = "Lesung"` and Cassiopeia tags an immersive show `genre = "Immersive
+ * Ausstellung"`, leaving the title — just an author or event name — with no cue for
+ * [classifyByTitleKeyword].
+ *
+ * Deliberately narrower than the title classifier: only the three formats a music
+ * venue would never list as a *music* genre are recognized — a screening, a reading,
+ * or an exhibition — so a genuine genre string ("Techno", "Spoken Word, Jazz") never
+ * reclassifies a concert. Reuses the title classifier's keyword lists and the same
+ * whole-word guards (`\bslam\b`, `\bkino\b`), so a `Songslam`/`Alkinoos` substring in
+ * a genre can't false-match either.
+ */
+fun classifyByGenreKeyword(genre: String): String? {
+    val haystack = genre.lowercase()
+    return when {
+        isScreeningTitle(genre) -> EventType.SCREENING.name
+
+        READING_TITLE_KEYWORDS.any { it in haystack } ||
+            READING_TITLE_WORD_PATTERN.containsMatchIn(haystack) -> EventType.READING.name
+
+        EXHIBITION_TITLE_KEYWORDS.any { it in haystack } -> EventType.EXHIBITION.name
+
+        else -> null
+    }
+}
 
 /** The generic "unclassified" category labels a venue may emit (as opposed to a specific kind). */
 private val GENERIC_OTHER_TYPES = setOf(EventType.OTHER.name)
