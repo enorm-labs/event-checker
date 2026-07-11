@@ -10,6 +10,7 @@ import de.norm.events.scraper.imgSrcAt
 import de.norm.events.scraper.mapEventType
 import de.norm.events.scraper.parsePriceValue
 import de.norm.events.scraper.parseTime
+import de.norm.events.scraper.refineConcertVenueType
 import de.norm.events.scraper.resolveUrl
 import de.norm.events.scraper.textAt
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -126,7 +127,7 @@ class FrannzOverviewPageScraper(
         }
 
         val subtitle = article.textAt("h4.event-utitle")
-        val eventType = parseEventType(article)
+        val eventType = refineConcertVenueType(parseEventType(article), title)
 
         val doorsTime = parseTime(article.textAt("ul.event-times li.event-entrance .value"))
         val startTime = parseTime(article.textAt("ul.event-times li.event-start .value"))
@@ -186,8 +187,8 @@ class FrannzOverviewPageScraper(
      * than the human `.event-typ` label text. `event_typ-highlight` is a carousel
      * flag, not a type, so it is ignored. Frannz-specific tokens (`ballroomparty`,
      * `kinotv`) are supplied as synonyms; `konzert` / `party` resolve via the base
-     * table. An unrecognized or absent token yields `null`, letting the persistence
-     * boundary default to `OTHER`.
+     * table. An unrecognized or absent token yields `null`; the caller then falls
+     * back to title-based inference ([refineConcertVenueType]).
      */
     private fun parseEventType(article: Element): String? {
         val token =

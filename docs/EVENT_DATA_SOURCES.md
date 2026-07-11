@@ -18,7 +18,7 @@ The **Import** column tracks whether an automated importer has been implemented 
 | Reset Club                  |                                             | Club         |            |        |                                   |
 | Prince Charles              | https://princecharlesberlin.com/            | Club         |            |        | No own listings; links to RA only |
 | Alte Kantine Kulturbrauerei | https://alte-kantine.eu/                    | Concert Hall |     ✅      |        |                                   |
-| Festsaal Kreuzberg          | https://festsaal-kreuzberg.de/de            | Concert Hall |     ✅      |        |                                   |
+| Festsaal Kreuzberg          | https://festsaal-kreuzberg.de/de            | Concert Hall |     ✅      |   ✅    |                                   |
 | Fluxbau                     | https://www.fluxfm.de/fluxbau               | Club         |     ✅      |        | Sparse listings; Angular SPA      |
 | Sage Club                   | https://www.sage-club.de/                   | Club         |     ✅      |        | No event data in HTML; TYPO3 SPA  |
 | Schokoladen                 | https://www.schokoladen-mitte.de/           | Club         |     ✅      |        |                                   |

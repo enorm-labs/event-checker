@@ -432,7 +432,15 @@ export interface components {
        * @example CONCERT
        * @enum {string}
        */
-      eventType?: 'CONCERT' | 'FESTIVAL' | 'PARTY' | 'QUIZ' | 'CLUB_NIGHT' | 'SHOW' | 'OTHER'
+      eventType?:
+        | 'CONCERT'
+        | 'FESTIVAL'
+        | 'PARTY'
+        | 'QUIZ'
+        | 'CLUB_NIGHT'
+        | 'SHOW'
+        | 'SCREENING'
+        | 'OTHER'
       /**
        * @description Scheduling status of the event
        * @example SCHEDULED
@@ -579,7 +587,15 @@ export interface components {
        * @example CONCERT
        * @enum {string}
        */
-      eventType?: 'CONCERT' | 'FESTIVAL' | 'PARTY' | 'QUIZ' | 'CLUB_NIGHT' | 'SHOW' | 'OTHER'
+      eventType?:
+        | 'CONCERT'
+        | 'FESTIVAL'
+        | 'PARTY'
+        | 'QUIZ'
+        | 'CLUB_NIGHT'
+        | 'SHOW'
+        | 'SCREENING'
+        | 'OTHER'
       /**
        * @description Scheduling status of the event
        * @example SCHEDULED

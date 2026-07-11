@@ -11,6 +11,7 @@ import de.norm.events.scraper.mapEventType
 import de.norm.events.scraper.parseEventStatus
 import de.norm.events.scraper.parseRealDate
 import de.norm.events.scraper.parseTime
+import de.norm.events.scraper.refineConcertVenueType
 import de.norm.events.scraper.resolveUrl
 import de.norm.events.scraper.supportSubtitleLine
 import de.norm.events.scraper.textAt
@@ -127,10 +128,16 @@ class AstraOverviewPageScraper {
     ): ScrapedEvent? {
         val block = parseAstraEventBlock(article, baseUrl) ?: return null
 
+        // Astra omits the `kind` label for some events and dumps others in its
+        // generic "Other" kind; refine both from the title here (not in the shared
+        // block parser) so the authoritative overview type is set while the detail
+        // scraper still leaves the type to the overview. See refineConcertVenueType.
+        val eventType = refineConcertVenueType(block.eventType, block.title)
+
         return ScrapedEvent(
             title = block.title,
             subtitle = block.subtitle,
-            eventType = block.eventType,
+            eventType = eventType,
             // Sentinel for the dateless teaser; the detail page fills the real date in.
             eventDate = block.eventDate ?: UNRESOLVED_EVENT_DATE,
             doorsTime = block.doorsTime,
@@ -146,7 +153,7 @@ class AstraOverviewPageScraper {
                 buildArtistsForEventType(
                     block.title,
                     supportSubtitleLine(article.textLinesAt(".event__subtitle")),
-                    block.eventType
+                    eventType
                 )
         )
     }

@@ -49,6 +49,27 @@ class MadameClaudeOverviewPageScraperTest {
     }
 
     @Nested
+    inner class MapMadameClaudeCategory {
+        @Test
+        fun `maps a known CSS category`() {
+            mapMadameClaudeCategory("MusicQuiz", null, "Music Quiz #12") shouldBe "QUIZ"
+        }
+
+        @Test
+        fun `types an unknown category with a screening title as SCREENING`() {
+            // Madame Claude publishes no screening category, so the title is the only
+            // signal — otherwise this film night would fall to the OTHER default.
+            mapMadameClaudeCategory("Shorties", null, "SHORTIES FILMS SCREENING #28") shouldBe "SCREENING"
+        }
+
+        @Test
+        fun `returns null for an unknown category and a non-screening title`() {
+            // Null lets fillGapsFromOverview fall back to the other page's value.
+            mapMadameClaudeCategory("Unknown", null, "Some Live Act") shouldBe null
+        }
+    }
+
+    @Nested
     inner class ExperimontagConcert {
         @Test
         fun `parses experimontag concert card`() {

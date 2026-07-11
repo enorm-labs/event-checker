@@ -13,6 +13,7 @@ import de.norm.events.scraper.isNonArtistName
 import de.norm.events.scraper.mapEventType
 import de.norm.events.scraper.parseIsoDate
 import de.norm.events.scraper.parseTime
+import de.norm.events.scraper.refineConcertVenueType
 import de.norm.events.scraper.splitSupportActs
 import de.norm.events.scraper.textAt
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -68,7 +69,7 @@ class So36DetailPageScraper {
             return null
         }
 
-        val eventType = mapEventType(document.textAt("small.supertitle:not(.ticketsfor)"))
+        val eventType = refineConcertVenueType(mapEventType(document.textAt("small.supertitle:not(.ticketsfor)")), title)
         val subtitle = document.textAt("small.subtitle")
         val jsonLd = document.parseEventJsonLd()
         val (doorsTime, startTime) = parseTimes(document)

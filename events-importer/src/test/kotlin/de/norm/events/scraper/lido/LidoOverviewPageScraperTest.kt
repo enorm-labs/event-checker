@@ -5,7 +5,6 @@ import de.norm.events.scraper.ScrapedEvent
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldHaveSize
-import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import org.jsoup.Jsoup
 import org.junit.jupiter.api.BeforeEach
@@ -89,10 +88,11 @@ class LidoOverviewPageScraperTest {
     }
 
     @Test
-    fun `leaves the type null and extracts no artists for an unmapped category`() {
+    fun `types a public-viewing screening as SCREENING and extracts no artists`() {
         val publicViewing = event("WM 2026")
-        // "Public Viewing" is not in the synonym table → null (persistence defaults it to OTHER).
-        publicViewing.eventType.shouldBeNull()
+        // Lido's "Public Viewing" category maps to SCREENING, so the football screening
+        // is never treated as a concert and no headliner is minted from its title.
+        publicViewing.eventType shouldBe "SCREENING"
         publicViewing.artists.shouldBeEmpty()
     }
 

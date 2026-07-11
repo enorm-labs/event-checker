@@ -2,6 +2,7 @@ package de.norm.events.scraper.roadrunner
 
 import de.norm.events.scraper.EventSource
 import de.norm.events.scraper.ScrapedEvent
+import de.norm.events.scraper.inferConcertVenueType
 import de.norm.events.scraper.inferYearForWeekday
 import de.norm.events.scraper.parseTime
 import de.norm.events.scraper.resolveUrl
@@ -140,6 +141,9 @@ class RoadrunnerOverviewPageScraper(
         return ScrapedEvent(
             title = title,
             description = description,
+            // The retro programme carries no category field; infer from the title
+            // (concert by default for this live-music venue). See inferConcertVenueType.
+            eventType = inferConcertVenueType(title),
             eventDate = eventDate,
             doorsTime = doorsTime,
             imageUrl = imageUrl,

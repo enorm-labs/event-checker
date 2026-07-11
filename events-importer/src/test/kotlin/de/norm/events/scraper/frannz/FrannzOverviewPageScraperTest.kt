@@ -115,10 +115,13 @@ class FrannzOverviewPageScraperTest {
     @Nested
     inner class UntypedEvent {
         @Test
-        fun `leaves eventType null when the article has no event_typ taxonomy class`() {
+        fun `infers the type from the title when the article has no event_typ taxonomy class`() {
+            // Frannz omits the taxonomy class for this quiz, so the venue-level
+            // mapping yields null; the title-based fallback classifies it as QUIZ
+            // (and extracts no artists, since a quiz names an event, not an act).
             val quiz = scrape().first { it.title == "Quiz Night Show" }
 
-            quiz.eventType.shouldBeNull()
+            quiz.eventType shouldBe "QUIZ"
             quiz.doorsTime shouldBe LocalTime.of(18, 0)
             quiz.startTime shouldBe LocalTime.of(19, 0)
             quiz.promoters.shouldBeEmpty()
