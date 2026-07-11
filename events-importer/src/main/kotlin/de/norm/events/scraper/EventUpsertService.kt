@@ -32,10 +32,11 @@ class EventUpsertService(
      *
      * This method should be called within a transactional boundary so partial failures
      * roll back cleanly. The full pipeline:
-     * 1. Deduplicate scraped events by generated slug (date + title).
-     * 2. Upsert events into the database (insert new, update existing by `sourceId`).
-     * 3. Resolve and sync artist/promoter associations (delegated to [AssociationSyncService]).
-     * 4. Remove stale future events no longer listed on the source website.
+     * 1. Drop scraped events dated before today (see [dropPastEvents]).
+     * 2. Deduplicate scraped events by generated slug (date + title).
+     * 3. Upsert events into the database (insert new, update existing by `sourceId`).
+     * 4. Resolve and sync artist/promoter associations (delegated to [AssociationSyncService]).
+     * 5. Remove stale future events no longer listed on the source website.
      *
      * @param scrapedEvents the raw events from the scraper (may contain duplicates).
      * @param venueId the database ID of the venue these events belong to.
@@ -49,10 +50,44 @@ class EventUpsertService(
         venueSlug: String,
         eventSourceId: Long
     ): Int {
-        val uniqueEvents = deduplicateScrapedEvents(scrapedEvents)
+        val upcomingEvents = dropPastEvents(scrapedEvents, eventSourceId)
+        val uniqueEvents = deduplicateScrapedEvents(upcomingEvents)
         val upserted = upsertEvents(uniqueEvents, venueId, venueSlug, eventSourceId)
         removeStaleEvents(uniqueEvents, eventSourceId)
         return upserted.size
+    }
+
+    /**
+     * Drops scraped events dated before today, keeping today onward.
+     *
+     * Calendar-style sources publish the venue's whole standing programme — including
+     * shows that have already happened (a widget returning the full calendar, or a CMS
+     * page that leaves recently-passed nights listed). Because [removeStaleEvents] never
+     * prunes past-dated rows (it preserves them for historical records), re-importing such
+     * a source would otherwise resurrect stale events on every run. Filtering here — the
+     * single funnel every source flows through — stops that universally.
+     *
+     * This is the ingestion-side dual of [removeStaleEvents]'s cutoff: that method keeps
+     * the future as the live window on cleanup; this one does the same on intake. Same-day
+     * events are kept (the show may still be running), matching the `tomorrow` lower bound
+     * used for cleanup. Existing past-dated rows are untouched — they are simply not
+     * re-upserted, so nothing is lost for a source scraped regularly (events age into the
+     * past only after they were first imported while still upcoming).
+     *
+     * @param scrapedEvents the raw events from the scraper.
+     * @param eventSourceId the database ID of the [EventSourceEntity] that owns these events, used for logging.
+     * @return the scraped events dated today or later.
+     */
+    private fun dropPastEvents(
+        scrapedEvents: List<ScrapedEvent>,
+        eventSourceId: Long
+    ): List<ScrapedEvent> {
+        val today = LocalDate.now(clock)
+        val (upcoming, past) = scrapedEvents.partition { !it.eventDate.isBefore(today) }
+        if (past.isNotEmpty()) {
+            logger.info { "Dropped ${past.size} past event(s) from event source $eventSourceId" }
+        }
+        return upcoming
     }
 
     /**

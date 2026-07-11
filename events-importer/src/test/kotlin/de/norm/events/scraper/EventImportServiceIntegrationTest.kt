@@ -23,8 +23,11 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Import
 import org.springframework.context.annotation.Primary
+import java.time.Clock
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.ZoneOffset
 
 /**
  * Integration test for the full event import pipeline with real database records.
@@ -489,11 +492,16 @@ class EventImportServiceIntegrationTest : BaseControllerTest() {
     }
 
     /**
-     * Test configuration that provides a mock [EventImporter] for CASSIOPEIA.
+     * Test configuration that provides a mock [EventImporter] for CASSIOPEIA and a
+     * fixed [Clock] for the import pipeline.
      *
-     * Uses `@Primary` to override the real [CassiopeiaWebsiteImporter] bean,
-     * ensuring the integration test controls what the importer returns without
+     * The mock importer uses `@Primary` to override the real [CassiopeiaWebsiteImporter]
+     * bean, ensuring the integration test controls what the importer returns without
      * making real HTTP requests.
+     *
+     * The fixed clock (pinned to 2026-07-01, on or before every fixture date) makes
+     * [EventUpsertService]'s past-event cutoff deterministic — without it the cutoff
+     * would drop fixtures dated before the real wall-clock day.
      */
     @TestConfiguration
     class MockImporterConfiguration {
@@ -503,5 +511,9 @@ class EventImportServiceIntegrationTest : BaseControllerTest() {
             mockk {
                 every { eventSource } returns EventSource.CASSIOPEIA
             }
+
+        @Bean
+        @Primary
+        fun fixedClock(): Clock = Clock.fixed(Instant.parse("2026-07-01T00:00:00Z"), ZoneOffset.UTC)
     }
 }

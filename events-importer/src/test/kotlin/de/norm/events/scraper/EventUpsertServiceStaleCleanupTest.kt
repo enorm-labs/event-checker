@@ -18,11 +18,13 @@ import java.time.LocalDate
 import java.time.ZoneOffset
 
 /**
- * Unit tests for stale event cleanup logic in [EventUpsertService].
+ * Unit tests for the date-bounded pipeline logic in [EventUpsertService]: the
+ * ingestion-side past-event filter (`dropPastEvents`) and the cleanup-side stale
+ * removal (`removeStaleEvents`).
  *
  * Uses a fixed clock pinned to 2026-06-15 so all "today"/"tomorrow" calculations
- * are deterministic. Tests exercise `removeStaleEvents` indirectly through the
- * public [EventUpsertService.upsertAndCleanup] method.
+ * are deterministic. Tests exercise both through the public
+ * [EventUpsertService.upsertAndCleanup] method.
  */
 class EventUpsertServiceStaleCleanupTest {
     private val eventRepository: EventRepository = mockk(relaxed = true)
@@ -284,6 +286,48 @@ class EventUpsertServiceStaleCleanupTest {
                 coVerify {
                     eventRepository.deleteByIdIn(match { it == listOf(3L) })
                 }
+            }
+    }
+
+    @Nested
+    inner class PastEventFilter {
+        @Test
+        fun `drops scraped events before today and keeps today onward`() =
+            runTest {
+                // Calendar-style sources re-list past shows; the pipeline must drop them
+                // before upsert so they are never resurrected. Today is kept (may still run).
+                val scrapedEvents =
+                    listOf(
+                        scrapedEvent(title = "Old Show", eventDate = today.minusDays(1), sourceId = "src:past"),
+                        scrapedEvent(title = "Today Show", eventDate = today, sourceId = "src:today"),
+                        scrapedEvent(title = "Future Show", eventDate = tomorrow, sourceId = "src:future")
+                    )
+
+                val sourceIdSlot = slot<List<String>>()
+                coEvery { eventRepository.findBySourceIdIn(capture(sourceIdSlot)) } returns emptyFlow()
+
+                val upserted = service.upsertAndCleanup(scrapedEvents, venueId, venueSlug, eventSourceId)
+
+                // The past event is dropped before upsert; today + future survive.
+                upserted shouldBe 2
+                sourceIdSlot.captured shouldBe listOf("src:today", "src:future")
+            }
+
+        @Test
+        fun `upserts nothing and deletes nothing when every scraped event is past`() =
+            runTest {
+                val scrapedEvents =
+                    listOf(
+                        scrapedEvent(title = "Old One", eventDate = today.minusDays(2), sourceId = "src:old-1"),
+                        scrapedEvent(title = "Old Two", eventDate = today.minusDays(1), sourceId = "src:old-2")
+                    )
+
+                val upserted = service.upsertAndCleanup(scrapedEvents, venueId, venueSlug, eventSourceId)
+
+                upserted shouldBe 0
+                // With no upcoming events, stale cleanup has nothing to query or delete.
+                coVerify(exactly = 0) { eventRepository.findByEventSourceIdAndEventDateBetween(any(), any(), any()) }
+                coVerify(exactly = 0) { eventRepository.deleteByIdIn(any()) }
             }
     }
 
