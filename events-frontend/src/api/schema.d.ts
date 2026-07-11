@@ -440,6 +440,8 @@ export interface components {
         | 'CLUB_NIGHT'
         | 'SHOW'
         | 'SCREENING'
+        | 'EXHIBITION'
+        | 'READING'
         | 'OTHER'
       /**
        * @description Scheduling status of the event
@@ -595,6 +597,8 @@ export interface components {
         | 'CLUB_NIGHT'
         | 'SHOW'
         | 'SCREENING'
+        | 'EXHIBITION'
+        | 'READING'
         | 'OTHER'
       /**
        * @description Scheduling status of the event

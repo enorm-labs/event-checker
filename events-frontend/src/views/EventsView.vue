@@ -16,6 +16,8 @@ const EVENT_TYPES = [
   'CLUB_NIGHT',
   'SHOW',
   'SCREENING',
+  'EXHIBITION',
+  'READING',
   'OTHER',
 ]
 

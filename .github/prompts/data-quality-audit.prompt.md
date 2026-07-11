@@ -49,7 +49,7 @@ Tables (all in schema `events`): `venue`, `artist`, `promoter`, `event`, `event_
 
 Valid enum values (stored as `TEXT`; anything else is a bug — parsers fall back on unknowns):
 
-- `event.event_type`: `CONCERT`, `FESTIVAL`, `PARTY`, `QUIZ`, `CLUB_NIGHT`, `SHOW`, `OTHER`
+- `event.event_type`: `CONCERT`, `FESTIVAL`, `PARTY`, `QUIZ`, `CLUB_NIGHT`, `SHOW`, `SCREENING`, `EXHIBITION`, `READING`, `OTHER`
 - `event.status`: `SCHEDULED`, `RELOCATED`, `CANCELLED`, `POSTPONED`
 - `event_artist.role`: `HEADLINER`, `SUPPORT`, `DJ`
 
@@ -106,6 +106,11 @@ usually points at that importer.
   no tags extracted, or tags present that don't relate to the raw text).
 - Type heuristic sanity: titles containing `Quiz`/`Karaoke`/`Party` mapped to a surprising `event_type`,
   or festivals (multi-day, `Festival` in title) typed as `CONCERT`.
+- Keyword-driven type sanity (these types are inferred from title keywords in `EventMappingExtensions`):
+  a `SCREENING` whose title has no screening cue, a `READING`/`EXHIBITION` that looks like a gig, or —
+  conversely — a reading/exhibition/screening keyword that landed in `OTHER`/`CONCERT` because its venue
+  doesn't run the title classifier. Watch for keyword false positives (e.g. a musical `Songslam`
+  mistyped `READING`, or `\bkino\b`/`slam` matching a substring of a band name).
 
 ### 5. Dates, times & prices
 

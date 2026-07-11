@@ -30,6 +30,9 @@ class EventTypeTest {
         assertEquals(EventType.QUIZ, EventType.parseOrDefault("QUIZ"))
         assertEquals(EventType.CLUB_NIGHT, EventType.parseOrDefault("CLUB_NIGHT"))
         assertEquals(EventType.SHOW, EventType.parseOrDefault("SHOW"))
+        assertEquals(EventType.SCREENING, EventType.parseOrDefault("SCREENING"))
+        assertEquals(EventType.EXHIBITION, EventType.parseOrDefault("EXHIBITION"))
+        assertEquals(EventType.READING, EventType.parseOrDefault("READING"))
         assertEquals(EventType.OTHER, EventType.parseOrDefault("OTHER"))
     }
 

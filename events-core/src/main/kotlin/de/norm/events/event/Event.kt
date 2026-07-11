@@ -26,6 +26,8 @@ enum class EventType {
     CLUB_NIGHT,
     SHOW,
     SCREENING,
+    EXHIBITION,
+    READING,
     OTHER;
 
     companion object {
