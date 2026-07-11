@@ -25,6 +25,7 @@ enum class EventType {
     QUIZ,
     CLUB_NIGHT,
     SHOW,
+    SCREENING,
     OTHER;
 
     companion object {

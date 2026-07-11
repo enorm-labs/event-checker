@@ -42,6 +42,100 @@ class EventMappingExtensionsTest {
         mapEventType("Party", mapOf("party" to "CLUB_NIGHT")) shouldBe "CLUB_NIGHT"
     }
 
+    @Test
+    fun `mapEventType maps a public-viewing label to SCREENING`() {
+        mapEventType("Public Viewing") shouldBe "SCREENING"
+    }
+
+    // --- inferConcertVenueType ---
+
+    @Test
+    fun `inferConcertVenueType defaults a plain artist title to CONCERT`() {
+        // Band names a concert-venue left uncategorised (Astra Green Lung, So36 NOFX,
+        // Lido Pomplamoose/Dea Matrona/South Arcade) — the title names the act.
+        inferConcertVenueType("GREEN LUNG") shouldBe "CONCERT"
+        inferConcertVenueType("NOFX - 40 YEARS OF FUCKING UP") shouldBe "CONCERT"
+        inferConcertVenueType("POMPLAMOOSE") shouldBe "CONCERT"
+    }
+
+    @Test
+    fun `inferConcertVenueType detects a quiz`() {
+        inferConcertVenueType("Quiz Night Show") shouldBe "QUIZ"
+    }
+
+    @Test
+    fun `inferConcertVenueType detects a wrestling or burlesque show`() {
+        inferConcertVenueType("QUEER WRESTLING CIRCUS") shouldBe "SHOW"
+        inferConcertVenueType("BERLIN FREAK BURLESQUE CIRCUS") shouldBe "SHOW"
+    }
+
+    @Test
+    fun `inferConcertVenueType maps football and cinema formats to SCREENING`() {
+        inferConcertVenueType("11FREUNDE WM-QUARTIER") shouldBe "SCREENING"
+        inferConcertVenueType("Fußball Weltmeisterschaft") shouldBe "SCREENING"
+        inferConcertVenueType("World Cup 2026 Live Screening") shouldBe "SCREENING"
+        inferConcertVenueType("KENNEN SIE KINO?") shouldBe "SCREENING"
+    }
+
+    @Test
+    fun `inferConcertVenueType maps other non-music formats to OTHER`() {
+        inferConcertVenueType("DAV JURA SLAM") shouldBe "OTHER"
+        inferConcertVenueType("LESEDÜNE") shouldBe "OTHER"
+    }
+
+    @Test
+    fun `inferConcertVenueType keeps an act whose name merely contains kino as a substring`() {
+        // "kino" is only a whole-word cinema marker, so "AlKINOos" stays a CONCERT.
+        inferConcertVenueType("ALKINOOS IOANNIDIS") shouldBe "CONCERT"
+    }
+
+    // --- isScreeningTitle ---
+
+    @Test
+    fun `isScreeningTitle detects football public-viewings and cinema nights`() {
+        isScreeningTitle("11FREUNDE WM-QUARTIER") shouldBe true
+        isScreeningTitle("World Cup 2026 Live Screening") shouldBe true
+        isScreeningTitle("Fußball Weltmeisterschaft") shouldBe true
+        isScreeningTitle("KENNEN SIE KINO?") shouldBe true
+        isScreeningTitle("SHORTIES FILMS SCREENING #28") shouldBe true
+    }
+
+    @Test
+    fun `isScreeningTitle keeps a plain act, including a kino substring`() {
+        isScreeningTitle("GREEN LUNG") shouldBe false
+        isScreeningTitle("ALKINOOS IOANNIDIS") shouldBe false
+    }
+
+    @Test
+    fun `inferConcertVenueType detects a party or club night`() {
+        inferConcertVenueType("THE CURE AFTERSHOW PARTY") shouldBe "PARTY"
+        inferConcertVenueType("P ▲ R ▲ N ● I ► (PARANOID CLUB)") shouldBe "PARTY"
+    }
+
+    // --- refineConcertVenueType ---
+
+    @Test
+    fun `refineConcertVenueType defaults an unclassified event to CONCERT`() {
+        // No category (null) → the title names the act at a live-music venue.
+        refineConcertVenueType(null, "GREEN LUNG") shouldBe "CONCERT"
+    }
+
+    @Test
+    fun `refineConcertVenueType trusts a specific venue category`() {
+        refineConcertVenueType("PARTY", "Some DJ Night") shouldBe "PARTY"
+        refineConcertVenueType("FESTIVAL", "Some Weekender") shouldBe "FESTIVAL"
+    }
+
+    @Test
+    fun `refineConcertVenueType reclassifies a generic OTHER only on a keyword`() {
+        // Astra tags its wrestling show with the generic "Other" kind (→ OTHER); a
+        // keyword recovers it, but a signal-less catch-all stays OTHER rather than
+        // being force-promoted to CONCERT.
+        refineConcertVenueType("OTHER", "QUEER WRESTLING CIRCUS") shouldBe "SHOW"
+        refineConcertVenueType("OTHER", "11FREUNDE WM-QUARTIER") shouldBe "SCREENING"
+        refineConcertVenueType("OTHER", "GWF Summer Smash 2026") shouldBe "OTHER"
+    }
+
     // --- extractSupportFromSubtitle ---
 
     @Test

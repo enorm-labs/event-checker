@@ -83,7 +83,7 @@ class MadameClaudeDetailPageScraper {
         val categoryText =
             primaryInfo.selectFirst(".date p.days font")?.text()?.trim()
                 ?: primaryInfo.selectFirst(".date p.jumpe font")?.text()?.trim()
-        val eventType = if (isDjSet) EventType.PARTY.name else mapMadameClaudeCategory(categoryText, categoryText)
+        val eventType = if (isDjSet) EventType.PARTY.name else mapMadameClaudeCategory(categoryText, categoryText, title)
 
         // Times and price from the .info section
         val infoSection = primaryInfo.selectFirst(".info")

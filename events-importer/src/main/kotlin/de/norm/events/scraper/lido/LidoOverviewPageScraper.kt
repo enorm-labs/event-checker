@@ -9,6 +9,7 @@ import de.norm.events.scraper.mapEventType
 import de.norm.events.scraper.parseEventStatus
 import de.norm.events.scraper.parseRealDate
 import de.norm.events.scraper.parseTime
+import de.norm.events.scraper.refineConcertVenueType
 import de.norm.events.scraper.resolveUrl
 import de.norm.events.scraper.supportSubtitleLine
 import de.norm.events.scraper.textAt
@@ -155,7 +156,7 @@ internal fun parseLidoEventBlock(
         eventDate = parseRealDate(root.attr("data-realdate")),
         doorsTime = doorsTime,
         startTime = startTime,
-        eventType = mapEventType(root.textAt(".event-ticket__type__label")),
+        eventType = refineConcertVenueType(mapEventType(root.textAt(".event-ticket__type__label")), title),
         subtitle = root.textAt(".event-ticket__content__subtitle"),
         soldOut = statusText.contains("ausverkauft") || statusText.contains("sold out"),
         status = parseEventStatus(statusText),

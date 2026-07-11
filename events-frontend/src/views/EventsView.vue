@@ -8,7 +8,16 @@ import { type EventSearchParams, useEventSearch } from '@/composables/useEvents'
 import { useGenres } from '@/composables/useGenres'
 
 const PAGE_SIZE = 20
-const EVENT_TYPES = ['CONCERT', 'FESTIVAL', 'PARTY', 'QUIZ', 'CLUB_NIGHT', 'SHOW', 'OTHER']
+const EVENT_TYPES = [
+  'CONCERT',
+  'FESTIVAL',
+  'PARTY',
+  'QUIZ',
+  'CLUB_NIGHT',
+  'SHOW',
+  'SCREENING',
+  'OTHER',
+]
 
 // Berlin's 12 boroughs (Bezirke), as { slug, label } for the district filter. Venues carry the
 // slug; the label is shown in the dropdown. Kept as a static list since the set is fixed.

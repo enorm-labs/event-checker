@@ -6,6 +6,7 @@ import de.norm.events.scraper.ScrapedArtist
 import de.norm.events.scraper.ScrapedEvent
 import de.norm.events.scraper.imgSrcAt
 import de.norm.events.scraper.isNonArtistName
+import de.norm.events.scraper.isScreeningTitle
 import de.norm.events.scraper.mapEventType
 import de.norm.events.scraper.parseShortDate
 import de.norm.events.scraper.resolveUrl
@@ -118,7 +119,7 @@ class MadameClaudeOverviewPageScraper(
         // A "(DJ-Set)" title marker denotes a DJ party — take precedence over the CSS
         // category (which labels these Experimontag/Live → CONCERT). See mapMadameClaudeCategory.
         val eventType =
-            if (isDjSetTitle(title)) EventType.PARTY.name else mapMadameClaudeCategory(category, dayNameText)
+            if (isDjSetTitle(title)) EventType.PARTY.name else mapMadameClaudeCategory(category, dayNameText, title)
 
         return ScrapedEvent(
             title = title,
@@ -201,17 +202,22 @@ class MadameClaudeOverviewPageScraper(
  *
  * The "Concert" keyword in the day-name text takes precedence; otherwise the CSS
  * class is resolved via the shared [mapEventType] with Madame Claude's
- * venue-specific synonyms. Unknown categories return `null` so
- * `fillGapsFromOverview` can fall back to the other page's value.
+ * venue-specific synonyms. When the category is unknown, an unambiguous screening
+ * [title][isScreeningTitle] (e.g. "SHORTIES FILMS SCREENING #28") types the event
+ * [SCREENING][EventType.SCREENING] rather than letting it fall to the `OTHER`
+ * default. Failing all of these, returns `null` so `fillGapsFromOverview` can fall
+ * back to the other page's value.
  */
-@Suppress("ReturnCount") // Null guard + keyword check + delegated lookup are distinct return paths
+@Suppress("ReturnCount") // Keyword check + delegated lookup + title net are distinct return paths
 internal fun mapMadameClaudeCategory(
     cssCategory: String?,
-    dayNameText: String?
+    dayNameText: String?,
+    title: String? = null
 ): String? {
-    if (cssCategory == null && dayNameText == null) return null
     if (dayNameText?.lowercase()?.contains("concert") == true) return EventType.CONCERT.name
-    return mapEventType(cssCategory, MADAME_CLAUDE_CATEGORY_SYNONYMS)
+    mapEventType(cssCategory, MADAME_CLAUDE_CATEGORY_SYNONYMS)?.let { return it }
+    if (title != null && isScreeningTitle(title)) return EventType.SCREENING.name
+    return null
 }
 
 /** Matches the "(DJ-Set)" / "(DJ Set)" marker Madame Claude appends to a DJ-night title. */

@@ -64,7 +64,8 @@ class BadehausOverviewPageScraperTest {
         events.first { it.sourceId == "badehaus:pubquiz-with-simply-quiz-162" }.eventType shouldBe EventType.QUIZ.name
         events.first { it.sourceId == "badehaus:call-me-maybe-2000s-2010s-pop-party-8" }.eventType shouldBe
             EventType.PARTY.name
-        events.first { it.sourceId == "badehaus:world-cup-2026-live-screening-7" }.eventType shouldBe EventType.OTHER.name
+        events.first { it.sourceId == "badehaus:world-cup-2026-live-screening-7" }.eventType shouldBe
+            EventType.SCREENING.name
     }
 
     @Test

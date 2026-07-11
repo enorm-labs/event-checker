@@ -135,7 +135,7 @@ class BadehausOverviewPageScraper {
         return when {
             QUIZ_KEYWORDS.any { it in haystack } -> EventType.QUIZ.name
             PARTY_KEYWORDS.any { it in haystack } -> EventType.PARTY.name
-            SCREENING_KEYWORDS.any { it in haystack } -> EventType.OTHER.name
+            SCREENING_KEYWORDS.any { it in haystack } -> EventType.SCREENING.name
             else -> EventType.CONCERT.name
         }
     }
