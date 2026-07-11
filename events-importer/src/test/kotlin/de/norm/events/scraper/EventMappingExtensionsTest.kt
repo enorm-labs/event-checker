@@ -328,6 +328,16 @@ class EventMappingExtensionsTest {
         isNonArtistEvent("Green Lung") shouldBe false
     }
 
+    @Test
+    fun `isNonArtistEvent returns true for a Hoffest and a leading anniversary phrase`() {
+        isNonArtistEvent("36 Jahre Schokoladen - Hoffest") shouldBe true
+        isNonArtistEvent("Hoffest") shouldBe true
+        isNonArtistEvent("40 Jahre SO36") shouldBe true
+        isNonArtistEvent("10 Years Anniversary") shouldBe true
+        // A real act whose name merely contains "Jahre" mid-title is kept.
+        isNonArtistEvent("Fettes Brot") shouldBe false
+    }
+
     // --- isFestivalTitle ---
 
     @Test
@@ -454,6 +464,14 @@ class EventMappingExtensionsTest {
     fun `stripArtistSuffix recovers the act from an anniversary suffix`() {
         stripArtistSuffix("THE BUTLERS - 40 YEARS, SKA & SOULPOWER -") shouldBe "THE BUTLERS"
         stripArtistSuffix("SELIG - 30 JAHRE") shouldBe "SELIG"
+    }
+
+    @Test
+    fun `stripArtistSuffix recovers the act from a set-count note`() {
+        stripArtistSuffix("Toshìn & The Teleporters - 2 Sets!") shouldBe "Toshìn & The Teleporters"
+        stripArtistSuffix("Some Band - 3 Sets") shouldBe "Some Band"
+        // Requires the " - <n> Set(s)" shape, so an undecorated hyphenated name is left intact.
+        stripArtistSuffix("BAD COMPANY LEGACY - Dave Colwell") shouldBe "BAD COMPANY LEGACY - Dave Colwell"
     }
 
     @Test

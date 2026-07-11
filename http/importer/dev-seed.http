@@ -22,6 +22,7 @@
 ###   Madame Claude        — https://madameclaude.de/events/
 ###   Privatclub           — https://privatclub-berlin.de/
 ###   Roadrunner's Paradise — http://www.roadrunners-paradise.de/programm.html
+###   Schokoladen          — https://www.schokoladen-mitte.de/
 ###   SO36                 — https://www.so36.com/tickets
 ### ============================================================
 
@@ -735,6 +736,64 @@ Accept: application/json
 
 > {%
     client.test("Roadrunner's Paradise import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Schokoladen (Ackerstr. 169/170, Berlin-Mitte)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Schokoladen venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Schokoladen",
+    "address": "Ackerstr. 169/170",
+    "city": "Berlin",
+    "postalCode": "10115",
+    "district": "mitte",
+    "latitude": 52.53264,
+    "longitude": 13.39897,
+    "websiteUrl": "https://www.schokoladen-mitte.de"
+}
+
+> {%
+    client.global.set("schokoladen_venue_id", response.body.id);
+    client.test("Schokoladen venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Schokoladen event source ---
+# Links the venue to the SchokoladenWebsiteImporter.
+# The sourceType "SCHOKOLADEN" matches EventSource.SCHOKOLADEN.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{schokoladen_venue_id}},
+    "name": "Schokoladen",
+    "url": "https://www.schokoladen-mitte.de/",
+    "sourceType": "SCHOKOLADEN",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Schokoladen event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Schokoladen import ---
+POST {{importer-host}}/api/admin/event-sources/schokoladen/import
+Accept: application/json
+
+> {%
+    client.test("Schokoladen import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}
