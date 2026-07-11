@@ -34,9 +34,10 @@ import java.time.LocalTime
  * CMS Load to load additional pages via JavaScript, which is not
  * available to server-side scraping.
  *
- * The listing can carry recently-passed events; those are dropped so imports never
- * resurrect them, and their detail pages are never fetched (persistence prunes only
- * future events no longer listed, never past ones — see `EventUpsertService`).
+ * The listing can carry recently-passed events. Persistence drops past-dated events
+ * centrally (`EventUpsertService`), but this scraper also filters them here — after
+ * dedup, before the detail-page fetch — purely as an optimization, so no HTTP is
+ * wasted fetching detail pages for events that would be discarded anyway.
  *
  * @see CassiopeiaDetailPageScraper for the primary per-event data source.
  * @see <a href="https://cassiopeia-berlin.de/club">Cassiopeia Club page</a>
@@ -61,7 +62,8 @@ class CassiopeiaOverviewPageScraper(
      * @param sourceUrl the URL the document was fetched from, used for
      *   resolving relative links and building `sourceId` values.
      * @return a list of upcoming [ScrapedEvent] instances (today onward) extracted from
-     *   the page; recently-passed events the listing still carries are dropped.
+     *   the page; recently-passed events are dropped here to avoid wasted detail-page
+     *   fetches — persistence enforces the same cutoff regardless.
      */
     fun scrape(
         document: Document,
@@ -87,7 +89,9 @@ class CassiopeiaOverviewPageScraper(
     /**
      * Keeps only events dated today or later, dropping recently-passed ones the listing
      * still carries. Same-day events are kept — the show may still be happening — matching
-     * the persistence layer's cutoff (`EventUpsertService`).
+     * the persistence layer's cutoff (`EventUpsertService`), which enforces the same rule
+     * regardless. Applying it here spares the detail-page fetch for events that would be
+     * discarded anyway; it is an optimization, not the source of truth.
      */
     private fun dropPastEvents(events: List<ScrapedEvent>): List<ScrapedEvent> {
         val today = LocalDate.now(clock)

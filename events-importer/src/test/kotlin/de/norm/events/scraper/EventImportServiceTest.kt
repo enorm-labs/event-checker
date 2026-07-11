@@ -30,7 +30,9 @@ import org.junit.jupiter.api.Test
 import org.springframework.dao.OptimisticLockingFailureException
 import org.springframework.transaction.reactive.TransactionalOperator
 import reactor.core.publisher.Flux
+import java.time.Clock
 import java.time.LocalDate
+import java.time.ZoneOffset
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
@@ -130,7 +132,9 @@ class EventImportServiceTest {
         eventUpsertService =
             EventUpsertService(
                 eventRepository = eventRepository,
-                associationSyncService = associationSyncService
+                associationSyncService = associationSyncService,
+                // Pin "today" to the fixtures' event date so the past-event cutoff keeps them.
+                clock = Clock.fixed(LocalDate.of(2026, 6, 15).atStartOfDay().toInstant(ZoneOffset.UTC), ZoneOffset.UTC)
             )
 
         service =
