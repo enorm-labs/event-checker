@@ -653,7 +653,10 @@ private val NON_ARTIST_NAMES: Set<String> =
         "the swag jam",
         "groovejet",
         "ultra night",
-        "boheme sauvage"
+        "boheme sauvage",
+        "jazz after dark",
+        "future bash reloaded",
+        "a dead moon night"
     )
 
 /**

@@ -42,6 +42,13 @@ enum class EventSource {
     /** Madame Claude Berlin – WordPress-based event listing with detail pages. */
     MADAME_CLAUDE,
 
+    /**
+     * Neue Zukunft Berlin – static landing page whose concert programme lives only in an embedded
+     * Elfsight "Event Calendar" widget; events read from the widget's public JSON boot API
+     * (`core.service.elfsight.com/p/boot/?w=<widgetId>`) rather than the JS-rendered `<div>`.
+     */
+    NEUE_ZUKUNFT,
+
     /** Privatclub Berlin – WordPress-based single-page event listing. */
     PRIVATCLUB,
 

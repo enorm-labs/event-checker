@@ -401,6 +401,10 @@ class EventMappingExtensionsTest {
         isNonArtistName("FEMALE-FRONTED IS NOT A GENRE 6") shouldBe true
         isNonArtistName("Boheme Sauvage N°141") shouldBe true
         isNonArtistName("Boheme Sauvage N°142") shouldBe true
+        // Neue Zukunft recurring themed nights its widget calendar lists as the event title.
+        isNonArtistName("Jazz After Dark") shouldBe true
+        isNonArtistName("Future Bash Reloaded") shouldBe true
+        isNonArtistName("A Dead Moon Night") shouldBe true
     }
 
     @Test

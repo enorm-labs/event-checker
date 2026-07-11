@@ -1,0 +1,2468 @@
+{
+    "status": 1,
+    "data": {
+        "widgets": {
+            "e767cbbe-0026-4173-a511-5aaa105ed563": {
+                "status": 1,
+                "data": {
+                    "app": "event-calendar",
+                    "settings": {
+                        "events": [
+                            {
+                                "id": "5f68aab9-d858-4cf9-894a-79aa287f5159",
+                                "name": "Backengrillen + Stinking Lizaveta",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-07-08",
+                                    "time": "19:00"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-07-08",
+                                    "time": "19:00"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "noRepeat",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "<div>Unlimited Sonic Use presents:</div><br><div></div><br><div>BACKENGRILLEN - SWE | Svart Records</div><br><div><strong>Dennis Lyxzén</strong> – vocal and effects (Refused)<br><strong>Magnus Flagge</strong> – bass (Refused)<br><strong>David Sandström</strong> – drums and electronics (Refused)<br><strong>Mats Gustafsson</strong> – saxophones, flutes and live electronics (Fire Orchestra)</div><br><div><a href=\"https://backengrillen.bandcamp.com\">https://backengrillen.bandcamp.com</a></div><br><div>Genre: Antifascists antiracist free form death jazz</div><br><div>FFO: John Zorn, Misfirs, Can, Entombed</div><br><div></div><br><div><strong>Backengrillen</strong> is a new ensemble with their roots in HC, punk, noise and free Jazz. All members from Umeå, with roots in the original version of <strong>Refused</strong> – and one with starting points in the jazz-rock ensemble <strong>Nirvana</strong> (1980). With a solid and yet varied background in the creativities of Refused, <strong>TEXT, INVSN, Fire Orchestra, The International Noise Conspiracy, The End, Serpent, The Thing, Final Exit</strong> and other classic jazz combos we will now start our journey of 4 colliding locomotives, creating a new form of beauty and energy.</div><br><div>Antifascist, antiracists free form death-jazz – in the memory of <strong>Lars Lystedt</strong> – Backengrillen arrives with new perspectives on jazz. And punk. In-your-face HC jazz inspired by <strong>The Cramps, Little Richard, Albert Ayler, Polly Bradfield, Entombed, John Zorn, Misfits, Stooges, Lars Gullin, Can</strong> and much more.</div><br><div><strong>Backengrillen</strong>’s self-titled debut album is out today, January 23rd, 2026 on vinyl, CD, and digitally on <strong>Bandcamp </strong>via<strong> Svart Records.</strong></div><br><div></div><br><div></div><br><div>Stinking Lizaveta - US</div><br><div><a href=\"https://stinkinglizavetaofficial.bandcamp.com/\">https://stinkinglizavetaofficial.bandcamp.com/</a></div><br><div>Genre: Instrumental Heavy Noise Prog Rock</div><br><div>FFO: Shellac, Rotor, Mastodon</div><br><div></div><br><div>Born in West Philadelphia basements, raised in a blue Chevy van, Stinking Lizaveta hasspent almost three decades building an unmatched catalog of instrumental rock, starting with its self-titled 1995 EP released on Joe Lally’s (of Fugazi) Tolotta Records. Stinking Lizaveta features Yanni Papadopoulos on guitar, brother Alexi Papadopoulos on upright electric bass, and Cheshire Agusta on drums. All three came to the band with various backgrounds in rock, jazz, punk rock and classical music. The trio found its collective voice in West Philadelphia’s early-90s underground scene. They’ve toured and recorded steadily ever since, sharing stages in America and Europe with such bands as Clutch, Mastodon, Beehoover, the Sword, Torche, Weedeater, Fugazi, Don Vito, Dÿse, Rollins Band, Lamb of God, Orange Goblin, Zeni Geva, Hidden Hand, Corrosion of Conformity, and Today’s the Day.</div>",
+                                "eventType": [
+                                    "6368ba2a18e55"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [
+                                    {
+                                        "id": "e47658c622ad8",
+                                        "type": "link",
+                                        "text": "Get Tickets",
+                                        "link": {
+                                            "rawValue": "https://www.eventbrite.de/e/usu-pres-backengrillen-refused-members-gustafsson-stinking-lizaveta-tickets-1985279206549",
+                                            "value": "https://www.eventbrite.de/e/usu-pres-backengrillen-refused-members-gustafsson-stinking-lizaveta-tickets-1985279206549",
+                                            "type": "url",
+                                            "target": "_blank"
+                                        },
+                                        "primary": true
+                                    }
+                                ],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": null
+                            },
+                            {
+                                "id": "7c65e13b-2c52-4fc9-9a8e-048042f61a56",
+                                "name": "Future Bash Reloaded",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-07-08",
+                                    "time": "20:30"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-07-08",
+                                    "time": "20:30"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "nthDayInMonth",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [
+                                    "we"
+                                ],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "<div>Every 2nd and 4th Wednesday of the month Future Bash Reloaded brings you the newest and most exciting things the Berlin experimental Jazz Scene has to offer. </div><br><div>Curated by Felix Henkelhausen, Camilla Nebbia, Philipp Gropper, Lara Alarcón, Marius Wankel, Sofia Salvo, Beatdenker, Valentin Gerhardus &amp; Ludwig Wandinger.</div>",
+                                "eventType": [
+                                    "6368ba2a18dcf"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": null
+                            },
+                            {
+                                "id": "4618ec3c-9c25-401b-9f24-dce22b949328",
+                                "name": "Dionysiaque",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-07-09",
+                                    "time": "19:00"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-07-09",
+                                    "time": "19:00"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "noRepeat",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "<div>Making our \"Neue Zukunft\" more obscure! This time with:</div><br><div>⬥ DIONYSIAQUE&nbsp;<br>Unorthodox Doom - Strasbourg, France<br><a target=\"_blank\" rel=\"noopener\" href=\"http://fb.me/DionysiaqueGestedeGuerre\">fb.me/DionysiaqueGestedeGuerre</a><br><a href=\"http://dionysiaque.bandcamp.com\">dionysiaque.bandcamp.com</a></div><br><div>New album “La Tourbe des Rêves” out in March 2026 on I, Voidhanger Records!</div><br><div>+ 1 more tba</div><br><div>-----------------------------------------<br>Thursday, 09.07.2026<br>Neue Zukunft, Theatersaal<br>Alt-Stralau 68, 10245 Berlin</div><br><div>Doors 19:30 h<br>Doom 20:00 h</div><br><div>Presented by<br>DOOM IN BLOOM</div>",
+                                "eventType": [
+                                    "6368ba2a18d6e"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": null
+                            },
+                            {
+                                "id": "7939c3f1-5944-4885-b2f1-05f0b7549011",
+                                "name": "A World Of Our Own Festival",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-07-10",
+                                    "time": "19:00"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-07-10",
+                                    "time": "19:00"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "noRepeat",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "<div>A WORLD OF OUR OWN<br>A PLACE BEYOND THE WALL<br>&nbsp;<br>DIY Screamo. No barriers, just noise and heart.</div><br><div>Emerging from the heart of the Berlin underground, A WORLD OF OUR OWN&nbsp; is a two-day celebration of the DIY spirit. We are reclaiming space for the raw, the emotional, and the loud. Join us at Neue Zukunft for a weekend defined by chaotic energy and unconditional community.</div><br><div>This is a world of our own, a place beyond the wall. Come and be part of it.</div><br><div>THE LINEUP<br>Day 1<br>ABSENT FROM THE MORNING HEADCOUNT<br>BARABBAS DU FÖRTAPPADE<br>SOASTASPHRENAS<br>VIBORA<br>CHEVALIER<br>CROSSED<br>KNIVES CHAU<br>OSTRACA<br><br>Day 2<br>EMME<br>70CM3 OF YOUR CHEST<br>LETTERBOMBS<br>LA PETITE MORT/LITTLE DEATH<br>JOTA<br>CASSUS<br>HETTA<br>OJNE</div><br><div></div>",
+                                "eventType": [
+                                    "6368ba2a18d6e",
+                                    "6368ba2a18e55"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [
+                                    {
+                                        "id": "3f789307e8ea8",
+                                        "type": "link",
+                                        "text": "Get Tickets",
+                                        "link": {
+                                            "rawValue": "https://www.tixforgigs.com/de-DE/Event/72007/a-world-of-our-own-festival-a-place-beyond-the-wall-neue-zukunft-berlin",
+                                            "value": "https://www.tixforgigs.com/de-DE/Event/72007/a-world-of-our-own-festival-a-place-beyond-the-wall-neue-zukunft-berlin",
+                                            "type": "url",
+                                            "target": "_blank"
+                                        },
+                                        "primary": true
+                                    }
+                                ],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": null
+                            },
+                            {
+                                "id": "2f9efbdf-48ec-49a2-bf1c-7483f56dc228",
+                                "name": "A World Of Our Own Festival",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-07-11",
+                                    "time": "19:00"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-07-11",
+                                    "time": "19:00"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "noRepeat",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "<div>A WORLD OF OUR OWN<br>A PLACE BEYOND THE WALL<br>&nbsp;<br>DIY Screamo. No barriers, just noise and heart.</div><br><div>Emerging from the heart of the Berlin underground, A WORLD OF OUR OWN&nbsp; is a two-day celebration of the DIY spirit. We are reclaiming space for the raw, the emotional, and the loud. Join us at Neue Zukunft for a weekend defined by chaotic energy and unconditional community.</div><br><div>This is a world of our own, a place beyond the wall. Come and be part of it.</div><br><div>THE LINEUP<br>Day 1<br>ABSENT FROM THE MORNING HEADCOUNT<br>BARABBAS DU FÖRTAPPADE<br>SOASTASPHRENAS<br>VIBORA<br>CHEVALIER<br>CROSSED<br>KNIVES CHAU<br>OSTRACA<br><br>Day 2<br>EMME<br>70CM3 OF YOUR CHEST<br>LETTERBOMBS<br>LA PETITE MORT/LITTLE DEATH<br>JOTA<br>CASSUS<br>HETTA<br>OJNE</div><br><div></div>",
+                                "eventType": [
+                                    "6368ba2a18d6e",
+                                    "6368ba2a18e55"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [
+                                    {
+                                        "id": "266f85fac2476",
+                                        "type": "link",
+                                        "text": "Get Tickets",
+                                        "link": {
+                                            "rawValue": "https://www.tixforgigs.com/de-DE/Event/72007/a-world-of-our-own-festival-a-place-beyond-the-wall-neue-zukunft-berlin",
+                                            "value": "https://www.tixforgigs.com/de-DE/Event/72007/a-world-of-our-own-festival-a-place-beyond-the-wall-neue-zukunft-berlin",
+                                            "type": "url",
+                                            "target": "_blank"
+                                        },
+                                        "primary": true
+                                    }
+                                ],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": null
+                            },
+                            {
+                                "id": "a77a398b-c366-4a01-b040-8c9e1cc109b2",
+                                "name": "Glimmer",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-07-12",
+                                    "time": "19:00"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-07-12",
+                                    "time": "19:00"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "noRepeat",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "<div>Crunch Tapes &amp; Positive Transmitter present:</div><br><div>Glimmer (US) — live in Berlin<br>Sunday, 12 July 2026</div><br><div>Formed in the spring of 2023, New York-based grungy shoegazers Glimmer spent their first two years releasing a series of well-received singles (to praise from NPR, Stereogum, BrooklynVegan, and CREEM Magazine), landing on official Spotify playlists, and playing countless live shows in both the US and Europe. Now, with the release of their debut LP, Get Weak, the band has proven that not only can they produce heavy-hitting, hook-filled singles, but that their softer, dreamier soundscapes leave just as much of an impression.</div><br><div>Recorded in Brooklyn and mastered by Will Yip (Turnstile, Superheaven), Glimmer’s new album seamlessly transitions from pop-leaning singles like “Dissolve” and “Sorrow Again” to propulsive, fuzzed-out alt-rock anthems (“Been Down”) and hazy, etherial ballads (“Bloom.”) With elements of grunge, shoegaze, and dream pop, the album hits on a certain ‘90s nostalgia while still managing to sound fresh and modern.</div><br><div>Get Weak has racked up praise from NPR, Stereogum, VICE, NME, The Line of Best Fit, and more, and has had tracks featured on Spotify playlists like Fresh Finds, All New Rock, and New Noise.</div><br><div>Listen: <a href=\"https://glimmerisaband.bandcamp.com/album/get-weak\"><strong>https://glimmerisaband.bandcamp.com/album/get-weak</strong></a></div>",
+                                "eventType": [
+                                    "6368ba2a18d6e"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [
+                                    {
+                                        "id": "e75423fc8673",
+                                        "type": "link",
+                                        "text": "Get Tickets",
+                                        "link": {
+                                            "rawValue": "https://dice.fm/event/dk2wre-glimmer-12th-jul-neue-zukunft-berlin-tickets?lng=de",
+                                            "value": "https://dice.fm/event/dk2wre-glimmer-12th-jul-neue-zukunft-berlin-tickets?lng=de",
+                                            "type": "url",
+                                            "target": "_blank"
+                                        },
+                                        "primary": true
+                                    }
+                                ],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": null
+                            },
+                            {
+                                "id": "6d2f5339-2ab4-4030-85a5-130ea4e0dd2b",
+                                "name": "O.R.B. + Pult",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-07-12",
+                                    "time": "19:00"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-07-12",
+                                    "time": "19:00"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "noRepeat",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "<div><strong>Greyzone presents:</strong></div><br><div>ORB are a heavy-psych power-trio from Geelong, Australia, blending doom-laden riffs, fuzzed-out proto-metal and cosmic groove. Featuring members Zak Olsen, Daff Gravolin and John Zacharias, the band grew from informal jams into one of Australia’s most distinctive underground psychedelic rock acts. They debuted with the Womb cassette (2015) before breaking through with Birth (2016) and Naturality (2017), records thatshowcased their signature mix of Sabbath-weight, psychedelic sprawl and off-kilter melody. After a quiet spell, ORB returned with Tailem Bend (2024), expanding their palette into sun-baked psych-pop and funk-leaning rhythms. 2025 saw the band self-release their first single with new drummer John Zacharius. \"Mind Over Matter / End Times\" is a catchy number which finds the band leaning into their early 60s rhythm &amp; blues influences. With the single debuting on Seattle's KEXP radio, the band was then invited on to play a live set to kick off their 2025 US <a href=\"http://tour.Live\">tour.Live</a>, ORB operate as a raw, improvisational power-trio — loud, hypnotic and heavy without pretension. With one foot in classic hard-rock and another in the outer reaches of psych experimentation, ORB&nbsp;</div>",
+                                "eventType": [
+                                    "6368ba2a18e55"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [
+                                    {
+                                        "id": "f998b07146eda",
+                                        "type": "link",
+                                        "text": "Get Tickets",
+                                        "link": {
+                                            "rawValue": "https://www.greyzone-tickets.de/produkte/1272-tickets-o-r-b-neue-zukunft-berlin-am-12-07-2026",
+                                            "value": "https://www.greyzone-tickets.de/produkte/1272-tickets-o-r-b-neue-zukunft-berlin-am-12-07-2026",
+                                            "type": "url",
+                                            "target": "_blank"
+                                        },
+                                        "primary": true
+                                    }
+                                ],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": null
+                            },
+                            {
+                                "id": "be410164-693a-475c-86fc-1aa49db2ff73",
+                                "name": "Daniela Ljungsberg + Shaul Dahan",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-07-14",
+                                    "time": "19:00"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-07-14",
+                                    "time": "19:00"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "noRepeat",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "",
+                                "eventType": [
+                                    "6368ba2a18d6e"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": null
+                            },
+                            {
+                                "id": "f070f99b-6278-4b29-8f57-b96c8066282e",
+                                "name": "Restless + Água + M.Takara & Carla Boregas",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-07-15",
+                                    "time": "19:00"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-07-15",
+                                    "time": "19:00"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "noRepeat",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "",
+                                "eventType": [
+                                    "6368ba2a18d6e"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": null
+                            },
+                            {
+                                "id": "f733b55d-1ca4-4fde-8e7c-10feddf336a5",
+                                "name": "Jazz After Dark",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-06-17",
+                                    "time": "20:30"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-06-17",
+                                    "time": "20:30"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "custom",
+                                "repeatFrequency": "monthly",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [
+                                    "we"
+                                ],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "nthDay",
+                                "exceptions": [],
+                                "description": "<div><span>Every 1st and 3rd Wednesday of the month - Jazz After Dark brings you live Jazz music and a subsequent jam session. </span></div><br><div><span>Come, say hi, have a drink and play some tunes, bring your friends too!</span></div>",
+                                "eventType": [
+                                    "6368ba2a18dcf"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [
+                                    {
+                                        "id": "60fdd4f3-9092-4a14-ba06-96890d07c53c",
+                                        "tagName": ""
+                                    }
+                                ],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": {
+                                    "url": "https://scontent-fra5-2.xx.fbcdn.net/v/t39.30808-6/461494895_10220429336561906_8270013346173842595_n.jpg?stp=dst-jpg_tt6&cstp=mx1080x1080&ctp=s1080x1080&_nc_cat=109&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=Qn9NIdAZStMQ7kNvwGZPknF&_nc_oc=AdpiZaNBge_hJGL_h7GmQtvJuQGuYz_9pwNVS4Pcteqci_SD8rjka7Qf6L3wwmhO5bbMn8mvqrCya5CP_pWlCS0N&_nc_zt=23&_nc_ht=scontent-fra5-2.xx&_nc_gid=RdxBZVuwn4yxXrdEm5gX4Q&_nc_ss=7b289&oh=00_Af94Pz9WUbDDxs0Yu33KJqUcYc8z8NFb6AEezelvNWhrXQ&oe=6A3865F4",
+                                    "extension": "",
+                                    "name": "https://scontent-fra5-2.xx.fbcdn.net/v/t39.30808-6/461494895_10220429336561906_8270013346173842595_n.jpg?stp=dst-jpg_tt6&cstp=mx1080x1080&ctp=s1080x1080&_nc_cat=109&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=Qn9NIdAZStMQ7kNvwGZPknF&_nc_oc=AdpiZaNBge_hJGL_h7GmQtvJuQGuYz_9pwNVS4Pcteqci_SD8rjka7Qf6L3wwmhO5bbMn8mvqrCya5CP_pWlCS0N&_nc_zt=23&_nc_ht=scontent-fra5-2.xx&_nc_gid=RdxBZVuwn4yxXrdEm5gX4Q&_nc_ss=7b289&oh=00_Af94Pz9WUbDDxs0Yu33KJqUcYc8z8NFb6AEezelvNWhrXQ&oe=6A3865F4",
+                                    "isUploadedByLink": true
+                                }
+                            },
+                            {
+                                "id": "bdafa3c4-37f3-46d9-8012-9c42006a77a4",
+                                "name": "Doom Gong + Ixzhilion",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-07-16",
+                                    "time": "19:00"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-07-16",
+                                    "time": "19:00"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "noRepeat",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "<div>Greyzone presents:</div><br><div>Formed in 2022 in Louisville, Kentucky, U.S.A. by 7 music school nerds, DOOM GONG has made a name for themselves internationally with their own home-baked genre, Denim Psych - a hodgepodge of psychedelic rock, jazz fusion, bedroom pop, lo-fi, contemporary classical music, as well as blood, sweat, and a lot of denim.&nbsp;</div><br><div>Having only released their first two LP’s in 2023 (DOOM GONG&nbsp;and&nbsp;Dream Behemoth), DOOM GONG has quickly become a mainstay of the psych scene in the U.S. and abroad, performing their enigmatic and seamless live shows alongside the likes of&nbsp;Amyl and the Sniffers,&nbsp;The Black Angels,&nbsp;BADBADNOTGOOD,&nbsp;Allah Las,&nbsp;King Buffalo,&nbsp;Bass Drum of Death,&nbsp;Death Valley Girls,&nbsp;HOLY WAVE,&nbsp;Gustaf,&nbsp;Ron Gallo&nbsp;and many others at music festivals including&nbsp;Treefort Music Fest&nbsp;(US),&nbsp;Sled Island&nbsp;(CAN),&nbsp;Purple City Music Festival&nbsp;(CAN),&nbsp;Big Stomp&nbsp;(US) Back Alley Ballyhoo (US),&nbsp;Wagner Subaru Outdoor Experience&nbsp;(US),&nbsp;Swampfest&nbsp;(CAN),&nbsp;Expansion Psychedelic Festival&nbsp;(US),&nbsp;Moonshiners Ball&nbsp;(US), and&nbsp;Jorts Fest&nbsp;(US).</div><br><div>In 2024, DOOM GONG launched their international presence, completing two summer tours consisting of 24 shows across the eastern United States and Canada with immense reception. Soon after, the denim assemblage partnered with&nbsp;Romanus Records&nbsp;to produce vinyl of their debut album – all presses were sold out within an hour of its release. In 2025, DOOM GONG will be releasing their long awaited 3rd LP entitled “MEGAGONG” along with a MASSIVE international tour (US, Canada, Europe)</div><br><div>THE GONG RINGS ON</div>",
+                                "eventType": [
+                                    "6368ba2a18d6e"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [
+                                    {
+                                        "id": "6670f0f178d84",
+                                        "type": "link",
+                                        "text": "Get Tickets",
+                                        "link": {
+                                            "rawValue": "https://www.greyzone-tickets.de/produkte/1277-tickets-doom-gong-neue-zukunft-berlin-am-16-07-2026",
+                                            "value": "https://www.greyzone-tickets.de/produkte/1277-tickets-doom-gong-neue-zukunft-berlin-am-16-07-2026",
+                                            "type": "url",
+                                            "target": "_blank"
+                                        },
+                                        "primary": true
+                                    }
+                                ],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": null
+                            },
+                            {
+                                "id": "3048a28f-0559-4015-bf57-e2aaff251c72",
+                                "name": "Gee Tee + Gym Tonic + Dead Finks",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-07-16",
+                                    "time": "19:30"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-07-16",
+                                    "time": "19:30"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "noRepeat",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "<div>ROUGH’n’ROLL Concerts presents:</div><br><div>GEE TEE (Sydney, Australia)</div><br><div><a href=\"https://geeteeband.bandcamp.com/\">https://geeteeband.bandcamp.com/</a></div><br><div>DEAD FINKS (Berlin)</div><br><div><a href=\"https://deadfinkera.bandcamp.com/\">https://deadfinkera.bandcamp.com/</a></div><br><div>GYM TONIC (Berlin)</div><br><div><a href=\"https://gymtonic.bandcamp.com/\">https://gymtonic.bandcamp.com/</a></div><br><div></div><br><div>Doors: 19:30</div><br><div>Show: 20:30</div>",
+                                "eventType": [
+                                    "6368ba2a18e55"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [
+                                    {
+                                        "id": "e948d0ed41bf",
+                                        "type": "link",
+                                        "text": "Get Tickets",
+                                        "link": {
+                                            "rawValue": "https://www.tickettailor.com/events/roughnroll/2257308",
+                                            "value": "https://www.tickettailor.com/events/roughnroll/2257308",
+                                            "type": "url",
+                                            "target": "_blank"
+                                        },
+                                        "primary": true
+                                    }
+                                ],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": null
+                            },
+                            {
+                                "id": "a80277af-99a5-4d0c-a8b0-de016b255d1b",
+                                "name": "Nana Ios + JFR Moon",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-07-17",
+                                    "time": "19:00"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-07-17",
+                                    "time": "19:00"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "noRepeat",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "",
+                                "eventType": [
+                                    "6368ba2a18d6e"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "visible": false,
+                                "actions": [],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": null
+                            },
+                            {
+                                "id": "f03d70fa-98a3-4d6a-8069-72c94c536138",
+                                "name": "Odd Couple + Kombynat Robotron",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-07-17",
+                                    "time": "19:00"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-07-17",
+                                    "time": "19:00"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "noRepeat",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "<div>Greyzone presents:</div><br><div></div><br><div>Rush-Hour des Lebens: Odd Couple und das ewig schlagende Herz des&nbsp;Menschseins</div><br><div>In Zeiten, in denen die Realität hinter gefilterten Bildern verschwindet und&nbsp;Musik zunehmend von Algorithmen geprägt wird, legen Odd Couple mit ihrem&nbsp;neuen Album „Rush-Hour des Lebens“ ein warm-buntes Album vor, das an&nbsp;eine Zeit erinnert, in der Musik noch handgemacht war – roh, spielerisch,&nbsp;fehlerhaft und dadurch überzeugend.&nbsp;Herausgekommen ist eine Medizin gegen digitale Oberflächen und verkürzte&nbsp;Inhalte. Diesem Album zuzuhören ist wie sich einen Trip schmeißen, aber&nbsp;nicht um Realitätsflucht zu betreiben, sondern um wieder mehr von der Tiefe&nbsp;des Moments spüren.</div><br><div>Auf die Frage „Wer spricht hier?“ müsste man antworten: Hier spricht das talentierte, kreative Berlin im Alter zwischen 28 und 34, was sich, wie in jeder neuen Lebensphase, konfrontiert sieht mit der Frage, welche verdammten Weichen es einem solch fluide Leben überhaupt stellen soll. Wie geht die angebliche „Rush Hour des Lebens“ als von einer Pandemie teilweise übel ausgebremster, umtriebiger Musiker? Dieses Album ist Zeuge der Lücken der Zwecksoptimierung und beweist, dass es anarchische Gedanken und Gefühle im Leben auszuhalten gibt, bei denen auch keine Instagram-Parole hilft. Lieber stellen Odd Couple uns jede Menge Fragen.</div>",
+                                "eventType": [
+                                    "6368ba2a18e55"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [
+                                    {
+                                        "id": "c5ebe095a70e5",
+                                        "type": "link",
+                                        "text": "Get Tickets",
+                                        "link": {
+                                            "rawValue": "https://www.greyzone-tickets.de/produkte/1286-tickets-odd-couple-neue-zukunft-berlin-am-17-07-2026",
+                                            "value": "https://www.greyzone-tickets.de/produkte/1286-tickets-odd-couple-neue-zukunft-berlin-am-17-07-2026",
+                                            "type": "url",
+                                            "target": "_blank"
+                                        },
+                                        "primary": true
+                                    }
+                                ],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": null
+                            },
+                            {
+                                "id": "938eb58e-6206-4437-a6ac-77e71664a19b",
+                                "name": "Femme Royale #1: Tell A Vision + KOSCHKA",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-07-18",
+                                    "time": "19:00"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-07-18",
+                                    "time": "19:00"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "noRepeat",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "",
+                                "eventType": [
+                                    "6368ba2a18d6e"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": null
+                            },
+                            {
+                                "id": "7171add9-ea50-48c4-bf35-1219b5ac0ba0",
+                                "name": "Future Bash Reloaded",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-06-24",
+                                    "time": "20:30"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-06-24",
+                                    "time": "20:30"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "nthDayInMonth",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [
+                                    "we"
+                                ],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "<div>Every 2nd and 4th Wednesday of the month Future Bash Reloaded brings you the newest and most exciting things the Berlin experimental Jazz Scene has to offer. </div><br><div>Curated by Felix Henkelhausen, Camilla Nebbia, Philipp Gropper, Lara Alarcón, Marius Wankel, Sofia Salvo, Beatdenker, Valentin Gerhardus &amp; Ludwig Wandinger.</div>",
+                                "eventType": [
+                                    "6368ba2a18dcf"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": null
+                            },
+                            {
+                                "id": "345ba634-4aff-4d7b-98a4-0003635cf7fa",
+                                "name": "Liturgy + Machukha",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-07-24",
+                                    "time": "19:00"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-07-24",
+                                    "time": "19:00"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "noRepeat",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "<div>Greyzone presents:</div><br><div></div><br><div>Liturgy is the project of Haela Ravenna Hunt-Hendrix, whose yearning, energetic “transcendental black metal” exists in the space between metal, art music and sacred ritual. Its current lineup includes Mario Miron (guitar), Tia Vincent-Clark (bass) and Leo Didkovsky (drums).</div><br><div>Celebrated for their fusion of sincere emotion, compositional complexity, stylistic daring and intense live energy, the band is simultaneously a medium and platform for drama and theology. It was founded in the context of Brooklyn DIY as a solo project by Hunt-Hendrix in 2005 while she was studying philosophy and classical composition at Columbia. In 2009 Hunt-Hendrix stimulated fervent conversation in the music world with her text “Transcendental Black Metal”, and after expanding to a quartet they made waves globally with their 2011 sophomore album Aesthethica for fusing black metal with math rock and infusing the form with a counterintuitively loving, emotional energy.</div><br><div>Their ambitious 2015 album The Ark Work was controversial for its incorporation of IDM and trap production into their musical language. In fall 2019 they solidified this sound world with their highly acclaimed fourth studio album H.A.Q.Q., which is tied to an ongoing philosophical YouTube lecture series.</div><br><div>Their fifth studio album, an opera entitled Origin of the Alimonies, was released in November 2020, recorded with an eight-piece chamber ensemble and performed at Roadburn Festival in 2021 as the live score to an eponymous film created by Hunt-Hendrix. After a solo sculpture exhibition in 2022, the album 93696 was released in 2023 followed by an extensive world tour.</div>",
+                                "eventType": [
+                                    "6368ba2a18e55"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [
+                                    {
+                                        "id": "7f9b84a671457",
+                                        "type": "link",
+                                        "text": "Get Tickets",
+                                        "link": {
+                                            "rawValue": "https://www.greyzone-tickets.de/produkte/1273-tickets-liturgy-neue-zukunft-berlin-am-24-07-2026",
+                                            "value": "https://www.greyzone-tickets.de/produkte/1273-tickets-liturgy-neue-zukunft-berlin-am-24-07-2026",
+                                            "type": "url",
+                                            "target": "_blank"
+                                        },
+                                        "primary": true
+                                    }
+                                ],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": null
+                            },
+                            {
+                                "id": "87dfec00-0a17-4019-8ef4-0d51073832f9",
+                                "name": "Evolfo",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-07-29",
+                                    "time": "19:00"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-07-29",
+                                    "time": "19:00"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "noRepeat",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "<div><span>Evolfo offers an expansive interpretation of psychedelic rock - \"We don't do the typical psychedelic rock platitudes,\" says guitarist and vocalist Matt Gibbs. Over three LPs, multiple singles and innumerable raucous received performances, Evolfo offers a feast of expressive psych soul, sinister garage, and spaced-out experimental rock a la Can and Yes. The band's collective approach to songwriting is similarly free from constraints of genre; as Impose Magazine declared, \"you fall into the depths of the lyrics within seconds.\"</span></div>",
+                                "eventType": [
+                                    "6368ba2a18d6e"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [
+                                    {
+                                        "id": "3745e91a6ba01",
+                                        "type": "link",
+                                        "text": "Get Tickets",
+                                        "link": {
+                                            "rawValue": "https://www.greyzone-tickets.de/produkte/1287-tickets-evolfo-neue-zukunft-berlin-am-29-07-2026",
+                                            "value": "https://www.greyzone-tickets.de/produkte/1287-tickets-evolfo-neue-zukunft-berlin-am-29-07-2026",
+                                            "type": "url",
+                                            "target": "_blank"
+                                        },
+                                        "primary": true
+                                    }
+                                ],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": null
+                            },
+                            {
+                                "id": "966a7ac3-e94c-4fe0-9444-1c9813245625",
+                                "name": "Kanaan & Ævestaden",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-07-31",
+                                    "time": "20:00"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-07-31",
+                                    "time": "20:00"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "noRepeat",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "<div>Two powerful young bands combine musical forces, with an altogether unique outcome</div><br><div>Unlimited Sonic Use presents:</div><br><div></div><br><div>Kanaan &amp; Ævestaden - NOR | Jansen Records</div><br><div><a href=\"https://kanaanband.bandcamp.com/album/langt-langt-vekk\">https://kanaanband.bandcamp.com/album/langt-langt-vekk</a></div><br><div>Genre: Experimental Fuzz Psychedelic Folk Rock</div><br><div>FFO: Motorpsycho, Kungens Man, Larkin Poe, Needlepoint</div><br><div></div><br><div>Two powerful young bands combine musical forces, with an altogether unique outcome.</div><br><div>The psychedelic power trio Kanaan and the neo-folk innovators Ævestaden are both</div><br><div>among Norway’s busiest and most critically lauded bands.</div><br><div>With Langt, langt vekk (eng: far, far away) the two bands have created a singular album.</div><br><div>Traditional Norwegian folk music and rock has been combined several times before, but nothing sounds like this.</div><br><div>Kanaan contributes its members’ jazz/psych background, rooted in improvisation and jamming.</div><br><div>Ævestaden’s modern folktronicautilizes several ancient traditional instruments,</div><br><div>in addition to the incorporation of traditional Swedish folk music.</div><br><div>The result is something truly groundbreaking, in where both bands’ identities shines through.</div>",
+                                "eventType": [],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [
+                                    {
+                                        "id": "b3fdb1f647f05",
+                                        "type": "link",
+                                        "text": "Get Tickets",
+                                        "link": {
+                                            "rawValue": "https://www.eventbrite.de/e/usu-pres-kanaan-vestaden-neue-zukunft-31072026-tickets-1989213383779",
+                                            "value": "https://www.eventbrite.de/e/usu-pres-kanaan-vestaden-neue-zukunft-31072026-tickets-1989213383779",
+                                            "type": "url",
+                                            "target": "_blank"
+                                        },
+                                        "primary": true
+                                    }
+                                ],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": null
+                            },
+                            {
+                                "id": "d8796ac9-00d7-47fa-a651-1b2a6a217e8f",
+                                "name": "Festival Entre Trópicos",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-08-01",
+                                    "time": "18:00"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-08-01",
+                                    "time": "18:00"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "noRepeat",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "<div><span>estival Entre Trópicos is Berlin’s first contemporary Latin American music and culture festival organized by and for the Latin diaspora. One unique day at </span><a class=\"x1i10hfl xjbqb8w x1ejq31n x18oe1m7 x1sy0etr xstzfhl x972fbf x10w94by x1qhh985 x14e42zd x9f619 x1ypdohk xt0psk2 x3ct3a4 xdj266r x14z9mp xat24cr x1lziwak xexx8yu xyri2b x18d9i69 x1c1uobl x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz notranslate _a6hd\" href=\"https://www.instagram.com/neuezukunftstralau/?hl=de\">@neuezukunftstralau</a><span> and </span><a class=\"x1i10hfl xjbqb8w x1ejq31n x18oe1m7 x1sy0etr xstzfhl x972fbf x10w94by x1qhh985 x14e42zd x9f619 x1ypdohk xt0psk2 x3ct3a4 xdj266r x14z9mp xat24cr x1lziwak xexx8yu xyri2b x18d9i69 x1c1uobl x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz notranslate _a6hd\" href=\"https://www.instagram.com/r100_projectspace/?hl=de\">@r100_projectspace</a><span> featuring two live stages, film, food and a market of independent projects by </span><a class=\"x1i10hfl xjbqb8w x1ejq31n x18oe1m7 x1sy0etr xstzfhl x972fbf x10w94by x1qhh985 x14e42zd x9f619 x1ypdohk xt0psk2 x3ct3a4 xdj266r x14z9mp xat24cr x1lziwak xexx8yu xyri2b x18d9i69 x1c1uobl x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz notranslate _a6hd\" href=\"https://www.instagram.com/byl0lab/?hl=de\">@byl0lab</a><span> ✦</span><br><br><span>From cumbia and alternative rock to experimental electronics — a lineup that reflects the current Latin scene in Germany with artists like </span><a class=\"x1i10hfl xjbqb8w x1ejq31n x18oe1m7 x1sy0etr xstzfhl x972fbf x10w94by x1qhh985 x14e42zd x9f619 x1ypdohk xt0psk2 x3ct3a4 xdj266r x14z9mp xat24cr x1lziwak xexx8yu xyri2b x18d9i69 x1c1uobl x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz notranslate _a6hd\" href=\"https://www.instagram.com/lasmigraniasok/?hl=de\">@lasmigraniasok</a><span>, </span><a class=\"x1i10hfl xjbqb8w x1ejq31n x18oe1m7 x1sy0etr xstzfhl x972fbf x10w94by x1qhh985 x14e42zd x9f619 x1ypdohk xt0psk2 x3ct3a4 xdj266r x14z9mp xat24cr x1lziwak xexx8yu xyri2b x18d9i69 x1c1uobl x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz notranslate _a6hd\" href=\"https://www.instagram.com/desenfrenotropical/?hl=de\">@desenfrenotropical</a><span>, </span><a class=\"x1i10hfl xjbqb8w x1ejq31n x18oe1m7 x1sy0etr xstzfhl x972fbf x10w94by x1qhh985 x14e42zd x9f619 x1ypdohk xt0psk2 x3ct3a4 xdj266r x14z9mp xat24cr x1lziwak xexx8yu xyri2b x18d9i69 x1c1uobl x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz notranslate _a6hd\" href=\"https://www.instagram.com/mercedes.marxx/?hl=de\">@mercedes.marxx</a><span>, </span><a class=\"x1i10hfl xjbqb8w x1ejq31n x18oe1m7 x1sy0etr xstzfhl x972fbf x10w94by x1qhh985 x14e42zd x9f619 x1ypdohk xt0psk2 x3ct3a4 xdj266r x14z9mp xat24cr x1lziwak xexx8yu xyri2b x18d9i69 x1c1uobl x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz notranslate _a6hd\" href=\"https://www.instagram.com/losbabyjaguars/?hl=de\">@losbabyjaguars</a><span>, </span><a class=\"x1i10hfl xjbqb8w x1ejq31n x18oe1m7 x1sy0etr xstzfhl x972fbf x10w94by x1qhh985 x14e42zd x9f619 x1ypdohk xt0psk2 x3ct3a4 xdj266r x14z9mp xat24cr x1lziwak xexx8yu xyri2b x18d9i69 x1c1uobl x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz notranslate _a6hd\" href=\"https://www.instagram.com/lalalatindrama/?hl=de\">@lalalatindrama</a><span> </span><a class=\"x1i10hfl xjbqb8w x1ejq31n x18oe1m7 x1sy0etr xstzfhl x972fbf x10w94by x1qhh985 x14e42zd x9f619 x1ypdohk xt0psk2 x3ct3a4 xdj266r x14z9mp xat24cr x1lziwak xexx8yu xyri2b x18d9i69 x1c1uobl x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz notranslate _a6hd\" href=\"https://www.instagram.com/kiwitanikita/?hl=de\">@kiwitanikita</a><span> and showcases from </span><a class=\"x1i10hfl xjbqb8w x1ejq31n x18oe1m7 x1sy0etr xstzfhl x972fbf x10w94by x1qhh985 x14e42zd x9f619 x1ypdohk xt0psk2 x3ct3a4 xdj266r x14z9mp xat24cr x1lziwak xexx8yu xyri2b x18d9i69 x1c1uobl x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz notranslate _a6hd\" href=\"https://www.instagram.com/isa.otoya/?hl=de\">@isa.otoya</a><span>, </span><a class=\"x1i10hfl xjbqb8w x1ejq31n x18oe1m7 x1sy0etr xstzfhl x972fbf x10w94by x1qhh985 x14e42zd x9f619 x1ypdohk xt0psk2 x3ct3a4 xdj266r x14z9mp xat24cr x1lziwak xexx8yu xyri2b x18d9i69 x1c1uobl x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz notranslate _a6hd\" href=\"https://www.instagram.com/soyemetres/?hl=de\">@soyemetres</a><span> </span><a class=\"x1i10hfl xjbqb8w x1ejq31n x18oe1m7 x1sy0etr xstzfhl x972fbf x10w94by x1qhh985 x14e42zd x9f619 x1ypdohk xt0psk2 x3ct3a4 xdj266r x14z9mp xat24cr x1lziwak xexx8yu xyri2b x18d9i69 x1c1uobl x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz notranslate _a6hd\" href=\"https://www.instagram.com/be.hier/?hl=de\">@be.hier</a><span> ✦</span><br><br><span>More than a concert: a space where the Latin community is not just invited — it’s the host.</span></div>",
+                                "eventType": [
+                                    "6368ba2a18d6e",
+                                    "6368ba2a18e55"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [
+                                    {
+                                        "id": "2996f856-d835-4a3b-b599-2bdbb7f27fd3",
+                                        "tagName": ""
+                                    }
+                                ],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [
+                                    {
+                                        "id": "5d0aa3b365725",
+                                        "type": "link",
+                                        "text": "Get Tickets",
+                                        "link": {
+                                            "rawValue": "https://dice.fm/partner/tickets/event/2wyp2o-festival-entre-trpicos-1st-aug-neue-zukunft-berlin-tickets?dice_id=9477373&dice_channel=web&dice_tags=organic&dice_campaign=DICE&dice_feature=mio_marketing",
+                                            "value": "https://dice.fm/partner/tickets/event/2wyp2o-festival-entre-trpicos-1st-aug-neue-zukunft-berlin-tickets?dice_id=9477373&dice_channel=web&dice_tags=organic&dice_campaign=DICE&dice_feature=mio_marketing",
+                                            "type": "url",
+                                            "target": "_blank"
+                                        },
+                                        "primary": true
+                                    }
+                                ],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": null
+                            },
+                            {
+                                "id": "161c9267-49e6-43a1-9bf9-8bb6805d10ca",
+                                "name": "Jazz After Dark",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-07-01",
+                                    "time": "20:30"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-07-01",
+                                    "time": "20:30"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "nthDayInMonth",
+                                "repeatFrequency": "monthly",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [
+                                    "we"
+                                ],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "nthDay",
+                                "exceptions": [],
+                                "description": "<div><span>Every 1st and 3rd Wednesday of the month - Jazz After Dark brings you live Jazz music and a subsequent jam session. </span></div><br><div><span>Come, say hi, have a drink and play some tunes, bring your friends too!</span></div>",
+                                "eventType": [
+                                    "6368ba2a18dcf"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": {
+                                    "url": "https://scontent-fra5-2.xx.fbcdn.net/v/t39.30808-6/461494895_10220429336561906_8270013346173842595_n.jpg?stp=dst-jpg_tt6&cstp=mx1080x1080&ctp=s1080x1080&_nc_cat=109&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=Qn9NIdAZStMQ7kNvwGZPknF&_nc_oc=AdpiZaNBge_hJGL_h7GmQtvJuQGuYz_9pwNVS4Pcteqci_SD8rjka7Qf6L3wwmhO5bbMn8mvqrCya5CP_pWlCS0N&_nc_zt=23&_nc_ht=scontent-fra5-2.xx&_nc_gid=RdxBZVuwn4yxXrdEm5gX4Q&_nc_ss=7b289&oh=00_Af94Pz9WUbDDxs0Yu33KJqUcYc8z8NFb6AEezelvNWhrXQ&oe=6A3865F4",
+                                    "extension": "",
+                                    "name": "https://scontent-fra5-2.xx.fbcdn.net/v/t39.30808-6/461494895_10220429336561906_8270013346173842595_n.jpg?stp=dst-jpg_tt6&cstp=mx1080x1080&ctp=s1080x1080&_nc_cat=109&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=Qn9NIdAZStMQ7kNvwGZPknF&_nc_oc=AdpiZaNBge_hJGL_h7GmQtvJuQGuYz_9pwNVS4Pcteqci_SD8rjka7Qf6L3wwmhO5bbMn8mvqrCya5CP_pWlCS0N&_nc_zt=23&_nc_ht=scontent-fra5-2.xx&_nc_gid=RdxBZVuwn4yxXrdEm5gX4Q&_nc_ss=7b289&oh=00_Af94Pz9WUbDDxs0Yu33KJqUcYc8z8NFb6AEezelvNWhrXQ&oe=6A3865F4",
+                                    "isUploadedByLink": true
+                                }
+                            },
+                            {
+                                "id": "4b6107a1-dabd-4d33-bdee-be4f331ba3e8",
+                                "name": "Ragana + Dis Fig + Spixe",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-08-06",
+                                    "time": "19:00"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-08-06",
+                                    "time": "19:00"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "noRepeat",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "<div>CTM presents:</div><br><div></div><br><div>A night of queer black metal intensity and crushing emotional release unfolds in a powerful double bill that opens with hardcore punk resistance.</div><br><div>Moving fluidly between drums, guitar, and voice, Ragana's sound is all about blurred lines. Emerging from the DIY punk underground of Olympia and now rooted between there and Oakland, the queer duo's wide spectrum of influences meld into a singular vision of experimental black metal, redolent of the petrichor and damp green moss of the Pacific Northwest. Delicate vocal harmony dissolves into searing cries, a constant push and pull between fragility and force: heavy yet luminous, grounded in emotion and carried by a sense of haunted space.</div><br><div>Dis Fig’s performances are full-bodied transmissions. Her live shows erase the distance between artist and audience, drawing listeners into a shared emotional terrain that extends beyond language. Her voice is an immediate snare to the senses, her presence immense. Honed across years spent in experimental scenes where boundaries were meant to be pushed, her sound spits on easy classification. It’s Rapture and Rupture, brvtal beauty flensed and stretched in uncannily melodic configurations. Continuously expanding the scope of her sound and performance, her collaborations with bass don The Bug, radical multi-disciplinary artist Tianzhuo Chen, and sonic freight trains The Body are essential listening for weird ears.</div><br><div>Opening the evening, Spixe brings a fierce and urgent energy rooted in Berlin’s queer punk landscape, drawing from hardcore and crust. Fronted by FLINTA voices and formed from members of Shimmer, Wet Dream War Machine, and Double Life, they channel the tensions and realities faced by marginalized communities into cutting confrontation you can mosh to, setting the tone for a night of catharsis and collective release.</div>",
+                                "eventType": [
+                                    "6368ba2a18e55"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [
+                                    {
+                                        "id": "f8f67a2c023e",
+                                        "type": "link",
+                                        "text": "Get Tickets",
+                                        "link": {
+                                            "rawValue": "https://disk.stager.co/shop/default/events/111656984",
+                                            "value": "https://disk.stager.co/shop/default/events/111656984",
+                                            "type": "url",
+                                            "target": "_blank"
+                                        },
+                                        "primary": true
+                                    }
+                                ],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": null
+                            },
+                            {
+                                "id": "20c62ec4-998f-44ef-b753-42ba7a5d2026",
+                                "name": "Kee Avil",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-08-11",
+                                    "time": "20:00"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-08-11",
+                                    "time": "20:00"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "noRepeat",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "<div>Digital in Berlin presents:</div><br><div><strong>Montreal producer Kee Avil crafts deconstructed songs that blend guitar, voice, and electronic production with avant-pop, glitch, and experimental folk sensibilities. After her Berlin debut at the Kiezsalon in 2019, Digital in Berlin welcomes her back to Neue Zukunft in support of her third album, </strong><a target=\"_blank\" rel=\"noopener\" href=\"https://keeavil.bandcamp.com/album/vapor\"><strong><em>Vapor</em></strong></a><strong>&nbsp;on NYC label NNA Tapes.</strong></div><br><div>Throughout 2026, Kee Avil’s latest project <em>Vapor </em>is being released progressively, song by song. For Avil, this deconstructed album is a sonic diary, reflecting what inspires her in the moment. It is an attempt to capture fleeting moments of creativity and complete them quickly while they are still fresh and breathing. On the evolving album, Avil doesn’t attempt to link the songs, but instead allows each one to tell its own story.</div><br><div>Her previous albums, <em>Crease</em> (Constellation, March 2022) and <em>Spine</em> (Constellation, May 2024), were Bandcamp Album of the Day selections and received widespread critical acclaim, including Juno nominations for Best Album Artwork.</div><br><div>The Line of Best Fit declared <em>“Spine affirms Kee Avil’s status of an aesthetics and production virtuoso comparable to Jlin or SOPHIE, producing a dripping, cavernous version of glitch slammed with manipulations”</em> while the Quietus applauded its restrained intensity<em> “Spine simmers, sashaying close to eruption. Sounds worm around like squeezed gel.”</em></div><br><div>As a compelling voice in experimental songcraft, Kee Avil evokes PJ Harvey, Eartheater, SOPHIE, and Lucretia Dalt, where Juana Molina meets Autechre. She has toured extensively, including festivals like Rewire, Les Nuits Botanique, A Colossal Weekend, Pop Montreal, À L'arme, Ruhrtriennale, Le Guess Who?, Guelph and Vancouver Jazz Festival, and supported bands such as Godspeed You! Black Emperor, Xiu Xiu, SUUNS and Big | Brave.</div>",
+                                "eventType": [
+                                    "6368ba2a18d6e"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": null
+                            },
+                            {
+                                "id": "44ce48df-2ab5-46f0-bb23-87f27de8167e",
+                                "name": "A Dead Moon Night",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-08-18",
+                                    "time": "19:00"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-08-18",
+                                    "time": "19:00"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "noRepeat",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "<div>Greyzone presents - Sold Out!</div><br><div></div><br><div><strong>with Toody Cole and Her band with Jenny Don't &amp; the Spurs supporting</strong></div><br><div>Direct from Clackamas, Oregon, Toody Cole (Dead Moon) &amp; Her Band centers on one of the most influential figures in American DIY rock &amp; roll. As co-founder and driving force of the iconic band Dead Moon, Toody Cole, alongside her husband and creative partner Fred Cole, helped forge a raw, uncompromising sound that formed a living bridge between original ’60s American garage rock and later punk, garage, and early grunge movements. Her punchy, melodic bass playing and unmistakable vocal presence were essential to Dead Moon’s power-trio dynamic, anchoring a fiercely independent body of work that continues to resonate across generations.</div><br><div>Following the passing of drummer Andrew Loomis and Fred Cole,Toody carries the Dead Moon songbook forward with Kelly Haliburton (drums), her longtime bandmate from Pierced Arrows, and Christopher March (guitar) of Jenny Don’t &amp; The Spurs. Together, Toody Cole &amp; Her Band honor the grit, emotional weight, and self-reliant spirit of Dead Moon’s catalog, delivering these songs with renewed urgency and reverence while preserving one of American rock &amp; roll’s most enduring DIY legacies.</div>",
+                                "eventType": [
+                                    "6368ba2a18e55"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [
+                                    {
+                                        "id": "5e6975f72bfd5",
+                                        "type": "link",
+                                        "text": "Sold Out!",
+                                        "link": {
+                                            "rawValue": "",
+                                            "value": "",
+                                            "type": "url",
+                                            "target": "_blank"
+                                        },
+                                        "primary": true
+                                    }
+                                ],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": null
+                            },
+                            {
+                                "id": "94ffb84f-8c74-4468-b8dd-b412bde027b7",
+                                "name": "1017 - Colin Stetson & Stian Westerhuus",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-08-19",
+                                    "time": "19:00"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-08-19",
+                                    "time": "19:00"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "noRepeat",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "<div>Positive Transmitter presents:</div><br><div>1017 is the high-voltage new trio from Colin Stetson, Stian Westerhus, and Erland Dahlen – a band whose name references the staggering energy (1017 TeV) theoretically needed to create a black hole! This is music forged at the brink of collapse, and the band dives headlong into that gravitational threshold – where songs and sounds bend, fractures and collapses into something profoundly transformative and painfully beautiful.</div><br><div>The trio balances raw power with striking emotional depth. Known for his thunderous saxophone and circular breathing mastery, Colin Stetson brings seismic power and sculpted overtones, while Stian Westerhus pushes the electric guitar to its outermost expressive limits – bending tones, building walls of sound, and singing with a voice that’s as fragile as it is commanding. Echoing the emotional immediacy of David Bowie, Thom Yorke, or Scott Walker, Westerhus brings a deep vulnerability to the songs – his vocals often standing bare against the chaos, like a flickering signal from deep space.</div><br><div>Completing the trio is Erland Dahlen, whose deep sense of space, momentum, and signature bell textures brings a haunting clarity and percussive drive to the group’s sound world. His extended kit becomes part rhythm machine, part atmospheric portal.</div><br><div>1017 is unlike anything out there. It is not just a band – it is a gravitational force. A visceral live experience where sonic extremes meet emotional honesty and song writing mastery.</div>",
+                                "eventType": [
+                                    "6368ba2a18e55"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [
+                                    {
+                                        "id": "0d2af3576b5fa",
+                                        "type": "link",
+                                        "text": "Get Tickets",
+                                        "link": {
+                                            "rawValue": "https://dice.fm/event/avwdqv-1017-colin-stetson-stian-westerhus-19th-aug-neue-zukunft-berlin-tickets?lng=de",
+                                            "value": "https://dice.fm/event/avwdqv-1017-colin-stetson-stian-westerhus-19th-aug-neue-zukunft-berlin-tickets?lng=de",
+                                            "type": "url",
+                                            "target": "_blank"
+                                        },
+                                        "primary": true
+                                    }
+                                ],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": null
+                            },
+                            {
+                                "id": "f2456044-190a-4b4c-b1bd-c2de4ce41890",
+                                "name": "Killer Kin",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-08-19",
+                                    "time": "19:00"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-08-19",
+                                    "time": "19:00"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "noRepeat",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "<div><span>Greyzone presents:</span></div><br><div></div><br><div><span>KILLER KIN PLAYS BALL-BREAKING, HIGH POWERED ROCK N' ROLL, PULLING INFLUENCE FROM BANDS LIKE RADIO BIRDMAN, AC/DC, MOTÖRHEAD, AND SO ON. FORMED IN 2018 BY SINGER MATT, AND GUITARIST/ SONGWRITER CHLOE ROSE, THE TWO SOLIDIFIED THE LINE UP TO INCLUDE CLOSE FRIENDS JASON KYEK ON DRUMS, MARCO CAROTENUTO ON BASS, AND BRADY \"THE CAT\" WILSON ON LEAD GUITAR. KILLER KIN RELEASED THEIR DEBUT S/T RECORD ON DEAD BEAT RECORDS IN 2023, COMPLETED TWO EUROPEAN TOURS, AND IS CURRENTLY WORKING ON THEIR SECOND FULL LENGTH RECORD TO BE RELEASED IN THE FALL OF 2026.&nbsp;</span></div>",
+                                "eventType": [
+                                    "6368ba2a18d6e"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [
+                                    {
+                                        "id": "02c920a3151f4",
+                                        "type": "link",
+                                        "text": "Get Tickets",
+                                        "link": {
+                                            "rawValue": "https://www.greyzone-tickets.de/produkte/1294-tickets-killer-kin-neue-zukunft-berlin-am-19-08-2026",
+                                            "value": "https://www.greyzone-tickets.de/produkte/1294-tickets-killer-kin-neue-zukunft-berlin-am-19-08-2026",
+                                            "type": "url",
+                                            "target": "_blank"
+                                        },
+                                        "primary": true
+                                    }
+                                ],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": null
+                            },
+                            {
+                                "id": "49baa208-c2ca-40df-82dd-5be437be547d",
+                                "name": "A Dead Moon Night",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-08-30",
+                                    "time": "19:00"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-08-30",
+                                    "time": "19:00"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "noRepeat",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "<div>Greyzone presents - Sold Out!</div><br><div></div><br><div><strong>with Toody Cole and Her band with Jenny Don't &amp; the Spurs supporting</strong></div><br><div>Direct from Clackamas, Oregon, Toody Cole (Dead Moon) &amp; Her Band centers on one of the most influential figures in American DIY rock &amp; roll. As co-founder and driving force of the iconic band Dead Moon, Toody Cole, alongside her husband and creative partner Fred Cole, helped forge a raw, uncompromising sound that formed a living bridge between original ’60s American garage rock and later punk, garage, and early grunge movements. Her punchy, melodic bass playing and unmistakable vocal presence were essential to Dead Moon’s power-trio dynamic, anchoring a fiercely independent body of work that continues to resonate across generations.</div><br><div>Following the passing of drummer Andrew Loomis and Fred Cole,Toody carries the Dead Moon songbook forward with Kelly Haliburton (drums), her longtime bandmate from Pierced Arrows, and Christopher March (guitar) of Jenny Don’t &amp; The Spurs. Together, Toody Cole &amp; Her Band honor the grit, emotional weight, and self-reliant spirit of Dead Moon’s catalog, delivering these songs with renewed urgency and reverence while preserving one of American rock &amp; roll’s most enduring DIY legacies.</div>",
+                                "eventType": [
+                                    "6368ba2a18e55"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [
+                                    {
+                                        "id": "995fd12d780a5",
+                                        "type": "link",
+                                        "text": "Sold Out!",
+                                        "link": {
+                                            "rawValue": "",
+                                            "value": "",
+                                            "type": "url",
+                                            "target": "_blank"
+                                        },
+                                        "primary": true
+                                    }
+                                ],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": null
+                            },
+                            {
+                                "id": "0d6dc9f2-b204-4f3a-bc32-8e8874b941f0",
+                                "name": "Macabre + Cryptic Brood",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-07-07",
+                                    "time": "19:00"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-07-07",
+                                    "time": "19:00"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "noRepeat",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "<div>Swamp Conspiracy presents:</div>",
+                                "eventType": [
+                                    "6368ba2a18e55"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [
+                                    {
+                                        "id": "58fae0fedf72f",
+                                        "type": "link",
+                                        "text": "Get Tickets",
+                                        "link": {
+                                            "rawValue": "https://www.tixforgigs.com/en-GB/Event/74556/macabre-european-killing-spree-2026-neue-zukunft-berlin",
+                                            "value": "https://www.tixforgigs.com/en-GB/Event/74556/macabre-european-killing-spree-2026-neue-zukunft-berlin",
+                                            "type": "url",
+                                            "target": "_blank"
+                                        },
+                                        "primary": true
+                                    }
+                                ],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": null
+                            },
+                            {
+                                "id": "afbd0fa3-d826-485f-bba6-d13555166f66",
+                                "name": "Bold + Drink Deep",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-07-06",
+                                    "time": "17:35"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-07-06",
+                                    "time": "17:35"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "noRepeat",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "<div>Tangible Material presents:</div><br><div></div><br><div><span>Formed in 1985 by four disaffected thirteen year olds, BOLD began life as Crippled Youth. The band first caught the attention of the thriving mid-80’s hardcore scene with the release of their nine song e.p., “Join The Fight”, which along with brother band, Youth of Today helped define the look, message and sound of what would become known as Youth Crew hardcore. Shortly after the release of “Join The Fight”, the band changed its name and released the landmark NYHC L.P. “Speak Out” on Revelation Records. Non-stop live shows expanded the band’s reach and cemented them among the most influential groups of their time. In 1989 BOLD recruited guitarist Tom Capone for the release of what would become, at its time, their swan song - the eponymous 7”, which would later be re-released as Looking Back. This record marked a distinct sonic and lyrical progression; anticipating the more technical components of what would follow in hardcore of the 90’s, while at the same time, pre-figuring many hallmarks of what would soon inform post-hardcore.</span></div>",
+                                "eventType": [
+                                    "6368ba2a18e55"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [
+                                    {
+                                        "id": "df9dad5f96653",
+                                        "type": "link",
+                                        "text": "Get Tickets",
+                                        "link": {
+                                            "rawValue": "https://dice.fm/event/q2vmnx-bold-6th-jul-neue-zukunft-berlin-tickets?lng=de",
+                                            "value": "https://dice.fm/event/q2vmnx-bold-6th-jul-neue-zukunft-berlin-tickets?lng=de",
+                                            "type": "url",
+                                            "target": "_blank"
+                                        },
+                                        "primary": true
+                                    }
+                                ],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": null
+                            },
+                            {
+                                "id": "edbcb85e-f555-4f1d-a3a1-e4a87eea3a3a",
+                                "name": "Cruhda + Ecaccio + Irakli + Cocktail Twinks",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-07-05",
+                                    "time": "18:00"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-07-05",
+                                    "time": "18:00"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "noRepeat",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "",
+                                "eventType": [
+                                    "6368ba2a18e55"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": null
+                            },
+                            {
+                                "id": "90e44fad-4211-4347-9515-4b54ea72fe5f",
+                                "name": "Changeover Berlin",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-07-04",
+                                    "time": "19:00"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-07-04",
+                                    "time": "19:00"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "noRepeat",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "<div><span>Since its founding four years ago, CHANGEOVER FESTIVAL, organized by Connected Agency, has been committed to constant development — across genres, audiences and different forms of cultural exploration. This year, the festival moves beyond the familiar festival format, opening new routes between cities and scenes.  After launching the season in Belgrade with the SWITCH showcase edition on 22–23 May and following the first tour stops in Niš, Sofia and Prague, Changeover Tour arrives in Berlin on Saturday, 4 July. The Berlin edition will take place at Neue Zukunft — a venue whose atmosphere fits the tour’s interest in independent scenes, new encounters and artists working at the edges of genre.  Regional independent voices at Neue Zukunft  The Berlin showcase brings together artists from the regional and underground scene, moving through punk, noise, experimental electronics, leftfield sound and performance-oriented approaches.  The program reflects the wider mission of Changeover Tour: to create space for artists from the Balkans and the wider region to meet new audiences, build connections between local and international scenes and bring less predictable music into new spaces.  Performing:   Св. Псета — one of the main alternative acts of the Belgrade underground scene. What characterizes them — and why they are so wanted — are extremely energetic and tense live shows, in which the band flirts with the audience in all its pompous wildness and unrestraint, emotionally draining yet therapeutically liberating at the same time.  ACHRE — a new shaped trio project of Sunfear, Cryer and R. Miro. ACHRE plays doomgaze, drone metal, ambient-doom — labels that sound important until the feedback starts eating them. Screams and moanings turn into something almost tender, a survival mechanism disguised as noise.  Uličnedžukele — recently upgraded their setup as a three-piece, this instrumental art-punk band from Belgrade will stir you into unrest, then comfort you into finding inner peace. </span><br></div>",
+                                "eventType": [
+                                    "6368ba2a18d6e",
+                                    "6368ba2a18e55"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [
+                                    {
+                                        "id": "f808e722b5bca",
+                                        "type": "link",
+                                        "text": "Get Tickets",
+                                        "link": {
+                                            "rawValue": "https://de.ra.co/events/2463270",
+                                            "value": "https://de.ra.co/events/2463270",
+                                            "type": "url",
+                                            "target": "_blank"
+                                        },
+                                        "primary": true
+                                    }
+                                ],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": null
+                            },
+                            {
+                                "id": "292df42b-f32c-4a26-a928-ea6483f4cad1",
+                                "name": "The Datsuns + Operators",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-07-02",
+                                    "time": "20:00"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-07-02",
+                                    "time": "20:00"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "noRepeat",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "<div>Unlimited Sonic Use presents:</div><br><div></div><br><div>The Datsuns - NZ | Hellsquad Records</div><br><div><a href=\"https://thedatsuns.bandcamp.com\"><u>https://thedatsuns.bandcamp.com</u></a></div><br><div>Genre: Filth Garage Rock'n'Roll</div><br><div>FFO: The Hellacopters, Black Rebel Motorcycle Club, The Stooges</div><br><div></div><br><div>Time stumbles on. So does the clan DATSUN. Change the inevitable. Despite the ever warping landscape, the DATSUNS find those paths of least resistance up the mountain, and take their lifetime’s accumulated lessons &amp; mastery of rock, up the proverbial giant rock, to dispel their latest riffage &amp; learnings, from the highest point, upon the masses, with joyous savagery.</div><br><div>The workings towards an eighth volume of Datsun sonics proceed steadily. Though the clan have lost another drummer, Scandinavian thumper Adam Lindmark of Dead Lord fills the seat for upcoming 2025 live action. A host of Swedish drumming familiars also litter recordings thus far, to deliver the Stoogeoid evil, the powerpop crunch or the classic proto rawk assault &amp; battery.</div><br><div>Lead string wrangler Christian, comes to grips with the literal new hand he’s been dealt, after a literal handicapped year, whereupon next level surgical intervention was required to save a paw ravaged.</div><br><div>Entrenched in the semi-rural NZ paradise, Phil has wracked mind &amp; mitts to conjure up new weaving guitarring rhythms to dispense to his comrades across the seas.</div><br><div>In the lands of ice &amp; snow Dolf has soundboarded hooks &amp; crunch w/his like minded Scandinavian pals &amp; also shot back many a reshaped idea &amp; burst of rok energy to his Datsun brothers.</div><br><div>The newest eighth album (\"Moonstruck Man\"), the latest in crafted Datsun sonics teeters on the bridge of existence. To celebrate, the touring sets forth thru July 2026 cross Northern Hemisphered European lands, to share with the masses the in-the-flesh spectacle of Aotearoan strut &amp; swagger. The promise beckons, of more running, riffing, dancing rock, in the Western calendar year of 2026, both studio wrecked &amp; wrangled, and delivered hot wired alive.</div><br><div></div><br><div></div><br><div>Operators- Berlin</div><br><div><a href=\"https://operators.bandcamp.com/\">https://operators.bandcamp.com/</a></div><br><div>Genre: Finest organ driven Stoner Rock'n'Roll</div><br><div>FFO: The Doors, Kyuss, Deep Purple</div><br><div></div><br><div>Heavy rock'n'roll from Berlin. Three albums. +200 sweaty live shows, from Desertfest Berlin to your grandma's basement. \"It is a rollercoaster, complete with ups and downs, climbs and descents that ultimately combine for a well put together if recognizable sound.\"</div>",
+                                "eventType": [
+                                    "6368ba2a18e55"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [
+                                    {
+                                        "id": "885e40f7fb805",
+                                        "type": "link",
+                                        "text": "Get Tickets",
+                                        "link": {
+                                            "rawValue": "https://www.eventbrite.de/e/usu-pres-the-datsuns-operators-neue-zukunft-02072026-tickets-1987506059125",
+                                            "value": "https://www.eventbrite.de/e/usu-pres-the-datsuns-operators-neue-zukunft-02072026-tickets-1987506059125",
+                                            "type": "url",
+                                            "target": "_blank"
+                                        },
+                                        "primary": true
+                                    }
+                                ],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": null
+                            },
+                            {
+                                "id": "acab6406-589b-4a25-ab6f-b1d0e05f2599",
+                                "name": "Dygl",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-07-02",
+                                    "time": "19:00"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-07-02",
+                                    "time": "19:00"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "noRepeat",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "<div>Japanese rock band DYGL (pronounced ‘day-glo’) are the four-piece alt-rock band&nbsp;has landed features in NME, Japan Times, The Line of Best Fit, and Headstuﬀ. The&nbsp;band has toured globally, playing shows in China, the USA, the UK (supporting&nbsp;Bad Suns), and Europe (supporting The Mystery Lights). They have also performed&nbsp;at a wide range of music festivals, including Le Magnifique (France), Treefort Music&nbsp;Fest, SXSW (USA), Concrete &amp; Grass (China), Summer Sonic, Fuji Rock Festival&nbsp;(Japan), Maho Rasop (Thailand), and DMZ (Korea). Additionally, the group has&nbsp;opened for indie rock legends Franz Ferdinand, Pavement, Beach Fossils, and&nbsp;Fontaines D.C..</div><br><div>DYGL was formed in 2012 when members Nobuki Akiyama (vocals &amp; guitar), Kohei&nbsp;Kamoto (guitar), Yotaro Kachi (bass), and Yosuke Shimonaka (guitar) were studying&nbsp;at Meiji Gakuin University. The group has already released five studio albums. After&nbsp;the release of their first EP in 2015, the band collaborated with Albert Hammond Jr.&nbsp;(guitarist for The Strokes) and Gus Oberg, who produced their 2017 debut album,&nbsp;Say Goodbye to Memory Den. This was followed by Songs of Innocence &amp;&nbsp;Experience (2019), A Daze In A Haze (2021), Thirst (2022), and Who's in the&nbsp;House? (2025)</div><br><div>After exploring a diverse range of musical styles, their sound is now shifting towards a more raw and physical direction, influenced by Television, Talking Heads, The Kinks, Led Zeppelin, and Black Sabbath. Their latest album, Who's in the House?, was recorded, mixed, and mastered by Stephanie “Slozzaa” Loza. The band just digitally released 2 new singles, “All tomorrows” and “NRG”</div>",
+                                "eventType": [
+                                    "6368ba2a18d6e"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [
+                                    {
+                                        "id": "e10c4d0e8995f",
+                                        "type": "link",
+                                        "text": "Get Tickets",
+                                        "link": {
+                                            "rawValue": "https://www.greyzone-tickets.de/produkte/1280-tickets-dygl-neue-zukunft-berlin-am-02-07-2026",
+                                            "value": "https://www.greyzone-tickets.de/produkte/1280-tickets-dygl-neue-zukunft-berlin-am-02-07-2026",
+                                            "type": "url",
+                                            "target": "_blank"
+                                        },
+                                        "primary": true
+                                    }
+                                ],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": null
+                            },
+                            {
+                                "id": "1e899e9e-8c6f-41a6-96c4-d20440be4655",
+                                "name": "Free Throw + Saturdays at your Place + Pool Kids",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-06-30",
+                                    "time": "17:28"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-06-30",
+                                    "time": "17:28"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "noRepeat",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "<div>Since forming in 2012, FREE THROW’s story has been simple: keep going. New records, longer tours, bigger rooms – it’s always been another step upward for the Nashville-based quintet, whose 2014 debut, Those Days Are Gone, has become an era-defining classic in the emo-punk genre, launching them onto global tours with Hot Mulligan and New Found Glory and slots at Slam Dunk, Riot Fest, and The Fest. Every milestone has pushed them ahead, but on their sixth LP, Moments Before The Wind (Wax Bodega), that constant charge gradually slows, suspended mid-step, mid-thought, mid-life.</div><br><div>Recorded with longtime producer Brett Romnes on either end of the sold-out Those Days Are Gone 10-year tour, the follow-up to 2023’s Lessons That We Swear To Keep chronicles a surrealist descent into liminality: a period of intense personal upheaval colored by loss, renewal, reflection, and, ultimately, life-altering joy through the impending birth of a child. The 11-song set is disarmingly real, colored by sonic spontaneity – a swirl of Midwest emo, sweat-soaked punk fervor, and crashing alternative rock – but also the sort of achingly vulnerable lyricism fans and critics have come to expect from the band. Through it all, Moments finds Free Throw still moving, still growing, but now, perhaps more than ever, acutely aware that the path ahead is neither straight nor obvious. There’s a quiet confidence guiding them there into a brand-new era, ready for whatever the wind blows their way.  </div><br><div>Support: SATURDAYS AT YOUR PLACE &amp; POOL KIDS  </div><br><div></div><br><div>Einlass: 19 Uhr</div>",
+                                "eventType": [
+                                    "6368ba2a18e55"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [
+                                    {
+                                        "id": "12afb43b07e8e",
+                                        "type": "link",
+                                        "text": "Get Tickets",
+                                        "link": {
+                                            "rawValue": "https://tickets.loft.de/event/free-throw-jgdz0t",
+                                            "value": "https://tickets.loft.de/event/free-throw-jgdz0t",
+                                            "type": "url",
+                                            "target": "_blank"
+                                        },
+                                        "primary": true
+                                    }
+                                ],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": null
+                            },
+                            {
+                                "id": "39128a44-7d0a-43a3-bb08-fa2cf1787ce2",
+                                "name": "ShitKid",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-06-29",
+                                    "time": "19:00"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-06-29",
+                                    "time": "19:00"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "noRepeat",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "<div><span>Seit ihrem Durchbruch im Jahr 2016 ist Åsa Söderqvists Lo-Fi-Rock-Projekt ShitKid einer der faszinierendsten Acts Schwedens, der stets Erwartungen unterläuft und Konventionen bricht, während er von Medien wie The FADER, i-D, NPR, The Line of Best Fit und vielen anderen gelobt wird. Nachdem ShitKid im Frühjahr 2016 mit der Debütsingle „Oh Please Be A Cocky Cool Kid“ erstmals in Erscheinung getreten war, veröffentlichte sie eine Reihe von Alben und EPs, darunter das Kultklassiker-Debütalbum „Fish“, die Durchbruch-EP „This Is It“ und die in Zusammenarbeit mit den Melvins entstandene EP Limbo/„Mellan himmel å helvete“, und gewann dabei Fans wie Iggy Pop, Billie Joe Armstrong von Green Day und Fever Ray. Auftritte bei Festivals wie Roskilde, SXSW, The Great Escape und Way Out West folgten, ebenso wie Tourtermine rund um die Welt und Auftritte als Vorband von Bands wie den Melvins. Im Jahr 2020 beendete sie das Projekt abrupt und zog sich vollständig aus der Musikszene zurück. 2026 ist ShitKid nun zurück. Nach einem schnell ausverkauften Konzert in Berlin im März kommt sie im Juni nach Köln, Berlin und Hamburg.</span></div>",
+                                "eventType": [
+                                    "6368ba2a18e55"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [
+                                    {
+                                        "id": "74e700eeec6a9",
+                                        "type": "link",
+                                        "text": "Get Tickets",
+                                        "link": {
+                                            "rawValue": "https://dice.fm/partner/tickets/event/xeap5l-shitkid-29th-jun-neue-zukunft-berlin-tickets?dice_id=8748891&dice_channel=web&dice_tags=organic&dice_campaign=DICE&dice_feature=mio_marketing",
+                                            "value": "https://dice.fm/partner/tickets/event/xeap5l-shitkid-29th-jun-neue-zukunft-berlin-tickets?dice_id=8748891&dice_channel=web&dice_tags=organic&dice_campaign=DICE&dice_feature=mio_marketing",
+                                            "type": "url",
+                                            "target": "_blank"
+                                        },
+                                        "primary": true
+                                    }
+                                ],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": null
+                            },
+                            {
+                                "id": "05a80ded-6182-486e-b639-f16b1847c4bd",
+                                "name": "Rosegarden Funeral Party",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-06-28",
+                                    "time": "19:00"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-06-28",
+                                    "time": "19:00"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "noRepeat",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "",
+                                "eventType": [
+                                    "6368ba2a18d6e"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [
+                                    {
+                                        "id": "7bcb472c1fe6b",
+                                        "type": "link",
+                                        "text": "Get Tickets",
+                                        "link": {
+                                            "rawValue": "https://www.greyzone-tickets.de/produkte/1256-tickets-rosegarden-funeral-party-neue-zukunft-berlin-am-28-06-2026",
+                                            "value": "https://www.greyzone-tickets.de/produkte/1256-tickets-rosegarden-funeral-party-neue-zukunft-berlin-am-28-06-2026",
+                                            "type": "url",
+                                            "target": "_blank"
+                                        },
+                                        "primary": true
+                                    }
+                                ],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": null
+                            },
+                            {
+                                "id": "34d9bff5-eb3f-4f88-ba77-19cc7c6c2819",
+                                "name": "Grey Gallows + Supplant",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-06-27",
+                                    "time": "19:00"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-06-27",
+                                    "time": "19:00"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "noRepeat",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "<div>Greyzone presents:</div><br><div></div><br><div>Grey Gallows is a dark wave duo from Patras,Greece which formed in 2016. The band members are Konstantin (vocals / keys) and Dionisis (Guitar / bass / keys / programing).</div><br><div>On June 2017 they released their debut mini album “Beyond Reflections” and on September 2018 their first full album “Tears” was released by In Club Records in tape format.</div><br><div>On October 2019 their second album “Shades” was released by Secret Sin Records.</div><br><div>On March 2021 their third album titled “Garden of lies” was released by Cold Transmission.</div><br><div>On May 2023 their album “Strangers” was released again by Cold Transmission and also the same year, they released a compilation under the title “RMXS” with remixes from artists such as Actors, Unconscious, Multicore, The Ending Nights and Stutter Monk.&nbsp;</div>",
+                                "eventType": [
+                                    "6368ba2a18d6e"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [
+                                    {
+                                        "id": "785a735a798de",
+                                        "type": "link",
+                                        "text": "Get Tickets",
+                                        "link": {
+                                            "rawValue": "https://www.greyzone-tickets.de/produkte/1275-tickets-grey-gallows-neue-zukunft-berlin-am-27-06-2026",
+                                            "value": "https://www.greyzone-tickets.de/produkte/1275-tickets-grey-gallows-neue-zukunft-berlin-am-27-06-2026",
+                                            "type": "url",
+                                            "target": "_blank"
+                                        },
+                                        "primary": true
+                                    }
+                                ],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": null
+                            },
+                            {
+                                "id": "412ec6ac-3355-4d79-a8f8-417455d077e8",
+                                "name": "Cinerea + Sowa + Vatermord",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-06-26",
+                                    "time": "19:00"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-06-26",
+                                    "time": "19:00"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "noRepeat",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "",
+                                "eventType": [
+                                    "6368ba2a18d6e"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": null
+                            },
+                            {
+                                "id": "1191ae02-f408-4e6b-89c3-151c6bb995a1",
+                                "name": "TVOD + Twiggy",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-06-25",
+                                    "time": "19:00"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-06-25",
+                                    "time": "19:00"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "noRepeat",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "<div>Brooklyn-based rockers TVOD stand out with emotional, sometimes juvenile lyrics, paired with driving, catchy songs that never fail to get a crowd moving/moshing. Influenced by post-punk, egg punk and krautrock, TVOD effortlessly weave musical genres in a way that comes off seamlessly. “More than anything, their sound is engineered to make you move” (Creem Magazine). The brainchild of singer-songwriter Tyler Wright, the project draws from personal and external inspirations like the nightlife/music scene, heartaches, World War II, the untimely death of a beloved pet fish, and so on. TVOD’s vivid storytelling paints a gritty tongue-in-cheek picture of being a D.I.Y. artist grinding it out in NYC, complete with fabled tales about the degenerate lifestyle and all the good and the bad that comes with it.</div><br><div>TVOD bloomed into existence in 2019 via a high-energy cassette full of punk songs recorded by Wright on a Tascam 4-track tape recorder in the basement of a D.I.Y. space he was living in. Since then, the band independently released two EPs – Daisy (2020) and Victory Garden (2021) – along with singles “Alien”, “Mantis”, “Goldfish”, and “Poppies”, as well as two limited run 45’s, Creem Magazine describing their sonic palette as “a nod to traditional post-punk bands like The Pixies as well as newer ones like Dry Cleaning”.</div>",
+                                "eventType": [
+                                    "6368ba2a18d6e"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [
+                                    {
+                                        "id": "90a214166950e",
+                                        "type": "link",
+                                        "text": "Get Tickets",
+                                        "link": {
+                                            "rawValue": "https://dice.fm/event/6dlvn8-tvod-25th-jun-neue-zukunft-berlin-tickets?lng=de",
+                                            "value": "https://dice.fm/event/6dlvn8-tvod-25th-jun-neue-zukunft-berlin-tickets?lng=de",
+                                            "type": "url",
+                                            "target": "_blank"
+                                        },
+                                        "primary": true
+                                    }
+                                ],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": {
+                                    "url": "https://dice-media.imgix.net/attachments/2026-03-16/32831498-d948-480c-ac83-da1be36189ab.jpg?rect=0%2C0%2C1080%2C1080&auto=format%2Ccompress&q=80&w=328&h=328&fit=crop&crop=faces%2Ccenter&dpr=1",
+                                    "extension": "",
+                                    "name": "https://dice-media.imgix.net/attachments/2026-03-16/32831498-d948-480c-ac83-da1be36189ab.jpg?rect=0%2C0%2C1080%2C1080&auto=format%2Ccompress&q=80&w=328&h=328&fit=crop&crop=faces%2Ccenter&dpr=1",
+                                    "isUploadedByLink": true
+                                }
+                            },
+                            {
+                                "id": "dc398e7c-d3d8-40d5-b803-4e14cda93aba",
+                                "name": "Yass + Bö.senberg",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-06-24",
+                                    "time": "19:00"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-06-24",
+                                    "time": "19:00"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "noRepeat",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "<div>Synth PostPunk Noise Kraut, Black Forrest // Industrial Minimal Tech, Berlin</div><br><div>YASS</div><br><div>Since 2012, Markus and Frank—legends of the underground from KURT, TEN VOLT SHOCK and MAULGRUPPE—have channeled decades of raw energy and creativity into their duo YASS. With a sound that reimagines KRAFTWERK’s precision and hypnotic mechanical monotony through the lens of noise, distortion, and relentless rhythm, YASS delivers a visceral fusion of Post-Punk,Noise, Kraut and irresistibly pulsing Synth loops.</div><br><div></div><br><div>Having toured Europe, the USA, Japan, and Australia since the ’90s, Markus Brengartner and Frank Otto are no strangers to pushing boundaries. Between 2018 and 2023, they collaborated with Jens Rachut in the project MAULGRUPPE, crafting two critically acclaimed albums released on \"Major Label\".</div><br><div>YASS has created their own entirely unique sound by working with various samplers, loopers, extensive sound and vocal effects, as well as countless plugins. They craft the blue prints for their songs at home on the computer, transforming these intricate soundscapes into live performances. Especially live, this is a one-of-a-kind experience, bursting with energy and precision. The two musicians have over 10 record releases to their name. YASS itself has released three records so far on the former cult label X-Mist Records.</div><br><div></div><br><div>BÖ.SENBERG</div><br><div>Armed with nothing but a drum kit and a stack of effects pedals, BÖ.SENBERG turns minimal rhythms into industrial energy. The solo project of French drummer Vincent Redel (La Colonie de Vacances, ex-Electric Electric), these live sets are a pulsing mix of ’90s techno and percussive power. With over 250 shows across 20 countries over the last 3 years, BÖ.SENBERG is a dance music force of power.</div>",
+                                "eventType": [
+                                    "6368ba2a18d6e"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": {
+                                    "url": "https://amplified-mag.de/images/pagebuilderck/250408_yass_band.jpg",
+                                    "extension": "jpg",
+                                    "name": "250408_yass_band.jpg",
+                                    "isUploadedByLink": true
+                                }
+                            },
+                            {
+                                "id": "208b1278-7e66-4d25-a8bd-69c71c2b6396",
+                                "name": "Marbled Eye + Skorts + Punchlove",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-06-23",
+                                    "time": "19:00"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-06-23",
+                                    "time": "19:00"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "noRepeat",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "<div>Crunch Tapes &amp; Positive Transmitter present:</div><br><div>Marbled Eye (US)</div><br><div>Marbled Eye return after five years with their second full-length Read The Air, a record that proves the wait was worth it. Blending sharp post-punk tension with art-school experimentation, garage-rock swagger and bursts of primitive hardcore energy, the band sounds focused, imaginative and restless. The album captures a strange determination: staring into uncertainty without giving in to it, turning wasted time and passing years into something urgent and alive.</div><br><div>Skorts (US)</div><br><div>In under two years, Skorts went from conception to one of the most talked about and in demand local bands in New York. Their sound has been described as many things including psych-glam, post-alt and darkwave disco. Their live shows have become a crown jewel of the NYC &amp; Brooklyn music scene, winning them 'Our Wicked Lady's 2024 Winter Madness' and also earning them the number one spot on the 'Ohmyrockness Hardest Working Bands List of 2024'.</div><br><div>Punchlove (US)</div><br><div>Punchlove is multi-instrumentalists Jillian Olesen, Joey Machina, Ian Lange-McPherson, David Moberg, and visual artist viz_wel. Quietly evolving from Olesen’s COVID-19 bedroom project into a syneasthetic, headlining live phenom, the Brooklyn-based five-piece blends densely layered, emotionally serrated noise-pop with captivating performance and production — delivering an immense, original, and digitally inflected brand of modern shoegaze.</div>",
+                                "eventType": [
+                                    "6368ba2a18e55"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [
+                                    {
+                                        "id": "2dfbd6480c2f5",
+                                        "type": "link",
+                                        "text": "Get Tickets",
+                                        "link": {
+                                            "rawValue": "https://dice.fm/event/3o6mpv-marbled-eye-skorts-punchlove-23rd-jun-neue-zukunft-berlin-tickets?lng=de",
+                                            "value": "https://dice.fm/event/3o6mpv-marbled-eye-skorts-punchlove-23rd-jun-neue-zukunft-berlin-tickets?lng=de",
+                                            "type": "url",
+                                            "target": "_blank"
+                                        },
+                                        "primary": true
+                                    }
+                                ],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": {
+                                    "url": "https://dice-media.imgix.net/attachments/2026-03-13/76c65d92-0467-4fd2-bca7-8543916b3e0b.jpg?rect=202%2C0%2C797%2C797&auto=format%2Ccompress&q=80&w=328&h=328&fit=crop&crop=faces%2Ccenter&dpr=1",
+                                    "extension": "",
+                                    "name": "https://dice-media.imgix.net/attachments/2026-03-13/76c65d92-0467-4fd2-bca7-8543916b3e0b.jpg?rect=202%2C0%2C797%2C797&auto=format%2Ccompress&q=80&w=328&h=328&fit=crop&crop=faces%2Ccenter&dpr=1",
+                                    "isUploadedByLink": true
+                                }
+                            },
+                            {
+                                "id": "6d795643-bf1e-4ddd-98f8-537436dbe31c",
+                                "name": "Young Mountain + Fee Aviv + Abgrund",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-06-21",
+                                    "time": "19:00"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-06-21",
+                                    "time": "19:00"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "noRepeat",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "<div><a target=\"_blank\" href=\"https://youngmountainswe.bandcamp.com/\">Young Mountain</a><span> from Sweden</span><br><br><a target=\"_blank\" href=\"https://feeaviv.bandcamp.com/\">Fee Aviv</a><span> from Berlin</span><br><br><span>Abgrund‘s first Berlin show</span><br><br><span>🌝 doors 7pm</span><br><span>🌚 noise 8pm</span><br><br><span>no presale and as always notaflof</span><br><br><span>poster by </span><a target=\"_blank\" href=\"https://www.instagram.com/_h__c__s_/\">@_h__c__s_</a><br><br><span>✨ see you soon ✨</span></div>",
+                                "eventType": [
+                                    "6368ba2a18d6e"
+                                ],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": {
+                                    "url": "https://scontent-fra3-1.xx.fbcdn.net/v/t39.30808-6/351338595_279623611200222_5401884473226011570_n.jpg?stp=dst-jpg_tt6&cstp=mx960x960&ctp=s960x960&_nc_cat=103&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=7WNvlkfUxU8Q7kNvwEze_Ag&_nc_oc=AdoIkWKu3glPG_LNW6cLSyOdIUxI8kCBakgv6NBH_tc_Xawqi47GKMH17zsQiSIb9pUPAQzu9HZ7xg7aLKYUNxPL&_nc_zt=23&_nc_ht=scontent-fra3-1.xx&_nc_gid=qCLPzhStosZvfYqQA1tBdA&_nc_ss=7b289&oh=00_Af8sSjV1M0Kf3qO7UcREkQObjGYzlxTd0j9Wa7eIj24Zvw&oe=6A386583",
+                                    "extension": "",
+                                    "name": "https://scontent-fra3-1.xx.fbcdn.net/v/t39.30808-6/351338595_279623611200222_5401884473226011570_n.jpg?stp=dst-jpg_tt6&cstp=mx960x960&ctp=s960x960&_nc_cat=103&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=7WNvlkfUxU8Q7kNvwEze_Ag&_nc_oc=AdoIkWKu3glPG_LNW6cLSyOdIUxI8kCBakgv6NBH_tc_Xawqi47GKMH17zsQiSIb9pUPAQzu9HZ7xg7aLKYUNxPL&_nc_zt=23&_nc_ht=scontent-fra3-1.xx&_nc_gid=qCLPzhStosZvfYqQA1tBdA&_nc_ss=7b289&oh=00_Af8sSjV1M0Kf3qO7UcREkQObjGYzlxTd0j9Wa7eIj24Zvw&oe=6A386583",
+                                    "isUploadedByLink": true
+                                }
+                            },
+                            {
+                                "id": "4abb2da1-d5cf-4d0a-b942-ebadf050f006",
+                                "name": "Child + Doomerang",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-06-17",
+                                    "time": "20:00"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-06-17",
+                                    "time": "20:00"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "noRepeat",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "<div>Making our \"Neue Zukunft\" more groovy! This time with:</div><br><div>⬥ CHILD<br>Heavy Psych Stoner Blues - Melbourne, Australia<br><a target=\"_blank\" rel=\"nofollow noreferrer\" class=\"x1i10hfl xjbqb8w x1ejq31n x18oe1m7 x1sy0etr xstzfhl x972fbf x10w94by x1qhh985 x14e42zd x9f619 x1ypdohk xt0psk2 x3ct3a4 xdj266r x14z9mp xat24cr x1lziwak xexx8yu xyri2b x18d9i69 x1c1uobl x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz xkrqix3 x1sur9pj x1fey0fg x1s688f\" href=\"https://fb.me/childtheband\"><strong>fb.me/childtheband</strong></a><br><a target=\"_blank\" rel=\"nofollow noreferrer\" class=\"x1i10hfl xjbqb8w x1ejq31n x18oe1m7 x1sy0etr xstzfhl x972fbf x10w94by x1qhh985 x14e42zd x9f619 x1ypdohk xt0psk2 x3ct3a4 xdj266r x14z9mp xat24cr x1lziwak xexx8yu xyri2b x18d9i69 x1c1uobl x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz xkrqix3 x1sur9pj x1fey0fg x1s688f\" href=\"https://l.facebook.com/l.php?u=http%3A%2F%2Flinktr.ee%2Fchildtheband&amp;h=AUB3mlaYCr8kDElhhXLJZWDcJj-WWQRLxy3ae_vros7UZaempmxY5bcsfXO3SB7KROTbz8Ye6wJ4c8L-Y95LKdsFhRYA5JfNLnrd5hHRyRbaX5jeXfGAjvVdbarj1r4v-aphyYnnYi399mOJ_S9Q6AXwol0vbSPQY76123lWtyPsQqSJ&amp;__tn__=q&amp;c[0]=AUBy7HoQXugZuET9Tm2awwGsHuQ4j5eLTGektRTslqO20mAsswc-GYnmo0KlCp70n5JL_FWmYnTxXf1h1Y9i5UDuvgWVDAKHJ60wBMFCs3dDPEduA-wYbOV-TbgXHQ-iVpUUtBhpIo1mL43iQyA5D7cZShaicPSc7rk\"><strong>linktr.ee/childtheband</strong></a><br><a href=\"http://childtheband.bandcamp.com\"><strong>childtheband.bandcamp.com</strong></a><br><a href=\"http://www.childtheband.com\"><strong>www.childtheband.com</strong></a></div><br><div>New album “Rebirth” out in June 2026 on Heavy Psych Sounds!</div><br><div>⬥ DOOMERANG<br>Psyched Stoner Rock - Berlin</div><br><div>-----------------------------------------<br>Wednesday, 17.06.2026<br>Neue Zukunft, Theatersaal<br>Alt-Stralau 68, 10245 Berlin</div><br><div>Doors 20:00 h<br>Blues 20:30 h</div>",
+                                "eventType": [],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [
+                                    {
+                                        "id": "71e127997176c",
+                                        "type": "link",
+                                        "text": "Get Tickets",
+                                        "link": {
+                                            "rawValue": "https://tinyurl.com/childneuezukunftberlin",
+                                            "value": "https://tinyurl.com/childneuezukunftberlin",
+                                            "type": "url",
+                                            "target": "_blank"
+                                        },
+                                        "primary": true
+                                    }
+                                ],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": {
+                                    "url": "https://scontent-fra3-2.xx.fbcdn.net/v/t39.30808-6/687675459_1394979749100637_3301493657979649286_n.jpg?stp=dst-jpg_tt6&cstp=mx1440x2017&ctp=s1440x2017&_nc_cat=104&ccb=1-7&_nc_sid=75d36f&_nc_ohc=Ag03f9sp_uoQ7kNvwG76fLq&_nc_oc=AdogP4I6iFVF5pqve7WSO0XS_1FfKJEuTi-FdGJuDKeMsjJhBF6Zwt7eX0-1jG831ShK_vCH2qS2BB-YtgBxk41T&_nc_zt=23&_nc_ht=scontent-fra3-2.xx&_nc_gid=3bhsZ1tCX9VrDGdGSIjJDA&_nc_ss=7b289&oh=00_Af8t5XrL7yQ8ibZrlk5maUvqwUMWb5ECCfSMcPJ2JmoG9A&oe=6A3883D6",
+                                    "extension": "",
+                                    "name": "https://scontent-fra3-2.xx.fbcdn.net/v/t39.30808-6/687675459_1394979749100637_3301493657979649286_n.jpg?stp=dst-jpg_tt6&cstp=mx1440x2017&ctp=s1440x2017&_nc_cat=104&ccb=1-7&_nc_sid=75d36f&_nc_ohc=Ag03f9sp_uoQ7kNvwG76fLq&_nc_oc=AdogP4I6iFVF5pqve7WSO0XS_1FfKJEuTi-FdGJuDKeMsjJhBF6Zwt7eX0-1jG831ShK_vCH2qS2BB-YtgBxk41T&_nc_zt=23&_nc_ht=scontent-fra3-2.xx&_nc_gid=3bhsZ1tCX9VrDGdGSIjJDA&_nc_ss=7b289&oh=00_Af8t5XrL7yQ8ibZrlk5maUvqwUMWb5ECCfSMcPJ2JmoG9A&oe=6A3883D6",
+                                    "isUploadedByLink": true
+                                }
+                            },
+                            {
+                                "id": "8862fd9d-f0bf-41fb-a337-b192a5909883",
+                                "name": "DeafDeafDeaf + Tristesse",
+                                "start": {
+                                    "type": "datetime",
+                                    "date": "2026-06-17",
+                                    "time": "19:00"
+                                },
+                                "end": {
+                                    "type": "datetime",
+                                    "date": "2026-06-17",
+                                    "time": "19:00"
+                                },
+                                "timeZone": "Europe/Berlin",
+                                "repeatPeriod": "noRepeat",
+                                "repeatFrequency": "daily",
+                                "repeatInterval": 1,
+                                "repeatWeeklyOnDays": [],
+                                "repeatEnds": "never",
+                                "repeatEndsDate": null,
+                                "repeatEndsOccurrences": 1,
+                                "repeatMonthlyOnDay": "sameDay",
+                                "exceptions": [],
+                                "description": "<div><span>• DEAFDEAFDEAF are an independent band from Greater Manchester, UK, blending shoegaze, feedback-heavy post-punk, noise rock, and raw emotional intensity into a sound that feels both chaotic and deeply atmospheric. Known for explosive live performances and crushing walls of sound, the band have quickly built a reputation as one of the most exciting new names in the UK underground. Their music balances abrasive noise with vulnerable melancholy, drawing comparisons to Manchester’s rich alternative legacy while carving out a distinctly modern identity of their own.  Louder Than War described the band as “a mile away from the average indie bollocks and a marker for the Next Next Wave,” while VOICE praised their live shows for their “chaos and intensity that has to be experienced firsthand.”  • TRISTESSE is a Berlin-based band blending indie rock, shoegaze, and dreampop into a spacious, atmospheric sound. Reverb-drenched vocals, dreamy guitars, and steady rhythms create a mood that’s both melancholic and immersive.</span></div>",
+                                "eventType": [],
+                                "location": [],
+                                "host": [],
+                                "tags": [],
+                                "color": "transparent",
+                                "video": null,
+                                "file": null,
+                                "isAllDay": false,
+                                "actions": [
+                                    {
+                                        "id": "ac5e67e089704",
+                                        "type": "link",
+                                        "text": "Get Tickets",
+                                        "link": {
+                                            "rawValue": "https://dice.fm/event/pybmql-deafdeafdeaf-tristesse-17th-jun-neue-zukunft-berlin-tickets",
+                                            "value": "https://dice.fm/event/pybmql-deafdeafdeaf-tristesse-17th-jun-neue-zukunft-berlin-tickets",
+                                            "type": "url",
+                                            "target": "_blank"
+                                        },
+                                        "primary": true
+                                    }
+                                ],
+                                "actionsCaption": "",
+                                "images": [],
+                                "coverImage": {
+                                    "url": "https://imgproxy.ra.co/_/quality:66/w:1442/rt:fill/aHR0cHM6Ly9pbWFnZXMucmEuY28vOWViNTgxNGRjY2M2NmYyODdjNmMyOTIwZjI3ZTE5OTUzMDc4MzdmMi5wbmc=",
+                                    "extension": "",
+                                    "name": "https://imgproxy.ra.co/_/quality:66/w:1442/rt:fill/aHR0cHM6Ly9pbWFnZXMucmEuY28vOWViNTgxNGRjY2M2NmYyODdjNmMyOTIwZjI3ZTE5OTUzMDc4MzdmMi5wbmc=",
+                                    "isUploadedByLink": true
+                                }
+                            }
+                        ],
+                        "eventTypes": [
+                            {
+                                "id": "6368ba2a18e55",
+                                "name": "Saal",
+                                "categoryColor": "transparent",
+                                "filterID": "saal",
+                                "$$key": [
+                                    "eventTypes",
+                                    3
+                                ]
+                            },
+                            {
+                                "id": "6368ba2a18d6e",
+                                "name": "Garage",
+                                "categoryColor": "transparent",
+                                "filterID": "garage",
+                                "$$key": [
+                                    "eventTypes",
+                                    0
+                                ]
+                            },
+                            {
+                                "id": "6368ba2a18dcf",
+                                "name": "Jazzbar",
+                                "categoryColor": "transparent",
+                                "filterID": "jazzbar",
+                                "$$key": [
+                                    "eventTypes",
+                                    1
+                                ]
+                            },
+                            {
+                                "id": "6368ba2a18e18",
+                                "name": "Festival",
+                                "categoryColor": "transparent",
+                                "filterID": "festival",
+                                "$$key": [
+                                    "eventTypes",
+                                    2
+                                ]
+                            }
+                        ],
+                        "locations": [],
+                        "hosts": [],
+                        "widgetTitle": "",
+                        "layout": "list",
+                        "sliderArrowsEnabled": true,
+                        "sliderSwipeEnabled": true,
+                        "sliderTransitionDuration": 0.6,
+                        "sliderPaginationType": "bullets",
+                        "sliderAutoSlideEnabled": false,
+                        "sliderAutoSlideDelay": 5,
+                        "sliderAutoSlidePauseOnHover": false,
+                        "sliderElementsColor": "rgba(0,0,0,1)",
+                        "gridGutter": 12,
+                        "masonryGutter": 32,
+                        "groupBy": "month",
+                        "timeRange": [
+                            "06:00",
+                            "23:00"
+                        ],
+                        "numberOfEventsInMasonry": 12,
+                        "numberOfEventsOnMobileInMasonry": 12,
+                        "numberOfYearsInMasonry": 3,
+                        "numberOfYearsOnMobileInMasonry": 3,
+                        "numberOfMonthsInMasonry": 6,
+                        "numberOfMonthsOnMobileInMasonry": 6,
+                        "numberOfDaysInMasonry": 7,
+                        "numberOfDaysOnMobileInMasonry": 7,
+                        "numberOfEventsInGrid": 5,
+                        "numberOfEventsOnMobileInGrid": 5,
+                        "numberOfYearsInGrid": 3,
+                        "numberOfYearsOnMobileInGrid": 3,
+                        "numberOfMonthsInGrid": 3,
+                        "numberOfMonthsOnMobileInGrid": 3,
+                        "numberOfDaysInGrid": 7,
+                        "numberOfDaysOnMobileInGrid": 7,
+                        "numberOfEventsInList": 10,
+                        "numberOfEventsOnMobileInList": 10,
+                        "numberOfYearsInList": 3,
+                        "numberOfYearsOnMobileInList": 3,
+                        "numberOfMonthsInList": 2,
+                        "numberOfMonthsOnMobileInList": 2,
+                        "numberOfDaysInList": 7,
+                        "numberOfDaysOnMobileInList": 7,
+                        "numberOfSlides": 10,
+                        "paginationAppearance": {
+                            "mode": "contain",
+                            "color": "rgb(17, 17, 17)",
+                            "fontColor": "rgb(255, 255, 255)",
+                            "font": {
+                                "fontSize": 13,
+                                "fontWeight": "bold"
+                            },
+                            "borderRadius": 0,
+                            "horizontalPadding": 20,
+                            "verticalPadding": 9,
+                            "fullWidth": false,
+                            "size": 13
+                        },
+                        "width": {
+                            "auto": false,
+                            "customValue": 999
+                        },
+                        "filters": [
+                            {
+                                "id": "03c4b928-0928-41c0-9660-cb6e19017198",
+                                "type": "date",
+                                "label": "Dates",
+                                "selected": false
+                            },
+                            {
+                                "id": "1870c2d1-0f05-421f-8327-1d7f976d58f3",
+                                "type": "eventType",
+                                "label": "Event Type",
+                                "selected": false
+                            },
+                            {
+                                "id": "f54ad1d0-3eb3-4bc5-83a6-1eeb0a36ff25",
+                                "type": "location",
+                                "label": "Venue",
+                                "selected": false
+                            },
+                            {
+                                "id": "ca12be66-e28a-4942-bf33-36cc7e27bbcb",
+                                "type": "host",
+                                "label": "Host",
+                                "selected": false
+                            },
+                            {
+                                "id": "cabde5c0-8bd3-4b2b-9403-03b639227981",
+                                "type": "tag",
+                                "label": "Tags",
+                                "selected": false
+                            }
+                        ],
+                        "filtersSorting": "manual",
+                        "filtersStyle": "inline",
+                        "enabledSearch": false,
+                        "eventElements": [
+                            "button",
+                            "date",
+                            "dayOfWeek",
+                            "eventType",
+                            "location",
+                            "tags"
+                        ],
+                        "showPastEvents": false,
+                        "numberOfPastEvents": 5,
+                        "eventClickAction": "popup",
+                        "popupElements": [
+                            "eventType",
+                            "button",
+                            "media",
+                            "tags",
+                            "description",
+                            "date",
+                            "location",
+                            "map",
+                            "host",
+                            "share",
+                            "dateTime"
+                        ],
+                        "enableEventLinking": true,
+                        "displayDateFormat": "D. MMMM",
+                        "displayTimeFormat": "HH:mm",
+                        "widgetBackground": {
+                            "type": "color",
+                            "color": "transparent",
+                            "imageFile": null,
+                            "borderRadius": 0
+                        },
+                        "widgetHorizontalPadding": 40,
+                        "widgetVerticalPadding": 40,
+                        "widgetImageAnimationType": "none",
+                        "carouselColumnsMode": "auto",
+                        "carouselColumnsDesktopLarge": 5,
+                        "carouselColumnsDesktopMedium": 4,
+                        "carouselColumnsDesktopSmall": 3,
+                        "carouselColumnsTablet": 2,
+                        "carouselColumnsMobile": 1,
+                        "carouselItemSpacing": 20,
+                        "carouselRows": 1,
+                        "carouselRowsOnMobile": 1,
+                        "limitTotalNumberOfItems": false,
+                        "totalNumberOfItems": 100,
+                        "carouselScrollMode": "slide",
+                        "carouselAutoplay": false,
+                        "carouselAutoplayPauseOnHover": true,
+                        "carouselAutoplayInterval": 5000,
+                        "carouselAnimationType": "slide",
+                        "carouselAnimationSpeed": 740,
+                        "carouselPagination": true,
+                        "carouselArrowsEnable": true,
+                        "carouselArrowsShowOnHover": false,
+                        "carouselArrowsOnMobileEnable": true,
+                        "carouselSwipeDesktopEnable": true,
+                        "carouselSwipeMobileEnable": true,
+                        "carouselRtl": false,
+                        "carouselArrowBackgroundColor": "rgba(17, 17, 17, 0.5)",
+                        "carouselArrowColor": "rgba(255, 255, 255, 1)",
+                        "carouselArrowBackgroundColorOnHover": "rgba(17, 17, 17, 1)",
+                        "carouselArrowColorOnHover": "rgba(255, 255, 255, 1)",
+                        "carouselArrowSize": 32,
+                        "carouselPaginationColor": "rgba(17, 17, 17, 1)",
+                        "headingTextColor": "rgb(17, 17, 17)",
+                        "headingFontSize": {
+                            "fontSize": 40
+                        },
+                        "filtersColor": "rgb(17, 17, 17)",
+                        "activeFiltersColor": "rgb(17, 17, 17)",
+                        "gridEventStyle": "style1",
+                        "masonryEventStyle": "style1",
+                        "sliderEventStyle": "style1",
+                        "carouselEventStyle": "style1",
+                        "eventBackgroundColor": "rgba(17, 17, 17, 0.1)",
+                        "eventTextColor": "rgb(17, 17, 17)",
+                        "eventDateBackgroundColor": "rgba(0, 0, 0, 0.79)",
+                        "eventDateTextColor": "rgb(239, 213, 130)",
+                        "eventPrimaryButtonColor": "rgb(239, 213, 130)",
+                        "eventSecondaryButtonColor": "rgb(239, 213, 130)",
+                        "eventGroupTextColor": "#000000",
+                        "eventGroupFontSize": {
+                            "fontSize": 20
+                        },
+                        "eventNameFontSize": {
+                            "fontSize": 26
+                        },
+                        "eventTimeFontSize": {
+                            "fontSize": 12
+                        },
+                        "eventShape": 8,
+                        "calendarDateTextSize": {
+                            "fontSize": 18
+                        },
+                        "calendarDateTextColor": "#000000",
+                        "calendarTodayBgColor": "rgb(28, 145, 255)",
+                        "calendarTodayBorderColor": "#000000",
+                        "popupBackgroundColor": "rgb(255,255,255)",
+                        "popupOverlayColor": "rgba(17, 17, 17, 0.7)",
+                        "popupTextColor": "rgb(17, 17, 17)",
+                        "popupLinksColor": "rgb(28, 145, 255)",
+                        "popupPrimaryButtonColor": "rgb(239, 213, 130)",
+                        "popupSecondaryButtonColor": "rgb(239, 213, 130)",
+                        "inLocalTimeZone": false,
+                        "customCSS": "",
+                        "customJS": "",
+                        "selectedEventsProvider": "manual",
+                        "font": null,
+                        "integrationGoogleCalendar": null,
+                        "language": {
+                            "language": "de",
+                            "label": "Deutsch",
+                            "messages": {}
+                        },
+                        "_repeatsAfterNow": 30,
+                        "_customEventsLimit": 400,
+                        "_customCollectionEventsLimit": 1000,
+                        "eventButtonColor": "rgb(239, 213, 130)",
+                        "popupButtonColor": "rgb(239, 213, 130)",
+                        "widgetId": "e767cbbe-0026-4173-a511-5aaa105ed563",
+                        "template": "c6a3d137-7e22-4689-8be9-ac623c410a98"
+                    },
+                    "user": {
+                        "owner": false
+                    },
+                    "percentage": 0.0146,
+                    "preferences": {
+                        "hide_elfsight_logo": 1,
+                        "disable_widget": 0,
+                        "deactivated_widget_url": "https://dash.elfsight.com/apps/event-calendar/pricing?claim=removeBranding&claim=increaseViews",
+                        "display_deactivation": false,
+                        "deactivation_url": "https://dash.elfsight.com/apps/event-calendar/pricing?claim=removeBranding&claim=increaseViews",
+                        "display_free_link": false,
+                        "display_free_link_remove": false,
+                        "free_link_anchor": "Free Event Calendar Widget",
+                        "free_link_url": "https://elfsight.com/event-calendar-widget/?utm_source=websites&utm_medium=clients&utm_content=event-calendar&utm_term=%website_domain%&utm_campaign=free-widget",
+                        "free_link_remove_url": "https://dash.elfsight.com/apps/event-calendar/pricing?claim=removeBranding&claim=removeBranding"
+                    },
+                    "meta": {
+                        "widget_name": "Zukunft Konzerte",
+                        "app_name": "Event Calendar",
+                        "app_version": "2.49.2",
+                        "thumbnail_url": "https://universe-static.elfsightcdn.com/widget-thumbnails/c88be63a-d1cf-475f-acee-307c4dcc4841@2x.png"
+                    },
+                    "public_widget_token": "REDACTED_PUBLIC_WIDGET_TOKEN"
+                }
+            }
+        },
+        "assets": [
+            "https://universe-static.elfsightcdn.com/app-releases/event-calendar/stable/v2.49.2/d40affbd99797103baa94ff3b2a2d9b7abf39638/widget/eventCalendar.js"
+        ]
+    }
+}
