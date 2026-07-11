@@ -7,6 +7,7 @@ import de.norm.events.scraper.HtmlFetcher
 import de.norm.events.scraper.ImportResult
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Component
+import java.time.Clock
 
 /**
  * Website importer for Roadrunner's Paradise' retro `programm.html` page.
@@ -25,13 +26,15 @@ import org.springframework.stereotype.Component
  */
 @Component
 class RoadrunnerWebsiteImporter(
-    private val htmlFetcher: HtmlFetcher
+    private val htmlFetcher: HtmlFetcher,
+    /** Clock for the scraper's past-event cutoff and year inference. Defaults to the system clock; override in tests. */
+    private val clock: Clock = Clock.systemDefaultZone()
 ) : EventImporter {
     private val logger = KotlinLogging.logger {}
 
     override val eventSource: EventSource = EventSource.ROADRUNNER
 
-    private val overviewPageScraper = RoadrunnerOverviewPageScraper()
+    private val overviewPageScraper = RoadrunnerOverviewPageScraper(clock)
 
     override suspend fun importEvents(
         url: String,

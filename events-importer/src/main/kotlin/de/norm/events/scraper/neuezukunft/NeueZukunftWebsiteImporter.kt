@@ -6,6 +6,7 @@ import de.norm.events.scraper.EventSource
 import de.norm.events.scraper.ImportResult
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Component
+import java.time.Clock
 
 /**
  * Website importer for Neue Zukunft Berlin.
@@ -32,13 +33,15 @@ import org.springframework.stereotype.Component
  */
 @Component
 class NeueZukunftWebsiteImporter(
-    private val apiClient: ApiClient
+    private val apiClient: ApiClient,
+    /** Clock for the scraper's past-event cutoff. Defaults to the system clock; override in tests for determinism. */
+    private val clock: Clock = Clock.systemDefaultZone()
 ) : EventImporter {
     private val logger = KotlinLogging.logger {}
 
     override val eventSource: EventSource = EventSource.NEUE_ZUKUNFT
 
-    private val apiScraper = NeueZukunftApiScraper()
+    private val apiScraper = NeueZukunftApiScraper(clock)
 
     override suspend fun importEvents(
         url: String,

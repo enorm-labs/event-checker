@@ -10,27 +10,33 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldStartWith
 import org.junit.jupiter.api.Test
+import java.time.Clock
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.ZoneOffset
 
 /**
  * Unit tests for [NeueZukunftApiScraper].
  *
  * Parses a saved snapshot of Neue Zukunft's Elfsight Event Calendar boot response
  * (`core.service.elfsight.com/p/boot/?w=<widgetId>`) for deterministic, offline-safe
- * testing without HTTP fetching.
+ * testing without HTTP fetching. The clock is pinned to 2026-06-01 — before every event
+ * in the snapshot (earliest 2026-06-17) — so the whole calendar counts as upcoming and the
+ * past-event cutoff is exercised separately in its own test.
  */
 class NeueZukunftApiScraperTest {
-    private val scraper = NeueZukunftApiScraper()
+    private val clock: Clock = Clock.fixed(Instant.parse("2026-06-01T00:00:00Z"), ZoneOffset.UTC)
+    private val scraper = NeueZukunftApiScraper(clock)
 
-    private val events: List<ScrapedEvent> by lazy {
-        val json =
-            javaClass.classLoader
-                .getResourceAsStream("scraper/neuezukunft/neuezukunft-api.json")!!
-                .bufferedReader()
-                .readText()
-        scraper.scrape(json)
+    private val rawJson: String by lazy {
+        javaClass.classLoader
+            .getResourceAsStream("scraper/neuezukunft/neuezukunft-api.json")!!
+            .bufferedReader()
+            .readText()
     }
+
+    private val events: List<ScrapedEvent> by lazy { scraper.scrape(rawJson) }
 
     private fun event(sourceId: String): ScrapedEvent = events.first { it.sourceId == sourceId }
 
@@ -116,6 +122,21 @@ class NeueZukunftApiScraperTest {
     fun `builds a stable sourceId prefixed from the widget event id`() {
         val backengrillen = event("neue_zukunft:5f68aab9-d858-4cf9-894a-79aa287f5159")
         backengrillen.sourceId shouldBe "neue_zukunft:5f68aab9-d858-4cf9-894a-79aa287f5159"
+    }
+
+    @Test
+    fun `drops events before today and keeps same-day and later ones`() {
+        // Cut off at 2026-07-09: Backengrillen (2026-07-08) is now past, so it must disappear,
+        // while every surviving event is dated on or after the cutoff.
+        val cutoff = LocalDate.of(2026, 7, 9)
+        val scraperAtCutoff =
+            NeueZukunftApiScraper(Clock.fixed(cutoff.atStartOfDay(ZoneOffset.UTC).toInstant(), ZoneOffset.UTC))
+
+        val upcoming = scraperAtCutoff.scrape(rawJson)
+
+        upcoming.size shouldBe events.count { !it.eventDate.isBefore(cutoff) }
+        upcoming.all { !it.eventDate.isBefore(cutoff) } shouldBe true
+        upcoming.none { it.sourceId == "neue_zukunft:5f68aab9-d858-4cf9-894a-79aa287f5159" } shouldBe true
     }
 
     @Test

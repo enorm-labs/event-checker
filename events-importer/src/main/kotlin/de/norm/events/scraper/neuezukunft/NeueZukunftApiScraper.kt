@@ -11,6 +11,7 @@ import org.jsoup.Jsoup
 import tools.jackson.databind.JsonNode
 import tools.jackson.databind.json.JsonMapper
 import tools.jackson.module.kotlin.kotlinModule
+import java.time.Clock
 import java.time.LocalDate
 import java.time.format.DateTimeParseException
 
@@ -38,10 +39,17 @@ private const val NEUE_ZUKUNFT_URL = "https://neue-zukunft.org/"
  * for an unambiguous festival title ([isFestivalTitle]). This class performs **no I/O** —
  * it operates on the raw JSON string, making it trivial to test against a saved snapshot.
  *
+ * The widget returns the venue's **whole calendar**, including shows that have already
+ * happened; those are dropped so imports never resurrect stale events (persistence prunes
+ * only future events no longer listed, never past ones — see `EventUpsertService`).
+ *
  * @see NeueZukunftWebsiteImporter for the HTTP fetch orchestrator.
  * @see <a href="https://neue-zukunft.org/">Neue Zukunft</a>
  */
-class NeueZukunftApiScraper {
+class NeueZukunftApiScraper(
+    /** Clock for the past-event cutoff. Defaults to the system clock; override in tests for determinism. */
+    private val clock: Clock = Clock.systemDefaultZone()
+) {
     private val logger = KotlinLogging.logger {}
 
     // Elfsight uses camelCase JSON keys (coverImage, isAllDay), so the default mapper suffices;
@@ -56,22 +64,32 @@ class NeueZukunftApiScraper {
      * Parses every event from the Elfsight widget boot response [json].
      *
      * @param json the raw JSON body of the `p/boot/?w=<widgetId>` response.
-     * @return a list of [ScrapedEvent] instances, one per calendar entry; empty if the
-     *   payload is absent, unparseable, or carries no events.
+     * @return a list of upcoming [ScrapedEvent] instances (today onward), one per calendar
+     *   entry; empty if the payload is absent, unparseable, or carries no upcoming events.
      */
     fun scrape(json: String): List<ScrapedEvent> {
         val eventNodes = parseEventNodes(json) ?: return emptyList()
         logger.info { "Found ${eventNodes.size} event(s) in Neue Zukunft widget response" }
 
         @Suppress("TooGenericExceptionCaught") // Intentional: skip individual malformed events without aborting the import.
-        return eventNodes.mapNotNull { node ->
-            try {
-                parseEvent(jsonMapper.treeToValue(node, NeueZukunftEventNode::class.java))
-            } catch (e: Exception) {
-                logger.warn(e) { "Failed to parse Neue Zukunft event, skipping" }
-                null
+        val parsed =
+            eventNodes.mapNotNull { node ->
+                try {
+                    parseEvent(jsonMapper.treeToValue(node, NeueZukunftEventNode::class.java))
+                } catch (e: Exception) {
+                    logger.warn(e) { "Failed to parse Neue Zukunft event, skipping" }
+                    null
+                }
             }
+
+        // The widget lists the venue's whole calendar; keep only today onward so stale past
+        // shows are never (re-)imported. Same-day events are kept — the venue may still run them.
+        val today = LocalDate.now(clock)
+        val (upcoming, past) = parsed.partition { !it.eventDate.isBefore(today) }
+        if (past.isNotEmpty()) {
+            logger.info { "Dropped ${past.size} past event(s) from Neue Zukunft widget response" }
         }
+        return upcoming
     }
 
     /**

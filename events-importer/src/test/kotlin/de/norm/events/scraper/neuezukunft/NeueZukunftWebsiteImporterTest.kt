@@ -14,16 +14,21 @@ import io.mockk.slot
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.time.Clock
+import java.time.Instant
+import java.time.ZoneOffset
 
 /**
  * Unit tests for [NeueZukunftWebsiteImporter].
  *
  * Uses a saved JSON fixture and a mocked [ApiClient] for deterministic,
- * offline-safe testing without real HTTP requests.
+ * offline-safe testing without real HTTP requests. The clock is pinned to 2026-06-01 —
+ * before every event in the fixture — so the scraper's past-event cutoff keeps all of them.
  */
 class NeueZukunftWebsiteImporterTest {
     private lateinit var importer: NeueZukunftWebsiteImporter
     private val apiClient: ApiClient = mockk()
+    private val clock: Clock = Clock.fixed(Instant.parse("2026-06-01T00:00:00Z"), ZoneOffset.UTC)
     private val bootUrl = "https://core.service.elfsight.com/p/boot/?w=e767cbbe-0026-4173-a511-5aaa105ed563"
 
     private val fixtureJson: String =
@@ -34,7 +39,7 @@ class NeueZukunftWebsiteImporterTest {
 
     @BeforeEach
     fun setUp() {
-        importer = NeueZukunftWebsiteImporter(apiClient)
+        importer = NeueZukunftWebsiteImporter(apiClient, clock)
         coEvery { apiClient.fetchJson(any()) } returns fixtureJson
     }
 

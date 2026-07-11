@@ -11,6 +11,7 @@ import de.norm.events.scraper.textAt
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
+import java.time.Clock
 import java.time.DateTimeException
 import java.time.LocalDate
 import java.time.LocalTime
@@ -33,10 +34,17 @@ import java.time.LocalTime
  * CMS Load to load additional pages via JavaScript, which is not
  * available to server-side scraping.
  *
+ * The listing can carry recently-passed events; those are dropped so imports never
+ * resurrect them, and their detail pages are never fetched (persistence prunes only
+ * future events no longer listed, never past ones — see `EventUpsertService`).
+ *
  * @see CassiopeiaDetailPageScraper for the primary per-event data source.
  * @see <a href="https://cassiopeia-berlin.de/club">Cassiopeia Club page</a>
  */
-class CassiopeiaOverviewPageScraper {
+class CassiopeiaOverviewPageScraper(
+    /** Clock for the past-event cutoff. Defaults to the system clock; override in tests for determinism. */
+    private val clock: Clock = Clock.systemDefaultZone()
+) {
     private val logger = KotlinLogging.logger {}
 
     /**
@@ -52,7 +60,8 @@ class CassiopeiaOverviewPageScraper {
      * @param document the parsed Jsoup document of the overview page.
      * @param sourceUrl the URL the document was fetched from, used for
      *   resolving relative links and building `sourceId` values.
-     * @return a list of [ScrapedEvent] instances extracted from the page.
+     * @return a list of upcoming [ScrapedEvent] instances (today onward) extracted from
+     *   the page; recently-passed events the listing still carries are dropped.
      */
     fun scrape(
         document: Document,
@@ -72,7 +81,21 @@ class CassiopeiaOverviewPageScraper {
                 }
             }
 
-        return deduplicateEvents(events)
+        return dropPastEvents(deduplicateEvents(events))
+    }
+
+    /**
+     * Keeps only events dated today or later, dropping recently-passed ones the listing
+     * still carries. Same-day events are kept — the show may still be happening — matching
+     * the persistence layer's cutoff (`EventUpsertService`).
+     */
+    private fun dropPastEvents(events: List<ScrapedEvent>): List<ScrapedEvent> {
+        val today = LocalDate.now(clock)
+        val (upcoming, past) = events.partition { !it.eventDate.isBefore(today) }
+        if (past.isNotEmpty()) {
+            logger.info { "Dropped ${past.size} past event(s) from Cassiopeia listing" }
+        }
+        return upcoming
     }
 
     /**

@@ -32,9 +32,10 @@ import java.time.MonthDay
  *
  * Every night is a DJ dance party, so all events are typed [EventType.PARTY].
  * Dates render as German `DD.MM.` with **no year**, but the row carries a German
- * two-letter weekday (Mo–So); the year is inferred from it via
- * [inferYearForWeekday], which also resolves the recently-passed events the venue
- * leaves on the page.
+ * two-letter weekday (Mo–So); the year is inferred from it via [inferYearForWeekday].
+ * The venue leaves recently-passed nights on the page; those are dropped so imports
+ * never resurrect them (persistence prunes only future events no longer listed, never
+ * past ones — see `EventUpsertService`).
  *
  * This class performs **no I/O** — it operates solely on a pre-fetched Jsoup
  * [Document], making it easy to test with static HTML fixtures.
@@ -55,7 +56,8 @@ class DunckerOverviewPageScraper(
      * @param document the parsed Jsoup document of `start.html`.
      * @param baseUrl the URL the document was fetched from, used to resolve the
      *   relative flyer image path and as each event's `sourceUrl`.
-     * @return a list of [ScrapedEvent] instances, one per dated table row.
+     * @return a list of upcoming [ScrapedEvent] instances (today onward), one per dated
+     *   table row; recently-passed nights the venue still lists are dropped.
      */
     fun scrape(
         document: Document,
@@ -65,14 +67,24 @@ class DunckerOverviewPageScraper(
         logger.info { "Found ${cells.size} programme row(s) on Duncker Club page" }
 
         @Suppress("TooGenericExceptionCaught") // Intentional: skip individual malformed rows without aborting the whole import.
-        return cells.mapNotNull { cell ->
-            try {
-                parseRow(cell, baseUrl)
-            } catch (e: Exception) {
-                logger.warn(e) { "Failed to parse Duncker event row, skipping" }
-                null
+        val parsed =
+            cells.mapNotNull { cell ->
+                try {
+                    parseRow(cell, baseUrl)
+                } catch (e: Exception) {
+                    logger.warn(e) { "Failed to parse Duncker event row, skipping" }
+                    null
+                }
             }
+
+        // The venue leaves recently-passed nights listed; keep only today onward so stale
+        // events are never (re-)imported. Same-day events are kept — the night may still run.
+        val today = LocalDate.now(clock)
+        val (upcoming, past) = parsed.partition { !it.eventDate.isBefore(today) }
+        if (past.isNotEmpty()) {
+            logger.info { "Dropped ${past.size} past event(s) from Duncker Club programme" }
         }
+        return upcoming
     }
 
     /** Parses one programme row (its event cell plus sibling date/weekday/time cells) into a [ScrapedEvent]. */

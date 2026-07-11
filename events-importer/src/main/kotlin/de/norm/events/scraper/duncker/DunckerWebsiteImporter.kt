@@ -7,6 +7,7 @@ import de.norm.events.scraper.HtmlFetcher
 import de.norm.events.scraper.ImportResult
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Component
+import java.time.Clock
 
 /**
  * Website importer for Duncker Club Berlin's retro `start.html` programme page.
@@ -22,13 +23,15 @@ import org.springframework.stereotype.Component
  */
 @Component
 class DunckerWebsiteImporter(
-    private val htmlFetcher: HtmlFetcher
+    private val htmlFetcher: HtmlFetcher,
+    /** Clock for the scraper's past-event cutoff and year inference. Defaults to the system clock; override in tests. */
+    private val clock: Clock = Clock.systemDefaultZone()
 ) : EventImporter {
     private val logger = KotlinLogging.logger {}
 
     override val eventSource: EventSource = EventSource.DUNCKER
 
-    private val overviewPageScraper = DunckerOverviewPageScraper()
+    private val overviewPageScraper = DunckerOverviewPageScraper(clock)
 
     override suspend fun importEvents(
         url: String,

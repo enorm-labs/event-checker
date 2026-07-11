@@ -5,15 +5,22 @@ import io.kotest.matchers.shouldBe
 import org.jsoup.Jsoup
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import java.time.Clock
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneOffset
 
 /**
  * Unit tests for [CassiopeiaOverviewPageScraper].
  *
  * Focuses on the deduplication logic that prefers Webflow CMS canonical
- * URLs (with numeric ID suffix) over legacy plain-text slugs.
+ * URLs (with numeric ID suffix) over legacy plain-text slugs. The clock is pinned to
+ * 2026-05-01 — before every synthetic fixture date — so events count as upcoming and
+ * survive the past-event cutoff, which is exercised in its own test.
  */
 class CassiopeiaOverviewPageScraperTest {
-    private val scraper = CassiopeiaOverviewPageScraper()
+    private val clock: Clock = Clock.fixed(Instant.parse("2026-05-01T00:00:00Z"), ZoneOffset.UTC)
+    private val scraper = CassiopeiaOverviewPageScraper(clock)
     private val sourceUrl = "https://cassiopeia-berlin.de/club"
 
     @Nested
@@ -107,6 +114,24 @@ class CassiopeiaOverviewPageScraperTest {
 
             events shouldHaveSize 2
         }
+    }
+
+    @Test
+    fun `drops events dated before today, keeping same-day and later ones`() {
+        val html =
+            buildOverviewPage(
+                eventItem(title = "Past Show", date = "15", month = "05", year = "Mai 2026", slug = "past-111111111"),
+                eventItem(title = "Future Show", date = "20", month = "06", year = "Juni 2026", slug = "future-222222222")
+            )
+        // Today is 2026-06-01: the 15 May show is past and must be dropped, leaving 20 June.
+        val scraperInJune =
+            CassiopeiaOverviewPageScraper(Clock.fixed(Instant.parse("2026-06-01T00:00:00Z"), ZoneOffset.UTC))
+
+        val events = scraperInJune.scrape(Jsoup.parse(html, sourceUrl), sourceUrl)
+
+        events shouldHaveSize 1
+        events.first().title shouldBe "Future Show"
+        events.first().eventDate shouldBe LocalDate.of(2026, 6, 20)
     }
 
     // -- HTML fixture builders ---
