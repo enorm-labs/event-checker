@@ -20,6 +20,7 @@
 ###   Gretchen             — https://www.gretchen-club.de/
 ###   Lido                 — https://www.lido-berlin.de/
 ###   Madame Claude        — https://madameclaude.de/events/
+###   Neue Zukunft         — https://neue-zukunft.org/ (Elfsight Event Calendar widget JSON API)
 ###   Privatclub           — https://privatclub-berlin.de/
 ###   Roadrunner's Paradise — http://www.roadrunners-paradise.de/programm.html
 ###   Schokoladen          — https://www.schokoladen-mitte.de/
@@ -618,6 +619,69 @@ Accept: application/json
 
 > {%
     client.test("Madame Claude import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Neue Zukunft (Alt-Stralau 68, Berlin-Friedrichshain — Stralau peninsula)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Neue Zukunft venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Neue Zukunft",
+    "address": "Alt-Stralau 68",
+    "city": "Berlin",
+    "postalCode": "10245",
+    "district": "friedrichshain-kreuzberg",
+    "latitude": 52.50110,
+    "longitude": 13.47320,
+    "websiteUrl": "https://neue-zukunft.org"
+}
+
+> {%
+    client.global.set("neue_zukunft_venue_id", response.body.id);
+    client.test("Neue Zukunft venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Neue Zukunft event source ---
+# Links the venue to the NeueZukunftWebsiteImporter.
+# The sourceType "NEUE_ZUKUNFT" matches EventSource.NEUE_ZUKUNFT.
+# NOTE: the public site (neue-zukunft.org) is a static landing page; the concert programme
+# lives only in an embedded Elfsight "Event Calendar" widget (rendered client-side) and an
+# image-based monthly PDF poster. The URL is therefore the widget's public JSON boot endpoint,
+# carrying the widget id; the importer fetches it verbatim.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{neue_zukunft_venue_id}},
+    "name": "Neue Zukunft",
+    "url": "https://core.service.elfsight.com/p/boot/?w=e767cbbe-0026-4173-a511-5aaa105ed563",
+    "sourceType": "NEUE_ZUKUNFT",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Neue Zukunft event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Neue Zukunft import ---
+# Slug is derived from the source name: "Neue Zukunft" → neue-zukunft.
+POST {{importer-host}}/api/admin/event-sources/neue-zukunft/import
+Accept: application/json
+
+> {%
+    client.test("Neue Zukunft import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}
