@@ -13,10 +13,13 @@ If either is missing, ask for it before starting.
 - Read [ADR-007 Web Scraping Strategy](../../docs/adr/ADR-007_WEB_SCRAPING_STRATEGY.md) in full before writing
   any code — it is the source of truth for architecture, selector strategy, and scraping ethics. Also skim
   [EVENT_DATA_SOURCES.md](../../docs/EVENT_DATA_SOURCES.md) for the pre-analysed field mapping of the target venue.
-- Use an existing importer as a template. Pick the closest match to the target's page structure:
-    - **Single listing page** (all data on one page): `scraper/privatclub/` — implements `EventImporter` directly.
+- Use an existing importer as a template. Pick the closest match to the target's data source:
+    - **JSON / API source** (structured feed, no HTML scraping — always prefer this when one exists): `scraper/festsaal/`,
+      `scraper/neuezukunft/`, `scraper/madameclaude/` — implement `EventImporter` directly, fetch via `ApiClient`, and parse
+      the raw JSON body in a single `*ApiScraper.kt`.
+    - **Single listing page** (all data on one HTML page): `scraper/privatclub/` — implements `EventImporter` directly.
     - **List + detail pages** (summaries on a listing, full data on per-event pages): `scraper/cassiopeia/`,
-      `scraper/madameclaude/`, `scraper/astra/`, `scraper/lido/` — extend `AbstractTwoPageWebsiteImporter`.
+      `scraper/astra/`, `scraper/lido/` — extend `AbstractTwoPageWebsiteImporter`.
 - Do **not** reinvent boilerplate. Reuse the shared extension helpers in the `scraper/` package
   (see step 4). New code should look like the code around it.
 
@@ -34,10 +37,11 @@ Before writing anything, learn how the site is built and whether you're allowed 
     - Open the site's **Network tab** (or `curl` the page) and look for XHR/`fetch` calls returning
       JSON — many "JS-rendered" venues are actually a thin SPA over a public REST/GraphQL API or an
       embedded third-party calendar widget with its own boot endpoint. Precedents:
-      **Festsaal Kreuzberg** (Wagtail headless-CMS REST API) and **Neue Zukunft** (Elfsight
-      "Event Calendar" widget boot API) — both import from JSON, no HTML scraping.
-    - Check common conventions: WordPress `/wp-json/wp/v2/…`, a `sitemap.xml`, an RSS/Atom feed
-      (e.g. Supamolly's `rss.php`), or `?format=json` variants.
+      **Festsaal Kreuzberg** (Wagtail headless-CMS REST API), **Neue Zukunft** (Elfsight
+      "Event Calendar" widget boot API), and **Madame Claude** (WordPress `event` REST API,
+      `/wp-json/wp/v2/event` with ACF fields) — all import from JSON, no HTML scraping.
+    - Check common conventions: WordPress `/wp-json/wp/v2/…` (often a custom post type like `event`),
+      a `sitemap.xml`, an RSS/Atom feed (e.g. Supamolly's `rss.php`), or `?format=json` variants.
     - Check for embedded structured data in the HTML itself: `<script type="application/ld+json">`
       `schema.org/MusicEvent` (e.g. Astra). This is still an HTML fetch (the JSON-LD lives in the
       page), but parse the structured data, not the rendered markup.

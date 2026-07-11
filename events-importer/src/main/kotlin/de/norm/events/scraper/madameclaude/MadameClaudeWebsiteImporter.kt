@@ -1,66 +1,87 @@
 package de.norm.events.scraper.madameclaude
 
-import de.norm.events.scraper.AbstractTwoPageWebsiteImporter
+import de.norm.events.scraper.ApiClient
+import de.norm.events.scraper.EventImporter
 import de.norm.events.scraper.EventSource
-import de.norm.events.scraper.HtmlFetcher
-import de.norm.events.scraper.ScrapedEvent
-import de.norm.events.scraper.UNRESOLVED_EVENT_DATE
-import org.jsoup.nodes.Document
+import de.norm.events.scraper.ImportResult
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Component
+import java.time.Clock
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 /**
- * Website importer for Madame Claude Berlin's WordPress-based event listing.
+ * Website importer for Madame Claude Berlin.
  *
- * Orchestrates the full fetch → parse pipeline for Madame Claude:
- * 1. Fetches the overview page (`/events/`) via [HtmlFetcher] with conditional
- *    request support (ETag / Last-Modified).
- * 2. Parses event cards from the overview page via [MadameClaudeOverviewPageScraper].
- * 3. For each event, fetches its detail page via [HtmlFetcher].
- * 4. Parses the detail page via [MadameClaudeDetailPageScraper] — this is the
- *    **primary** data source. The overview page provides discovery and fallback
- *    data for fields the detail page cannot supply (e.g. image URL).
+ * Madame Claude runs on WordPress with an Advanced Custom Fields `event` post type, whose
+ * public REST API (`/wp-json/wp/v2/event`) exposes every event as clean structured JSON.
+ * Importing from that API is far more stable than the previous two-page HTML scrape (an
+ * events grid plus a detail-page fetch per event) — structured data is priority 1 in
+ * ADR-007 §"Selector Strategy" — and needs a single request, so this importer:
+ * 1. Builds the query URL from the configured API base ([buildRequestUrl]) — upcoming
+ *    `event`s only (`after=<today>`), ordered by date, with the featured image embedded.
+ * 2. Fetches the JSON body via [ApiClient.fetchJson] (shared politeness throttle and
+ *    identifying User-Agent).
+ * 3. Parses it into [de.norm.events.scraper.ScrapedEvent]s via [MadameClaudeApiScraper].
  *
- * @see MadameClaudeOverviewPageScraper for overview page parsing (discovery + fallback)
- * @see MadameClaudeDetailPageScraper for detail page parsing (primary data source)
+ * The WP REST list endpoint returns the venue's full event history (past included), so the
+ * `after` filter restricts the response to upcoming events server-side (ADR-007
+ * first-page-only: ~two dozen upcoming shows fit in one page). No ETag / Last-Modified
+ * conditional request is used — the `etag` / `lastModified` parameters are ignored and every
+ * import returns [ImportResult.Success]; re-imports stay cheap and safe because persistence
+ * upserts idempotently by `sourceId`.
+ *
+ * @see MadameClaudeApiScraper for the JSON parsing logic.
  * @see <a href="https://madameclaude.de/events/">Madame Claude Events</a>
  */
 @Component
 class MadameClaudeWebsiteImporter(
-    htmlFetcher: HtmlFetcher
-) : AbstractTwoPageWebsiteImporter(htmlFetcher) {
+    private val apiClient: ApiClient
+) : EventImporter {
+    private val logger = KotlinLogging.logger {}
+
     override val eventSource: EventSource = EventSource.MADAME_CLAUDE
 
-    private val overviewPageScraper = MadameClaudeOverviewPageScraper()
-    private val detailPageScraper = MadameClaudeDetailPageScraper()
+    private val apiScraper = MadameClaudeApiScraper()
 
-    override fun scrapeOverview(
-        document: Document,
-        url: String
-    ): List<ScrapedEvent> = overviewPageScraper.scrape(document, url)
+    /** Berlin-local clock so the `after` cut-off is start of the venue's own day, not UTC. */
+    private val clock: Clock = Clock.system(BERLIN)
 
-    override fun scrapeDetail(
-        document: Document,
-        url: String
-    ): ScrapedEvent? = detailPageScraper.scrape(document, url)
+    override suspend fun importEvents(
+        url: String,
+        etag: String?,
+        lastModified: String?
+    ): ImportResult {
+        val requestUrl = buildRequestUrl(url)
+        val json = apiClient.fetchJson(requestUrl)
+        val events = apiScraper.scrape(json)
+        logger.info { "Scraped ${events.size} event(s) from Madame Claude" }
+
+        // The WP REST endpoint's conditional-cache support is not used here; ETag / Last-Modified
+        // are always null and change detection relies on idempotent upserts.
+        return ImportResult.Success(events = events, etag = null, lastModified = null)
+    }
 
     /**
-     * Fills missing fields in the [primary] (detail page) event with values
-     * from the [fallback] (overview page) event.
+     * Builds the WP REST `event` query from the configured API base [baseUrl].
      *
-     * The detail page is authoritative for every field it provides. The
-     * overview page only contributes values where the detail page returned
-     * null or a default sentinel.
+     * The ordering, page size, upcoming-only cut-off and image-embed flag are parsing concerns
+     * and live in code (ADR-007: parsing logic in code, entry-point URL in config). The base is
+     * stored on the event source, e.g. `https://madameclaude.de/wp-json/wp/v2/event`. `after`
+     * is start of today in Berlin so an event later today is still included.
      */
-    override fun fillGapsFromOverview(
-        primary: ScrapedEvent,
-        fallback: ScrapedEvent
-    ): ScrapedEvent =
-        primary.copy(
-            // Use overview date if detail page couldn't parse it (detail returns the sentinel)
-            eventDate = primary.eventDate.takeIf { it != UNRESOLVED_EVENT_DATE } ?: fallback.eventDate,
-            eventType = primary.eventType ?: fallback.eventType,
-            imageUrl = primary.imageUrl ?: fallback.imageUrl,
-            description = primary.description ?: fallback.description,
-            artists = primary.artists.ifEmpty { fallback.artists }
-        )
+    private fun buildRequestUrl(baseUrl: String): String {
+        val separator = if ('?' in baseUrl) '&' else '?'
+        val after = LocalDate.now(clock).atStartOfDay().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+        return "$baseUrl${separator}per_page=$PER_PAGE&orderby=date&order=asc&after=$after&_embed=wp:featuredmedia"
+    }
+
+    private companion object {
+        /** Time zone whose civil date bounds the `after` filter — Madame Claude is in Berlin. */
+        val BERLIN: ZoneId = ZoneId.of("Europe/Berlin")
+
+        /** Upper bound on events fetched in the single request; comfortably above the venue's ~two dozen upcoming shows. */
+        const val PER_PAGE = 100
+    }
 }

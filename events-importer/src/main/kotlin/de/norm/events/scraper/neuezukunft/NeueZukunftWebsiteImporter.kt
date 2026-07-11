@@ -20,14 +20,14 @@ import org.springframework.stereotype.Component
  *    throttle and identifying User-Agent). The configured `url` is the boot endpoint
  *    carrying the widget id (`core.service.elfsight.com/p/boot/?w=<widgetId>`) and is
  *    used verbatim — all events come back in the single response (ADR-007 first-page-only).
- * 2. Parses it into [de.norm.events.scraper.ScrapedEvent]s via [NeueZukunftOverviewPageScraper].
+ * 2. Parses it into [de.norm.events.scraper.ScrapedEvent]s via [NeueZukunftApiScraper].
  *
  * The Elfsight boot API sends no ETag / Last-Modified, so conditional requests do not
  * apply: the `etag` / `lastModified` parameters are ignored and every import returns
  * [ImportResult.Success] (never [ImportResult.NotModified]). Re-imports stay cheap and
  * safe because persistence upserts idempotently by `sourceId`.
  *
- * @see NeueZukunftOverviewPageScraper for the JSON parsing logic.
+ * @see NeueZukunftApiScraper for the JSON parsing logic.
  * @see <a href="https://neue-zukunft.org/">Neue Zukunft</a>
  */
 @Component
@@ -38,7 +38,7 @@ class NeueZukunftWebsiteImporter(
 
     override val eventSource: EventSource = EventSource.NEUE_ZUKUNFT
 
-    private val overviewPageScraper = NeueZukunftOverviewPageScraper()
+    private val apiScraper = NeueZukunftApiScraper()
 
     override suspend fun importEvents(
         url: String,
@@ -46,7 +46,7 @@ class NeueZukunftWebsiteImporter(
         lastModified: String?
     ): ImportResult {
         val json = apiClient.fetchJson(url)
-        val events = overviewPageScraper.scrape(json)
+        val events = apiScraper.scrape(json)
         logger.info { "Scraped ${events.size} event(s) from Neue Zukunft" }
 
         // The Elfsight boot API has no conditional-request support, so there is no NotModified path;

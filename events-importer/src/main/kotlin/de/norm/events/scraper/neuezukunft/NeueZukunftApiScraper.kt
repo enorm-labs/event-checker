@@ -41,7 +41,7 @@ private const val NEUE_ZUKUNFT_URL = "https://neue-zukunft.org/"
  * @see NeueZukunftWebsiteImporter for the HTTP fetch orchestrator.
  * @see <a href="https://neue-zukunft.org/">Neue Zukunft</a>
  */
-class NeueZukunftOverviewPageScraper {
+class NeueZukunftApiScraper {
     private val logger = KotlinLogging.logger {}
 
     // Elfsight uses camelCase JSON keys (coverImage, isAllDay), so the default mapper suffices;
@@ -200,7 +200,7 @@ private fun String?.blankToNull(): String? = this?.trim()?.takeIf { it.isNotBlan
  * Only the fields Neue Zukunft populates are declared; unknown keys (repeat rules,
  * styling, empty `location`/`host`) are ignored. Every field is nullable/defaulted so a
  * partial or evolving payload deserializes cleanly and is validated in
- * [NeueZukunftOverviewPageScraper.parseEvent] instead.
+ * [NeueZukunftApiScraper.parseEvent] instead.
  */
 private data class NeueZukunftEventNode(
     val id: String? = null,

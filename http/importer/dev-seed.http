@@ -19,7 +19,7 @@
 ###   Frannz Club          — https://frannz.eu/
 ###   Gretchen             — https://www.gretchen-club.de/
 ###   Lido                 — https://www.lido-berlin.de/
-###   Madame Claude        — https://madameclaude.de/events/
+###   Madame Claude        — https://madameclaude.de/ (WordPress `event` REST API, ACF-backed)
 ###   Neue Zukunft         — https://neue-zukunft.org/ (Elfsight Event Calendar widget JSON API)
 ###   Privatclub           — https://privatclub-berlin.de/
 ###   Roadrunner's Paradise — http://www.roadrunners-paradise.de/programm.html
@@ -594,13 +594,16 @@ Content-Type: application/json
 ### --- Create Madame Claude event source ---
 # Links the venue to the MadameClaudeWebsiteImporter.
 # The sourceType "MADAME_CLAUDE" matches EventSource.MADAME_CLAUDE.
+# NOTE: the URL is the WordPress REST endpoint for the venue's `event` custom post type
+# (ACF-backed), not the human `/events/` page. The importer appends the upcoming-only query
+# (per_page/orderby/order/after/_embed) itself; the featured image is embedded via `_embed`.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
 {
     "venueId": {{madame_claude_venue_id}},
     "name": "Madame Claude",
-    "url": "https://madameclaude.de/events/",
+    "url": "https://madameclaude.de/wp-json/wp/v2/event",
     "sourceType": "MADAME_CLAUDE",
     "enabled": true,
     "importIntervalMinutes": 1440,

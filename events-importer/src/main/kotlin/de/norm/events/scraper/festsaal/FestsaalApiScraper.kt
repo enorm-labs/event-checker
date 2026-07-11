@@ -4,7 +4,7 @@ import de.norm.events.event.EventType
 import de.norm.events.scraper.EventSource
 import de.norm.events.scraper.ScrapedArtist
 import de.norm.events.scraper.ScrapedEvent
-import de.norm.events.scraper.festsaal.FestsaalOverviewPageScraper.Companion.NON_CONCERT_EVENT_KEYWORDS
+import de.norm.events.scraper.festsaal.FestsaalApiScraper.Companion.NON_CONCERT_EVENT_KEYWORDS
 import de.norm.events.scraper.headlinersFromTitle
 import de.norm.events.scraper.isFestivalTitle
 import de.norm.events.scraper.isNonArtistName
@@ -53,7 +53,7 @@ private const val HH_MM_LENGTH = 5
  * @see FestsaalWebsiteImporter for the HTTP fetch orchestrator.
  * @see <a href="https://festsaal-kreuzberg.de/de/programm/">Festsaal Kreuzberg programme</a>
  */
-class FestsaalOverviewPageScraper {
+class FestsaalApiScraper {
     private val logger = KotlinLogging.logger {}
 
     // Maps the API's snake_case fields onto camelCase DTO properties, so the DTOs need no
@@ -336,7 +336,7 @@ private fun String?.blankToNull(): String? = this?.trim()?.takeIf { it.isNotBlan
  * `SNAKE_CASE` strategy maps snake_case JSON keys (`sub_title`, `changed_date`,
  * `preview_image`) onto these camelCase properties, and unknown keys are ignored.
  * Every field is nullable/defaulted so a partial or evolving payload deserializes
- * cleanly and is validated in [FestsaalOverviewPageScraper.parseEvent] instead.
+ * cleanly and is validated in [FestsaalApiScraper.parseEvent] instead.
  */
 private data class FestsaalEventNode(
     val id: Long? = null,

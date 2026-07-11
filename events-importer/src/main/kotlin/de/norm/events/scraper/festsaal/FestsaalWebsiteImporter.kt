@@ -20,14 +20,14 @@ import org.springframework.stereotype.Component
  *    all upcoming `EventPage`s ordered by date, in one request (ADR-007 first-page-only).
  * 2. Fetches the JSON body via [ApiClient.fetchJson] (shared politeness throttle
  *    and identifying User-Agent).
- * 3. Parses it into [de.norm.events.scraper.ScrapedEvent]s via [FestsaalOverviewPageScraper].
+ * 3. Parses it into [de.norm.events.scraper.ScrapedEvent]s via [FestsaalApiScraper].
  *
  * The Wagtail API sends no ETag / Last-Modified, so conditional requests do not apply:
  * the `etag` / `lastModified` parameters are ignored and every import returns
  * [ImportResult.Success] (never [ImportResult.NotModified]). Re-imports stay cheap and
  * safe because persistence upserts idempotently by `sourceId`.
  *
- * @see FestsaalOverviewPageScraper for the JSON parsing logic.
+ * @see FestsaalApiScraper for the JSON parsing logic.
  * @see <a href="https://festsaal-kreuzberg.de/de/programm/">Festsaal Kreuzberg programme</a>
  */
 @Component
@@ -38,7 +38,7 @@ class FestsaalWebsiteImporter(
 
     override val eventSource: EventSource = EventSource.FESTSAAL
 
-    private val overviewPageScraper = FestsaalOverviewPageScraper()
+    private val apiScraper = FestsaalApiScraper()
 
     override suspend fun importEvents(
         url: String,
@@ -47,7 +47,7 @@ class FestsaalWebsiteImporter(
     ): ImportResult {
         val requestUrl = buildRequestUrl(url)
         val json = apiClient.fetchJson(requestUrl)
-        val events = overviewPageScraper.scrape(json)
+        val events = apiScraper.scrape(json)
         logger.info { "Scraped ${events.size} event(s) from Festsaal Kreuzberg" }
 
         // The Wagtail API has no conditional-request support, so there is no NotModified path;

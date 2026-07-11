@@ -28,7 +28,7 @@ class NeueZukunftWebsiteImporterTest {
 
     private val fixtureJson: String =
         javaClass.classLoader
-            .getResourceAsStream("scraper/neuezukunft/neuezukunft-overview.json")!!
+            .getResourceAsStream("scraper/neuezukunft/neuezukunft-api.json")!!
             .bufferedReader()
             .readText()
 

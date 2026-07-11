@@ -163,14 +163,21 @@ subprojects sharing a root `settings.gradle.kts`, plus a standalone frontend pro
           classification (`mapGermanCategory()`), placeholder name detection (`isPlaceholderName()`), and artist list
           construction from the headliner + support pattern (`buildArtistList()`).
     - **Venue-specific subdirectories** — each venue importer lives in its own sub-package under `scraper/` (e.g. `scraper/cassiopeia/`).
-      Each contains a `*WebsiteImporter.kt` implementing `EventImporter`, plus `*OverviewPageScraper.kt` and `*DetailPageScraper.kt`
-      for pure HTML parsing (no I/O). Use existing implementations as templates when adding new venue importers.
+      Each contains a `*WebsiteImporter.kt` implementing `EventImporter`, plus pure (no-I/O) parsers: HTML importers use
+      `*OverviewPageScraper.kt` / `*DetailPageScraper.kt`, while JSON/API importers use a single `*ApiScraper.kt` (see below).
+      Use existing implementations as templates when adding new venue importers.
     - **`AbstractTwoPageWebsiteImporter`** — base class for venues that use the overview → detail pattern (currently
-      Cassiopeia, Madame Claude, Astra, Lido, SO36, and Badehaus). Owns the shared overview-fetch → per-event detail-fetch → gap-fill orchestration,
+      Cassiopeia, Astra, Lido, SO36, and Badehaus). Owns the shared overview-fetch → per-event detail-fetch → gap-fill orchestration,
       including `NotModified` handling and the "degrade to overview data if the detail page fails" fallback. Subclasses
       implement only `scrapeOverview`, `scrapeDetail`, and `fillGapsFromOverview` (the venue-specific merge strategy).
-      Single-page venues (e.g. `PrivatclubWebsiteImporter`) implement `EventImporter` directly instead.
+      Single-page HTML venues (e.g. `PrivatclubWebsiteImporter`) implement `EventImporter` directly instead.
       The two-layer strategy itself is the decision recorded in ADR-007; the abstract class is just the implementation vehicle.
+    - **JSON/API importers (`ApiClient`)** — venues whose events come from a structured JSON feed rather than scrapeable HTML
+      (Festsaal Kreuzberg → Wagtail headless-CMS REST, Neue Zukunft → Elfsight widget boot API, Madame Claude → WordPress
+      `event` REST API with ACF fields) implement `EventImporter` directly and fetch via **`ApiClient`** — the JSON counterpart
+      to `HtmlFetcher`, sharing the same `@Qualifier(SCRAPER_WEB_CLIENT)` throttled `WebClient` (so the same per-host politeness
+      and User-Agent apply). Each has a single pure `*ApiScraper.kt` that parses the raw JSON body into `List<ScrapedEvent>` —
+      no Overview/Detail split. **Prefer a JSON/API source over HTML whenever one exists** (ADR-007 §"Prefer a JSON / API Source").
 - **Scheduled imports**: The importer uses Spring `@Scheduled` with the `event_source` table for periodic event imports. See ADR-008. Key design:
     - A single `@Scheduled(fixedDelay = 60s)` tick in `ScheduledImportService` queries for due sources.
     - Due sources are imported concurrently via `EventImportService.importConcurrently()`, bounded by the

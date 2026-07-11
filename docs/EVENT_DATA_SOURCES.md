@@ -36,7 +36,7 @@ The **Import** column tracks whether an automated importer has been implemented 
 | Hole 44                     | https://hole-berlin.de/                     | Concert Hall |     ✅      |        |                                    |
 | SO36                        | https://www.so36.com/                       | Club         |     ✅      |   ✅    | Cookie wall blocks content         |
 | Artliners Berlin            | https://artliners-berlin.com/               | Club         |     ✅      |        | No structured events; flyers only  |
-| Madame Claude               | https://madameclaude.de/                    | Bar          |     ✅      |   ✅    |                                    |
+| Madame Claude               | https://madameclaude.de/                    | Bar          |     ✅      |   ✅    | WordPress `event` REST API (ACF)   |
 | Bar jeder Vernunft          | https://www.bar-jeder-vernunft.de/          | Bar          |     ✅      |        | Theater/cabaret; multi-day ranges  |
 | Prachtwerk                  | https://www.prachtwerkberlin.com/           | Bar          |     ✅      |        | No event listings on website       |
 | Wiener Blut                 | https://www.wienerblut.org/                 | Bar          |     ✅      |        | Impressum only; no events          |
@@ -621,6 +621,9 @@ Source: [madameclaude.de](https://madameclaude.de/)
 
 *Notes:*
 
+- *Imported via the WordPress `event` custom-post-type REST API (`/wp-json/wp/v2/event`, ACF-backed) rather than HTML scraping —
+  a single request returns date, doors, type, entrance fee, ticket link, description, and the featured image (`_embed`). See ADR-007
+  §"Prefer a JSON / API Source". The HTML field mapping above is retained for reference.*
 - *WordPress-based site with rich, well-structured event data. Both list and detail views are clean and parseable.*
 - *Detail pages include per-artist descriptions, genre + origin, Bandcamp/Instagram/Linktree links, and multiple images.*
 - *Recurring series (Open Mic, Music Quiz, Experimontag) have consistent naming — maps to `event.event_type`.*

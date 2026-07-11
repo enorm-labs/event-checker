@@ -15,6 +15,8 @@ import de.norm.events.scraper.textAt
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.json.JsonMapper
 import java.math.BigDecimal
 import java.net.URI
 import java.time.Clock
@@ -54,6 +56,8 @@ class PrivatclubOverviewPageScraper(
     private val clock: Clock = Clock.systemDefaultZone()
 ) {
     private val logger = KotlinLogging.logger {}
+
+    private val jsonMapper: JsonMapper = JsonMapper.builder().build()
 
     /**
      * Parses all events from the Privatclub overview page document.
@@ -207,10 +211,13 @@ class PrivatclubOverviewPageScraper(
      * - `url` — canonical event detail page URL
      * - `offers[].url` — first ticket shop URL
      *
-     * Values are extracted via regex to avoid pulling in a JSON parser
-     * dependency for a handful of fields. Returns `null` if no JSON-LD
-     * block is found.
+     * The block is parsed with Jackson rather than by regex: proper JSON parsing
+     * handles escaping, whitespace, and field ordering, and reads the ticket URL
+     * from the structured `offers[].url` instead of a substring search that could
+     * mismatch the event's own top-level `url`. Returns `null` if no JSON-LD block
+     * is found or it cannot be parsed.
      */
+    @Suppress("ReturnCount") // Guard clauses for the missing and unparseable JSON-LD block are clearer than nesting.
     private fun parseJsonLd(wrapper: Element): JsonLdData? {
         val jsonLdScript =
             wrapper
@@ -218,57 +225,61 @@ class PrivatclubOverviewPageScraper(
                 .firstOrNull { it.tagName() == "script" && it.attr("type") == "application/ld+json" }
                 ?: return null
 
-        val json = jsonLdScript.data()
+        val eventNode = parseEventNode(jsonLdScript.data()) ?: return null
 
-        val startDateStr = extractJsonLdField(json, "startDate")
-        val eventDate = startDateStr?.let { parseIsoDate(it) }
-        val startTime = startDateStr?.let { parseIsoTime(it) }
-        val doorsTime = extractJsonLdField(json, "doorTime")?.let { parseTime(it) }
-        val imageUrl = extractJsonLdField(json, "image")?.takeIf { it.startsWith("http") }
-        val url = extractJsonLdField(json, "url")?.takeIf { it.startsWith("http") }
-
-        // Extract ticket URL from the "offers" array — must search only within
-        // the offers block to avoid matching the event's own "url" field.
-        val ticketUrl = extractOfferUrl(json)
-
+        val startDateStr = eventNode.stringField("startDate")
         return JsonLdData(
-            eventDate = eventDate,
-            startTime = startTime,
-            doorsTime = doorsTime,
-            imageUrl = imageUrl,
-            url = url,
-            ticketUrl = ticketUrl
+            eventDate = startDateStr?.let { parseIsoDate(it) },
+            startTime = startDateStr?.let { parseIsoTime(it) },
+            doorsTime = eventNode.stringField("doorTime")?.let { parseTime(it) },
+            imageUrl = eventNode.stringField("image")?.takeIf { it.startsWith("http") },
+            url = eventNode.stringField("url")?.takeIf { it.startsWith("http") },
+            ticketUrl = extractOfferUrl(eventNode)
         )
     }
 
     /**
-     * Extracts a string field value from JSON text by key name.
+     * Parses the JSON-LD block and returns the event object node, or null if unparseable.
      *
-     * Matches patterns like `"fieldName" : "value"` with flexible whitespace.
+     * Privatclub emits a single schema.org `MusicEvent` object per block; an array or
+     * `@graph` wrapper is handled defensively by taking the first object node.
      */
-    private fun extractJsonLdField(
-        json: String,
-        fieldName: String
-    ): String? {
-        val pattern = Regex(""""$fieldName"\s*:\s*"([^"]+)"""")
-        return pattern.find(json)?.groupValues?.get(1)
+    @Suppress(
+        "TooGenericExceptionCaught", // A malformed block must degrade to null, never abort the import.
+        "ReturnCount" // Guard clause for the unparseable body is clearer than nesting.
+    )
+    private fun parseEventNode(json: String): JsonNode? {
+        val root =
+            try {
+                jsonMapper.readTree(json)
+            } catch (e: Exception) {
+                logger.warn(e) { "Failed to parse Privatclub JSON-LD block" }
+                return null
+            }
+        val candidates =
+            when {
+                root.isArray -> root.toList()
+                root.path("@graph").isArray -> root.path("@graph").toList()
+                else -> listOf(root)
+            }
+        return candidates.firstOrNull { it.isObject }
     }
 
-    /**
-     * Extracts the first ticket URL from the JSON-LD `offers` array.
-     *
-     * The offers section is identified by locating `"offers"` in the JSON text
-     * and then searching for the first `"url"` within that section. This avoids
-     * matching the event's own top-level `"url"` field.
-     */
-    private fun extractOfferUrl(json: String): String? {
-        val offersIndex = json.indexOf("\"offers\"")
-        if (offersIndex == -1) return null
-        val offersSection = json.substring(offersIndex)
-        return OFFER_URL_PATTERN
-            .find(offersSection)
-            ?.groupValues
-            ?.get(1)
+    /** Reads the first ticket-shop URL from the structured JSON-LD `offers[].url`, or null when absent. */
+    private fun extractOfferUrl(eventNode: JsonNode): String? {
+        val offers = eventNode.path("offers")
+        val offerNodes = if (offers.isArray) offers.toList() else listOf(offers)
+        return offerNodes
+            .asSequence()
+            .mapNotNull { it.stringField("url") }
+            .firstOrNull { it.startsWith("http") }
+    }
+
+    /** Reads a trimmed string [field] from this node, or `null` when the field is missing, JSON `null`, or blank. */
+    private fun JsonNode.stringField(field: String): String? {
+        val node = path(field)
+        if (node.isMissingNode || node.isNull) return null
+        return node.asString().trim().takeIf { it.isNotBlank() }
     }
 
     // -- HTML fallback parsers --------------------------------------------
@@ -515,9 +526,6 @@ class PrivatclubOverviewPageScraper(
 
         /** Regex to extract the first price value (e.g. "25€", "25,50 €", "25.00€"). */
         private val PRICE_PATTERN = Regex("""(\d+(?:[.,]\d{1,2})?)\s*€""")
-
-        /** Regex to extract the first offer URL from JSON-LD offers array. */
-        private val OFFER_URL_PATTERN = Regex(""""url"\s*:\s*"(https?://[^"]+)"""")
 
         /**
          * Formatter for parsing German month names (e.g. "16. Mai" → May 16).
