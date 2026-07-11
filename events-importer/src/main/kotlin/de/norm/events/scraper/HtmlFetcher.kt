@@ -7,62 +7,36 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpStatus
-import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.awaitBody
 import org.springframework.web.reactive.function.client.awaitExchange
-import reactor.netty.http.client.HttpClient
 import java.net.URI
 
 /**
- * Reactive HTTP fetcher with conditional-request support and Jsoup parsing.
+ * Reactive HTML fetcher with conditional-request support and Jsoup parsing.
  *
- * Uses Spring [WebClient] for non-blocking HTTP fetching and Jsoup for
- * HTML parsing. Supports ETag / Last-Modified conditional headers to
- * skip re-downloading pages that haven't changed since the last import.
+ * Uses the shared, politeness-throttled scraper [WebClient] ([SCRAPER_WEB_CLIENT]) for
+ * non-blocking HTTP fetching and Jsoup for HTML parsing. Supports ETag / Last-Modified
+ * conditional headers to skip re-downloading pages that haven't changed since the last import.
  *
  * Jsoup's `parse()` is a CPU-bound blocking call, so it runs on an
  * injected IO dispatcher to avoid blocking the coroutine event loop.
  *
- * Besides HTML, the shared throttled WebClient is also reused for the occasional
- * venue whose events come from a JSON REST API rather than a scrapeable page
- * (e.g. Festsaal Kreuzberg's Wagtail CMS): [fetchString] returns the raw response
- * body verbatim, so those importers get the same politeness throttling and
- * identifying User-Agent for free without any HTML parsing.
+ * Venues whose events come from a JSON/API source rather than a scrapeable HTML page use
+ * [ApiClient] instead — it shares the same [WebClient] bean (and therefore the same per-host
+ * throttle and User-Agent), so this class stays focused purely on HTML.
  *
- * Per-host politeness throttling is handled transparently by
- * [PerHostThrottlingFilter], which is registered as a WebClient filter
- * and enforces a minimum delay between consecutive requests to the same host.
+ * Per-host politeness throttling is handled transparently by [PerHostThrottlingFilter],
+ * registered as a filter on the shared [WebClient] (see [ScraperHttpClientConfig]).
  */
 @Component
 class HtmlFetcher(
-    webClientBuilder: WebClient.Builder,
-    scraperProperties: ScraperProperties,
+    @Qualifier(SCRAPER_WEB_CLIENT) private val webClient: WebClient,
     @Qualifier("ioDispatcher") private val ioDispatcher: CoroutineDispatcher
 ) {
     private val logger = KotlinLogging.logger {}
-
-    /**
-     * Shared WebClient instance configured with a response timeout, a browser-like User-Agent,
-     * and a [PerHostThrottlingFilter] for politeness rate limiting.
-     *
-     * The response body size limit is controlled by the standard `spring.http.codecs.max-in-memory-size`
-     * property (defaults to 256KB; set to 2MB in application.yaml for scraping large venue pages).
-     */
-    private val webClient: WebClient =
-        webClientBuilder
-            .clientConnector(
-                ReactorClientHttpConnector(
-                    HttpClient.create().responseTimeout(scraperProperties.responseTimeout)
-                )
-            ).defaultHeader(
-                "User-Agent",
-                "Mozilla/5.0 (compatible; EventChecker/1.0; +https://github.com/enorm-labs/event-checker)"
-            ).filter(
-                PerHostThrottlingFilter(scraperProperties.politeDelayMillis)
-            ).build()
 
     /**
      * Fetches and parses HTML from [url] with optional conditional-request headers.
@@ -117,27 +91,14 @@ class HtmlFetcher(
      *
      * Lower-level convenience method for fetching secondary pages (e.g. event detail pages)
      * where change detection is not needed. Prefer [fetchDocument] when a parsed [Document]
-     * is needed, as it also moves Jsoup parsing to the IO dispatcher.
+     * is needed, as it also moves Jsoup parsing to the IO dispatcher. Fails fast with
+     * [HttpFetchException] on any 4xx/5xx so error pages are never parsed as valid event data.
      *
      * @param url the page URL to fetch.
      * @return the raw HTML body as a string.
      */
-    suspend fun fetchHtml(url: String): String = fetchString(url)
-
-    /**
-     * Fetches the raw response body from [url] without conditional-request headers.
-     *
-     * The content-type–agnostic counterpart to [fetchHtml] / [fetchDocument]: it returns
-     * the body verbatim, so importers whose data comes from a JSON REST API rather than a
-     * scrapeable HTML page (e.g. Festsaal Kreuzberg's Wagtail CMS) can reuse the shared,
-     * politeness-throttled WebClient and identifying User-Agent. Fails fast with
-     * [HttpFetchException] on any 4xx/5xx so error payloads are never mistaken for data.
-     *
-     * @param url the URL to fetch.
-     * @return the raw response body as a string.
-     */
-    suspend fun fetchString(url: String): String {
-        logger.debug { "Fetching raw body: $url" }
+    suspend fun fetchHtml(url: String): String {
+        logger.debug { "Fetching HTML body: $url" }
         return webClient
             .get()
             // Pass a pre-built URI so WebClient uses the (already percent-encoded) URL verbatim

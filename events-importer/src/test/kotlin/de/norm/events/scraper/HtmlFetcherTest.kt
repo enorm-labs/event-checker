@@ -24,9 +24,13 @@ class HtmlFetcherTest {
 
     private val fetcher: HtmlFetcher by lazy {
         HtmlFetcher(
-            webClientBuilder = WebClient.builder(),
-            // No politeness delay so tests aren't slowed by the per-host throttle.
-            scraperProperties = ScraperProperties(politeDelayMillis = 0),
+            // The real shared bean, built from the production config — no politeness delay so
+            // tests aren't slowed by the per-host throttle.
+            webClient =
+                ScraperHttpClientConfig().scraperWebClient(
+                    webClientBuilder = WebClient.builder(),
+                    scraperProperties = ScraperProperties(politeDelayMillis = 0)
+                ),
             ioDispatcher = Dispatchers.IO
         )
     }
@@ -82,27 +86,12 @@ class HtmlFetcherTest {
     @Nested
     inner class RawBodyFetching {
         @Test
-        fun `fetchString returns the response body verbatim for a JSON payload`() =
+        fun `fetchHtml returns the response body verbatim`() =
             runTest {
-                val body = """{"items":[{"title":"ok"}]}"""
+                val body = "<html><body>ok</body></html>"
                 server.enqueue(MockResponse().setResponseCode(200).setBody(body))
 
-                fetcher.fetchString(baseUrl() + "/api") shouldBe body
-            }
-
-        @Test
-        fun `fetchString throws HttpFetchException on a 404`() =
-            runTest {
-                server.enqueue(MockResponse().setResponseCode(404))
-
-                val url = baseUrl() + "/missing"
-                val exception =
-                    shouldThrow<HttpFetchException> {
-                        fetcher.fetchString(url)
-                    }
-
-                exception.message!! shouldContain "HTTP 404"
-                exception.message!! shouldContain url
+                fetcher.fetchHtml(baseUrl() + "/page") shouldBe body
             }
     }
 

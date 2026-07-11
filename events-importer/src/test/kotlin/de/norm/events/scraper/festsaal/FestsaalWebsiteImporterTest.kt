@@ -1,7 +1,7 @@
 package de.norm.events.scraper.festsaal
 
+import de.norm.events.scraper.ApiClient
 import de.norm.events.scraper.EventSource
-import de.norm.events.scraper.HtmlFetcher
 import de.norm.events.scraper.ImportResult
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.nulls.shouldBeNull
@@ -20,12 +20,12 @@ import org.junit.jupiter.api.Test
 /**
  * Unit tests for [FestsaalWebsiteImporter].
  *
- * Uses a saved JSON fixture and a mocked [HtmlFetcher] for deterministic,
+ * Uses a saved JSON fixture and a mocked [ApiClient] for deterministic,
  * offline-safe testing without real HTTP requests.
  */
 class FestsaalWebsiteImporterTest {
     private lateinit var importer: FestsaalWebsiteImporter
-    private val htmlFetcher: HtmlFetcher = mockk()
+    private val apiClient: ApiClient = mockk()
     private val apiBaseUrl = "https://admin.festsaal-kreuzberg.de/api/v2/pages/"
 
     private val fixtureJson: String =
@@ -36,8 +36,8 @@ class FestsaalWebsiteImporterTest {
 
     @BeforeEach
     fun setUp() {
-        importer = FestsaalWebsiteImporter(htmlFetcher)
-        coEvery { htmlFetcher.fetchString(any()) } returns fixtureJson
+        importer = FestsaalWebsiteImporter(apiClient)
+        coEvery { apiClient.fetchJson(any()) } returns fixtureJson
     }
 
     @Test
@@ -52,11 +52,11 @@ class FestsaalWebsiteImporterTest {
     fun `importEvents builds the Wagtail EventPage query from the configured base URL`() =
         runTest {
             val requestUrl = slot<String>()
-            coEvery { htmlFetcher.fetchString(capture(requestUrl)) } returns fixtureJson
+            coEvery { apiClient.fetchJson(capture(requestUrl)) } returns fixtureJson
 
             importer.importEvents(apiBaseUrl)
 
-            coVerify { htmlFetcher.fetchString(any()) }
+            coVerify { apiClient.fetchJson(any()) }
             requestUrl.captured shouldStartWith "$apiBaseUrl?"
             requestUrl.captured shouldContain "type=home.EventPage"
             requestUrl.captured shouldContain "fields=title,sub_title,date,doors,start"
@@ -77,7 +77,7 @@ class FestsaalWebsiteImporterTest {
     @Test
     fun `importEvents returns an empty success for a payload without events`() =
         runTest {
-            coEvery { htmlFetcher.fetchString(any()) } returns """{"meta":{"total_count":0},"items":[]}"""
+            coEvery { apiClient.fetchJson(any()) } returns """{"meta":{"total_count":0},"items":[]}"""
 
             val result = importer.importEvents(apiBaseUrl)
             result.shouldBeInstanceOf<ImportResult.Success>()

@@ -1,8 +1,8 @@
 package de.norm.events.scraper.festsaal
 
+import de.norm.events.scraper.ApiClient
 import de.norm.events.scraper.EventImporter
 import de.norm.events.scraper.EventSource
-import de.norm.events.scraper.HtmlFetcher
 import de.norm.events.scraper.ImportResult
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Component
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component
  * this importer:
  * 1. Builds the CMS query URL from the configured API base ([buildRequestUrl]) —
  *    all upcoming `EventPage`s ordered by date, in one request (ADR-007 first-page-only).
- * 2. Fetches the JSON body via [HtmlFetcher.fetchString] (shared politeness throttle
+ * 2. Fetches the JSON body via [ApiClient.fetchJson] (shared politeness throttle
  *    and identifying User-Agent).
  * 3. Parses it into [de.norm.events.scraper.ScrapedEvent]s via [FestsaalOverviewPageScraper].
  *
@@ -32,7 +32,7 @@ import org.springframework.stereotype.Component
  */
 @Component
 class FestsaalWebsiteImporter(
-    private val htmlFetcher: HtmlFetcher
+    private val apiClient: ApiClient
 ) : EventImporter {
     private val logger = KotlinLogging.logger {}
 
@@ -46,7 +46,7 @@ class FestsaalWebsiteImporter(
         lastModified: String?
     ): ImportResult {
         val requestUrl = buildRequestUrl(url)
-        val json = htmlFetcher.fetchString(requestUrl)
+        val json = apiClient.fetchJson(requestUrl)
         val events = overviewPageScraper.scrape(json)
         logger.info { "Scraped ${events.size} event(s) from Festsaal Kreuzberg" }
 
