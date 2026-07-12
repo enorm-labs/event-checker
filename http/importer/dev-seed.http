@@ -14,6 +14,7 @@
 ###   Badehaus             — https://badehaus-berlin.com/events/
 ###   Bi Nuu               — https://binuu.de/de/events
 ###   Cassiopeia           — https://cassiopeia-berlin.de/club
+###   Clash                — https://clash-berlin.de/
 ###   Duncker Club         — https://www.dunckerclub.de/start.html
 ###   Festsaal Kreuzberg   — https://festsaal-kreuzberg.de/de/programm/ (Wagtail CMS JSON API)
 ###   Frannz Club          — https://frannz.eu/
@@ -261,6 +262,67 @@ Accept: application/json
 
 > {%
     client.test("Cassiopeia import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Clash (Gneisenaustr. 2a, Berlin-Kreuzberg — Mehringdamm)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Clash venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Clash",
+    "address": "Gneisenaustr. 2a",
+    "city": "Berlin",
+    "postalCode": "10961",
+    "district": "friedrichshain-kreuzberg",
+    "latitude": 52.49170,
+    "longitude": 13.38550,
+    "websiteUrl": "https://clash-berlin.de"
+}
+
+> {%
+    client.global.set("clash_venue_id", response.body.id);
+    client.test("Clash venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Clash event source ---
+# Links the venue to the ClashWebsiteImporter.
+# The sourceType "CLASH" matches EventSource.CLASH.
+# NOTE: the URL is the homepage `/` — all upcoming events are server-rendered inline in the
+# `#events` section; the site has no per-event detail pages (the WP `event` post type is not
+# exposed via the REST API, and the numeric `/events/<id>/` permalinks 404).
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{clash_venue_id}},
+    "name": "Clash",
+    "url": "https://clash-berlin.de/",
+    "sourceType": "CLASH",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Clash event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Clash import ---
+POST {{importer-host}}/api/admin/event-sources/clash/import
+Accept: application/json
+
+> {%
+    client.test("Clash import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}
