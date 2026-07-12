@@ -1,5 +1,6 @@
 package de.norm.events.scraper.loge
 
+import de.norm.events.scraper.loge.LogeWixWarmupData.WIX_EVENTS_APP_DEF_ID
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jsoup.nodes.Document
 import tools.jackson.databind.JsonNode
