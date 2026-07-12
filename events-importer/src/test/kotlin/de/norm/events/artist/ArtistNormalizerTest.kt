@@ -48,6 +48,21 @@ class ArtistNormalizerTest {
     }
 
     @Test
+    fun `keeps a standalone two-letter all-caps name verbatim rather than title-casing it`() {
+        assertAll(
+            // A single short all-caps name is an initialism/stylisation, not a shouted word.
+            { canonicalArtistName("JJ") shouldBe "JJ" },
+            { canonicalArtistName("EV") shouldBe "EV" },
+            { canonicalArtistName("YU") shouldBe "YU" },
+            { canonicalArtistName("MØ") shouldBe "MØ" },
+            // Scoped to the whole name: a short word inside a multi-word name still de-shouts.
+            { canonicalArtistName("WARS OF ATTRITION") shouldBe "Wars Of Attrition" },
+            // Three-plus letters stay a title-cased shouted word (accepted residual).
+            { canonicalArtistName("MUNA") shouldBe "Muna" }
+        )
+    }
+
+    @Test
     fun `leaves stylised tokens with digits, dots or slashes untouched`() {
         assertAll(
             { canonicalArtistName("AC/DC") shouldBe "AC/DC" },

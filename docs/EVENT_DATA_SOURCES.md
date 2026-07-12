@@ -30,7 +30,6 @@ The **Import** column tracks whether an automated importer has been implemented 
 | Supamolly                   | https://www.supamolly.de/                   | Club         |     ✅      |        | Has RSS feed                       |
 | Monarch                     | https://www.kottimonarch.de/                | Bar          |     ✅      |   ✅    |                                    |
 | Sisyfass                    |                                             | Bar          |            |        |                                    |
-| Bar Bobu                    | https://barbobu.de/                         | Bar          |     ✅      |        | No event listings; weekly nights   |
 | Urban Spree                 | https://www.urbanspree.com/                 | Club         |     ✅      |        |                                    |
 | Lido                        | https://www.lido-berlin.de/                 | Concert Hall |     ✅      |   ✅    |                                    |
 | Hole 44                     | https://hole-berlin.de/                     | Concert Hall |     ✅      |        |                                    |

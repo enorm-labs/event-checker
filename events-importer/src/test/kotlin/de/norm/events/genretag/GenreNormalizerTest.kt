@@ -103,6 +103,17 @@ class GenreNormalizerTest {
     }
 
     @Test
+    fun `descriptor labels are dropped while surrounding genres survive`() {
+        // "Groove"/"Dirt"/"Progressive" are section labels a venue lists next to real
+        // genres, not genres themselves — they must not leak as standalone tags.
+        normalizeGenre("Funk, Soul, Groove").shouldContainExactlyInAnyOrder("Funk", "Soul")
+        normalizeGenre("Dub, Grime, Bass, Dirt").shouldContainExactlyInAnyOrder("Dub", "Grime", "Bass")
+        normalizeGenre("Jazz, Progressive, Fusion").shouldContainExactlyInAnyOrder("Jazz", "Fusion")
+        // A compound built on the descriptor still resolves via the word-level synonym match.
+        normalizeGenre("Progressive Rock").shouldContainExactly("Rock")
+    }
+
+    @Test
     fun `hip hop soul rnb oldschool newschool`() {
         normalizeGenre("Hip Hop, Soul, RnB, Oldschool, Newschool")
             .shouldContainExactlyInAnyOrder("Hip Hop", "Soul", "R&B", "Old School", "New School")
@@ -251,6 +262,24 @@ class GenreNormalizerTest {
         normalizeGenre("D&B").shouldContainExactly("Drum & Bass")
         normalizeGenre("Techno, Drum & Bass, House")
             .shouldContainExactlyInAnyOrder("Techno", "Drum & Bass", "House")
+    }
+
+    @Test
+    fun `Singer-Songwriter slash spelling folds onto one canonical tag`() {
+        // "Singer-/Songwriter" embeds a "/" delimiter, so without the pre-pass it fragments
+        // into the junk tags "Singer-" + "Songwriter"; it must resolve to one clean tag.
+        normalizeGenre("Singer-/Songwriter").shouldContainExactly("Singer-Songwriter")
+        normalizeGenre("Singer/Songwriter").shouldContainExactly("Singer-Songwriter")
+        normalizeGenre("Singer-Songwriterin").shouldContainExactly("Singer-Songwriter")
+        normalizeGenre("Singer-/Songwriter, Latin, Folk")
+            .shouldContainExactlyInAnyOrder("Singer-Songwriter", "Latin", "Folk")
+    }
+
+    @Test
+    fun `German Hip Hop maps to Hip Hop rather than being dropped`() {
+        // A three-word label would fail the looksLikeGenre gate and be discarded; the
+        // synonym entry recovers it as the canonical Hip Hop tag.
+        normalizeGenre("German Hip Hop").shouldContainExactly("Hip Hop")
     }
 
     @Test

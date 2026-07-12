@@ -9,6 +9,9 @@ import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.time.LocalTime
 
+// Cohesive suite covering the many small mapping utilities in EventMappingExtensions
+// (itself @file:Suppress("TooManyFunctions") for the same reason) — one focused test per behaviour.
+@Suppress("LargeClass")
 class EventMappingExtensionsTest {
     // --- mapEventType ---
 
@@ -176,6 +179,17 @@ class EventMappingExtensionsTest {
         refineConcertVenueType("OTHER", "QUEER WRESTLING CIRCUS") shouldBe "SHOW"
         refineConcertVenueType("OTHER", "11FREUNDE WM-QUARTIER") shouldBe "SCREENING"
         refineConcertVenueType("OTHER", "GWF Summer Smash 2026") shouldBe "OTHER"
+    }
+
+    @Test
+    fun `inferUnmarkedTitleType types by keyword but never defaults to CONCERT`() {
+        // A positive keyword flips the type…
+        inferUnmarkedTitleType("Kotti Karaoke Party") shouldBe "PARTY"
+        inferUnmarkedTitleType("Monarch Music Quiz") shouldBe "QUIZ"
+        // …but an unmarked event with no cue stays OTHER (not force-promoted to CONCERT),
+        // so a party's event name is never minted as a headliner.
+        inferUnmarkedTitleType("OFF BEAT: SUMMER SESSIONS") shouldBe "OTHER"
+        inferUnmarkedTitleType("DAS LUNSENTRIO") shouldBe "OTHER"
     }
 
     // --- extractSupportFromSubtitle ---
@@ -635,11 +649,23 @@ class EventMappingExtensionsTest {
         splitHeadlinerTitle("Portland") shouldContainExactly listOf("Portland")
         // Comma signals a member-list band name.
         splitHeadlinerTitle("Earth, Wind & Fire") shouldContainExactly listOf("Earth, Wind & Fire")
-        // "& Friends" / "& Guests" collective tail names an unnamed cast, not a second act.
+        // "& Friends" / "& Guests" / "& Band" collective tail names an unnamed cast, not a second act.
         splitHeadlinerTitle("Taylor & Friends") shouldContainExactly listOf("Taylor & Friends")
         splitHeadlinerTitle("Jonny & Guests") shouldContainExactly listOf("Jonny & Guests")
+        splitHeadlinerTitle("Andreas Dresen & Band") shouldContainExactly listOf("Andreas Dresen & Band")
         // A real co-bill alongside a collective tail still splits at the real boundary.
         splitHeadlinerTitle("Ann & the Band + Real Act") shouldContainExactly listOf("Ann & the Band", "Real Act")
+        // A named act after "&" ("Jesko Band") is still a genuine second act, not a bare "& Band" tail.
+        splitHeadlinerTitle("Dennis & Jesko Band") shouldContainExactly listOf("Dennis", "Jesko Band")
+    }
+
+    @Test
+    fun `splitHeadlinerTitle keeps a slash inside a single act name when splitOnSlash is false`() {
+        // Madame Claude uses "/" inside one act's name, so its co-bills split only on " + ".
+        splitHeadlinerTitle("Morimoto / Wong duo", splitOnSlash = false) shouldContainExactly
+            listOf("Morimoto / Wong duo")
+        splitHeadlinerTitle("Matthew Ryals + Morimoto / Wong duo + Song-Ming Ang", splitOnSlash = false) shouldContainExactly
+            listOf("Matthew Ryals", "Morimoto / Wong duo", "Song-Ming Ang")
     }
 
     @Test
@@ -655,6 +681,17 @@ class EventMappingExtensionsTest {
         headlinersFromTitle("TBA + Real Band") shouldContainExactly
             listOf(ScrapedArtist(name = "Real Band", role = "HEADLINER"))
         headlinersFromTitle("TBA").shouldBeEmpty()
+    }
+
+    @Test
+    fun `headlinersFromTitle keeps a slashed act name intact when splitOnSlash is false`() {
+        // The Madame Claude concert path: "/" belongs to a single act ("Morimoto / Wong duo"),
+        // so it must not be torn into two headliners; the trailing "(DJ-Set)" is still stripped.
+        headlinersFromTitle("Morimoto / Wong duo + Forrest Gimp (DJ-Set)", splitOnSlash = false) shouldContainExactly
+            listOf(
+                ScrapedArtist(name = "Morimoto / Wong duo", role = "HEADLINER"),
+                ScrapedArtist(name = "Forrest Gimp", role = "HEADLINER")
+            )
     }
 
     @Test

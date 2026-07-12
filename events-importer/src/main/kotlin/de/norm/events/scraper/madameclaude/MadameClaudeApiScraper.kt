@@ -182,8 +182,10 @@ class MadameClaudeApiScraper {
     /**
      * Builds the lineup from the title, keyed off the authoritative [eventType]:
      * - **Concerts** — the title carries the co-billed acts (`A + B + C`), split into
-     *   headliners via [headlinersFromTitle]; a trailing "(DJ-Set)" on the last act is
-     *   stripped as an artist-name suffix.
+     *   headliners via [headlinersFromTitle] with `splitOnSlash = false` (Madame Claude
+     *   uses `/` *inside* a single act name — `Morimoto / Wong duo` — so co-bills are
+     *   delimited only by `+`); a trailing "(DJ-Set)" on the last act is stripped as an
+     *   artist-name suffix.
      * - **Parties** — only a "(DJ-Set)" night names its DJs (via [djSetArtistsFromTitle],
      *   role `DJ`); a party whose title is an event name (e.g. "Summer Break Send-Off")
      *   mints none.
@@ -195,7 +197,7 @@ class MadameClaudeApiScraper {
         eventType: String?
     ): List<ScrapedArtist> =
         when (eventType) {
-            EventType.CONCERT.name -> headlinersFromTitle(title)
+            EventType.CONCERT.name -> headlinersFromTitle(title, splitOnSlash = false)
             EventType.PARTY.name -> if (isDjSetTitle(title)) djSetArtistsFromTitle(title) else emptyList()
             else -> emptyList()
         }
