@@ -143,7 +143,14 @@ private val NON_CONCERT_TITLE_KEYWORDS =
 
 /** Title keywords marking a DJ/club night (mapped to [EventType.PARTY]). */
 private val PARTY_TITLE_KEYWORDS =
-    listOf("aftershow", "afterparty", "after-party", "after party", "party", "club night", "clubnight", "club", "rave", "karaoke")
+    listOf("aftershow", "afterparty", "after-party", "after party", "party", "club night", "clubnight", "club", "karaoke")
+
+/**
+ * Whole-word party keyword too short for a safe substring test: `rave` is a substring
+ * of real band names like "GRAVE DIGGER" and "The Brave", so it is matched only as a
+ * standalone word — mirrors the `\bkino\b` / `\bslam\b` guards above.
+ */
+private val PARTY_TITLE_WORD_PATTERN = Regex("""\brave\b""", RegexOption.IGNORE_CASE)
 
 /**
  * Classifies an event by unambiguous keywords in its [title], or `null` when none
@@ -170,7 +177,8 @@ private fun classifyByTitleKeyword(title: String): String? {
 
         NON_CONCERT_TITLE_KEYWORDS.any { it in haystack } -> EventType.OTHER.name
 
-        PARTY_TITLE_KEYWORDS.any { it in haystack } -> EventType.PARTY.name
+        PARTY_TITLE_KEYWORDS.any { it in haystack } ||
+            PARTY_TITLE_WORD_PATTERN.containsMatchIn(haystack) -> EventType.PARTY.name
 
         else -> null
     }

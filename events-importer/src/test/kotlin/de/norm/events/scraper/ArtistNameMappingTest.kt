@@ -35,6 +35,20 @@ class ArtistNameMappingTest {
             listOf("Scott Hepple & The Sun Band")
     }
 
+    @Test
+    fun `extractSupportFromSubtitle recognizes Opener and Special Guest markers`() {
+        extractSupportFromSubtitle("+ Special Guest: Motorowl") shouldContainExactly listOf("Motorowl")
+        extractSupportFromSubtitle("Opener: Warwolf") shouldContainExactly listOf("Warwolf")
+    }
+
+    @Test
+    fun `extractSupportFromSubtitle splits a subtitle stacking two markers and strips the second`() {
+        // "Opener: Warwolf + Special Guest: Motorjesus": the `+` separates the two acts;
+        // the leading "Special Guest:" on the second act is stripped to its bare name.
+        extractSupportFromSubtitle("Opener: Warwolf + Special Guest: Motorjesus") shouldContainExactly
+            listOf("Warwolf", "Motorjesus")
+    }
+
     // --- splitSupportActs ---
 
     @Test

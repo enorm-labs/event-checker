@@ -44,6 +44,15 @@ enum class EventSource {
     GRETCHEN,
 
     /**
+     * Hole 44 Berlin – WordPress/Events-Manager concert hall; the `/events/` page lists every show as a
+     * `li.event-item` (date, start time, title, genre tags, and a `.changes` relocation/cancellation note),
+     * each linking to a `/event/<date-slug>/` detail page that adds the promoter, doors time, image, and a
+     * schema.org `Event` JSON-LD block (name, description, image). The Events-Manager REST API is not exposed
+     * for anonymous reads (it 301-redirects), so the two HTML pages are the source.
+     */
+    HOLE44,
+
+    /**
      * Junction Bar Berlin – retro hand-coded site imported from the homepage entry, which links to two programs merged
      * into this one source: the live-music listing (`music_html/music.html` → per-month `program/MM_YYYY/MM_YY.html`
      * pages) and the DJ program (`DJ_html/DJ.html`). Each page is a flat sequence of `strong.datum`/`strong.Datum` date
