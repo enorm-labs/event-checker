@@ -23,7 +23,7 @@ The **Import** column tracks whether an automated importer has been implemented 
 | Sage Club                   | https://www.sage-club.de/                   | Club         |     ✅      |        | No event data in HTML; TYPO3 SPA   |
 | Schokoladen                 | https://www.schokoladen-mitte.de/           | Club         |     ✅      |   ✅    |                                    |
 | Neue Zukunft                | https://neue-zukunft.org/                   | Club         |     ✅      |   ✅    | Elfsight Event Calendar widget API |
-| Clash Club                  | https://clash-berlin.de/                    | Club         |     ✅      |        |                                    |
+| Clash Club                  | https://clash-berlin.de/                    | Club         |     ✅      |   ✅    |                                    |
 | Loge                        | https://www.loge-berlin.org/                | Club         |     ✅      |        | Wix site; tickets sold on-site     |
 | Arcanoa                     | https://www.ssi-media.com/arcanoa/          | Bar          |     ✅      |        | Very basic HTML; open stages       |
 | Junction Bar                | https://www.junction-bar.de/                | Bar          |     ✅      |        |                                    |

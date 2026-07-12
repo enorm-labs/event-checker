@@ -21,6 +21,13 @@ enum class EventSource {
     /** Cassiopeia Berlin – Webflow-based event listing at `/club`. */
     CASSIOPEIA,
 
+    /**
+     * Clash Berlin – WordPress punk/ska venue; upcoming events rendered on the homepage `#events`
+     * section as `.gigs-container .item` blocks (the `event` custom post type is not exposed via the
+     * WP REST API), each carrying a `DD.MM.YY` date, a Stager ticket-shop link, and a poster image.
+     */
+    CLASH,
+
     /** Duncker Club Berlin – retro hand-coded single-page `start.html` programme table (goth/wave/indie DJ nights), German `DD.MM.` dates without a year. */
     DUNCKER,
 
