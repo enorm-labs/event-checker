@@ -11,6 +11,7 @@ import de.norm.events.scraper.gretchen.GretchenOverviewPageScraper.Companion.RES
 import de.norm.events.scraper.hrefAt
 import de.norm.events.scraper.isNonArtistName
 import de.norm.events.scraper.parseEventStatus
+import de.norm.events.scraper.parseGermanDate
 import de.norm.events.scraper.parsePriceValue
 import de.norm.events.scraper.parseTime
 import de.norm.events.scraper.resolveUrl
@@ -23,8 +24,6 @@ import org.jsoup.nodes.TextNode
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalTime
-import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeParseException
 
 /**
  * Pure HTML parser for Gretchen Berlin's retro hand-coded single-page listing.
@@ -189,14 +188,7 @@ class GretchenOverviewPageScraper {
      * "10.07.2026"), so no year inference is needed. Returns `null` when the
      * element is absent or unparseable.
      */
-    private fun parseEventDate(gig: Element): LocalDate? {
-        val dateText = gig.textAt(".date strong") ?: return null
-        return try {
-            LocalDate.parse(dateText, GERMAN_DATE_FORMATTER)
-        } catch (_: DateTimeParseException) {
-            null
-        }
-    }
+    private fun parseEventDate(gig: Element): LocalDate? = parseGermanDate(gig.textAt(".date strong"))
 
     /**
      * Parses doors and show times from the `.date` cell.
@@ -440,9 +432,6 @@ class GretchenOverviewPageScraper {
     }
 
     companion object {
-        /** Formatter for Gretchen's full numeric `DD.MM.YYYY` date (locale-independent). */
-        private val GERMAN_DATE_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
-
         /** Captures the "Doors: HH.MM" time from the `.date` cell (dot separator). */
         private val DOORS_PATTERN = Regex("""Doors:\s*(\d{1,2})\.(\d{2})""")
 

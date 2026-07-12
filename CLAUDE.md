@@ -9,6 +9,7 @@ The full agent playbook — commands, architecture decisions, R2DBC/Modulith got
 Slash commands available under `.claude/skills/`:
 
 - `/code-review` — review the current diff
+- `/codebase-audit` — comprehensive whole-repo review of code + architecture (size, duplication, conventions, simplification)
 - `/commit-message` — generate a commit message from staged changes
 - `/improve-test-coverage` — find and fill coverage gaps
 - `/scaffold-importer` — scaffold a new venue event importer (scraper) end to end

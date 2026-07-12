@@ -19,6 +19,9 @@ import kotlin.math.abs
 //    time by [parseIsoDate] and [parseIsoTime].
 // 3. European short date DD/MM/YY — used by some WordPress-based venue
 //    sites (e.g. "21/09/26"). Parsed by [parseShortDate].
+// 4. German dotted date DD.MM.YYYY / DD.MM.YY — rendered on many Berlin
+//    venue pages (e.g. "10.07.2026", "29.06.26"). Parsed by [parseGermanDate]
+//    (four-digit year) and [parseGermanShortDate] (two-digit year).
 //
 // All functions follow a null-safe convention: they return null for
 // unparseable, blank, or missing input rather than throwing exceptions.
@@ -38,6 +41,12 @@ private val HH_MM_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("HH
 
 /** European short date format (d/M/yy); 2-digit year resolves to 2000–2099. */
 private val SHORT_DATE_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("d/M/yy")
+
+/** German dotted date format with a four-digit year (d.M.yyyy); accepts single- and double-digit day/month. */
+private val GERMAN_DATE_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("d.M.yyyy")
+
+/** German dotted date format with a two-digit year (d.M.yy); 2-digit year resolves to 2000–2099. */
+private val GERMAN_SHORT_DATE_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("d.M.yy")
 
 /**
  * Attempts to parse [text] as a [LocalTime] using the given [formatter].
@@ -154,6 +163,52 @@ fun parseShortDate(text: String?): LocalDate? {
     if (text.isNullOrBlank()) return null
     return try {
         LocalDate.parse(text.trim(), SHORT_DATE_FORMATTER)
+    } catch (_: DateTimeParseException) {
+        null
+    }
+}
+
+/**
+ * Parses a German dotted date with a four-digit year (`DD.MM.YYYY`).
+ *
+ * The most common human date rendering on Berlin venue pages (e.g. "10.07.2026",
+ * "23.09.2026"). Single-digit day/month values are also accepted (e.g. "1.9.2026").
+ * Returns `null` for null, blank, or unparseable input.
+ *
+ * Example:
+ * ```kotlin
+ * parseGermanDate("10.07.2026")  // LocalDate.of(2026, 7, 10)
+ * parseGermanDate("1.9.2026")    // LocalDate.of(2026, 9, 1)
+ * parseGermanDate("invalid")     // null
+ * ```
+ */
+fun parseGermanDate(text: String?): LocalDate? = parseGerman(text, GERMAN_DATE_FORMATTER)
+
+/**
+ * Parses a German dotted date with a two-digit year (`DD.MM.YY`).
+ *
+ * Used where venues render a short human year (e.g. Astra's "11.12.26", Clash's
+ * "29.06.26"). Two-digit years resolve to the 2000–2099 range; single-digit
+ * day/month values are also accepted. Returns `null` for null, blank, or
+ * unparseable input.
+ *
+ * Example:
+ * ```kotlin
+ * parseGermanShortDate("11.12.26")  // LocalDate.of(2026, 12, 11)
+ * parseGermanShortDate("1.9.26")    // LocalDate.of(2026, 9, 1)
+ * parseGermanShortDate("invalid")   // null
+ * ```
+ */
+fun parseGermanShortDate(text: String?): LocalDate? = parseGerman(text, GERMAN_SHORT_DATE_FORMATTER)
+
+/** Shared null-safe parse for the two German dotted-date formatters. */
+private fun parseGerman(
+    text: String?,
+    formatter: DateTimeFormatter
+): LocalDate? {
+    if (text.isNullOrBlank()) return null
+    return try {
+        LocalDate.parse(text.trim(), formatter)
     } catch (_: DateTimeParseException) {
         null
     }

@@ -115,32 +115,7 @@ class EventService(
         // Include venue slug in event slug to ensure cross-venue uniqueness for events
         // with the same title on the same date (e.g. "Open Decks" at two different venues).
         val slug = SlugGenerator.slugify("${request.eventDate}-${venue.slug}-${request.title}")
-        val entity =
-            EventEntity(
-                venueId = request.venueId,
-                title = request.title,
-                subtitle = request.subtitle,
-                description = request.description,
-                eventType = request.eventType.name,
-                status = request.status.name,
-                slug = slug,
-                eventDate = request.eventDate,
-                doorsTime = request.doorsTime,
-                startTime = request.startTime,
-                imageUrl = request.imageUrl,
-                sourceUrl = request.sourceUrl,
-                sourceId = request.sourceId,
-                ticketUrl = request.ticketUrl,
-                facebookEventUrl = request.facebookEventUrl,
-                genre = request.genre,
-                pricePresale = request.pricePresale?.normalizeMoneyScale(),
-                priceBoxOffice = request.priceBoxOffice?.normalizeMoneyScale(),
-                priceCurrency = request.priceCurrency,
-                priceNote = request.priceNote,
-                soldOut = request.soldOut,
-                free = request.free
-            )
-        val saved = eventRepository.save(entity)
+        val saved = eventRepository.save(request.toEventEntity(slug))
         val eventId = saved.id!!
 
         val artistResponses = saveArtistAssociations(eventId, request.artists)
@@ -171,30 +146,13 @@ class EventService(
         val venue = venueRepository.findById(request.venueId) ?: throw VenueNotFoundException(request.venueId)
 
         val slug = SlugGenerator.slugify("${request.eventDate}-${venue.slug}-${request.title}")
+        // Remap all request fields via the shared factory, then carry over the identity and
+        // audit fields the request never owns (primary key, import source, creation timestamp).
         val updated =
-            existing.copy(
-                venueId = request.venueId,
-                title = request.title,
-                subtitle = request.subtitle,
-                description = request.description,
-                eventType = request.eventType.name,
-                status = request.status.name,
-                slug = slug,
-                eventDate = request.eventDate,
-                doorsTime = request.doorsTime,
-                startTime = request.startTime,
-                imageUrl = request.imageUrl,
-                sourceUrl = request.sourceUrl,
-                sourceId = request.sourceId,
-                ticketUrl = request.ticketUrl,
-                facebookEventUrl = request.facebookEventUrl,
-                genre = request.genre,
-                pricePresale = request.pricePresale?.normalizeMoneyScale(),
-                priceBoxOffice = request.priceBoxOffice?.normalizeMoneyScale(),
-                priceCurrency = request.priceCurrency,
-                priceNote = request.priceNote,
-                soldOut = request.soldOut,
-                free = request.free
+            request.toEventEntity(slug).copy(
+                id = existing.id,
+                eventSourceId = existing.eventSourceId,
+                createdAt = existing.createdAt
             )
         val saved = eventRepository.save(updated)
 
@@ -368,3 +326,37 @@ class EventService(
         return EventResponse.fromEntity(entity, artists, promoters, genreTags)
     }
 }
+
+/**
+ * Maps an [EventRequest] and pre-computed [slug] onto a new [EventEntity].
+ *
+ * Single source of truth for the request → entity field mapping, shared by
+ * [EventService.create] (persists the result directly) and [EventService.update]
+ * (copies the identity and audit fields from the existing row onto the result).
+ * Monetary values are normalized to scale 2 at this boundary.
+ */
+private fun EventRequest.toEventEntity(slug: String): EventEntity =
+    EventEntity(
+        venueId = venueId,
+        title = title,
+        subtitle = subtitle,
+        description = description,
+        eventType = eventType.name,
+        status = status.name,
+        slug = slug,
+        eventDate = eventDate,
+        doorsTime = doorsTime,
+        startTime = startTime,
+        imageUrl = imageUrl,
+        sourceUrl = sourceUrl,
+        sourceId = sourceId,
+        ticketUrl = ticketUrl,
+        facebookEventUrl = facebookEventUrl,
+        genre = genre,
+        pricePresale = pricePresale?.normalizeMoneyScale(),
+        priceBoxOffice = priceBoxOffice?.normalizeMoneyScale(),
+        priceCurrency = priceCurrency,
+        priceNote = priceNote,
+        soldOut = soldOut,
+        free = free
+    )

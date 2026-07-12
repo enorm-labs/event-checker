@@ -3,14 +3,13 @@ package de.norm.events.scraper.badehaus
 import de.norm.events.scraper.EventSource
 import de.norm.events.scraper.ScrapedEvent
 import de.norm.events.scraper.UNRESOLVED_EVENT_DATE
+import de.norm.events.scraper.parseGermanDate
 import de.norm.events.scraper.parseTime
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import java.net.URI
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeParseException
 
 /**
  * Pure HTML parser for Badehaus Berlin event detail (`/events/<slug>/`) pages.
@@ -105,12 +104,8 @@ class BadehausDetailPageScraper {
 
     /** Parses the `DD.MM.YYYY` date from the event header (e.g. "Fr. 04.12.2026 | 19:00 UHR"). */
     private fun parseDate(event: Element): LocalDate? {
-        val match = DATE_PATTERN.find(event.selectFirst("h3")?.text().orEmpty()) ?: return null
-        return try {
-            LocalDate.parse(match.value, DATE_FORMATTER)
-        } catch (_: DateTimeParseException) {
-            null
-        }
+        val header = event.selectFirst("h3")?.text().orEmpty()
+        return parseGermanDate(DATE_PATTERN.find(header)?.value)
     }
 
     /** Extracts the event slug from a `/events/<slug>/` URL for a stable `sourceId`. */
@@ -125,7 +120,5 @@ class BadehausDetailPageScraper {
 
         /** Matches the start time: "Beginn: 20:00" or "Beginn 20:00". */
         private val BEGINN_PATTERN = Regex("""Beginn:?\s*(\d{1,2}:\d{2})""", RegexOption.IGNORE_CASE)
-
-        private val DATE_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
     }
 }

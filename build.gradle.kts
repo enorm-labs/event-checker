@@ -79,6 +79,31 @@ dependencies {
     subprojects.forEach { kover(it) }
 }
 
+// Per-module report filters do not propagate into this aggregated report, so mirror the
+// events-core exclusions here to keep the headline aggregate meaningful: pure domain data
+// classes, Spring Modulith markers, and test-fixture factories carry no logic and would only
+// dilute the number. Exact class names are used for the domain data classes so the importer/BFF
+// `*Entity` persistence classes stay measured; the `*Module` / `*Fixtures` patterns intentionally
+// drop those non-logic classes across every module.
+kover {
+    reports {
+        filters {
+            excludes {
+                classes(
+                    "de.norm.events.artist.Artist",
+                    "de.norm.events.event.Event",
+                    "de.norm.events.event.LineupEntry",
+                    "de.norm.events.genretag.GenreTag",
+                    "de.norm.events.promoter.Promoter",
+                    "de.norm.events.venue.Venue",
+                    "de.norm.events.*Module",
+                    "de.norm.events.*Fixtures"
+                )
+            }
+        }
+    }
+}
+
 // IntelliJ HTTP Client CLI – runs .http request files from the command line.
 // Requires `ijhttp` to be installed (e.g. `brew install ijhttp` on macOS).
 // Usage: `./gradlew httpTest` to run the full lifecycle scenario against a running importer.
