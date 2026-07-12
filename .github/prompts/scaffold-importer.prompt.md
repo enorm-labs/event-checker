@@ -118,8 +118,10 @@ Utilities). Use these:
   non-absolute URLs.
 - **`DateParsingExtensions.kt`** — `parseTime(text)`, `parseIsoDate(str)`, `parseIsoTime(str)`, `HH_MM_FORMATTER`.
   Add a venue-specific formatter (e.g. German month names) only if the site's date format isn't covered.
-- **`EventMappingExtensions.kt`** — `mapEventType(...)` / `mapGermanCategory(...)`, `isPlaceholderName(...)`
-  (drop "TBA"/"N.N."), `buildArtistList(title, supportNames)`, `extractSupportFromSubtitle(...)`.
+- **`EventTypeMapping.kt`** — `mapEventType(...)`, `refineConcertVenueType(...)`, `isFestivalTitle(...)`.
+- **`ArtistNameMapping.kt`** — `isPlaceholderName(...)` / `isNonArtistName(...)` (drop "TBA"/"N.N."),
+  `buildArtistList(title, supportNames)`, `extractSupportFromSubtitle(...)`.
+- **`EventFieldMapping.kt`** — `parseEventStatus(...)`, `orderDoorsBeforeStart(...)`, `cleanEventTitle(...)`, `detectFree(...)`.
 
 If you find yourself writing a genuinely reusable helper (used by 2+ venues), add it to the appropriate
 extension file rather than the venue package, and note it in ADR-007's utility tables.
