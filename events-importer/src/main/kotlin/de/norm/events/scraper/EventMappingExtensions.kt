@@ -197,6 +197,21 @@ private fun classifyByTitleKeyword(title: String): String? {
 fun inferConcertVenueType(title: String): String = classifyByTitleKeyword(title) ?: EventType.CONCERT.name
 
 /**
+ * Title-based type inference for a venue that categorises only *some* of its events
+ * and leaves the rest unlabelled — e.g. Monarch flags concerts with a "(KONZERT)"
+ * suffix and emits no category at all for its DJ nights, parties and other formats.
+ *
+ * Classifies an unmarked event by an unambiguous [classifyByTitleKeyword] cue (a
+ * party/quiz/show/screening/reading/exhibition keyword → that type), falling back to
+ * [OTHER][EventType.OTHER]. Unlike [inferConcertVenueType] it deliberately does **not**
+ * default to CONCERT: the venue's *own* concert marker is authoritative, so its absence
+ * signals "not a standard concert", and defaulting to CONCERT would both mislabel the
+ * unmarked parties and mint their event names as headliners
+ * ([buildArtistsForEventType]). Mirrors the OTHER branch of [refineConcertVenueType].
+ */
+fun inferUnmarkedTitleType(title: String): String = classifyByTitleKeyword(title) ?: EventType.OTHER.name
+
+/**
  * Classifies an event by an unambiguous non-musical **format** cue in its raw
  * [genre] text, or `null` when none match. A venue occasionally files the format in
  * the genre/category field rather than the title: Festsaal tags a book reading
@@ -747,19 +762,26 @@ private val KNOWN_SINGLE_ACTS: Set<String> =
  * - articles/possessives opening a backing band ("X & **the** Ys", "X and **his**
  *   Ys", "X und **die** Ys"); and
  * - collective nouns naming an unnamed supporting cast ("X & **Friends**", "X &
- *   **Guests**", "X & **Gäste**"), a billing convention where the act is "X",
- *   not a separate act literally called "Friends".
+ *   **Guests**", "X & **Gäste**", "X & **Band**"), a billing convention where the
+ *   act is "X", not a separate act literally called "Friends" or "Band".
  */
 private val CONJUNCTION_TAIL_ARTICLES: Set<String> =
     setOf("the", "his", "her", "their", "los", "las", "die", "der", "das", "el", "la")
 
-private val CONJUNCTION_TAIL_COLLECTIVES: Set<String> = setOf("friends", "guests", "gäste", "freunde")
+private val CONJUNCTION_TAIL_COLLECTIVES: Set<String> = setOf("friends", "guests", "gäste", "freunde", "band")
 
 /** Right-hand-side opener words that keep a conjunction boundary joined — see the two source sets. */
 private val CONJUNCTION_TAIL_MARKERS: Set<String> = CONJUNCTION_TAIL_ARTICLES + CONJUNCTION_TAIL_COLLECTIVES
 
 /** Space-padded `/` or `+` — unambiguous co-bill separators once whitespace is required on both sides. */
 private val SAFE_TITLE_SEPARATOR = Regex("""\s+[/+]\s+""")
+
+/**
+ * Space-padded `+` only — the co-bill separator for venues (Madame Claude) that use
+ * `/` *inside* a single act name (`Morimoto / Wong duo`), where splitting on `/` would
+ * fragment one act into two. Selected via `splitOnSlash = false`.
+ */
+private val PLUS_ONLY_TITLE_SEPARATOR = Regex("""\s+\+\s+""")
 
 /**
  * Space-padded conjunction (`&`, `and`, `und`) — split only at boundaries that
@@ -866,6 +888,10 @@ fun splitSupportActs(text: String): List<String> =
  * singleton list of the trimmed title, so callers see no behavioural change.
  * Placeholder filtering is left to the caller.
  *
+ * @param splitOnSlash when false, `/` is *not* treated as a co-bill separator (only
+ *   ` + ` is) — for venues that use `/` inside a single act name (Madame Claude's
+ *   `Morimoto / Wong duo`). Defaults to true (the co-bill spelling other venues use).
+ *
  * Example:
  * ```kotlin
  * splitHeadlinerTitle("TOTAL CHAOS + RUMKICKS")       // ["TOTAL CHAOS", "RUMKICKS"]
@@ -874,10 +900,14 @@ fun splitSupportActs(text: String): List<String> =
  * splitHeadlinerTitle("Simon & Garfunkel")            // ["Simon & Garfunkel"]  (denylist)
  * splitHeadlinerTitle("James and the Cold Gun")       // ["James and the Cold Gun"]  (article tail)
  * splitHeadlinerTitle("AC/DC")                         // ["AC/DC"]  (no space padding)
+ * splitHeadlinerTitle("Morimoto / Wong duo", splitOnSlash = false) // ["Morimoto / Wong duo"]
  * ```
  */
 @Suppress("ReturnCount") // Guard clauses for blank and denylisted titles are clearer than nesting
-fun splitHeadlinerTitle(title: String): List<String> {
+fun splitHeadlinerTitle(
+    title: String,
+    splitOnSlash: Boolean = true
+): List<String> {
     val trimmed = title.trim()
     if (trimmed.isEmpty()) return listOf(title)
     // Normalize the "and"/"und" word forms to "&" so a title matches the &-spelled denylist.
@@ -885,7 +915,7 @@ fun splitHeadlinerTitle(title: String): List<String> {
 
     val acts =
         trimmed
-            .split(SAFE_TITLE_SEPARATOR)
+            .split(if (splitOnSlash) SAFE_TITLE_SEPARATOR else PLUS_ONLY_TITLE_SEPARATOR)
             .flatMap { splitSegmentOnConjunctions(it) }
             .map { it.trim() }
             .filter { it.isNotBlank() }
@@ -936,9 +966,15 @@ private fun stripFramingPrefix(name: String): String {
  * anything that is not an artist ([isNonArtistName] — placeholders, role labels,
  * segments, festivals). Returned in billing order (title order); the caller appends
  * support acts.
+ *
+ * @param splitOnSlash forwarded to [splitHeadlinerTitle]: pass false for a venue that
+ *   uses `/` inside a single act name (Madame Claude) so the name isn't torn apart.
  */
-fun headlinersFromTitle(title: String): List<ScrapedArtist> =
-    splitHeadlinerTitle(stripSeriesPrefix(title))
+fun headlinersFromTitle(
+    title: String,
+    splitOnSlash: Boolean = true
+): List<ScrapedArtist> =
+    splitHeadlinerTitle(stripSeriesPrefix(title), splitOnSlash)
         .map { stripFramingPrefix(stripArtistSuffix(it)) }
         .filterNot { isNonArtistName(it) }
         .map { ScrapedArtist(name = it, role = "HEADLINER") }

@@ -33,6 +33,7 @@ private val GENRE_SYNONYMS: Map<String, String> =
     mapOf(
         // Hip Hop family
         "hiphop" to "Hip Hop",
+        "germanhiphop" to "Hip Hop",
         "rap" to "Hip Hop",
         "deutschrap" to "Hip Hop",
         "urban" to "Hip Hop",
@@ -184,6 +185,13 @@ private val NON_GENRE_TOKENS: Set<String> =
         "wave",
         "retro",
         "nontango",
+        // Descriptors/section labels a venue lists alongside real genres — not genres
+        // themselves ("Funk, Soul, Groove"; "Dub, Grime, Bass, Dirt"; "Jazz, Progressive,
+        // Fusion"). A compound like "Groove Metal" / "Progressive Rock" still resolves via
+        // the word-level synonym match, which runs before this stop-list.
+        "dirt",
+        "groove",
+        "progressive",
         // Audience / theme / series labels Gretchen pushes into the genre field.
         // Keys are [lookupKey]-normalized: it strips non-ASCII letters, so
         // "Männerparty" → "mnnerparty" (the ä is dropped) and "FLINTA*" → "flinta".
@@ -232,8 +240,20 @@ private val DRUM_AND_BASS_REGEX =
         RegexOption.IGNORE_CASE
     )
 
+/**
+ * "Singer-Songwriter" is frequently written with a slash ("Singer-/Songwriter",
+ * "Singer/Songwriter"), and `/` is a hard [GENRE_DELIMITERS] separator — so the name
+ * would be torn into the junk fragments "Singer-" + "Songwriter". Collapsed to the
+ * hyphen-only spelling (which contains no delimiter) *before* the split so the whole
+ * name survives and resolves via [GENRE_SYNONYMS] ("singersongwriter").
+ */
+private val SINGER_SONGWRITER_REGEX = Regex("""\bsinger[\s/-]*songwriter(in)?\b""", RegexOption.IGNORE_CASE)
+
 /** Collapses delimiter-embedding genre names to a split-safe spelling before tokenization. */
-private fun preNormalize(rawGenre: String): String = rawGenre.replace(DRUM_AND_BASS_REGEX, "Drum'n'Bass")
+private fun preNormalize(rawGenre: String): String =
+    rawGenre
+        .replace(DRUM_AND_BASS_REGEX, "Drum'n'Bass")
+        .replace(SINGER_SONGWRITER_REGEX, "Singer-Songwriter")
 
 /**
  * Suffixes commonly appended to genre names in venue listings that should

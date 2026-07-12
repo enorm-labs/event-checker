@@ -21,27 +21,45 @@ package de.norm.events.artist
 //   - tokens with a digit or an interior "." / "/", i.e. stylised names and dotted
 //     initialisms, not plain words ("MC5", "UB40", "H2O", "AC/DC", "R.E.M.");
 //   - recognised acronyms in [ACRONYMS] ("DJ", "MC", "UK") — so "DJ KOZE" becomes
-//     "DJ Koze", not "Dj Koze".
+//     "DJ Koze", not "Dj Koze";
+//   - a name that is a *single* short all-caps token (≤ [SHORT_INITIALISM_MAX_LEN]
+//     letters: "JJ", "EV", "YU", "MØ") — a standalone two-letter all-caps name is an
+//     initialism/stylisation far more often than a shouted word, and title-casing it
+//     to "Jj"/"Ev" reads as a typo. Scoped to the whole name so a short *word* inside
+//     a multi-word name still de-shouts ("WARS OF ATTRITION" -> "Wars of Attrition").
 //
-// Known limits (accepted): a genuine all-caps name that is only letters and isn't
-// in [ACRONYMS] ("ABBA", "MGMT", "MUNA", "MØ") is title-cased like any shouted
-// word, because it is indistinguishable from one without a lookup table — extend
-// [ACRONYMS] when a real act needs its capitals kept. Names stylised with other
-// interior symbols ("BIGA*RANX", "OI!STURM") are likewise title-cased. This is
-// display-only: slugs are case-insensitive, so the resolved artist row is unaffected.
+// Known limits (accepted): a genuine all-caps name of three-plus letters that isn't
+// in [ACRONYMS] ("ABBA", "MGMT", "MUNA") is title-cased like any shouted word, because
+// it is indistinguishable from one without a lookup table — extend [ACRONYMS] when a
+// real act needs its capitals kept. Names stylised with other interior symbols
+// ("BIGA*RANX", "OI!STURM") are likewise title-cased. This is display-only: slugs are
+// case-insensitive, so the resolved artist row is unaffected.
 
 /**
  * Returns the de-shouted display form of an artist [raw] name (see file header).
  * Casing-only: no words are added or removed. Falls back to the trimmed input
  * when normalization would leave nothing.
  */
-fun canonicalArtistName(raw: String): String =
-    raw
-        .trim()
-        .split(WHITESPACE_REGEX)
-        .filter { it.isNotBlank() }
-        .joinToString(" ") { it.deshoutWord() }
-        .ifBlank { raw.trim() }
+fun canonicalArtistName(raw: String): String {
+    val trimmed = raw.trim()
+    val tokens = trimmed.split(WHITESPACE_REGEX).filter { it.isNotBlank() }
+    // A whole name that is a single short all-caps token is an initialism/stylisation
+    // ("JJ", "MØ"), not a shouted word — keep it verbatim rather than minting "Jj"/"Mø".
+    if (tokens.size == 1 && tokens[0].isShortStandaloneInitialism()) return tokens[0]
+    return tokens.joinToString(" ") { it.deshoutWord() }.ifBlank { trimmed }
+}
+
+/**
+ * Whether the token is a standalone short initialism to keep verbatim: only letters,
+ * no lowercase, and at most [SHORT_INITIALISM_MAX_LEN] characters long. Only applied
+ * to a single-token name (see [canonicalArtistName]) so it never freezes a short word
+ * ("OF", "MY") inside a longer shouted name.
+ */
+private fun String.isShortStandaloneInitialism(): Boolean =
+    length <= SHORT_INITIALISM_MAX_LEN && any { it.isLetter() } && none { it.isLowerCase() || it.isDigit() }
+
+/** Max length of a single-token all-caps name kept as an initialism rather than de-shouted. */
+private const val SHORT_INITIALISM_MAX_LEN = 2
 
 /** Title-cases a shouted word (see [isShoutedWord]); returns any other token unchanged. */
 private fun String.deshoutWord(): String = if (isShoutedWord()) titleCaseKeepingPunctuation() else this

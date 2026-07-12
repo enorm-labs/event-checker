@@ -69,14 +69,15 @@ class MonarchOverviewPageScraperTest {
     }
 
     @Test
-    fun `treats a non-concert club night as unclassified with no artists`() {
+    fun `treats a non-concert club night with no keyword cue as OTHER with no artists`() {
         val offBeat =
             scraper
                 .scrape(programme(), baseUrl)
                 .single { it.title == "OFF BEAT: SUMMER SESSIONS" }
 
-        // No "(KONZERT)" marker → left unclassified (defaults to OTHER downstream).
-        offBeat.eventType.shouldBeNull()
+        // No "(KONZERT)" marker and no party/quiz/… keyword in the title → OTHER
+        // (never CONCERT, so the event name is not minted as a headliner).
+        offBeat.eventType shouldBe "OTHER"
         offBeat.startTime shouldBe LocalTime.of(23, 0)
         offBeat.ticketUrl shouldBe "https://ra.co/events/2475168"
         // A party/DJ-night title is not an artist.

@@ -4,6 +4,7 @@ import de.norm.events.scraper.EventSource
 import de.norm.events.scraper.ScrapedEvent
 import de.norm.events.scraper.buildArtistsForEventType
 import de.norm.events.scraper.hrefAt
+import de.norm.events.scraper.inferUnmarkedTitleType
 import de.norm.events.scraper.mapEventType
 import de.norm.events.scraper.parseEventStatus
 import de.norm.events.slug.SlugGenerator
@@ -94,9 +95,12 @@ class MonarchOverviewPageScraper {
             return null
         }
 
-        // "(KONZERT)" is the venue's only reliable concert marker; everything else
-        // (DJ nights, parties) is left unclassified and defaults to OTHER downstream.
-        val eventType = if (KONZERT_PATTERN.containsMatchIn(rawTitle)) mapEventType("konzert") else null
+        // "(KONZERT)" is the venue's authoritative concert marker. For everything else
+        // (DJ nights, parties, other formats) the title is classified by keyword —
+        // a party/quiz/show/… cue types it, otherwise it stays OTHER. It deliberately
+        // does not default unmarked events to CONCERT (see [inferUnmarkedTitleType]).
+        val eventType =
+            if (KONZERT_PATTERN.containsMatchIn(rawTitle)) mapEventType("konzert") else inferUnmarkedTitleType(rawTitle)
         // "ABGESAGT" in the raw title flags a cancellation.
         val status = parseEventStatus(rawTitle)
 
