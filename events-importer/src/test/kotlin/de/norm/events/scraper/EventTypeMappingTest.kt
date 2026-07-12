@@ -131,6 +131,14 @@ class EventTypeMappingTest {
     fun `inferConcertVenueType detects a party or club night`() {
         inferConcertVenueType("THE CURE AFTERSHOW PARTY") shouldBe "PARTY"
         inferConcertVenueType("P ▲ R ▲ N ● I ► (PARANOID CLUB)") shouldBe "PARTY"
+        inferConcertVenueType("HARD TECHNO RAVE") shouldBe "PARTY"
+    }
+
+    @Test
+    fun `inferConcertVenueType keeps an act whose name merely contains rave as a substring`() {
+        // "rave" is only a whole-word party marker, so "GRAVE DIGGER" (a metal band) stays a CONCERT.
+        inferConcertVenueType("GRAVE DIGGER") shouldBe "CONCERT"
+        inferConcertVenueType("The Brave") shouldBe "CONCERT"
     }
 
     // --- classifyByGenreKeyword ---

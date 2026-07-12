@@ -11,34 +11,49 @@ import java.text.Normalizer
 // EventTypeMapping.kt.
 
 /**
- * Extracts support act names from a subtitle's `"… + Support: A & B"` pattern.
+ * Extracts support act names from a subtitle's `"… + <marker>: A & B"` pattern,
+ * where `<marker>` is any support-billing label — `Support`, `Opener`, or
+ * `Special Guest(s)` (see [SUPPORT_INTRO_PATTERN]).
  *
- * Delegates to [splitSupportActs], so the captured names are split on commas,
- * `+` and `/`, with `&` / `and` / `und` handled per boundary — a backing-band
- * tail stays attached to its act. Returns an empty list when no support line is
- * present. Shared across venue scrapers (e.g. Privatclub, Astra) whose subtitles
+ * Captures everything after the *first* marker and delegates to [splitSupportActs],
+ * so the names are split on commas, `+` and `/`, with `&` / `and` / `und` handled
+ * per boundary — a backing-band tail stays attached to its act. A subtitle that
+ * stacks two markers (`"Opener: Warwolf + Special Guest: Motorjesus"`) is split on
+ * the `+`, then any remaining leading marker on a later act is stripped via
+ * [ROLE_LABEL_PREFIX]. Returns an empty list when no support line is present.
+ * Shared across venue scrapers (e.g. Privatclub, Astra, Hole 44) whose subtitles
  * follow this convention.
  *
  * Example:
  * ```kotlin
- * extractSupportFromSubtitle("Tour 2026 | Support: Luana")          // ["Luana"]
- * extractSupportFromSubtitle("Tour + Support: High On Fire & Gnome") // ["High On Fire", "Gnome"]
- * extractSupportFromSubtitle("Tour 2026")                            // []
+ * extractSupportFromSubtitle("Tour 2026 | Support: Luana")               // ["Luana"]
+ * extractSupportFromSubtitle("Tour + Support: High On Fire & Gnome")      // ["High On Fire", "Gnome"]
+ * extractSupportFromSubtitle("Opener: Warwolf + Special Guest: Motorjesus") // ["Warwolf", "Motorjesus"]
+ * extractSupportFromSubtitle("Tour 2026")                                 // []
  * ```
  */
 @Suppress("ReturnCount") // Guard clauses for blank subtitle and missing support line are clearer than nesting
 fun extractSupportFromSubtitle(subtitle: String?): List<String> {
     if (subtitle.isNullOrBlank()) return emptyList()
-    val match = SUPPORT_PATTERN.find(subtitle) ?: return emptyList()
+    val match = SUPPORT_INTRO_PATTERN.find(subtitle) ?: return emptyList()
     return splitSupportActs(match.groupValues[1])
+        .map { it.replaceFirst(ROLE_LABEL_PREFIX, "").trim() }
+        .filter { it.isNotBlank() }
 }
 
-/** Matches "Support: <names>" anywhere in a subtitle, capturing to end of line. */
-private val SUPPORT_PATTERN = Regex("""[Ss]upport:\s*(.+)""")
+/**
+ * Matches the first support-billing marker in a subtitle — `Support:`, `Opener:`,
+ * or `Special Guest(s):` — capturing the acts after it to end of line. A second
+ * marker within the captured tail (e.g. the `Special Guest:` in
+ * `"Opener: Warwolf + Special Guest: Motorjesus"`) is stripped per-act by
+ * [ROLE_LABEL_PREFIX] after [splitSupportActs].
+ */
+private val SUPPORT_INTRO_PATTERN =
+    Regex("""(?:supports?|openers?|special\s+guests?)\s*:\s*(.+)""", RegexOption.IGNORE_CASE)
 
 /**
- * Picks the subtitle line carrying the "Support:" marker from already-split
- * subtitle [lines], or `null` if none.
+ * Picks the subtitle line carrying a support-billing marker (see
+ * [SUPPORT_INTRO_PATTERN]) from already-split subtitle [lines], or `null` if none.
  *
  * Venues whose subtitle stacks a support line and trailing notes across separate
  * lines (e.g. an "ABGESAGT …" cancellation notice) must isolate the support line
@@ -53,7 +68,7 @@ private val SUPPORT_PATTERN = Regex("""[Ss]upport:\s*(.+)""")
  * supportSubtitleLine(listOf("Tour 2026"))                                   // null
  * ```
  */
-fun supportSubtitleLine(lines: List<String>): String? = lines.firstOrNull { SUPPORT_PATTERN.containsMatchIn(it) }
+fun supportSubtitleLine(lines: List<String>): String? = lines.firstOrNull { SUPPORT_INTRO_PATTERN.containsMatchIn(it) }
 
 /**
  * Common placeholder names used by venues when the artist has not been
@@ -88,14 +103,15 @@ fun isPlaceholderName(name: String): Boolean {
 }
 
 /**
- * A leading lineup **role label** ("Support:", "Special Guest(s):", "div. Supports",
- * "feat.", "featuring", "w/"), optionally followed by a colon. Used both to strip the
- * label off an act ("Special Guest: FUCK" → "FUCK") and, when a chunk is nothing but
- * the label, to recognize it as a non-artist via [isNonArtistLabel]. Shared with the
- * SO36 detail scraper, whose support subtitles carry these inline.
+ * A leading lineup **role label** ("Support:", "Opener:", "Special Guest(s):",
+ * "div. Supports", "feat.", "featuring", "w/"), optionally followed by a colon. Used
+ * both to strip the label off an act ("Special Guest: FUCK" → "FUCK") and, when a
+ * chunk is nothing but the label, to recognize it as a non-artist via
+ * [isNonArtistLabel]. Shared with the SO36 detail scraper, whose support subtitles
+ * carry these inline, and with [extractSupportFromSubtitle]'s stacked-marker strip.
  */
 val ROLE_LABEL_PREFIX =
-    Regex("""^(?:div\.?\s*supports?|special\s+guests?|supports?|feat\.?|featuring|w/)\s*:?\s*""", RegexOption.IGNORE_CASE)
+    Regex("""^(?:div\.?\s*supports?|special\s+guests?|supports?|openers?|feat\.?|featuring|w/)\s*:?\s*""", RegexOption.IGNORE_CASE)
 
 /**
  * Checks whether [name] is a bare lineup role label ("Special Guest", "Support",
