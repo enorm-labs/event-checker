@@ -46,6 +46,13 @@ enum class EventSource {
     /** Lido Berlin – same Kulturhäuser platform as Astra (different theme), homepage listing with detail pages. */
     LIDO,
 
+    /**
+     * Loge Berlin – Wix site with a Wix Events widget; the `/event-list` overview embeds every event as
+     * structured JSON in the `wix-warmup-data` script (discovery + core fields), and each `/event-details/<slug>`
+     * page carries a schema.org `Event` JSON-LD block with the ticket price.
+     */
+    LOGE,
+
     /** Madame Claude Berlin – WordPress-based event listing with detail pages. */
     MADAME_CLAUDE,
 
