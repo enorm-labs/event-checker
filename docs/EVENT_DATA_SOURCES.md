@@ -28,7 +28,7 @@ The **Import** column tracks whether an automated importer has been implemented 
 | Arcanoa                     | https://www.ssi-media.com/arcanoa/          | Bar          |     ✅      |        | Very basic HTML; open stages       |
 | Junction Bar                | https://www.junction-bar.de/                | Bar          |     ✅      |   ✅    |                                    |
 | Supamolly                   | https://www.supamolly.de/                   | Club         |     ✅      |        | Has RSS feed                       |
-| Monarch                     | https://www.kottimonarch.de/                | Bar          |     ✅      |        |                                    |
+| Monarch                     | https://www.kottimonarch.de/                | Bar          |     ✅      |   ✅    |                                    |
 | Sisyfass                    |                                             | Bar          |            |        |                                    |
 | Bar Bobu                    | https://barbobu.de/                         | Bar          |     ✅      |        | No event listings; weekly nights   |
 | Urban Spree                 | https://www.urbanspree.com/                 | Club         |     ✅      |        |                                    |
