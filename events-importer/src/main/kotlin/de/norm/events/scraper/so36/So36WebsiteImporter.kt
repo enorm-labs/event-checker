@@ -13,9 +13,9 @@ import org.springframework.stereotype.Component
  *
  * Orchestrates the full fetch → parse pipeline for SO36:
  * 1. Fetches the overview page (`/tickets`) via [HtmlFetcher] with conditional
- *    request support (ETag / Last-Modified). Note the configured source URL must
- *    be `/tickets`, not `/` — the homepage 302-redirects there and the WebClient
- *    does not follow redirects.
+ *    request support (ETag / Last-Modified). The configured source URL points
+ *    straight at `/tickets` (the homepage 302-redirects there) to save the extra
+ *    redirect hop, though the scraper client now follows redirects either way.
  * 2. Discovers every event and its detail URL via [So36OverviewPageScraper]
  *    (which also supplies the fallback title and date).
  * 3. For each event, fetches its `/produkte/…` detail page via [HtmlFetcher].
