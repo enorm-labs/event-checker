@@ -65,6 +65,14 @@ enum class EventSource {
     MADAME_CLAUDE,
 
     /**
+     * Monarch Berlin – retro hand-coded PHP bar/club above Kottbusser Tor; the whole programme lives on a single
+     * `/programm.php` page as a flat run of `div` blocks (no per-event URLs), each with a leading bold
+     * `Weekday DD/MM/YYYY-HH:MM` date line, a `td#td1` title cell (a `(KONZERT)` suffix marks concerts, an
+     * `ABGESAGT` prefix marks a cancellation), and an optional external "Ticket Vorverkauf" shop link.
+     */
+    MONARCH,
+
+    /**
      * Neue Zukunft Berlin – static landing page whose concert programme lives only in an embedded
      * Elfsight "Event Calendar" widget; events read from the widget's public JSON boot API
      * (`core.service.elfsight.com/p/boot/?w=<widgetId>`) rather than the JS-rendered `<div>`.
