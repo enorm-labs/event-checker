@@ -20,6 +20,7 @@
 ###   Frannz Club          — https://frannz.eu/
 ###   Gretchen             — https://www.gretchen-club.de/
 ###   Lido                 — https://www.lido-berlin.de/
+###   Loge                 — https://www.loge-berlin.org/event-list (Wix Events warmup JSON + JSON-LD price)
 ###   Madame Claude        — https://madameclaude.de/ (WordPress `event` REST API, ACF-backed)
 ###   Neue Zukunft         — https://neue-zukunft.org/ (Elfsight Event Calendar widget JSON API)
 ###   Privatclub           — https://privatclub-berlin.de/
@@ -623,6 +624,66 @@ Accept: application/json
 
 > {%
     client.test("Lido import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Loge (Kinzigstr. 9, Berlin-Friedrichshain — Kneipenkollektiv)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Loge venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Loge",
+    "address": "Kinzigstr. 9",
+    "city": "Berlin",
+    "postalCode": "10247",
+    "district": "friedrichshain-kreuzberg",
+    "latitude": 52.5136856,
+    "longitude": 13.4661767,
+    "websiteUrl": "https://www.loge-berlin.org"
+}
+
+> {%
+    client.global.set("loge_venue_id", response.body.id);
+    client.test("Loge venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Loge event source ---
+# Links the venue to the LogeWebsiteImporter.
+# The sourceType "LOGE" matches EventSource.LOGE.
+# The `/event-list` page embeds every event as Wix warmup JSON (discovery + core fields);
+# each `/event-details/<slug>` page adds the ticket price via schema.org JSON-LD.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{loge_venue_id}},
+    "name": "Loge",
+    "url": "https://www.loge-berlin.org/event-list",
+    "sourceType": "LOGE",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Loge event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Loge import ---
+POST {{importer-host}}/api/admin/event-sources/loge/import
+Accept: application/json
+
+> {%
+    client.test("Loge import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}
