@@ -5,6 +5,7 @@ import de.norm.events.event.EventType
 import de.norm.events.scraper.EventSource
 import de.norm.events.scraper.ScrapedEvent
 import de.norm.events.scraper.buildArtistsForEventType
+import de.norm.events.scraper.parseGermanDate
 import de.norm.events.scraper.parseTime
 import de.norm.events.scraper.resolveUrl
 import de.norm.events.scraper.textAt
@@ -14,8 +15,6 @@ import org.jsoup.nodes.Element
 import java.net.URI
 import java.time.LocalDate
 import java.time.LocalTime
-import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeParseException
 
 /**
  * Pure HTML parser for Badehaus Berlin's WordPress `/events/` listing page.
@@ -153,14 +152,7 @@ class BadehausOverviewPageScraper {
             ?.takeIf { it.isNotBlank() }
 
     /** Parses the `DD.MM.YYYY` date from the `.eventinfo` line (e.g. "Mi. 23.09.2026 | 19:00 UHR"). */
-    private fun parseDate(eventInfo: String): LocalDate? {
-        val match = DATE_PATTERN.find(eventInfo) ?: return null
-        return try {
-            LocalDate.parse(match.value, DATE_FORMATTER)
-        } catch (_: DateTimeParseException) {
-            null
-        }
-    }
+    private fun parseDate(eventInfo: String): LocalDate? = parseGermanDate(DATE_PATTERN.find(eventInfo)?.value)
 
     /** Parses the doors time (`HH:mm` before "UHR") from the `.eventinfo` line. */
     private fun parseDoorsTime(eventInfo: String): LocalTime? = parseTime(TIME_PATTERN.find(eventInfo)?.groupValues?.get(1))
@@ -205,7 +197,5 @@ class BadehausOverviewPageScraper {
 
         /** Matches the `HH:mm` doors time before the "UHR" suffix. */
         private val TIME_PATTERN = Regex("""(\d{1,2}:\d{2})\s*UHR""", RegexOption.IGNORE_CASE)
-
-        private val DATE_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
     }
 }

@@ -112,4 +112,69 @@ class DateParsingExtensionsTest {
         parseShortDate("invalid").shouldBeNull()
         parseShortDate("2026-09-21").shouldBeNull()
     }
+
+    // --- parseGermanDate ---
+
+    @Test
+    fun `parseGermanDate parses DD-MM-YYYY format`() {
+        parseGermanDate("10.07.2026") shouldBe LocalDate.of(2026, 7, 10)
+        parseGermanDate("23.09.2026") shouldBe LocalDate.of(2026, 9, 23)
+    }
+
+    @Test
+    fun `parseGermanDate parses single-digit day and month`() {
+        parseGermanDate("1.9.2026") shouldBe LocalDate.of(2026, 9, 1)
+    }
+
+    @Test
+    fun `parseGermanDate trims whitespace`() {
+        parseGermanDate("  10.07.2026  ") shouldBe LocalDate.of(2026, 7, 10)
+    }
+
+    @Test
+    fun `parseGermanDate returns null for null or blank input`() {
+        parseGermanDate(null).shouldBeNull()
+        parseGermanDate("").shouldBeNull()
+        parseGermanDate("   ").shouldBeNull()
+    }
+
+    @Test
+    fun `parseGermanDate returns null for invalid or two-digit-year format`() {
+        parseGermanDate("invalid").shouldBeNull()
+        parseGermanDate("2026-07-10").shouldBeNull()
+        // A two-digit year must not silently parse to year 0026 — the four-digit formatter rejects it.
+        parseGermanDate("11.12.26").shouldBeNull()
+    }
+
+    // --- parseGermanShortDate ---
+
+    @Test
+    fun `parseGermanShortDate parses DD-MM-YY format`() {
+        parseGermanShortDate("11.12.26") shouldBe LocalDate.of(2026, 12, 11)
+        parseGermanShortDate("29.06.26") shouldBe LocalDate.of(2026, 6, 29)
+    }
+
+    @Test
+    fun `parseGermanShortDate parses single-digit day and month`() {
+        parseGermanShortDate("1.9.26") shouldBe LocalDate.of(2026, 9, 1)
+    }
+
+    @Test
+    fun `parseGermanShortDate resolves two-digit year to 2000-2099`() {
+        parseGermanShortDate("01.01.00") shouldBe LocalDate.of(2000, 1, 1)
+        parseGermanShortDate("31.12.99") shouldBe LocalDate.of(2099, 12, 31)
+    }
+
+    @Test
+    fun `parseGermanShortDate returns null for null or blank input`() {
+        parseGermanShortDate(null).shouldBeNull()
+        parseGermanShortDate("").shouldBeNull()
+        parseGermanShortDate("   ").shouldBeNull()
+    }
+
+    @Test
+    fun `parseGermanShortDate returns null for invalid format`() {
+        parseGermanShortDate("invalid").shouldBeNull()
+        parseGermanShortDate("11.12.2026").shouldBeNull()
+    }
 }

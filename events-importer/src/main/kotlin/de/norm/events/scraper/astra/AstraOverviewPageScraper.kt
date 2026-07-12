@@ -9,6 +9,7 @@ import de.norm.events.scraper.extractEventSlug
 import de.norm.events.scraper.imgSrcAt
 import de.norm.events.scraper.mapEventType
 import de.norm.events.scraper.parseEventStatus
+import de.norm.events.scraper.parseGermanShortDate
 import de.norm.events.scraper.parseRealDate
 import de.norm.events.scraper.parseTime
 import de.norm.events.scraper.refineConcertVenueType
@@ -21,8 +22,6 @@ import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import java.time.LocalDate
 import java.time.LocalTime
-import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeParseException
 
 /**
  * Pure HTML parser for Astra Kulturhaus' event listing (overview) page.
@@ -216,21 +215,11 @@ internal fun parseAstraEventBlock(
 }
 
 /**
- * Parses Astra's `DD.MM.YY` date format (e.g. "11.12.26"). Two-digit years
- * resolve to 2000–2099. Returns `null` for missing or unparseable input.
+ * Parses Astra's `DD.MM.YY` date format (e.g. "11.12.26") via the shared
+ * [parseGermanShortDate][de.norm.events.scraper.parseGermanShortDate]. Two-digit
+ * years resolve to 2000–2099. Returns `null` for missing or unparseable input.
  *
  * Used as the fallback when no `data-realdate` attribute is present (see
- * [parseRealDate][de.norm.events.scraper.parseRealDate]). This human format is
- * Astra-theme-specific, so it stays local rather than in the shared helpers.
+ * [parseRealDate][de.norm.events.scraper.parseRealDate]).
  */
-internal fun parseAstraDate(text: String?): LocalDate? {
-    if (text.isNullOrBlank()) return null
-    return try {
-        LocalDate.parse(text.trim(), ASTRA_DATE_FORMATTER)
-    } catch (_: DateTimeParseException) {
-        null
-    }
-}
-
-/** Astra's `DD.MM.YY` date format; two-digit years resolve to 2000–2099. */
-private val ASTRA_DATE_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yy")
+internal fun parseAstraDate(text: String?): LocalDate? = parseGermanShortDate(text)

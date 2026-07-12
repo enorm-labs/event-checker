@@ -3,23 +3,21 @@ package de.norm.events.scraper.cassiopeia
 import de.norm.events.scraper.EventSource
 import de.norm.events.scraper.ScrapedArtist
 import de.norm.events.scraper.ScrapedEvent
-import de.norm.events.scraper.cassiopeia.CassiopeiaDetailPageScraper.Companion.DATE_FORMAT
 import de.norm.events.scraper.hasVisibleWebflowFlag
 import de.norm.events.scraper.headlinersFromTitle
 import de.norm.events.scraper.hrefAt
 import de.norm.events.scraper.imgSrcAt
 import de.norm.events.scraper.isNonArtistName
 import de.norm.events.scraper.mapEventType
+import de.norm.events.scraper.parseGermanDate
 import de.norm.events.scraper.parseTime
 import de.norm.events.scraper.textAt
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import java.net.URI
-import java.time.DateTimeException
 import java.time.LocalDate
 import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 
 /**
  * Pure HTML parser for Cassiopeia event detail pages.
@@ -150,17 +148,14 @@ class CassiopeiaDetailPageScraper {
      * Parses the event date from the detail page's date wrapper.
      *
      * The desktop date layout renders as `"16 . 05 . 2026"` when read via
-     * [Element.text]. Stripping spaces yields `"16.05.2026"`, which we parse
-     * with [DATE_FORMAT]. Time wrappers (e.g. `"Einlass 19:00"`) won't match
-     * the format and are skipped automatically.
+     * [Element.text]. Stripping spaces yields `"16.05.2026"`, which we parse via
+     * the shared [parseGermanDate][de.norm.events.scraper.parseGermanDate]. Time
+     * wrappers (e.g. `"Einlass 19:00"`) won't match the format and return `null`,
+     * so they are skipped automatically.
      */
     private fun parseEventDate(content: Element): LocalDate? =
         content.select(".date-wrapper").firstNotNullOfOrNull { wrapper ->
-            try {
-                LocalDate.parse(wrapper.text().replace(" ", ""), DATE_FORMAT)
-            } catch (_: DateTimeException) {
-                null
-            }
+            parseGermanDate(wrapper.text().replace(" ", ""))
         }
 
     /**
@@ -293,9 +288,6 @@ class CassiopeiaDetailPageScraper {
 
         /** German label for show start time. */
         private const val START_LABEL = "Beginn"
-
-        /** Date format for the detail page date wrapper (e.g. "16.05.2026" after stripping spaces). */
-        private val DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 
         /** Prefix used in description paragraphs to identify support acts. */
         private const val SUPPORT_PREFIX = "Support: "

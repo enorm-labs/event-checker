@@ -8,6 +8,7 @@ import de.norm.events.scraper.hrefAt
 import de.norm.events.scraper.imgSrcAt
 import de.norm.events.scraper.inferConcertVenueType
 import de.norm.events.scraper.isNonArtistName
+import de.norm.events.scraper.parseGermanShortDate
 import de.norm.events.scraper.resolveUrl
 import de.norm.events.scraper.splitSupportActs
 import de.norm.events.scraper.stripArtistSuffix
@@ -19,8 +20,6 @@ import org.jsoup.nodes.Element
 import java.time.DateTimeException
 import java.time.LocalDate
 import java.time.LocalTime
-import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeParseException
 
 /**
  * Pure HTML parser for Clash Berlin's WordPress homepage event listing.
@@ -163,15 +162,8 @@ class ClashOverviewPageScraper {
     /** Whether [subtitle] carries a lineup marker (a "Live:"/"DJ:" label or a `/`/`+` act separator). */
     private fun looksLikeLineup(subtitle: String): Boolean = LINEUP_LABEL_PREFIX.containsMatchIn(subtitle) || subtitle.contains('/') || subtitle.contains('+')
 
-    /** Parses a `DD.MM.YY` date (e.g. "29.06.26"); two-digit years resolve to 2000–2099. */
-    private fun parseDate(text: String?): LocalDate? {
-        if (text.isNullOrBlank()) return null
-        return try {
-            LocalDate.parse(text.trim(), CLASH_DATE_FORMATTER)
-        } catch (_: DateTimeParseException) {
-            null
-        }
-    }
+    /** Parses a `DD.MM.YY` date (e.g. "29.06.26") via the shared [parseGermanShortDate]; two-digit years resolve to 2000–2099. */
+    private fun parseDate(text: String?): LocalDate? = parseGermanShortDate(text)
 
     /**
      * Parses the start time from the meta line (e.g. "Fri 20:00", "Mon 0:00").
@@ -189,9 +181,6 @@ class ClashOverviewPageScraper {
     }
 
     companion object {
-        /** Formatter for Clash's `DD.MM.YY` dates; `yy` resolves two-digit years to 2000–2099. */
-        private val CLASH_DATE_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("d.M.yy")
-
         /** Extracts an `H:mm` / `HH:mm` clock time from the meta line's "<weekday> <time>" text. */
         private val TIME_PATTERN = Regex("""(\d{1,2}):(\d{2})""")
 
