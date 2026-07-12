@@ -234,8 +234,9 @@ Key components:
 - **Shared scraper utilities** — three focused extension files in `de.norm.events.scraper`, shared
   across all venue scrapers. `ScrapingExtensions.kt` provides Jsoup HTML element extraction helpers
   and URL resolution. `DateParsingExtensions.kt` covers time/date parsing for standalone `HH:mm`
-  strings and ISO 8601 datetime strings from JSON-LD. `EventMappingExtensions.kt` handles domain-level
-  mapping of scraped text to model constants (German categories, placeholder detection, artist lists).
+  strings and ISO 8601 datetime strings from JSON-LD. `EventTypeMapping.kt`, `ArtistNameMapping.kt`, and
+  `EventFieldMapping.kt` handle domain-level mapping of scraped text to model constants (event-type
+  classification, placeholder/non-artist detection, artist lists, status/title/free-entry fields).
   See [Shared Scraping Utilities](#shared-scraping-utilities) below. New venue scrapers should use
   these utilities to avoid reinventing boilerplate and ensure consistent handling of blank/missing values.
 - **`HtmlFetcher`** — WebClient wrapper for **HTML** venues handling conditional requests (ETag /
@@ -466,7 +467,7 @@ organized as the number of utilities grows with new venue scrapers.
 | `parseIsoTime(dateTimeStr)`                     | Extract time from ISO 8601 datetime, delegates to `parseTime`                     |
 | `inferYearForWeekday(monthDay, weekday, clock)` | Pick the year for a year-less date using its weekday (retro single-page listings) |
 
-**`EventMappingExtensions.kt`** — domain-level mapping of scraped text to model constants:
+**`EventTypeMapping.kt` / `ArtistNameMapping.kt` / `EventFieldMapping.kt`** — domain-level mapping of scraped text to model constants:
 
 | Extension / Function                   | Purpose                                                                             |
 |----------------------------------------|-------------------------------------------------------------------------------------|
@@ -599,7 +600,8 @@ industry literature (see References).
   keeps everything non-blocking; conditional requests reduce load on venue websites; first-page-only
   scraping keeps the pipeline simple while covering the most relevant upcoming events; the `EventImporter`
   `EventImporter` interface makes adding new scrapers a single-class addition; shared scraping utilities
-  (`ScrapingExtensions.kt`, `DateParsingExtensions.kt`, `EventMappingExtensions.kt`) reduce boilerplate
+  (`ScrapingExtensions.kt`, `DateParsingExtensions.kt`, `EventTypeMapping.kt`, `ArtistNameMapping.kt`,
+  `EventFieldMapping.kt`) reduce boilerplate
   when implementing new scrapers — common patterns like text extraction, URL parsing, time/date parsing,
   category mapping, and artist list construction are available as reusable functions;
   per-host politeness throttling via `PerHostThrottlingFilter` is transparent to scrapers — new

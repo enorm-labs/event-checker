@@ -8,7 +8,7 @@ import java.time.LocalTime
 /**
  * Unit tests for [ScrapedEvent.toEventEntity], focused on the normalization it applies
  * at the persistence boundary. The exhaustive doors/start reordering cases live in
- * [EventMappingExtensionsTest]; here we only assert the mapping actually wires it in.
+ * [EventFieldMappingTest]; here we only assert the mapping actually wires it in.
  */
 class ScrapedEventTest {
     private fun scrapedEvent(

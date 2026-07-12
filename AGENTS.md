@@ -159,9 +159,13 @@ subprojects sharing a root `settings.gradle.kts`, plus a standalone frontend pro
           `Element.imgSrcAt()`, `Element.hrefAt()`, `Element.hasVisibleWebflowFlag()`) and URL resolution (`resolveUrl()`).
         - **`DateParsingExtensions.kt`** — date/time parsing for the two common formats on venue websites: standalone
           `HH:mm` strings from HTML (`parseTime()`) and ISO 8601 datetime strings from schema.org JSON-LD (`parseIsoDate()`, `parseIsoTime()`).
-        - **`EventMappingExtensions.kt`** — domain-level mapping of scraped text to model constants: German event category
-          classification (`mapGermanCategory()`), placeholder name detection (`isPlaceholderName()`), and artist list
-          construction from the headliner + support pattern (`buildArtistList()`).
+        - **`EventTypeMapping.kt`** — domain-level classification of scraped text into `EventType` constants: category/genre/title
+          keyword mapping (`mapEventType()`, `refineConcertVenueType()`, `isFestivalTitle()`).
+        - **`ArtistNameMapping.kt`** — artist-name resolution: placeholder/non-artist detection (`isPlaceholderName()`,
+          `isNonArtistName()`), name cleanup (`stripArtistSuffix()`), and artist list construction from the headliner + support
+          pattern (`buildArtistList()`, `buildArtistsForEventType()`).
+        - **`EventFieldMapping.kt`** — field-level mapping: status badges (`parseEventStatus()`), doors/start ordering
+          (`orderDoorsBeforeStart()`), title cleanup (`cleanEventTitle()`), and free-entry detection (`detectFree()`).
     - **Venue-specific subdirectories** — each venue importer lives in its own sub-package under `scraper/` (e.g. `scraper/cassiopeia/`).
       Each contains a `*WebsiteImporter.kt` implementing `EventImporter`, plus pure (no-I/O) parsers: HTML importers use
       `*OverviewPageScraper.kt` / `*DetailPageScraper.kt`, while JSON/API importers use a single `*ApiScraper.kt` (see below).
@@ -323,7 +327,9 @@ Java version is managed via SDKMAN (`.sdkmanrc` pins `java=25.0.2-tem`; run `sdk
 | Genre normalizer utility              | `events-importer/src/.../genretag/GenreNormalizer.kt`                                                     |
 | Shared scraping utilities             | `events-importer/src/.../scraper/ScrapingExtensions.kt`                                                   |
 | Shared date/time parsing              | `events-importer/src/.../scraper/DateParsingExtensions.kt`                                                |
-| Shared event mapping utilities        | `events-importer/src/.../scraper/EventMappingExtensions.kt`                                               |
+| Event-type classification             | `events-importer/src/.../scraper/EventTypeMapping.kt`                                                     |
+| Artist-name resolution                | `events-importer/src/.../scraper/ArtistNameMapping.kt`                                                    |
+| Event field-level mapping             | `events-importer/src/.../scraper/EventFieldMapping.kt`                                                    |
 | WebFlux Pageable resolver config      | `events-importer/src/.../WebFluxConfiguration.kt`                                                         |
 | Base integration test class           | `events-importer/src/test/.../BaseControllerTest.kt`                                                      |
 | Full lifecycle integration test       | `events-importer/src/test/.../event/FullLifecycleIntegrationTest.kt`                                      |
