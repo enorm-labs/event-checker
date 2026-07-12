@@ -10,6 +10,7 @@
 ### run finishes. Poll `GET /api/admin/event-sources` to watch each source's status.
 ###
 ### Sources (alphabetical):
+###   Alte Kantine         — https://alte-kantine.eu/ (WordPress Content Views grid, list + detail)
 ###   Astra Kulturhaus     — https://www.astra-berlin.de/
 ###   Badehaus             — https://badehaus-berlin.com/events/
 ###   Bi Nuu               — https://binuu.de/de/events
@@ -31,6 +32,65 @@
 ###   Schokoladen          — https://www.schokoladen-mitte.de/
 ###   SO36                 — https://www.so36.com/tickets
 ### ============================================================
+
+### ————————————————————————————————————————————————————————————
+### Alte Kantine (Knaackstr. 97, Berlin-Prenzlauer Berg — Kulturbrauerei)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Alte Kantine venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Alte Kantine",
+    "address": "Knaackstr. 97",
+    "city": "Berlin",
+    "postalCode": "10435",
+    "district": "pankow",
+    "latitude": 52.53899,
+    "longitude": 13.41300,
+    "websiteUrl": "https://alte-kantine.eu"
+}
+
+> {%
+    client.global.set("alte_kantine_venue_id", response.body.id);
+    client.test("Alte Kantine venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Alte Kantine event source ---
+# Links the venue to the AlteKantineWebsiteImporter.
+# The sourceType "ALTE_KANTINE" matches EventSource.ALTE_KANTINE.
+# The URL is the homepage `/` (the Content Views programme grid); each event links to a `?p=<id>` detail post.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{alte_kantine_venue_id}},
+    "name": "Alte Kantine",
+    "url": "https://alte-kantine.eu/",
+    "sourceType": "ALTE_KANTINE",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Alte Kantine event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Alte Kantine import ---
+POST {{importer-host}}/api/admin/event-sources/alte-kantine/import
+Accept: application/json
+
+> {%
+    client.test("Alte Kantine import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
 
 ### ————————————————————————————————————————————————————————————
 ### Astra Kulturhaus (Revaler Str. 99, Berlin-Friedrichshain — RAW-Gelände)

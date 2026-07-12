@@ -9,6 +9,16 @@ package de.norm.events.scraper
  * every registered source must have a matching importer bean.
  */
 enum class EventSource {
+    /**
+     * Alte Kantine (Kulturbrauerei) Berlin – WordPress site whose upcoming programme is rendered on the
+     * homepage as a Content Views grid (`.pt-cv-content-item`, each carrying a `data-pid` post id, a
+     * year-less `DD.MM.` date, a start time, and a title link to the `?p=<id>` post). Each post's detail
+     * page adds the description, poster image, price, event kind (`Was`), and DJ via a `ul.list-style-6`
+     * label/value list. The WP REST API is locked down (iThemes Security 401s), so the two HTML pages are
+     * the source.
+     */
+    ALTE_KANTINE,
+
     /** Astra Kulturhaus Berlin – Kulturhäuser-platform listing on the homepage with per-event detail pages. */
     ASTRA,
 
