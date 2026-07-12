@@ -43,6 +43,14 @@ enum class EventSource {
     /** Gretchen Berlin – retro hand-coded single-page homepage listing; each event a `.gig` block with a `.lineup` performer list. */
     GRETCHEN,
 
+    /**
+     * Junction Bar Berlin – retro hand-coded site imported from the homepage entry, which links to two programs merged
+     * into this one source: the live-music listing (`music_html/music.html` → per-month `program/MM_YYYY/MM_YY.html`
+     * pages) and the DJ program (`DJ_html/DJ.html`). Each page is a flat sequence of `strong.datum`/`strong.Datum` date
+     * bars followed by band blocks (`.Stil1222` name + `p.text` bio + ticket-shop link) or DJ blocks (`p.djane`).
+     */
+    JUNCTION_BAR,
+
     /** Lido Berlin – same Kulturhäuser platform as Astra (different theme), homepage listing with detail pages. */
     LIDO,
 
