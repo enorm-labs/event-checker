@@ -95,6 +95,19 @@ class WildAtHeartOverviewPageScraperTest {
     }
 
     @Test
+    fun `drops a plus-Guest support slot, keeping only the headliner`() {
+        // "Bash Tru" (Fr 07.08.) lists an unannounced support as `+Guest` — a billing
+        // placeholder, not a performer — so it is dropped; the headliner and aftershow DJ remain.
+        val event = scraper.scrape(programme(), baseUrl).first { it.title == "Bash Tru" }
+
+        event.artists.map { it.name to it.role } shouldBe
+            listOf(
+                "Bash Tru" to "HEADLINER",
+                "DJ Lobotomy" to "DJ"
+            )
+    }
+
+    @Test
     fun `treats a bandless banner row as a non-concert event with no headliner artist`() {
         // The flea-market row ("So 06.09.") has a `.headlines` banner but no `.band`.
         val html =

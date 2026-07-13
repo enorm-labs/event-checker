@@ -45,6 +45,8 @@ private val GENRE_SYNONYMS: Map<String, String> =
         "poprock" to "Rock",
         "bluesrock" to "Rock",
         "experimentalrock" to "Rock",
+        "rawknroll" to "Rock",
+        "garagernr" to "Garage-Rock",
         "kraut" to "Krautrock",
         "krautrock" to "Krautrock",
         "alternative" to "Alternative",
@@ -65,11 +67,18 @@ private val GENRE_SYNONYMS: Map<String, String> =
         "synth" to "Synthpop",
         // Punk
         "punk" to "Punk",
+        "punkrock" to "Punk",
         "emo" to "Emo",
+        // Electropunk (folds the "Electropunk"/"Elektro-punk" spellings onto one tag)
+        "electropunk" to "Electropunk",
+        "elektropunk" to "Electropunk",
         // Metal / heavy
         "metal" to "Metal",
         "metalcore" to "Metalcore",
         "melodichardcore" to "Melodic-Hardcore",
+        "hc" to "Hardcore",
+        // Delimiter-less compound label some venues write concatenated (Wild at Heart)
+        "stonerpsychedelicmetal" to "Metal",
         // Electronic family
         "electronic" to "Electronic",
         "electronica" to "Electronic",
@@ -109,6 +118,13 @@ private val GENRE_SYNONYMS: Map<String, String> =
         "singersongwriterin" to "Singer-Songwriter",
         // Reggae
         "reggae" to "Reggae",
+        "reggea" to "Reggae",
+        // Neue Deutsche Welle / Härte — German new-wave & industrial-metal. Multi-word, so
+        // they need an explicit synonym: the ≤2-word looksLikeGenre gate otherwise drops them.
+        // (lookupKey drops the ä in "Härte", yielding the "neuedeutschehrte" key.)
+        "ndw" to "NDW",
+        "neuedeutschewelle" to "NDW",
+        "neuedeutschehrte" to "Neue Deutsche Härte",
         // Tango
         "tango" to "Tango",
         // Latin family
@@ -192,6 +208,7 @@ private val NON_GENRE_TOKENS: Set<String> =
         "dirt",
         "groove",
         "progressive",
+        "kickass",
         // Audience / theme / series labels Gretchen pushes into the genre field.
         // Keys are [lookupKey]-normalized: it strips non-ASCII letters, so
         // "Männerparty" → "mnnerparty" (the ä is dropped) and "FLINTA*" → "flinta".
