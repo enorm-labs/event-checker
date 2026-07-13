@@ -84,6 +84,17 @@ enum class EventSource {
     MADAME_CLAUDE,
 
     /**
+     * Mikropol Berlin – WordPress/Events-Manager club in Schöneberg; the `/events/` page lists every show as
+     * an `a.event` card (a `DD.MM.YYYY` date, start/doors times, title, an inline support line, and an
+     * `Ausverkauft`/`Abgesagt` status class), each linking to an `/event/<date-slug>/` detail page that adds
+     * the description (`.eventnotes`), poster image (`a.event-image`), and Eventim ticket link
+     * (`.ticket-links`). The theme carries no schema.org JSON-LD and the Events-Manager REST API is not exposed
+     * for anonymous reads, so the two HTML pages are the source. Relocated shows encode "verlegt in den … –" in
+     * the title itself rather than a status class.
+     */
+    MIKROPOL,
+
+    /**
      * Monarch Berlin – retro hand-coded PHP bar/club above Kottbusser Tor; the whole programme lives on a single
      * `/programm.php` page as a flat run of `div` blocks (no per-event URLs), each with a leading bold
      * `Weekday DD/MM/YYYY-HH:MM` date line, a `td#td1` title cell (a `(KONZERT)` suffix marks concerts, an
