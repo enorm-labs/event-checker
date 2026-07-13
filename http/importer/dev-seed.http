@@ -31,6 +31,7 @@
 ###   Roadrunner's Paradise — http://www.roadrunners-paradise.de/programm.html
 ###   Schokoladen          — https://www.schokoladen-mitte.de/
 ###   SO36                 — https://www.so36.com/tickets
+###   Wild at Heart        — https://www.wildatheartberlin.de/concerts.php (retro frameset single-page listing)
 ### ============================================================
 
 ### ————————————————————————————————————————————————————————————
@@ -1288,6 +1289,67 @@ Accept: application/json
 
 > {%
     client.test("SO36 import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Wild at Heart (Wiener Str. 20, Berlin-Kreuzberg)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Wild at Heart venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Wild at Heart",
+    "address": "Wiener Str. 20",
+    "city": "Berlin",
+    "postalCode": "10999",
+    "district": "friedrichshain-kreuzberg",
+    "latitude": 52.49770,
+    "longitude": 13.43700,
+    "websiteUrl": "https://www.wildatheartberlin.de"
+}
+
+> {%
+    client.global.set("wild_at_heart_venue_id", response.body.id);
+    client.test("Wild at Heart venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Wild at Heart event source ---
+# Links the venue to the WildAtHeartWebsiteImporter.
+# The sourceType "WILD_AT_HEART" matches EventSource.WILD_AT_HEART.
+# NOTE: the URL is `concerts.php` (the single-page programme linked from the nav frame),
+# not the `wah.htm` frameset entry, whose welcome frame carries no event data.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{wild_at_heart_venue_id}},
+    "name": "Wild at Heart",
+    "url": "https://www.wildatheartberlin.de/concerts.php",
+    "sourceType": "WILD_AT_HEART",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Wild at Heart event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Wild at Heart import ---
+# Slug is derived from the source name: "Wild at Heart" → wild-at-heart.
+POST {{importer-host}}/api/admin/event-sources/wild-at-heart/import
+Accept: application/json
+
+> {%
+    client.test("Wild at Heart import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}
