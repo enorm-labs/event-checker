@@ -245,6 +245,27 @@ class ArtistNameMappingTest {
         isNonArtistName("DJ Koze") shouldBe false
     }
 
+    // --- isGuestSlotLabel ---
+
+    @Test
+    fun `isGuestSlotLabel drops an unannounced guest slot, with or without a leading plus`() {
+        // Wild at Heart lists a yet-unnamed support act as "+ Guest" in the lineup.
+        isGuestSlotLabel("+Guest") shouldBe true
+        isGuestSlotLabel("+ Guest") shouldBe true
+        isGuestSlotLabel("Guest") shouldBe true
+        isGuestSlotLabel("Guests") shouldBe true
+        isGuestSlotLabel("Gäste") shouldBe true
+        isNonArtistName("+Guest") shouldBe true
+    }
+
+    @Test
+    fun `isGuestSlotLabel keeps a real act whose name only contains guest`() {
+        // Anchored: a real band is untouched even when a guest word appears inside the name.
+        isGuestSlotLabel("Guns N' Roses") shouldBe false
+        isGuestSlotLabel("Special Guest DJ Foo") shouldBe false
+        isNonArtistName("Guns N' Roses") shouldBe false
+    }
+
     // --- splitSegmentOnConjunctions ---
 
     @Test

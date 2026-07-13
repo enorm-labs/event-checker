@@ -334,4 +334,36 @@ class GenreNormalizerTest {
         normalizeGenre("Singer Songwriter").shouldContainExactly("Singer-Songwriter")
         normalizeGenre("World").shouldContainExactly("World Music")
     }
+
+    @Test
+    fun `punk-rock spelling variants fold onto the Punk tag`() {
+        // "PunkRock" and "Punk-Rock" previously fell through as two distinct as-is tags.
+        normalizeGenre("PunkRock").shouldContainExactly("Punk")
+        normalizeGenre("Punk-Rock").shouldContainExactly("Punk")
+    }
+
+    @Test
+    fun `electropunk spelling variants fold onto one tag`() {
+        // "Electropunk" (Festsaal) and "Elektro-punk" (Hole 44) previously fragmented.
+        normalizeGenre("Electropunk").shouldContainExactly("Electropunk")
+        normalizeGenre("EDM, elektro-punk").shouldContainExactly("EDM", "Electropunk")
+    }
+
+    @Test
+    fun `Wild at Heart freeform style labels are normalized or dropped`() {
+        // Idiosyncratic style labels from the retro concerts.php page.
+        normalizeGenre("Ska/Reggea/Beat").shouldContainExactly("Ska", "Reggae", "Beat") // typo folded
+        normalizeGenre("Kick Ass / Rock").shouldContainExactly("Rock") // non-genre dropped
+        normalizeGenre("StonerPsychedelicMetal").shouldContainExactly("Metal")
+        normalizeGenre("Rawk`n`Roll").shouldContainExactly("Rock")
+        normalizeGenre("HC").shouldContainExactly("Hardcore")
+    }
+
+    @Test
+    fun `multi-word German genres are kept rather than dropped by the word-count gate`() {
+        // Hole 44 lists these; they are ≥2 words so the looksLikeGenre gate would drop them
+        // without an explicit synonym.
+        normalizeGenre("Neue Deutsche Welle").shouldContainExactly("NDW")
+        normalizeGenre("Neue Deutsche Härte").shouldContainExactly("Neue Deutsche Härte")
+    }
 }
