@@ -108,7 +108,17 @@ enum class EventSource {
     SCHOKOLADEN,
 
     /** SO36 Berlin – Ticket-Toaster shop platform; `/tickets` listing with per-event `/produkte/…` detail pages. */
-    SO36;
+    SO36,
+
+    /**
+     * Wild at Heart Berlin – retro hand-coded frameset rockabilly/punk venue in Kreuzberg. The whole concert
+     * programme lives on a single `/concerts.php` page (linked from the `topics.htm` nav frame) as a flat
+     * `<table>` of `<tr>` rows, each carrying a year-less `Weekday DD.MM.` date (`.datum`), a headliner
+     * (`.band`) and optional support acts (`.supportband`) with a `(Genre - Country)` tag (`.stil-country`),
+     * an optional DJ (`.dj`), a flyer image (`/uploads/img/…`), and an optional `.headlines` banner that may
+     * embed a `Tickets:<url>` link, a `Beginn HH:MM` start time, or an `Eintritt frei` free-entry note.
+     */
+    WILD_AT_HEART;
 
     /**
      * Prefix for `sourceId` values, derived from the enum name in lowercase.
