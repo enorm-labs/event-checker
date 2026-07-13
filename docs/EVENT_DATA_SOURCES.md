@@ -4,76 +4,76 @@ Overview of all venues, clubs, and promoters whose websites are potential source
 The **Data Model** column tracks whether the source's website has been analyzed to ensure the schema covers its data.
 The **Import** column tracks whether an automated importer has been implemented for the source.
 
-| Name                        | URL                                 | Type         | Data Model | Import | Comment                            |
-|-----------------------------|-------------------------------------|--------------|:----------:|:------:|------------------------------------|
-| Astra Kulturhaus            | https://www.astra-berlin.de/        | Concert Hall |     ✅      |   ✅    |                                    |
-| Badehaus                    | https://badehaus-berlin.com/        | Club         |     ✅      |   ✅    |                                    |
-| Cassiopeia                  | https://cassiopeia-berlin.de/       | Club         |     ✅      |   ✅    |                                    |
-| Privatclub                  | https://privatclub-berlin.de/       | Club         |     ✅      |   ✅    |                                    |
-| Bi Nuu                      | https://binuu.de/                   | Club         |     ✅      |   ✅    |                                    |
-| Frannz Club                 | https://frannz.eu/                  | Club         |     ✅      |   ✅    |                                    |
-| Duncker Club                | https://www.dunckerclub.de/         | Club         |     ✅      |   ✅    |                                    |
-| Gretchen                    | https://www.gretchen-club.de/       | Club         |     ✅      |   ✅    |                                    |
-| Zenner                      | https://zenner.berlin/              | Club         |     ✅      |        |                                    |
-| Prince Charles              | https://princecharlesberlin.com/    | Club         |            |        | No own listings; links to RA only  |
-| Alte Kantine Kulturbrauerei | https://alte-kantine.eu/            | Concert Hall |     ✅      |   ✅    |                                    |
-| Festsaal Kreuzberg          | https://festsaal-kreuzberg.de/de    | Concert Hall |     ✅      |   ✅    |                                    |
-| Fluxbau                     | https://www.fluxfm.de/fluxbau       | Club         |     ✅      |        | Sparse listings; Angular SPA       |
-| Sage Club                   | https://www.sage-club.de/           | Club         |     ✅      |        | No event data in HTML; TYPO3 SPA   |
-| Schokoladen                 | https://www.schokoladen-mitte.de/   | Club         |     ✅      |   ✅    |                                    |
-| Neue Zukunft                | https://neue-zukunft.org/           | Club         |     ✅      |   ✅    | Elfsight Event Calendar widget API |
-| Clash Club                  | https://clash-berlin.de/            | Club         |     ✅      |   ✅    |                                    |
-| Loge                        | https://www.loge-berlin.org/        | Club         |     ✅      |   ✅    | Wix site; tickets sold on-site     |
-| Arcanoa                     | https://www.ssi-media.com/arcanoa/  | Bar          |     ✅      |        | Very basic HTML; open stages       |
-| Junction Bar                | https://www.junction-bar.de/        | Bar          |     ✅      |   ✅    |                                    |
-| Supamolly                   | https://www.supamolly.de/           | Club         |     ✅      |        | Has RSS feed                       |
-| Monarch                     | https://www.kottimonarch.de/        | Bar          |     ✅      |   ✅    |                                    |
-| Sisyfass                    |                                     | Bar          |            |        |                                    |
-| Urban Spree                 | https://www.urbanspree.com/         | Club         |     ✅      |        |                                    |
-| Lido                        | https://www.lido-berlin.de/         | Concert Hall |     ✅      |   ✅    |                                    |
-| Hole 44                     | https://hole-berlin.de/             | Concert Hall |     ✅      |   ✅    |                                    |
-| SO36                        | https://www.so36.com/               | Club         |     ✅      |   ✅    | Cookie wall blocks content         |
-| Artliners Berlin            | https://artliners-berlin.com/       | Club         |     ✅      |        | No structured events; flyers only  |
-| Madame Claude               | https://madameclaude.de/            | Bar          |     ✅      |   ✅    | WordPress `event` REST API (ACF)   |
-| Bar jeder Vernunft          | https://www.bar-jeder-vernunft.de/  | Bar          |     ✅      |        | Theater/cabaret; multi-day ranges  |
-| Prachtwerk                  | https://www.prachtwerkberlin.com/   | Bar          |     ✅      |        | No event listings on website       |
-| Wiener Blut                 | https://www.wienerblut.org/         | Bar          |     ✅      |        | Impressum only; no events          |
-| Wild at Heart               | https://www.wildatheartberlin.de/   | Bar          |     ✅      |   ✅    | Retro frameset; concerts.php table |
-| Bohnengold                  |                                     | Bar          |            |        |                                    |
-| Mikropol                    | https://mikropol-berlin.de/         | Club         |     ✅      |        | Booking info only; no listings     |
-| Roadrunner's Paradise       | http://www.roadrunners-paradise.de/ | Bar          |     ✅      |   ✅    | Retro HTML; rich event data        |
-| Havanna                     | https://www.havanna-berlin.de/      | Club         |     ✅      |        | Latin dance club; no event data    |
-| Paloma                      | https://www.palomabar.de/           | Bar          |     ✅      |        | Sparse listings; no dates          |
-| Arkaoda                     | https://berlin.arkaoda.com/         | Bar          |     ✅      |        |                                    |
-| Panke Culture               | https://www.pankeculture.com/       | Club         |     ✅      |        | No event listings found            |
-| Matrix Club Berlin          | https://www.matrix-berlin.de/       | Club         |     ✅      |        | Recurring nightly club events      |
-| Soda Club Berlin            | https://www.soda-berlin.de/         | Club         |     ✅      |        | Recurring party nights             |
-| The Pearl                   | https://thepearl-berlin.de/         | Club         |     ✅      |        | JS-rendered; no HTML events        |
-| Berghain / Panorama Bar     |                                     | Techno Club  |            |        |                                    |
-| Tresor                      |                                     | Techno Club  |            |        |                                    |
-| Sisyphos                    |                                     | Techno Club  |            |        |                                    |
-| Renate                      |                                     | Techno Club  |            |        |                                    |
-| Kater                       |                                     | Techno Club  |            |        |                                    |
-| KitKatClub                  |                                     | Techno Club  |            |        |                                    |
-| Ritter Butzke               |                                     | Techno Club  |            |        |                                    |
-| Kantine am Berghain         |                                     | Techno Club  |            |        |                                    |
-| ://about blank              |                                     | Techno Club  |            |        |                                    |
-| RSO                         |                                     | Techno Club  |            |        |                                    |
-| ELSE                        |                                     | Techno Club  |            |        |                                    |
-| Club der Visionäre          |                                     | Techno Club  |            |        |                                    |
-| OHM                         |                                     | Techno Club  |            |        |                                    |
-| OXI & OXI Garten            |                                     | Techno Club  |            |        |                                    |
-| ÆDEN                        |                                     | Techno Club  |            |        |                                    |
-| Lokschuppen                 |                                     | Techno Club  |            |        |                                    |
-| SchwuZ                      |                                     | Techno Club  |            |        |                                    |
-| MS Hoppetosse               |                                     | Techno Club  |            |        |                                    |
-| Humboldthain Club           |                                     | Techno Club  |            |        |                                    |
-| Golden Gate                 |                                     | Techno Club  |            |        |                                    |
-| Trinity Music               | https://trinitymusic.de/            | Promoter     |     ✅      |        |                                    |
-| Loft                        | https://loft.de/                    | Promoter     |     ✅      |        | Very few events; sparse data       |
-| Greyzone Tickets            | https://www.greyzone-tickets.de/    | Promoter     |     ✅      |        | Contact info only; no listings     |
-| Landstreicher Booking       | https://landstreicher-booking.de/   | Promoter     |     ✅      |        | Tour dates; filter Berlin          |
-| Puschen                     | https://puschen.net/berlin/         | Promoter     |     ✅      |        |                                    |
+| Name                        | URL                                 | Type         | Data Model | Import | Comment                             |
+|-----------------------------|-------------------------------------|--------------|:----------:|:------:|-------------------------------------|
+| Astra Kulturhaus            | https://www.astra-berlin.de/        | Concert Hall |     ✅      |   ✅    |                                     |
+| Badehaus                    | https://badehaus-berlin.com/        | Club         |     ✅      |   ✅    |                                     |
+| Cassiopeia                  | https://cassiopeia-berlin.de/       | Club         |     ✅      |   ✅    |                                     |
+| Privatclub                  | https://privatclub-berlin.de/       | Club         |     ✅      |   ✅    |                                     |
+| Bi Nuu                      | https://binuu.de/                   | Club         |     ✅      |   ✅    |                                     |
+| Frannz Club                 | https://frannz.eu/                  | Club         |     ✅      |   ✅    |                                     |
+| Duncker Club                | https://www.dunckerclub.de/         | Club         |     ✅      |   ✅    |                                     |
+| Gretchen                    | https://www.gretchen-club.de/       | Club         |     ✅      |   ✅    |                                     |
+| Zenner                      | https://zenner.berlin/              | Club         |     ✅      |        |                                     |
+| Prince Charles              | https://princecharlesberlin.com/    | Club         |            |        | No own listings; links to RA only   |
+| Alte Kantine Kulturbrauerei | https://alte-kantine.eu/            | Concert Hall |     ✅      |   ✅    |                                     |
+| Festsaal Kreuzberg          | https://festsaal-kreuzberg.de/de    | Concert Hall |     ✅      |   ✅    |                                     |
+| Fluxbau                     | https://www.fluxfm.de/fluxbau       | Club         |     ✅      |        | Sparse listings; Angular SPA        |
+| Sage Club                   | https://www.sage-club.de/           | Club         |     ✅      |        | No event data in HTML; TYPO3 SPA    |
+| Schokoladen                 | https://www.schokoladen-mitte.de/   | Club         |     ✅      |   ✅    |                                     |
+| Neue Zukunft                | https://neue-zukunft.org/           | Club         |     ✅      |   ✅    | Elfsight Event Calendar widget API  |
+| Clash Club                  | https://clash-berlin.de/            | Club         |     ✅      |   ✅    |                                     |
+| Loge                        | https://www.loge-berlin.org/        | Club         |     ✅      |   ✅    | Wix site; tickets sold on-site      |
+| Arcanoa                     | https://www.ssi-media.com/arcanoa/  | Bar          |     ✅      |        | Very basic HTML; open stages        |
+| Junction Bar                | https://www.junction-bar.de/        | Bar          |     ✅      |   ✅    |                                     |
+| Supamolly                   | https://www.supamolly.de/           | Club         |     ✅      |        | Has RSS feed                        |
+| Monarch                     | https://www.kottimonarch.de/        | Bar          |     ✅      |   ✅    |                                     |
+| Sisyfass                    |                                     | Bar          |            |        |                                     |
+| Urban Spree                 | https://www.urbanspree.com/         | Club         |     ✅      |        |                                     |
+| Lido                        | https://www.lido-berlin.de/         | Concert Hall |     ✅      |   ✅    |                                     |
+| Hole 44                     | https://hole-berlin.de/             | Concert Hall |     ✅      |   ✅    |                                     |
+| SO36                        | https://www.so36.com/               | Club         |     ✅      |   ✅    | Cookie wall blocks content          |
+| Artliners Berlin            | https://artliners-berlin.com/       | Club         |     ✅      |        | No structured events; flyers only   |
+| Madame Claude               | https://madameclaude.de/            | Bar          |     ✅      |   ✅    | WordPress `event` REST API (ACF)    |
+| Bar jeder Vernunft          | https://www.bar-jeder-vernunft.de/  | Bar          |     ✅      |        | Theater/cabaret; multi-day ranges   |
+| Prachtwerk                  | https://www.prachtwerkberlin.com/   | Bar          |     ✅      |        | No event listings on website        |
+| Wiener Blut                 | https://www.wienerblut.org/         | Bar          |     ✅      |        | Impressum only; no events           |
+| Wild at Heart               | https://www.wildatheartberlin.de/   | Bar          |     ✅      |   ✅    | Retro frameset; concerts.php table  |
+| Bohnengold                  |                                     | Bar          |            |        |                                     |
+| Mikropol                    | https://mikropol-berlin.de/         | Club         |     ✅      |   ✅    | Events-Manager /events/ list+detail |
+| Roadrunner's Paradise       | http://www.roadrunners-paradise.de/ | Bar          |     ✅      |   ✅    | Retro HTML; rich event data         |
+| Havanna                     | https://www.havanna-berlin.de/      | Club         |     ✅      |        | Latin dance club; no event data     |
+| Paloma                      | https://www.palomabar.de/           | Bar          |     ✅      |        | Sparse listings; no dates           |
+| Arkaoda                     | https://berlin.arkaoda.com/         | Bar          |     ✅      |        |                                     |
+| Panke Culture               | https://www.pankeculture.com/       | Club         |     ✅      |        | No event listings found             |
+| Matrix Club Berlin          | https://www.matrix-berlin.de/       | Club         |     ✅      |        | Recurring nightly club events       |
+| Soda Club Berlin            | https://www.soda-berlin.de/         | Club         |     ✅      |        | Recurring party nights              |
+| The Pearl                   | https://thepearl-berlin.de/         | Club         |     ✅      |        | JS-rendered; no HTML events         |
+| Berghain / Panorama Bar     |                                     | Techno Club  |            |        |                                     |
+| Tresor                      |                                     | Techno Club  |            |        |                                     |
+| Sisyphos                    |                                     | Techno Club  |            |        |                                     |
+| Renate                      |                                     | Techno Club  |            |        |                                     |
+| Kater                       |                                     | Techno Club  |            |        |                                     |
+| KitKatClub                  |                                     | Techno Club  |            |        |                                     |
+| Ritter Butzke               |                                     | Techno Club  |            |        |                                     |
+| Kantine am Berghain         |                                     | Techno Club  |            |        |                                     |
+| ://about blank              |                                     | Techno Club  |            |        |                                     |
+| RSO                         |                                     | Techno Club  |            |        |                                     |
+| ELSE                        |                                     | Techno Club  |            |        |                                     |
+| Club der Visionäre          |                                     | Techno Club  |            |        |                                     |
+| OHM                         |                                     | Techno Club  |            |        |                                     |
+| OXI & OXI Garten            |                                     | Techno Club  |            |        |                                     |
+| ÆDEN                        |                                     | Techno Club  |            |        |                                     |
+| Lokschuppen                 |                                     | Techno Club  |            |        |                                     |
+| SchwuZ                      |                                     | Techno Club  |            |        |                                     |
+| MS Hoppetosse               |                                     | Techno Club  |            |        |                                     |
+| Humboldthain Club           |                                     | Techno Club  |            |        |                                     |
+| Golden Gate                 |                                     | Techno Club  |            |        |                                     |
+| Trinity Music               | https://trinitymusic.de/            | Promoter     |     ✅      |        |                                     |
+| Loft                        | https://loft.de/                    | Promoter     |     ✅      |        | Very few events; sparse data        |
+| Greyzone Tickets            | https://www.greyzone-tickets.de/    | Promoter     |     ✅      |        | Contact info only; no listings      |
+| Landstreicher Booking       | https://landstreicher-booking.de/   | Promoter     |     ✅      |        | Tour dates; filter Berlin           |
+| Puschen                     | https://puschen.net/berlin/         | Promoter     |     ✅      |        |                                     |
 
 ---
 
@@ -707,18 +707,30 @@ Source: [wildatheartberlin.de/concerts.php](https://www.wildatheartberlin.de/con
 
 ### Mikropol
 
-Source: [mikropol-berlin.de](https://mikropol-berlin.de/)
+Source: [mikropol-berlin.de/events](https://mikropol-berlin.de/events/)
 
-| Website Element       | Mapped To |
-|-----------------------|-----------|
-| *(no event listings)* | —         |
+| Website Element                               | Mapped To                       |
+|-----------------------------------------------|---------------------------------|
+| `a.event` href → `/event/<date-slug>/`        | `event.sourceUrl` / `sourceId`  |
+| Slug ISO prefix / `.date` (`DD.MM.YYYY`)      | `event.eventDate`               |
+| `.time .start span` (Beginn)                  | `event.startTime`               |
+| `.time .doors span` (Einlass)                 | `event.doorsTime`               |
+| `.eventname`                                  | `event.title` / headliner       |
+| `.support` (`support:` / `+` line)            | `event.subtitle` / support acts |
+| `Ausverkauft` class / `.canceledsoldout`      | `event.soldOut`                 |
+| `Abgesagt` class, `verlegt in den …` title    | `event.status`                  |
+| Detail `.eventnotes`                          | `event.description`             |
+| Detail `a.event-image` (`.webp`) / `og:image` | `event.imageUrl`                |
+| Detail `.ticket-links a` (Eventim)            | `event.ticketUrl`               |
 
 *Notes:*
 
-- *New venue (formerly Privatclub space?) in Schöneberg with capacity up to 250.*
-- *Website is a landing page with booking information and accessibility details. No program page or event listings.*
-- *Events at Mikropol appear on promoter sites (e.g. Trinity Music) but not on the venue's own website.*
-- *Effectively not importable from venue site. No schema changes required.*
+- *Club in Schöneberg (capacity up to 250). The original analysis found only a booking landing page; the venue has since added a
+  WordPress/Events-Manager `/events/` programme, so it is now imported.*
+- *Same Events-Manager plugin as Hole 44 / Badehaus but a different theme (class-based `a.event` cards, no schema.org JSON-LD). Imported as list + detail
+  via `AbstractTwoPageWebsiteImporter`: the overview supplies date/times/status/artists, each detail page adds description, image, and ticket URL.*
+- *Relocated shows (typically moved to the sibling Frannz Club) encode `verlegt in den … –` in the title itself rather than a status class; the note is stripped
+  to recover the act name and mapped to `RELOCATED`. No schema changes required.*
 
 ### Roadrunner's Paradise
 
