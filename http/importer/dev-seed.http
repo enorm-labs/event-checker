@@ -11,6 +11,7 @@
 ###
 ### Sources (alphabetical):
 ###   Alte Kantine         — https://alte-kantine.eu/ (WordPress Content Views grid, list + detail)
+###   AMT                  — https://www.club-amt.berlin/events (Webflow techno club; entry → /month/<name> pages)
 ###   Astra Kulturhaus     — https://www.astra-berlin.de/
 ###   Badehaus             — https://badehaus-berlin.com/events/
 ###   Bi Nuu               — https://binuu.de/de/events
@@ -90,6 +91,66 @@ Accept: application/json
 
 > {%
     client.test("Alte Kantine import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### AMT (Dircksenstr. 114, Berlin-Mitte — S-Bahn arches)
+### ————————————————————————————————————————————————————————————
+
+### --- Create AMT venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "AMT",
+    "address": "Dircksenstr. 114",
+    "city": "Berlin",
+    "postalCode": "10178",
+    "district": "mitte",
+    "latitude": 52.51370,
+    "longitude": 13.41800,
+    "websiteUrl": "https://www.club-amt.berlin"
+}
+
+> {%
+    client.global.set("amt_venue_id", response.body.id);
+    client.test("AMT venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create AMT event source ---
+# Links the venue to the AmtWebsiteImporter.
+# The sourceType "AMT" matches EventSource.AMT.
+# The URL is the `/events` entry page; the importer follows its `/month/<name>` links to the
+# per-month event listings (the entry page itself renders no events server-side).
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{amt_venue_id}},
+    "name": "AMT",
+    "url": "https://www.club-amt.berlin/events",
+    "sourceType": "AMT",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("AMT event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial AMT import ---
+POST {{importer-host}}/api/admin/event-sources/amt/import
+Accept: application/json
+
+> {%
+    client.test("AMT import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}

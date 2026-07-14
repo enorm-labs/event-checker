@@ -10,6 +10,17 @@ package de.norm.events.scraper
  */
 enum class EventSource {
     /**
+     * AMT Club Berlin – Webflow techno club whose `/events` entry page carries no events server-side (the
+     * Finsweet CMS-nest list injects them client-side); the programme lives on per-month `/month/<name>`
+     * pages instead. Each month page renders every night as a `.div-grid-dan[data-date]` block (a full
+     * `MMMM d, yyyy` date, a `.name` title, an optional `.sexpos` theme tag, a `.perf` DJ line, a Resident
+     * Advisor/EventJet ticket link, a tiered `min – max €` price, and a `/event/<slug>` detail link). The
+     * per-event detail pages add only a prose blurb, so the month pages are the source; conditional caching
+     * is disabled because the entry ETag does not change when a night is edited within an existing month.
+     */
+    AMT,
+
+    /**
      * Alte Kantine (Kulturbrauerei) Berlin – WordPress site whose upcoming programme is rendered on the
      * homepage as a Content Views grid (`.pt-cv-content-item`, each carrying a `data-pid` post id, a
      * year-less `DD.MM.` date, a start time, and a title link to the `?p=<id>` post). Each post's detail
