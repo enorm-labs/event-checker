@@ -129,7 +129,9 @@ data class EventArtistResponse(
     @Schema(description = "The artist's role in the event lineup", example = "HEADLINER")
     val role: ArtistRole,
     @Schema(description = "Position in the lineup — lower numbers appear first", example = "0")
-    val billingOrder: Int
+    val billingOrder: Int,
+    @Schema(description = "Room / stage the artist plays (multi-room venues), or null", example = "Panorama Bar")
+    val stage: String? = null
 ) {
     companion object {
         /** Converts an [EventArtistEntity] join-table row to its API response representation. */
@@ -137,7 +139,8 @@ data class EventArtistResponse(
             EventArtistResponse(
                 artistId = entity.artistId,
                 role = ArtistRole.valueOf(entity.role),
-                billingOrder = entity.billingOrder
+                billingOrder = entity.billingOrder,
+                stage = entity.stage
             )
     }
 }

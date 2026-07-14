@@ -191,5 +191,7 @@ data class LineupEntryResponse(
     @Schema(description = "The artist's role in the lineup", example = "HEADLINER")
     val role: ArtistRole,
     @Schema(description = "Position in the lineup — lower numbers appear first", example = "0")
-    val billingOrder: Int
+    val billingOrder: Int,
+    @Schema(description = "Room / stage the artist plays (multi-room venues), or null", example = "Panorama Bar")
+    val stage: String? = null
 )

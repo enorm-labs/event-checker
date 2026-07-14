@@ -98,7 +98,8 @@ class EventService(
                     LineupEntryResponse(
                         artist = ArtistSummaryResponse.fromEntity(artist),
                         role = ArtistRole.parseOrDefault(link.role),
-                        billingOrder = link.billingOrder
+                        billingOrder = link.billingOrder,
+                        stage = link.stage
                     )
                 }
             }

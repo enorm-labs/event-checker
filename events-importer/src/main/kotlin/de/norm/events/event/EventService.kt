@@ -217,12 +217,15 @@ class EventService(
                     eventId = eventId,
                     artistId = artistReq.artistId,
                     role = artistReq.role.name,
-                    billingOrder = artistReq.billingOrder
+                    billingOrder = artistReq.billingOrder,
+                    stage = artistReq.stage
                 )
             }
         eventArtistRepository.saveAll(entities).toList()
 
-        return artists.map { EventArtistResponse(artistId = it.artistId, role = it.role, billingOrder = it.billingOrder) }
+        return artists.map {
+            EventArtistResponse(artistId = it.artistId, role = it.role, billingOrder = it.billingOrder, stage = it.stage)
+        }
     }
 
     /**

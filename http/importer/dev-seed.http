@@ -14,6 +14,7 @@
 ###   AMT                  — https://www.club-amt.berlin/events (Webflow techno club; entry → /month/<name> pages)
 ###   Astra Kulturhaus     — https://www.astra-berlin.de/
 ###   Badehaus             — https://badehaus-berlin.com/events/
+###   Berghain             — https://www.berghain.berlin/de/program/ (server-rendered; list + detail)
 ###   Bi Nuu               — https://binuu.de/de/events
 ###   Cassiopeia           — https://cassiopeia-berlin.de/club
 ###   Clash                — https://clash-berlin.de/
@@ -23,6 +24,7 @@
 ###   Gretchen             — https://www.gretchen-club.de/
 ###   Hole 44              — https://hole-berlin.de/events/ (WordPress/Events-Manager, list + detail)
 ###   Junction Bar         — https://www.junction-bar.de/ (live music + DJ programs)
+###   Kantine am Berghain  — https://www.berghain.berlin/de/program/kantine-am-berghain/ (shares BERGHAIN importer)
 ###   Lido                 — https://www.lido-berlin.de/
 ###   Loge                 — https://www.loge-berlin.org/event-list (Wix Events warmup JSON + JSON-LD price)
 ###   Madame Claude        — https://madameclaude.de/ (WordPress `event` REST API, ACF-backed)
@@ -269,6 +271,67 @@ Accept: application/json
 
 > {%
     client.test("Badehaus import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Berghain / Panorama Bar (Am Wriezener Bahnhof, Berlin-Friedrichshain)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Berghain venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Berghain / Panorama Bar",
+    "address": "Am Wriezener Bahnhof",
+    "city": "Berlin",
+    "postalCode": "10243",
+    "district": "friedrichshain-kreuzberg",
+    "latitude": 52.51110,
+    "longitude": 13.44290,
+    "websiteUrl": "https://www.berghain.berlin"
+}
+
+> {%
+    client.global.set("berghain_venue_id", response.body.id);
+    client.test("Berghain venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Berghain event source ---
+# Links the venue to the BerghainWebsiteImporter.
+# The sourceType "BERGHAIN" matches EventSource.BERGHAIN. One importer serves both this
+# main program page and the Kantine am Berghain page (below) — same page template.
+# The URL is the `/de/program/` listing (Berghain building floors); each event links to a
+# `/de/event/<id>/` detail page.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{berghain_venue_id}},
+    "name": "Berghain",
+    "url": "https://www.berghain.berlin/de/program/",
+    "sourceType": "BERGHAIN",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Berghain event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Berghain import ---
+POST {{importer-host}}/api/admin/event-sources/berghain/import
+Accept: application/json
+
+> {%
+    client.test("Berghain import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}
@@ -812,6 +875,65 @@ Accept: application/json
 
 > {%
     client.test("Junction Bar import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Kantine am Berghain (Am Wriezener Bahnhof, Berlin-Friedrichshain — concert hall)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Kantine am Berghain venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Kantine am Berghain",
+    "address": "Am Wriezener Bahnhof",
+    "city": "Berlin",
+    "postalCode": "10243",
+    "district": "friedrichshain-kreuzberg",
+    "latitude": 52.51110,
+    "longitude": 13.44290,
+    "websiteUrl": "https://www.berghain.berlin"
+}
+
+> {%
+    client.global.set("kantine_am_berghain_venue_id", response.body.id);
+    client.test("Kantine am Berghain venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Kantine am Berghain event source ---
+# Reuses the BerghainWebsiteImporter (sourceType "BERGHAIN" → EventSource.BERGHAIN): the
+# concert-hall page shares the main program page's template, and floor-based typing marks
+# these events CONCERT. The URL is the `/de/program/kantine-am-berghain/` listing.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{kantine_am_berghain_venue_id}},
+    "name": "Kantine am Berghain",
+    "url": "https://www.berghain.berlin/de/program/kantine-am-berghain/",
+    "sourceType": "BERGHAIN",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Kantine am Berghain event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Kantine am Berghain import ---
+POST {{importer-host}}/api/admin/event-sources/kantine-am-berghain/import
+Accept: application/json
+
+> {%
+    client.test("Kantine am Berghain import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}

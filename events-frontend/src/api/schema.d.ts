@@ -692,6 +692,11 @@ export interface components {
        * @example 0
        */
       billingOrder?: number
+      /**
+       * @description Room / stage the artist plays (multi-room venues), or null
+       * @example Panorama Bar
+       */
+      stage?: string | null
     }
     /** @description A page of results with pagination metadata */
     PageResponseArtistSummaryResponse: {

@@ -100,5 +100,7 @@ data class EventArtistRequest(
     @Schema(description = "The artist's role in the event lineup", example = "HEADLINER")
     val role: ArtistRole = ArtistRole.HEADLINER,
     @Schema(description = "Position in the lineup — lower numbers appear first (0 = headliner)", example = "0")
-    val billingOrder: Int = 0
+    val billingOrder: Int = 0,
+    @Schema(description = "Room / stage the artist plays (multi-room venues)", example = "Panorama Bar")
+    val stage: String? = null
 )
