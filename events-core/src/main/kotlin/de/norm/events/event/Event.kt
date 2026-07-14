@@ -142,7 +142,9 @@ data class LineupEntry(
     /** The artist's role in the event lineup. Example: [ArtistRole.SUPPORT] */
     val role: ArtistRole = ArtistRole.HEADLINER,
     /** Position in the lineup, lower numbers appear first. Example: `0` for headliner, `1` for first support */
-    val billingOrder: Int = 0
+    val billingOrder: Int = 0,
+    /** Room / stage the artist plays at this event (e.g. "Panorama Bar"). Null for single-room venues. */
+    val stage: String? = null
 )
 
 /**

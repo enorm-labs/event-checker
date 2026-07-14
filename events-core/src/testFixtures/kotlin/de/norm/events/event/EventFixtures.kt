@@ -80,11 +80,13 @@ object EventFixtures {
     fun createLineupEntry(
         artist: Artist = ArtistFixtures.create(),
         role: ArtistRole = ArtistRole.HEADLINER,
-        billingOrder: Int = 0
+        billingOrder: Int = 0,
+        stage: String? = null
     ): LineupEntry =
         LineupEntry(
             artist = artist,
             role = role,
-            billingOrder = billingOrder
+            billingOrder = billingOrder,
+            stage = stage
         )
 }

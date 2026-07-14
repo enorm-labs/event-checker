@@ -189,7 +189,10 @@ CREATE INDEX idx_event_genre_tag_genre_tag_id ON event_genre_tag (genre_tag_id);
 
 -- ============================================================
 -- EVENT_ARTIST (join table)
--- Links events to artists with role and billing order.
+-- Links events to artists with role, billing order, and stage.
+-- `stage` is the room/floor the act plays (e.g. "Panorama Bar") — a per-appearance
+-- attribute for multi-room venues (Berghain) and multi-stage festivals; nullable, so
+-- single-room venues leave it unset.
 -- ============================================================
 CREATE TABLE event_artist
 (
@@ -198,6 +201,7 @@ CREATE TABLE event_artist
     artist_id     BIGINT NOT NULL REFERENCES artist (id) ON DELETE CASCADE,
     role          TEXT   NOT NULL DEFAULT 'HEADLINER',
     billing_order INT    NOT NULL DEFAULT 0,
+    stage         TEXT,
     UNIQUE (event_id, artist_id)
 );
 

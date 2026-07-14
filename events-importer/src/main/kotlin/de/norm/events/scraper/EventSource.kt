@@ -33,6 +33,20 @@ enum class EventSource {
     /** Astra Kulturhaus Berlin – Kulturhäuser-platform listing on the homepage with per-event detail pages. */
     ASTRA,
 
+    /**
+     * Berghain Berlin – the club's own server-rendered programme. One importer serves two source rows built on
+     * the identical page template: the main `/de/program/` page (the Berghain building floors — Berghain,
+     * Panorama Bar, Säule, Halle — typed [PARTY][de.norm.events.event.EventType.PARTY]) and the
+     * `/de/program/kantine-am-berghain/` page (the adjacent concert hall, typed
+     * [CONCERT][de.norm.events.event.EventType.CONCERT]). Each night is an `a[href^=/de/event/<id>/]` block
+     * carrying a German `DD.MM.YYYY` date, an optional `tür` (doors) and a `beginn` (start) time, the event
+     * title (`h2`), one or more `h3` floor labels, and an `h4` running-order lineup (each act in its own span,
+     * with `Live`/`b2b` markers in uppercase spans). Each `/de/event/<id>/` detail page adds the poster image,
+     * the ticket-shop link, presale/box-office (`Abendkasse`) prices with an `ausverkauft` sold-out marker, and
+     * a prose description — so the two HTML pages (list + detail) are the source.
+     */
+    BERGHAIN,
+
     /** Badehaus Berlin – WordPress/Events-Manager single-page `/events/` listing with status classes. */
     BADEHAUS,
 

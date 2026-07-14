@@ -1,0 +1,76 @@
+package de.norm.events.scraper.berghain
+
+import de.norm.events.event.EventType
+import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.nulls.shouldBeNull
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldContain
+import io.kotest.matchers.string.shouldStartWith
+import org.jsoup.Jsoup
+import org.junit.jupiter.api.Test
+import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.LocalTime
+
+/**
+ * Unit tests for [BerghainDetailPageScraper], parsing saved event-detail snapshots:
+ * a fully-populated club night (image, both prices, ticket link, description) and a
+ * presale-sold-out night whose box office is still open.
+ */
+class BerghainDetailPageScraperTest {
+    private val scraper = BerghainDetailPageScraper()
+
+    private fun loadFixture(path: String): String =
+        javaClass.classLoader
+            .getResourceAsStream(path)!!
+            .bufferedReader()
+            .readText()
+
+    @Test
+    fun `parses a fully-populated detail page`() {
+        val url = "https://www.berghain.berlin/de/event/80835/"
+        val event = scraper.scrape(Jsoup.parse(loadFixture("scraper/berghain/berghain-detail-full.html"), url), url)!!
+
+        event.title shouldBe "BUTOH Batorū"
+        event.eventDate shouldBe LocalDate.of(2026, 7, 16)
+        event.doorsTime.shouldBeNull()
+        event.startTime shouldBe LocalTime.of(21, 0)
+        event.eventType shouldBe EventType.PARTY.name
+        event.genre shouldBe "Techno"
+        event.imageUrl!!.shouldStartWith("https://cdn.berghain.berlin/media/images/")
+        event.pricePresale shouldBe BigDecimal("20.00")
+        event.priceBoxOffice shouldBe BigDecimal("22.00")
+        event.ticketUrl shouldBe "https://ticketingv2.berghain.de/event/butoh"
+        event.soldOut shouldBe false
+        event.sourceId shouldBe "berghain:80835"
+        event.description!!.shouldContain("Butoh Batorū")
+        // The detail page never parses the lineup — the overview is authoritative.
+        event.artists.shouldBeEmpty()
+    }
+
+    @Test
+    fun `treats a presale-sold-out night with an open box office as not sold out`() {
+        val url = "https://www.berghain.berlin/de/event/80784/"
+        val event =
+            scraper.scrape(Jsoup.parse(loadFixture("scraper/berghain/berghain-detail-presale-soldout.html"), url), url)!!
+
+        event.title shouldBe "Sound Metaphors"
+        event.eventDate shouldBe LocalDate.of(2026, 7, 17)
+        event.startTime shouldBe LocalTime.of(22, 0)
+        event.eventType shouldBe EventType.PARTY.name
+        // A two-floor night joins both rooms' genres, in the detail page's floor order.
+        event.genre shouldBe "House, Techno"
+        // "Vorverkauf ausverkauft" → no presale price, but the box office is still available.
+        event.pricePresale.shouldBeNull()
+        event.priceBoxOffice shouldBe BigDecimal("30.00")
+        event.ticketUrl.shouldBeNull()
+        event.soldOut shouldBe false
+        event.sourceId shouldBe "berghain:80784"
+    }
+
+    @Test
+    fun `returns null for a page without the main container`() {
+        val url = "https://www.berghain.berlin/de/event/1/"
+        scraper.scrape(Jsoup.parse("<html><body><p>no main</p></body></html>", url), url).shouldBeNull()
+    }
+}

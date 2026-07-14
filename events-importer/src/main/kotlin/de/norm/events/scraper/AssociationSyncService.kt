@@ -177,9 +177,12 @@ class AssociationSyncService(
                 if (current == null) {
                     // New association — insert
                     toInsert.add(desired)
-                } else if (current.role != desired.role || current.billingOrder != desired.billingOrder) {
-                    // Association exists but role or billing order changed — update in place
-                    toUpdate.add(current.copy(role = desired.role, billingOrder = desired.billingOrder))
+                } else if (current.role != desired.role ||
+                    current.billingOrder != desired.billingOrder ||
+                    current.stage != desired.stage
+                ) {
+                    // Association exists but role, billing order or stage changed — update in place
+                    toUpdate.add(current.copy(role = desired.role, billingOrder = desired.billingOrder, stage = desired.stage))
                 }
                 // else: association is already correct — no-op
             }

@@ -178,7 +178,9 @@ data class ScrapedArtist(
     /** Artist or band name as it appears on the website. */
     val name: String,
     /** Role in the lineup (e.g. "HEADLINER", "SUPPORT", "DJ"). Defaults to headliner. */
-    val role: String = "HEADLINER"
+    val role: String = "HEADLINER",
+    /** Room / stage the artist plays at this event (e.g. "Panorama Bar"). Null for single-room venues. */
+    val stage: String? = null
 ) {
     /**
      * Converts this scraped artist into an [EventArtistEntity] join-table entry.
@@ -199,6 +201,7 @@ data class ScrapedArtist(
             eventId = eventId,
             artistId = artistId,
             role = ArtistRole.parseOrDefault(role).name,
-            billingOrder = billingOrder
+            billingOrder = billingOrder,
+            stage = stage
         )
 }

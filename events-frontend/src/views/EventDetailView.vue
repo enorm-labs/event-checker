@@ -102,9 +102,14 @@ watch(slug, run)
               {{ entry.artist.name }}
             </RouterLink>
             <span v-else class="font-medium">{{ entry.artist?.name }}</span>
-            <span v-if="entry.role" class="text-xs text-muted-foreground">
-              {{ roleLabels[entry.role] ?? entry.role }}
-            </span>
+            <div class="flex items-center gap-2 text-xs text-muted-foreground">
+              <span v-if="entry.stage" class="rounded-full border border-border px-2 py-0.5">
+                {{ entry.stage }}
+              </span>
+              <span v-if="entry.role">
+                {{ roleLabels[entry.role] ?? entry.role }}
+              </span>
+            </div>
           </li>
         </ul>
       </section>

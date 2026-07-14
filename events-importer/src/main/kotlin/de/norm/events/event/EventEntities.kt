@@ -60,7 +60,9 @@ data class EventArtistEntity(
     val eventId: Long,
     val artistId: Long,
     val role: String = ArtistRole.HEADLINER.name,
-    val billingOrder: Int = 0
+    val billingOrder: Int = 0,
+    /** Room / stage the artist plays at this event (e.g. "Panorama Bar"). Null for single-room venues. */
+    val stage: String? = null
 )
 
 /**
