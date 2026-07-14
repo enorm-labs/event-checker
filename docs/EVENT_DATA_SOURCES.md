@@ -50,6 +50,7 @@ The **Import** column tracks whether an automated importer has been implemented 
 | Soda Club Berlin            | https://www.soda-berlin.de/         | Club         |     ✅      |        | Recurring party nights              |
 | The Pearl                   | https://thepearl-berlin.de/         | Club         |     ✅      |        | JS-rendered; no HTML events         |
 | Berghain / Panorama Bar     |                                     | Techno Club  |            |        |                                     |
+| AMT                         | https://www.club-amt.berlin         | Techno Club  |     ✅      |   ✅    | Webflow; /events -> month pages     |
 | Tresor                      |                                     | Techno Club  |            |        |                                     |
 | Sisyphos                    |                                     | Techno Club  |            |        |                                     |
 | Renate                      |                                     | Techno Club  |            |        |                                     |
