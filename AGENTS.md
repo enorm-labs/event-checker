@@ -299,6 +299,9 @@ Java version is managed via SDKMAN (`.sdkmanrc` pins `java=25.0.2-tem`; run `sdk
   so that related dependencies are bundled into a single PR per group.
 - **Conventional Commits** — Commit messages follow the [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/) spec.
   Reusable prompts are available at `.github/prompts/` for commit messages, squash commit messages, and code reviews.
+- **Opening a PR** — the `/open-pr` skill (`.github/prompts/open-pr.prompt.md`) runs the full ship flow: cut a branch,
+  commit with a Conventional Commits message, push, and open the PR via `gh`. Invoking it is the explicit go-ahead for
+  the commit/push that the "no unsolicited commits/pushes" rule above otherwise withholds.
 
 ## Key Files
 
@@ -317,6 +320,7 @@ Java version is managed via SDKMAN (`.sdkmanrc` pins `java=25.0.2-tem`; run `sdk
 | Dependabot config                     | `.github/dependabot.yml`                                                                                  |
 | Commit message prompt                 | `.github/prompts/commit-message.prompt.md`                                                                |
 | Squash commit message prompt          | `.github/prompts/squash-commit-message.prompt.md`                                                         |
+| Open PR prompt                        | `.github/prompts/open-pr.prompt.md`                                                                       |
 | Code review prompt                    | `.github/prompts/code-review.prompt.md`                                                                   |
 | Shared domain module marker           | `events-core/src/.../EventsCoreModule.kt`                                                                 |
 | Domain data classes                   | `events-core/src/.../artist/`, `event/`, `genretag/`, `promoter/`, `venue/`                               |
