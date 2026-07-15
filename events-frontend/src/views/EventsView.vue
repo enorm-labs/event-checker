@@ -6,6 +6,7 @@ import EventCard from '@/components/EventCard.vue'
 import SectionLabel from '@/components/SectionLabel.vue'
 import { type EventSearchParams, useEventSearch } from '@/composables/useEvents'
 import { useGenres } from '@/composables/useGenres'
+import { DISTRICTS } from '@/lib/districts'
 
 const PAGE_SIZE = 20
 const EVENT_TYPES = [
@@ -19,23 +20,6 @@ const EVENT_TYPES = [
   'EXHIBITION',
   'READING',
   'OTHER',
-]
-
-// Berlin's 12 boroughs (Bezirke), as { slug, label } for the district filter. Venues carry the
-// slug; the label is shown in the dropdown. Kept as a static list since the set is fixed.
-const DISTRICTS = [
-  { slug: 'mitte', label: 'Mitte' },
-  { slug: 'friedrichshain-kreuzberg', label: 'Friedrichshain-Kreuzberg' },
-  { slug: 'pankow', label: 'Pankow' },
-  { slug: 'charlottenburg-wilmersdorf', label: 'Charlottenburg-Wilmersdorf' },
-  { slug: 'spandau', label: 'Spandau' },
-  { slug: 'steglitz-zehlendorf', label: 'Steglitz-Zehlendorf' },
-  { slug: 'tempelhof-schoeneberg', label: 'Tempelhof-Schöneberg' },
-  { slug: 'neukoelln', label: 'Neukölln' },
-  { slug: 'treptow-koepenick', label: 'Treptow-Köpenick' },
-  { slug: 'marzahn-hellersdorf', label: 'Marzahn-Hellersdorf' },
-  { slug: 'lichtenberg', label: 'Lichtenberg' },
-  { slug: 'reinickendorf', label: 'Reinickendorf' },
 ]
 
 const route = useRoute()
