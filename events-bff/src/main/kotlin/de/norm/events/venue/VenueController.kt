@@ -28,10 +28,17 @@ class VenueController(
         @Parameter(description = "Case-insensitive substring filter on the venue name. Omitted/blank returns all venues.")
         @RequestParam(required = false)
         q: String?,
+        @Parameter(
+            description =
+                "District filter — only venues in the matching Berlin borough (e.g. friedrichshain-kreuzberg). " +
+                    "Omitted/blank returns all districts."
+        )
+        @RequestParam(required = false)
+        district: String?,
         @ParameterObject
         @PageableDefault(size = 20, sort = ["name"])
         pageable: Pageable
-    ): PageResponse<VenueSummaryResponse> = venueService.list(q, pageable)
+    ): PageResponse<VenueSummaryResponse> = venueService.list(q, district, pageable)
 
     @GetMapping("/{slug}")
     @Operation(summary = "Get a single venue by slug")

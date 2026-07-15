@@ -46,7 +46,6 @@ Public name is **Event Junkie**; internal/repo name stays **Event Checker**
 
 - [ ] Add map to venues overview page
 - [ ] Add venue description and maybe other metadata to venue detail page
-- [ ] Filter venues by district
 - [ ] Filter events and venues by venue type and genre
 - [ ] Filter events by a specific venue (e.g. from the venue detail page)
 - [ ] Browse/see past events — an archive view (decide retention + UX; ties into the housekeeping delete policy under Importer / Data)

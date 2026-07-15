@@ -47,6 +47,46 @@ class VenueControllerTest : BaseControllerTest() {
         }
 
     @Test
+    fun `GET venues filters by district`(): Unit =
+        runBlocking {
+            insertVenue("Astra", "astra", district = "friedrichshain-kreuzberg")
+            insertVenue("Lido", "lido", district = "friedrichshain-kreuzberg")
+            insertVenue("Berghain", "berghain", district = "mitte")
+
+            webTestClient
+                .get()
+                .uri("/venues?district=mitte")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody()
+                .jsonPath("$.totalElements")
+                .isEqualTo(1)
+                .jsonPath("$.content[0].slug")
+                .isEqualTo("berghain")
+        }
+
+    @Test
+    fun `GET venues combines name query and district filter`(): Unit =
+        runBlocking {
+            insertVenue("Astra Kulturhaus", "astra", district = "friedrichshain-kreuzberg")
+            insertVenue("Astra Bar", "astra-bar", district = "mitte")
+            insertVenue("Lido", "lido", district = "friedrichshain-kreuzberg")
+
+            webTestClient
+                .get()
+                .uri("/venues?q=astra&district=friedrichshain-kreuzberg")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody()
+                .jsonPath("$.totalElements")
+                .isEqualTo(1)
+                .jsonPath("$.content[0].slug")
+                .isEqualTo("astra")
+        }
+
+    @Test
     fun `GET venues ignores an unknown or malicious sort parameter`(): Unit =
         runBlocking {
             insertVenue("Astra", "astra")

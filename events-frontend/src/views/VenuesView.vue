@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import SectionLabel from '@/components/SectionLabel.vue'
 import VenueCard from '@/components/VenueCard.vue'
 import { useVenueSearch, type VenueSearchParams } from '@/composables/useVenues'
+import { DISTRICTS } from '@/lib/districts'
 
 const PAGE_SIZE = 24
 
@@ -19,6 +20,7 @@ function queryString(key: string): string {
 
 const params = computed<VenueSearchParams>(() => ({
   q: queryString('q') || undefined,
+  district: queryString('district') || undefined,
   page: queryString('page') ? Number(queryString('page')) : 0,
   size: PAGE_SIZE,
 }))
@@ -37,9 +39,9 @@ watch(
 const currentPage = computed(() => page.value?.page ?? 0)
 const totalPages = computed(() => page.value?.totalPages ?? 0)
 
-function applySearch() {
-  // A new search resets to the first page; an empty term drops out of the URL.
-  const next: LocationQueryRaw = { ...route.query, q: search.value || undefined, page: undefined }
+function applyFilters(patch: LocationQueryRaw) {
+  // Any filter change resets to the first page; empty values drop out of the URL.
+  const next: LocationQueryRaw = { ...route.query, ...patch, page: undefined }
   for (const key of Object.keys(next)) {
     if (next[key] === '' || next[key] === undefined) delete next[key]
   }
@@ -65,7 +67,7 @@ watch(() => route.query, run, { deep: true })
     </header>
 
     <div class="flex flex-wrap items-end gap-3 rounded-xl border border-border bg-card p-4">
-      <form class="flex gap-2" @submit.prevent="applySearch">
+      <form class="flex gap-2" @submit.prevent="applyFilters({ q: search })">
         <input
           v-model="search"
           class="h-8 rounded-lg border border-border bg-background px-3 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
@@ -74,6 +76,16 @@ watch(() => route.query, run, { deep: true })
         />
         <Button type="submit" variant="outline">Search</Button>
       </form>
+
+      <select
+        :value="queryString('district')"
+        aria-label="Filter by district"
+        class="h-8 rounded-lg border border-border bg-background px-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+        @change="applyFilters({ district: ($event.target as HTMLSelectElement).value })"
+      >
+        <option value="">All districts</option>
+        <option v-for="d in DISTRICTS" :key="d.slug" :value="d.slug">{{ d.label }}</option>
+      </select>
     </div>
 
     <p v-if="loading" class="text-sm text-muted-foreground">Rounding up the rooms…</p>
