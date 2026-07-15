@@ -25,6 +25,7 @@ data class VenueEntity(
     val longitude: BigDecimal? = null,
     val websiteUrl: String? = null,
     val imageUrl: String? = null,
+    val description: String? = null,
     val createdAt: Instant? = null,
     val updatedAt: Instant? = null
 )

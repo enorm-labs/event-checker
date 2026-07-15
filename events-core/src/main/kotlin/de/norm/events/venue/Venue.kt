@@ -32,6 +32,8 @@ data class Venue(
     val websiteUrl: String? = null,
     /** URL of the venue's logo or photo. Example: `"https://example.com/astra-logo.jpg"` */
     val imageUrl: String? = null,
+    /** Short prose description of the venue, shown on the detail page. Example: `"A former power plant turned techno institution…"` */
+    val description: String? = null,
     /** Timestamp when this record was first created. Set by the database. */
     val createdAt: Instant? = null,
     /** Timestamp when this record was last modified. Set by the database. */

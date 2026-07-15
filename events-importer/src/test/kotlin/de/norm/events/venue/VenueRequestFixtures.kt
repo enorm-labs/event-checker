@@ -24,7 +24,8 @@ object VenueRequestFixtures {
         latitude: BigDecimal? = null,
         longitude: BigDecimal? = null,
         websiteUrl: String? = "https://www.astra-berlin.de",
-        imageUrl: String? = null
+        imageUrl: String? = null,
+        description: String? = "A large concert hall on the RAW-Gelände in Friedrichshain."
     ): VenueRequest =
         VenueRequest(
             name = name,
@@ -35,7 +36,8 @@ object VenueRequestFixtures {
             latitude = latitude,
             longitude = longitude,
             websiteUrl = websiteUrl,
-            imageUrl = imageUrl
+            imageUrl = imageUrl,
+            description = description
         )
 
     /** Creates a [VenueRequest] with minimal defaults. */
@@ -48,7 +50,8 @@ object VenueRequestFixtures {
         latitude: BigDecimal? = null,
         longitude: BigDecimal? = null,
         websiteUrl: String? = null,
-        imageUrl: String? = null
+        imageUrl: String? = null,
+        description: String? = null
     ): VenueRequest =
         VenueRequest(
             name = name,
@@ -59,6 +62,7 @@ object VenueRequestFixtures {
             latitude = latitude,
             longitude = longitude,
             websiteUrl = websiteUrl,
-            imageUrl = imageUrl
+            imageUrl = imageUrl,
+            description = description
         )
 }

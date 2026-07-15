@@ -130,7 +130,12 @@ class VenueControllerTest : BaseControllerTest() {
     @Test
     fun `GET venue by slug returns detail`(): Unit =
         runBlocking {
-            insertVenue("Astra", "astra", address = "Revaler Str. 99")
+            insertVenue(
+                "Astra",
+                "astra",
+                address = "Revaler Str. 99",
+                description = "A large concert hall on the RAW-Gelände in Friedrichshain."
+            )
 
             webTestClient
                 .get()
@@ -145,6 +150,8 @@ class VenueControllerTest : BaseControllerTest() {
                 .isEqualTo("Astra")
                 .jsonPath("$.address")
                 .isEqualTo("Revaler Str. 99")
+                .jsonPath("$.description")
+                .isEqualTo("A large concert hall on the RAW-Gelände in Friedrichshain.")
         }
 
     @Test

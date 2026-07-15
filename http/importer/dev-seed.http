@@ -54,7 +54,8 @@ Content-Type: application/json
     "district": "pankow",
     "latitude": 52.53899,
     "longitude": 13.41300,
-    "websiteUrl": "https://alte-kantine.eu"
+    "websiteUrl": "https://alte-kantine.eu",
+    "description": "A club and concert space in the Kulturbrauerei in Prenzlauer Berg, with a programme spanning live gigs, club nights and themed parties across many styles."
 }
 
 > {%
@@ -113,7 +114,8 @@ Content-Type: application/json
     "district": "mitte",
     "latitude": 52.51370,
     "longitude": 13.41800,
-    "websiteUrl": "https://www.club-amt.berlin"
+    "websiteUrl": "https://www.club-amt.berlin",
+    "description": "A techno club tucked into the S-Bahn arches near Alexanderplatz, running late-night electronic nights focused on techno and house."
 }
 
 > {%
@@ -173,7 +175,8 @@ Content-Type: application/json
     "district": "friedrichshain-kreuzberg",
     "latitude": 52.50724,
     "longitude": 13.45180,
-    "websiteUrl": "https://www.astra-berlin.de"
+    "websiteUrl": "https://www.astra-berlin.de",
+    "description": "One of Berlin's larger concert venues, set in a converted hall on the RAW-Gelände in Friedrichshain. It hosts touring rock, pop, indie and electronic acts alongside club nights."
 }
 
 > {%
@@ -232,7 +235,8 @@ Content-Type: application/json
     "district": "friedrichshain-kreuzberg",
     "latitude": 52.50780,
     "longitude": 13.45250,
-    "websiteUrl": "https://badehaus-berlin.com"
+    "websiteUrl": "https://badehaus-berlin.com",
+    "description": "An intimate live-music venue and club on the RAW-Gelände in Friedrichshain, mixing concerts, singer-songwriter sessions and eclectic DJ nights."
 }
 
 > {%
@@ -291,7 +295,8 @@ Content-Type: application/json
     "district": "friedrichshain-kreuzberg",
     "latitude": 52.51110,
     "longitude": 13.44290,
-    "websiteUrl": "https://www.berghain.berlin"
+    "websiteUrl": "https://www.berghain.berlin",
+    "description": "Berlin's most renowned techno institution, housed in a former power plant near Ostbahnhof. The main floor and the upstairs Panorama Bar host marathon weekend parties centred on techno and house."
 }
 
 > {%
@@ -352,7 +357,8 @@ Content-Type: application/json
     "district": "friedrichshain-kreuzberg",
     "latitude": 52.50083,
     "longitude": 13.44192,
-    "websiteUrl": "https://binuu.de"
+    "websiteUrl": "https://binuu.de",
+    "description": "A live-music club beneath the U-Bahn viaduct at Schlesisches Tor in Kreuzberg, presenting concerts and club nights across indie, rock, hip-hop and electronic styles."
 }
 
 > {%
@@ -414,7 +420,8 @@ Content-Type: application/json
     "district": "friedrichshain-kreuzberg",
     "latitude": 52.50730,
     "longitude": 13.45414,
-    "websiteUrl": "https://cassiopeia-berlin.de"
+    "websiteUrl": "https://cassiopeia-berlin.de",
+    "description": "A multi-room club and cultural venue on the RAW-Gelände in Friedrichshain, covering everything from reggae, hip-hop and drum & bass to indie and electronic nights."
 }
 
 > {%
@@ -472,7 +479,8 @@ Content-Type: application/json
     "district": "friedrichshain-kreuzberg",
     "latitude": 52.49170,
     "longitude": 13.38550,
-    "websiteUrl": "https://clash-berlin.de"
+    "websiteUrl": "https://clash-berlin.de",
+    "description": "A punk, ska and rock'n'roll bar and concert spot near Mehringdamm in Kreuzberg, hosting loud, no-frills live shows and DJ nights."
 }
 
 > {%
@@ -533,7 +541,8 @@ Content-Type: application/json
     "district": "pankow",
     "latitude": 52.54703,
     "longitude": 13.42116,
-    "websiteUrl": "https://www.dunckerclub.de"
+    "websiteUrl": "https://www.dunckerclub.de",
+    "description": "A long-running goth, wave and indie club in a historic building in Prenzlauer Berg, best known for its dark-alternative DJ nights and occasional live concerts."
 }
 
 > {%
@@ -593,7 +602,8 @@ Content-Type: application/json
     "district": "friedrichshain-kreuzberg",
     "latitude": 52.49660,
     "longitude": 13.44980,
-    "websiteUrl": "https://festsaal-kreuzberg.de"
+    "websiteUrl": "https://festsaal-kreuzberg.de",
+    "description": "A concert hall and event space by the Flutgraben on the Spree in Kreuzberg, with a wide-ranging programme of concerts, club nights and cultural events."
 }
 
 > {%
@@ -655,7 +665,8 @@ Content-Type: application/json
     "district": "pankow",
     "latitude": 52.53923,
     "longitude": 13.41266,
-    "websiteUrl": "https://frannz.eu"
+    "websiteUrl": "https://frannz.eu",
+    "description": "A club and concert venue in the Kulturbrauerei in Prenzlauer Berg, presenting live gigs and party nights across pop, indie, hip-hop and electronic music."
 }
 
 > {%
@@ -716,7 +727,8 @@ Content-Type: application/json
     "district": "friedrichshain-kreuzberg",
     "latitude": 52.49483,
     "longitude": 13.38387,
-    "websiteUrl": "https://www.gretchen-club.de"
+    "websiteUrl": "https://www.gretchen-club.de",
+    "description": "A club set in the vaulted former stables of a 19th-century barracks in Kreuzberg, known for bass-driven electronic nights — drum & bass, house, techno and hip-hop — plus live shows."
 }
 
 > {%
@@ -774,7 +786,8 @@ Content-Type: application/json
     "district": "neukoelln",
     "latitude": 52.47993,
     "longitude": 13.42565,
-    "websiteUrl": "https://hole-berlin.de"
+    "websiteUrl": "https://hole-berlin.de",
+    "description": "A concert hall in Neukölln geared towards touring bands, with a programme leaning on rock, metal, punk and alternative live acts."
 }
 
 > {%
@@ -835,7 +848,8 @@ Content-Type: application/json
     "district": "friedrichshain-kreuzberg",
     "latitude": 52.49076,
     "longitude": 13.38969,
-    "websiteUrl": "https://www.junction-bar.de"
+    "websiteUrl": "https://www.junction-bar.de",
+    "description": "A basement live-music and DJ bar near Mehringdamm in Kreuzberg, offering nightly concerts and DJ sets across jazz, soul, funk, rock and pop."
 }
 
 > {%
@@ -895,7 +909,8 @@ Content-Type: application/json
     "district": "friedrichshain-kreuzberg",
     "latitude": 52.51110,
     "longitude": 13.44290,
-    "websiteUrl": "https://www.berghain.berlin"
+    "websiteUrl": "https://www.berghain.berlin",
+    "description": "The concert hall adjoining Berghain near Ostbahnhof in Friedrichshain, hosting live shows across a broad musical range, separate from the club's techno floors."
 }
 
 > {%
@@ -954,7 +969,8 @@ Content-Type: application/json
     "district": "friedrichshain-kreuzberg",
     "latitude": 52.49778,
     "longitude": 13.43782,
-    "websiteUrl": "https://www.lido-berlin.de"
+    "websiteUrl": "https://www.lido-berlin.de",
+    "description": "A former 1950s cinema turned concert venue on the Spree in Kreuzberg, staging touring indie, rock and electronic acts as well as club nights."
 }
 
 > {%
@@ -1013,7 +1029,8 @@ Content-Type: application/json
     "district": "friedrichshain-kreuzberg",
     "latitude": 52.5136856,
     "longitude": 13.4661767,
-    "websiteUrl": "https://www.loge-berlin.org"
+    "websiteUrl": "https://www.loge-berlin.org",
+    "description": "An intimate, collectively run bar and events space in Friedrichshain, with a small programme of concerts, DJ nights and cultural gatherings."
 }
 
 > {%
@@ -1073,7 +1090,8 @@ Content-Type: application/json
     "district": "friedrichshain-kreuzberg",
     "latitude": 52.49967,
     "longitude": 13.43714,
-    "websiteUrl": "https://madameclaude.de"
+    "websiteUrl": "https://madameclaude.de",
+    "description": "A cosy, upside-down-themed bar and live venue near Schlesisches Tor in Kreuzberg, hosting free-entry concerts and DJ nights with an experimental, indie bent."
 }
 
 > {%
@@ -1134,7 +1152,8 @@ Content-Type: application/json
     "district": "tempelhof-schoeneberg",
     "latitude": 52.47360,
     "longitude": 13.35970,
-    "websiteUrl": "https://mikropol-berlin.de"
+    "websiteUrl": "https://mikropol-berlin.de",
+    "description": "A small underground club in Schöneberg with a varied programme of concerts and club nights across rock, metal, electronic and alternative styles."
 }
 
 > {%
@@ -1194,7 +1213,8 @@ Content-Type: application/json
     "district": "friedrichshain-kreuzberg",
     "latitude": 52.49930,
     "longitude": 13.41850,
-    "websiteUrl": "https://kottimonarch.de"
+    "websiteUrl": "https://kottimonarch.de",
+    "description": "A bar and club overlooking Kottbusser Tor in Kreuzberg. Behind an unassuming entrance it hosts DJ nights and live sets spanning electronic, indie and experimental music."
 }
 
 > {%
@@ -1254,7 +1274,8 @@ Content-Type: application/json
     "district": "friedrichshain-kreuzberg",
     "latitude": 52.50110,
     "longitude": 13.47320,
-    "websiteUrl": "https://neue-zukunft.org"
+    "websiteUrl": "https://neue-zukunft.org",
+    "description": "A cultural venue and club on the Stralau peninsula by the Spree in Friedrichshain, blending concerts, club nights and arts events."
 }
 
 > {%
@@ -1317,7 +1338,8 @@ Content-Type: application/json
     "district": "friedrichshain-kreuzberg",
     "latitude": 52.49985,
     "longitude": 13.43112,
-    "websiteUrl": "https://privatclub-berlin.de"
+    "websiteUrl": "https://privatclub-berlin.de",
+    "description": "A club below the Markthalle near Schlesisches Tor in Kreuzberg, presenting concerts and DJ nights across soul, funk, indie, hip-hop and electronic music."
 }
 
 > {%
@@ -1375,7 +1397,8 @@ Content-Type: application/json
     "district": "pankow",
     "latitude": 52.53060,
     "longitude": 13.41850,
-    "websiteUrl": "http://www.roadrunners-paradise.de"
+    "websiteUrl": "http://www.roadrunners-paradise.de",
+    "description": "A rock'n'roll club in a courtyard in Prenzlauer Berg, specialising in rockabilly, psychobilly, punk and garage live shows and parties."
 }
 
 > {%
@@ -1435,7 +1458,8 @@ Content-Type: application/json
     "district": "mitte",
     "latitude": 52.53264,
     "longitude": 13.39897,
-    "websiteUrl": "https://www.schokoladen-mitte.de"
+    "websiteUrl": "https://www.schokoladen-mitte.de",
+    "description": "A historic, collectively run cultural venue in Mitte with roots in the post-Wende squat scene, hosting intimate concerts, readings and club nights across many styles."
 }
 
 > {%
@@ -1493,7 +1517,8 @@ Content-Type: application/json
     "district": "friedrichshain-kreuzberg",
     "latitude": 52.50169,
     "longitude": 13.42256,
-    "websiteUrl": "https://www.so36.com"
+    "websiteUrl": "https://www.so36.com",
+    "description": "A legendary Kreuzberg club on Oranienstraße, central to Berlin's punk and new-wave history since the late 1970s. Today it runs a diverse programme of punk, rock, queer parties and club nights."
 }
 
 > {%
@@ -1553,7 +1578,8 @@ Content-Type: application/json
     "district": "friedrichshain-kreuzberg",
     "latitude": 52.49770,
     "longitude": 13.43700,
-    "websiteUrl": "https://www.wildatheartberlin.de"
+    "websiteUrl": "https://www.wildatheartberlin.de",
+    "description": "A rock'n'roll bar and live club near Schlesisches Tor in Kreuzberg, hosting raucous concerts and DJ nights spanning rockabilly, punk, garage and surf."
 }
 
 > {%

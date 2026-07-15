@@ -66,7 +66,9 @@ data class VenueDetailResponse(
     @Schema(description = "URL of the venue's official website")
     val websiteUrl: String?,
     @Schema(description = "URL of the venue's logo or photo")
-    val imageUrl: String?
+    val imageUrl: String?,
+    @Schema(description = "Short prose description of the venue")
+    val description: String?
 ) {
     companion object {
         fun fromEntity(entity: VenueEntity): VenueDetailResponse =
@@ -81,7 +83,8 @@ data class VenueDetailResponse(
                 latitude = entity.latitude,
                 longitude = entity.longitude,
                 websiteUrl = entity.websiteUrl,
-                imageUrl = entity.imageUrl
+                imageUrl = entity.imageUrl,
+                description = entity.description
             )
     }
 }
