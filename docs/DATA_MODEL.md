@@ -149,20 +149,21 @@ de.norm.events
 
 Represents a physical venue where music events take place (e.g. Astra Kulturhaus, Badehaus Berlin, SO36).
 
-| Field         | Type           | Nullable | Description                 | Example                         |
-|---------------|----------------|----------|-----------------------------|---------------------------------|
-| `id`          | `BIGINT`       | No       | Auto-generated primary key  | `42`                            |
-| `name`        | `TEXT`         | No       | Display name of the venue   | `Astra Kulturhaus`              |
-| `slug`        | `TEXT` (UQ)    | No       | URL-friendly identifier     | `astra-kulturhaus`              |
-| `address`     | `TEXT`         | Yes      | Street address              | `Revaler Str. 99`               |
-| `city`        | `TEXT`         | No       | City (defaults to `Berlin`) | `Berlin`                        |
-| `postal_code` | `TEXT`         | Yes      | Postal code                 | `10245`                         |
-| `latitude`    | `DECIMAL(9,6)` | Yes      | Geographic latitude         | `52.507242`                     |
-| `longitude`   | `DECIMAL(9,6)` | Yes      | Geographic longitude        | `13.451803`                     |
-| `website_url` | `TEXT`         | Yes      | Venue's official website    | `https://www.astra-berlin.de`   |
-| `image_url`   | `TEXT`         | Yes      | Venue logo or photo         | `https://example.com/astra.jpg` |
-| `created_at`  | `TIMESTAMPTZ`  | No       | Record creation timestamp   |                                 |
-| `updated_at`  | `TIMESTAMPTZ`  | No       | Last modification timestamp |                                 |
+| Field         | Type           | Nullable | Description                                      | Example                                           |
+|---------------|----------------|----------|--------------------------------------------------|---------------------------------------------------|
+| `id`          | `BIGINT`       | No       | Auto-generated primary key                       | `42`                                              |
+| `name`        | `TEXT`         | No       | Display name of the venue                        | `Astra Kulturhaus`                                |
+| `slug`        | `TEXT` (UQ)    | No       | URL-friendly identifier                          | `astra-kulturhaus`                                |
+| `address`     | `TEXT`         | Yes      | Street address                                   | `Revaler Str. 99`                                 |
+| `city`        | `TEXT`         | No       | City (defaults to `Berlin`)                      | `Berlin`                                          |
+| `postal_code` | `TEXT`         | Yes      | Postal code                                      | `10245`                                           |
+| `latitude`    | `DECIMAL(9,6)` | Yes      | Geographic latitude                              | `52.507242`                                       |
+| `longitude`   | `DECIMAL(9,6)` | Yes      | Geographic longitude                             | `13.451803`                                       |
+| `website_url` | `TEXT`         | Yes      | Venue's official website                         | `https://www.astra-berlin.de`                     |
+| `image_url`   | `TEXT`         | Yes      | Venue logo or photo                              | `https://example.com/astra.jpg`                   |
+| `description` | `TEXT`         | Yes      | Short prose description shown on the detail page | `A former power plant turned techno institution…` |
+| `created_at`  | `TIMESTAMPTZ`  | No       | Record creation timestamp                        |                                                   |
+| `updated_at`  | `TIMESTAMPTZ`  | No       | Last modification timestamp                      |                                                   |
 
 ### Event
 

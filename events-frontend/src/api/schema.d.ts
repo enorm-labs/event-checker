@@ -312,6 +312,8 @@ export interface components {
       websiteUrl?: string | null
       /** @description URL of the venue's logo or photo */
       imageUrl?: string | null
+      /** @description Short prose description of the venue */
+      description?: string | null
     }
     /** @description A page of results with pagination metadata */
     PageResponsePromoterSummaryResponse: {

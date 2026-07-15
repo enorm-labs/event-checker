@@ -25,6 +25,8 @@ CREATE TABLE venue
     longitude   DECIMAL(9, 6),
     website_url TEXT,
     image_url   TEXT,
+    -- Short prose description of the venue, shown on the public detail page.
+    description TEXT,
     created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );

@@ -60,7 +60,8 @@ class VenueService(
                 latitude = request.latitude,
                 longitude = request.longitude,
                 websiteUrl = request.websiteUrl,
-                imageUrl = request.imageUrl
+                imageUrl = request.imageUrl,
+                description = request.description
             )
         val entity = VenueEntity.fromDomain(venue)
         val saved = venueRepository.save(entity)
@@ -99,7 +100,8 @@ class VenueService(
                 latitude = request.latitude,
                 longitude = request.longitude,
                 websiteUrl = request.websiteUrl,
-                imageUrl = request.imageUrl
+                imageUrl = request.imageUrl,
+                description = request.description
             )
         val saved = venueRepository.save(updated)
         logger.info { "Updated venue '${saved.name}' (id=${saved.id})" }

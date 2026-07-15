@@ -40,5 +40,11 @@ data class VenueRequest(
     val websiteUrl: String? = null,
     @field:Size(max = 2048, message = "Image URL must not exceed 2048 characters")
     @Schema(description = "URL of the venue's logo or photo", example = "https://example.com/astra-logo.jpg")
-    val imageUrl: String? = null
+    val imageUrl: String? = null,
+    @field:Size(max = 4000, message = "Description must not exceed 4000 characters")
+    @Schema(
+        description = "Short prose description of the venue, shown on the detail page",
+        example = "A former power plant turned techno institution in Friedrichshain."
+    )
+    val description: String? = null
 )

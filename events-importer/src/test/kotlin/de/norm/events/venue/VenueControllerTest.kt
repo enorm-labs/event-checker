@@ -54,6 +54,8 @@ class VenueControllerTest : BaseControllerTest() {
                 venue.name shouldBe "Astra Kulturhaus"
                 // District round-trips through create → persist → read.
                 venue.district shouldBe "friedrichshain-kreuzberg"
+                // Description round-trips through create → persist → read.
+                venue.description shouldBe "A large concert hall on the RAW-Gelände in Friedrichshain."
             }
 
         // Update

@@ -60,5 +60,9 @@ watch(slug, reload)
         Website
       </a>
     </template>
+
+    <p v-if="venue?.description" class="whitespace-pre-line text-foreground/90">
+      {{ venue.description }}
+    </p>
   </BaseDetailView>
 </template>

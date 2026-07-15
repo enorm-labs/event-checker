@@ -55,18 +55,20 @@ abstract class BaseControllerTest {
         city: String = "Berlin",
         address: String? = null,
         imageUrl: String? = null,
-        district: String? = null
+        district: String? = null,
+        description: String? = null
     ): Long =
         databaseClient
             .sql(
-                "INSERT INTO events.venue (name, slug, city, address, image_url, district) " +
-                    "VALUES (:name, :slug, :city, :address, :imageUrl, :district) RETURNING id"
+                "INSERT INTO events.venue (name, slug, city, address, image_url, district, description) " +
+                    "VALUES (:name, :slug, :city, :address, :imageUrl, :district, :description) RETURNING id"
             ).bind("name", name)
             .bind("slug", slug)
             .bind("city", city)
             .bindOrNull("address", address)
             .bindOrNull("imageUrl", imageUrl)
             .bindOrNull("district", district)
+            .bindOrNull("description", description)
             .mapId()
 
     protected suspend fun insertArtist(

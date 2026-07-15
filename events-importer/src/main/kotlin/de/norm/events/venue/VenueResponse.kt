@@ -34,6 +34,11 @@ data class VenueResponse(
     val websiteUrl: String?,
     @Schema(description = "URL of the venue's logo or photo", example = "https://example.com/astra-logo.jpg")
     val imageUrl: String?,
+    @Schema(
+        description = "Short prose description of the venue, shown on the detail page",
+        example = "A former power plant turned techno institution in Friedrichshain."
+    )
+    val description: String?,
     @Schema(description = "Timestamp when this record was first created")
     val createdAt: Instant?,
     @Schema(description = "Timestamp when this record was last modified")
@@ -54,6 +59,7 @@ data class VenueResponse(
                 longitude = venue.longitude,
                 websiteUrl = venue.websiteUrl,
                 imageUrl = venue.imageUrl,
+                description = venue.description,
                 createdAt = venue.createdAt,
                 updatedAt = venue.updatedAt
             )
