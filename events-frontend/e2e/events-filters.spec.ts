@@ -48,6 +48,7 @@ function eventsResponseFor(sp: URLSearchParams) {
   if (sp.get('q') === 'nothing') return eventPage([])
   if (sp.get('q') === 'jazz') return eventPage(['Jazz Night'])
   if (sp.get('eventType') === 'FESTIVAL') return eventPage(['Big Festival'])
+  if (sp.get('venue') === 'lido') return eventPage(['Lido Show'])
   if (sp.get('genre') === 'techno') return eventPage(['Techno Rave'])
   if (sp.get('district') === 'neukoelln') return eventPage(['Neukölln Night'])
   if (sp.get('excludeSoldOut') === 'true') return eventPage(['Available Only'])
@@ -70,6 +71,19 @@ test.beforeEach(async ({ page }) => {
       { slug: 'techno', name: 'Techno' },
       { slug: 'jazz', name: 'Jazz' },
     ]),
+  )
+  // Populate the venue dropdown so its options can be selected.
+  await page.route(/\/api\/venues/, (route) =>
+    json(route, {
+      content: [
+        { slug: 'lido', name: 'Lido' },
+        { slug: 'berghain', name: 'Berghain' },
+      ],
+      page: 0,
+      size: 500,
+      totalElements: 2,
+      totalPages: 1,
+    }),
   )
   // Serve the search feed based on the query params the frontend sends.
   await page.route(/\/api\/events(\?|$)/, (route) =>
@@ -106,6 +120,16 @@ test('filters by event type', async ({ page }) => {
 
   await expect(page).toHaveURL(/[?&]eventType=FESTIVAL\b/)
   await expect(eventHeading(page, 'Big Festival')).toBeVisible()
+})
+
+test('filters by venue', async ({ page }) => {
+  await page.goto('/events')
+  await expect(eventHeading(page, 'Default Event A')).toBeVisible()
+
+  await selectWithOption(page, 'All venues').selectOption('lido')
+
+  await expect(page).toHaveURL(/[?&]venue=lido\b/)
+  await expect(eventHeading(page, 'Lido Show')).toBeVisible()
 })
 
 test('filters by genre', async ({ page }) => {

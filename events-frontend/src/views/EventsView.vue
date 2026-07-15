@@ -6,6 +6,7 @@ import EventCard from '@/components/EventCard.vue'
 import SectionLabel from '@/components/SectionLabel.vue'
 import { type EventSearchParams, useEventSearch } from '@/composables/useEvents'
 import { useGenres } from '@/composables/useGenres'
+import { useAllVenues } from '@/composables/useVenues'
 import { DISTRICTS } from '@/lib/districts'
 
 const PAGE_SIZE = 20
@@ -34,6 +35,7 @@ function queryString(key: string): string {
 const params = computed<EventSearchParams>(() => ({
   q: queryString('q') || undefined,
   eventType: queryString('eventType') || undefined,
+  venue: queryString('venue') || undefined,
   district: queryString('district') || undefined,
   genre: queryString('genre') || undefined,
   minPrice: queryString('minPrice') ? Number(queryString('minPrice')) : undefined,
@@ -45,6 +47,7 @@ const params = computed<EventSearchParams>(() => ({
 }))
 
 const genres = useGenres()
+const venues = useAllVenues()
 const { data: page, error, loading, run } = useEventSearch(() => params.value)
 
 // Search box and price range are local drafts applied on submit; selects apply immediately.
@@ -87,6 +90,7 @@ function goToPage(target: number) {
 
 onMounted(() => {
   genres.run()
+  venues.run()
   run()
 })
 watch(() => route.query, run, { deep: true })
@@ -118,6 +122,18 @@ watch(() => route.query, run, { deep: true })
       >
         <option value="">All types</option>
         <option v-for="type in EVENT_TYPES" :key="type" :value="type">{{ type }}</option>
+      </select>
+
+      <select
+        :value="queryString('venue')"
+        aria-label="Filter by venue"
+        class="h-8 rounded-lg border border-border bg-background px-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+        @change="applyFilters({ venue: ($event.target as HTMLSelectElement).value })"
+      >
+        <option value="">All venues</option>
+        <option v-for="v in venues.data.value ?? []" :key="v.slug" :value="v.slug ?? ''">
+          {{ v.name }}
+        </option>
       </select>
 
       <select
