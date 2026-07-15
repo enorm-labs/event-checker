@@ -12,6 +12,7 @@ Slash commands available under `.claude/skills/`:
 - `/codebase-audit` — comprehensive whole-repo review of code + architecture (size, duplication, conventions, simplification)
 - `/commit-message` — generate a commit message from staged changes
 - `/improve-test-coverage` — find and fill coverage gaps
+- `/open-pr` — branch, commit (Conventional Commits), push, and open a PR in one flow
 - `/scaffold-importer` — scaffold a new venue event importer (scraper) end to end
 - `/squash-commit-message` — write a squash commit message for the current branch
 - `/update-dependencies` — bump backend and frontend dependencies safely
