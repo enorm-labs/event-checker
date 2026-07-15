@@ -62,6 +62,23 @@ test('searching updates the URL query and re-requests', async ({ page }) => {
   await expect(page.getByRole('link', { name: /Astra/ })).toHaveCount(0)
 })
 
+test('filtering by district updates the URL query and re-requests', async ({ page }) => {
+  await page.route(venuesList, (route) => {
+    const district = new URL(route.request().url()).searchParams.get('district')
+    json(
+      route,
+      pageBody(district === 'mitte' ? [venue('berghain', 'Berghain')] : [venue('lido', 'Lido')]),
+    )
+  })
+
+  await page.goto('/venues')
+  await page.getByLabel('Filter by district').selectOption('mitte')
+
+  await expect(page).toHaveURL(/\/venues\?district=mitte$/)
+  await expect(page.getByRole('link', { name: /Berghain/ })).toBeVisible()
+  await expect(page.getByRole('link', { name: /Lido/ })).toHaveCount(0)
+})
+
 test('shows an empty state when no venues match', async ({ page }) => {
   await page.route(venuesList, (route) => json(route, pageBody([])))
 

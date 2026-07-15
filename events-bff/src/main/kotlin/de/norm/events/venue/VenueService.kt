@@ -16,20 +16,39 @@ class VenueService(
     private val venueRepository: VenueRepository
 ) {
     /**
-     * Lists venues with pagination, optionally filtered by a case-insensitive name [query].
+     * Lists venues with pagination, optionally filtered by a case-insensitive name [query]
+     * and/or an exact [district] (Bezirk) slug. The two filters combine independently, so any
+     * of the four presence combinations selects the matching repository query.
      */
     @Transactional(readOnly = true)
     suspend fun list(
         query: String?,
+        district: String?,
         pageable: Pageable
     ): PageResponse<VenueSummaryResponse> {
         val safePageable = pageable.sanitizeSort(SORTABLE_PROPERTIES, DEFAULT_SORT)
+        val name = query?.takeIf { it.isNotBlank() }
+        val borough = district?.takeIf { it.isNotBlank() }
         val (entities, total) =
-            if (query.isNullOrBlank()) {
-                venueRepository.findAllBy(safePageable).toList() to venueRepository.count()
-            } else {
-                venueRepository.findByNameContainingIgnoreCase(query, safePageable).toList() to
-                    venueRepository.countByNameContainingIgnoreCase(query)
+            when {
+                name == null && borough == null -> {
+                    venueRepository.findAllBy(safePageable).toList() to venueRepository.count()
+                }
+
+                name == null -> {
+                    venueRepository.findByDistrict(borough!!, safePageable).toList() to
+                        venueRepository.countByDistrict(borough)
+                }
+
+                borough == null -> {
+                    venueRepository.findByNameContainingIgnoreCase(name, safePageable).toList() to
+                        venueRepository.countByNameContainingIgnoreCase(name)
+                }
+
+                else -> {
+                    venueRepository.findByNameContainingIgnoreCaseAndDistrict(name, borough, safePageable).toList() to
+                        venueRepository.countByNameContainingIgnoreCaseAndDistrict(name, borough)
+                }
             }
         return PageResponse.of(entities.map { VenueSummaryResponse.fromEntity(it) }, safePageable, total)
     }

@@ -5,6 +5,7 @@ import { useAsync } from './useAsync'
 /** Query parameters accepted by the venue list endpoint (`GET /venues`). */
 export interface VenueSearchParams {
   q?: string
+  district?: string
   page?: number
   size?: number
   sort?: string[]

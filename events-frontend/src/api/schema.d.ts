@@ -772,6 +772,8 @@ export interface operations {
       query?: {
         /** @description Case-insensitive substring filter on the venue name. Omitted/blank returns all venues. */
         q?: string
+        /** @description District filter — only venues in the matching Berlin borough (e.g. friedrichshain-kreuzberg). Omitted/blank returns all districts. */
+        district?: string
         /** @description Zero-based page index (0..N) */
         page?: number
         /** @description The size of the page to be returned */
