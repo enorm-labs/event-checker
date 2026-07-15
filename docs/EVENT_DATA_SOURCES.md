@@ -49,9 +49,13 @@ The **Import** column tracks whether an automated importer has been implemented 
 | Matrix Club Berlin          | https://www.matrix-berlin.de/                               | Club         |     ✅      |        | Recurring nightly club events       |
 | Soda Club Berlin            | https://www.soda-berlin.de/                                 | Club         |     ✅      |        | Recurring party nights              |
 | The Pearl                   | https://thepearl-berlin.de/                                 | Club         |     ✅      |        | JS-rendered; no HTML events         |
+| Zuckerzauber                |                                                             | ?            |            |        |                                     |
+| Maxxim Club                 |                                                             | Club         |            |        |                                     |
+| Strandbad Grünau            |                                                             | Open Air     |            |        |                                     |
 | Berghain / Panorama Bar     | https://www.berghain.berlin/de/program/                     | Techno Club  |     ✅      |   ✅    | Server-rendered; list + detail      |
 | Kantine am Berghain         | https://www.berghain.berlin/de/program/kantine-am-berghain/ | Concert Hall |     ✅      |   ✅    | Shares BERGHAIN importer            |
 | AMT                         | https://www.club-amt.berlin                                 | Techno Club  |     ✅      |   ✅    | Webflow; /events -> month pages     |
+| C115                        |                                                             | Techno Club  |            |        |                                     |
 | Tresor                      |                                                             | Techno Club  |            |        |                                     |
 | Sisyphos                    |                                                             | Techno Club  |            |        |                                     |
 | Renate                      |                                                             | Techno Club  |            |        |                                     |
@@ -79,9 +83,10 @@ The **Import** column tracks whether an automated importer has been implemented 
 
 ---
 
-Think about importing events from Resident Advisor as well (would this be legal?)
+## TODO
 
-See also https://www.theclubmap.com/music-style/
+Source-discovery and new-importer tasks are tracked in the backlog — see the
+**More importers** section of [../TODO.md](../TODO.md).
 
 ---
 
