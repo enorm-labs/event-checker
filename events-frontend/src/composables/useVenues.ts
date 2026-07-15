@@ -1,5 +1,5 @@
 import { api, unwrap } from '@/api/client'
-import type { VenuePage } from '@/api/types'
+import type { VenuePage, VenueSummary } from '@/api/types'
 import { useAsync } from './useAsync'
 
 /** Query parameters accepted by the venue list endpoint (`GET /venues`). */
@@ -20,4 +20,15 @@ export function useVenueSearch(params: () => VenueSearchParams, label = 'venues'
     () => unwrap(api.GET('/venues', { params: { query: params() } })),
     label,
   )
+}
+
+/**
+ * Loads every venue (name-sorted) to populate the events filter dropdown. The list endpoint is
+ * paged; we request a size large enough to hold all tracked venues in a single call.
+ */
+export function useAllVenues() {
+  return useAsync<VenueSummary[]>(async () => {
+    const page = await unwrap(api.GET('/venues', { params: { query: { size: 500 } } }))
+    return page.content ?? []
+  }, 'venues')
 }
