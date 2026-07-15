@@ -36,6 +36,12 @@ const router = createRouter({
       component: () => import('../views/EventDetailView.vue'),
     },
     {
+      path: '/venues',
+      name: 'venues',
+      meta: { title: 'Venues' },
+      component: () => import('../views/VenuesView.vue'),
+    },
+    {
       path: '/venues/:slug',
       name: 'venue',
       component: () => import('../views/VenueDetailView.vue'),

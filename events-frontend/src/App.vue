@@ -57,6 +57,12 @@ function toggleDark() {
         </RouterLink>
         <RouterLink
           class="text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
+          to="/venues"
+        >
+          Venues
+        </RouterLink>
+        <RouterLink
+          class="text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
           to="/calendar"
         >
           Calendar

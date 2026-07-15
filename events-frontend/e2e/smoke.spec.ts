@@ -24,6 +24,7 @@ const staticRoutes = [
   // `nav` is the accessible name of the nav link — home's is the brand logo, not "Home".
   { path: '/', name: 'home', nav: 'Event Junkie', heading: 'Event Junkie' },
   { path: '/events', name: 'events', nav: 'Events', heading: 'Events' },
+  { path: '/venues', name: 'venues', nav: 'Venues', heading: 'Venues' },
   { path: '/calendar', name: 'calendar', nav: 'Calendar', heading: 'Calendar' },
   { path: '/about', name: 'about', nav: 'About', heading: 'About' },
 ] as const
