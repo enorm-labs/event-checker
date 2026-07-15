@@ -46,6 +46,11 @@ Public name is **Event Junkie**; internal/repo name stays **Event Checker**
 
 - [ ] Venues page (with map) — consumes the existing `GET /venues` list endpoint
 - [ ] Filter events and venues by venue type and genre
+- [ ] Filter events by a specific venue (e.g. from the venue detail page)
+- [ ] Browse/see past events — an archive view (decide retention + UX; ties into the housekeeping delete policy under Importer / Data)
+- [ ] Reduce or group the displayed genres — too many distinct tags; needs a grouping/taxonomy decision (UX + data)
+- [ ] Decide whether to display event **descriptions** and **source images** — copyright/licensing plus traffic to small sites; if images: store/cache/proxy vs.
+  hotlink vs. omit (see the Legal/Compliance copyright item)
 - [ ] Sitemap (still worthwhile for SEO?)
 - [ ] RSS feed for newly imported events
 - [ ] I18N / L10N + translations
@@ -80,7 +85,8 @@ Strategy & sequencing: [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEG
   backfill re-scrape** — existing rows keep no artist until re-imported.
 - [ ] **(Pillar 4 — Systematize)** AI-assisted data quality in the importer (one capability,
   several uses): detect/extract artist names from titles, validate event types, enrich missing
-  fields (genres, event types), and fix bad values (artist names, promoter names, …). Runs
+  fields (genres, event types), and fix bad values (artist names, promoter names, …) —
+  cross-checking the event source page and the wider web where useful. Runs
   *after* the deterministic normalizers, human-in-the-loop via the admin review UI.
   **Needs ADR-012 (AI-Assisted Data Quality)** — new external dependency, cost/latency,
   non-deterministic output.
@@ -92,6 +98,16 @@ Strategy & sequencing: [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEG
   (Strategy §6.)
 - [ ] Enrich venues: type (club/bar/concert hall), description, image/photo, genres, event types
 - [ ] Enrich promoters: description, image, and corrected display names
+- [ ] Check & fix venue districts, addresses, and geo-coordinates
+
+**Importer coverage & parsing:**
+
+- [ ] Scrape events in multiple languages (English + German) where the source offers it (e.g. Berghain) —
+  first audit which event sources are actually multi-language
+- [ ] Update importers to scrape/parse **all** available events via the site's navigation/pagination
+  (not just the first page)
+- [ ] Review events typed `OTHER` — should we add new values to the event-type enum?
+- [ ] Add events manually for venues that have no website — plus a plan for keeping those up to date
 
 **Admin tooling & maintenance:**
 
@@ -108,6 +124,14 @@ Strategy & sequencing: [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEG
 - [ ] Implement more importers/scrapers (see EVENT_DATA_SOURCES.md)
     - [ ] Strategy to implement the remaining importers fast — but still clean, robust, fully tested
     - [ ] Standardize/simplify existing importers + scrapers where it helps
+    - [ ] Find venues we may have missed — cross-check [theclubmap.com](https://www.theclubmap.com/music-style/),
+      Resident Advisor, and the web
+    - [ ] Evaluate bars that host DJs / live music / other events as sources
+    - [ ] Check promoters already in the DB and scan their sites for events
+    - [ ] Cover events at special/one-off locations (e.g. Durchlüften Festival @ Humboldtforum,
+      Tempelhofer Feld, Olympiastadion)
+    - [ ] Radio-station event listings (RadioEins, FluxFM, StarFM, …)
+    - [ ] Consider importing from Resident Advisor — confirm legality first (probably not allowed)
 
 ## Operations & Hardening
 
@@ -129,6 +153,9 @@ Strategy & sequencing: [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEG
 - [ ] Display used FOSS / attributions
 - [ ] Link to the GitHub repository
 - [ ] Confirm legality of scraping events and displaying them
+- [ ] Clarify copyright/licensing of event **descriptions** and **images** per source — are we allowed to
+  store/display them? Track a copyright/license status per event source (drives the description/image
+  display decision under Frontend & BFF)
 
 ## Tooling, AI Agents & Skills
 
@@ -157,6 +184,7 @@ Strategy & sequencing: [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEG
   would collapse the public/internal split. Note: this **reverses the current BRANDING naming rule**
   (§ "Naming rule"); if pursued, update BRANDING.md accordingly. Scope: repo name, Gradle modules,
   packages, DB schema, ADRs, docs.
+- [ ] Clean up KDoc comments across the codebase — drop boilerplate/irrelevant comments, keep the rest meaningful
 - [ ] Generate a Mermaid domain class diagram via Gradle
 - [ ] Community/repo health files: CONTRIBUTING, CODE_OF_CONDUCT, SECURITY, SUPPORT
   (example: [gitfolio](https://github.com/github-samples/gitfolio))
