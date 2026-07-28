@@ -18,8 +18,7 @@ Run Kover to get the current coverage baseline:
 ./gradlew koverLog
 ```
 
-This prints a per-module line/branch coverage summary to the console. For a detailed breakdown by class and
-method, generate the HTML report:
+This prints a per-module line/branch coverage summary to the console. For a detailed breakdown by class and method, generate the HTML report:
 
 ```bash
 ./gradlew koverHtmlReport
@@ -110,8 +109,8 @@ Follow these patterns — they are established in the codebase and must be respe
 
 ### Test Fixture Factories
 
-- Use existing `*RequestFixtures` object singletons (e.g., `VenueRequestFixtures.create(name = "Custom")`) to construct
-  test data with sensible defaults. Only override properties relevant to the specific test scenario.
+- Use existing `*RequestFixtures` object singletons (e.g., `VenueRequestFixtures.create(name = "Custom")`) to construct test data with sensible defaults. Only
+  override properties relevant to the specific test scenario.
 - If a fixture factory doesn't exist for the entity you're testing, create one following the same pattern.
 
 ### File Naming & Placement
@@ -131,8 +130,8 @@ Run unit tests with coverage enabled:
 npm run test:unit:coverage
 ```
 
-This prints a summary to the console and generates an HTML report in `coverage/index.html`.
-Uses `@vitest/coverage-v8` (V8's native code coverage — already installed as a dev dependency).
+This prints a summary to the console and generates an HTML report in `coverage/index.html`. Uses `@vitest/coverage-v8` (V8's native code coverage — already
+installed as a dev dependency).
 
 ### 2. Identify Coverage Gaps
 

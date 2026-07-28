@@ -1,18 +1,16 @@
 # Code Review
 
-Review the code changes in this pull request (or diff) for correctness, maintainability, and adherence to project
-conventions.
+Review the code changes in this pull request (or diff) for correctness, maintainability, and adherence to project conventions.
 
 ## Context Gathering
 
-1. **Understand the change** — read the PR description, linked issues, and conversation history to understand the
-   intent and motivation behind the changes. Use `gh pr view` to fetch the PR description and metadata.
+1. **Understand the change** — read the PR description, linked issues, and conversation history to understand the intent and motivation behind the changes. Use
+   `gh pr view` to fetch the PR description and metadata.
 2. **Inspect the diff** — use `git --no-pager diff main..HEAD` (or `gh pr diff`) to see all changed files.
 3. **Check CI status** — use `gh pr checks` to verify whether CI passes before reviewing code.
-4. **Read surrounding code** — don't review changes in isolation. Read the full files and related code to understand
-   how the changes fit into the existing architecture.
-5. **Check AGENTS.md** — refer to the project's `AGENTS.md` for architecture decisions, conventions, and patterns
-   that the code must follow.
+4. **Read surrounding code** — don't review changes in isolation. Read the full files and related code to understand how the changes fit into the existing
+   architecture.
+5. **Check AGENTS.md** — refer to the project's `AGENTS.md` for architecture decisions, conventions, and patterns that the code must follow.
 
 ## Review Checklist
 
@@ -80,9 +78,8 @@ conventions.
 - MockK is used for mocking (not Mockito).
 - Kotest assertions (`shouldBe`, `shouldContain`) are preferred.
 - Test fixture factories provide sensible defaults; tests only override relevant properties.
-- **Test coverage of changed classes**: Run `./gradlew koverHtmlReport` and verify that classes modified or added
-  in the PR have adequate line coverage. Flag any changed `@Service`, `@RestController`, or scraper class that
-  lacks corresponding test updates. Coverage should not regress for touched files.
+- **Test coverage of changed classes**: Run `./gradlew koverHtmlReport` and verify that classes modified or added in the PR have adequate line coverage. Flag
+  any changed `@Service`, `@RestController`, or scraper class that lacks corresponding test updates. Coverage should not regress for touched files.
 
 #### Code Organization
 
@@ -170,18 +167,17 @@ If the code looks good, say so — don't invent issues for the sake of having fe
 
 **IMPORTANT: Every review MUST produce a markdown file. This is not optional — it is a required deliverable.**
 **You MUST create (or update) the review file using a file-writing tool before ending your turn.**
-After completing the review, **automatically write the full review to a markdown file** in the `docs/reviews/` directory.
-Do not ask the user whether to write the file — just do it. Never present review findings only in the chat without
-also writing them to the file.
+After completing the review, **automatically write the full review to a markdown file** in the `docs/reviews/` directory. Do not ask the user whether to write
+the file — just do it. Never present review findings only in the chat without also writing them to the file.
 
-- **File name**: `{branch}-review.md`, where `{branch}` is the current Git branch name (use `git rev-parse --abbrev-ref HEAD`).
-  Replace any `/` characters in the branch name with `-` to produce a valid filename (e.g., branch `feat/add-venues` → `feat-add-venues-review.md`).
+- **File name**: `{branch}-review.md`, where `{branch}` is the current Git branch name (use `git rev-parse --abbrev-ref HEAD`). Replace any `/` characters in
+  the branch name with `-` to produce a valid filename (e.g., branch `feat/add-venues` → `feat-add-venues-review.md`).
 - **Create the `docs/reviews/` directory** if it does not already exist.
 - The file should contain the complete review output, including all findings, severities, and suggested fixes.
 - **If the review file already exists**, read the existing file first and update it in place:
-    - For each previously reported finding that has been resolved in the current code, mark it as done by
-      prefixing the description with ~~strikethrough~~ and adding a `✅ Resolved` label.
+    - For each previously reported finding that has been resolved in the current code, mark it as done by prefixing the description with ~~strikethrough~~ and
+      adding a `✅ Resolved` label.
     - Keep unresolved findings unchanged so they remain visible as open items.
     - Append any **new findings** discovered in this review pass to the appropriate section.
-    - Add a `## Review History` section at the bottom (or update it if it already exists) with a timestamped entry
-      noting which findings were resolved and which are new (e.g., `- 2026-05-12: 2 resolved, 1 new finding added`).
+    - Add a `## Review History` section at the bottom (or update it if it already exists) with a timestamped entry noting which findings were resolved and which
+      are new (e.g., `- 2026-05-12: 2 resolved, 1 new finding added`).

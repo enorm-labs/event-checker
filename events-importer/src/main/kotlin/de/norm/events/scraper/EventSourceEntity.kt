@@ -1,7 +1,5 @@
 package de.norm.events.scraper
 
-import de.norm.events.scraper.ImportStatus.Companion.S_IDLE
-import de.norm.events.scraper.ImportStatus.Companion.S_RUNNING
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.LastModifiedDate

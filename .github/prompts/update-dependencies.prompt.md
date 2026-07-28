@@ -1,7 +1,7 @@
 # Update Dependencies
 
-Update project dependencies to their latest stable versions, applying only to versions managed by this project — never
-override versions controlled by Spring Boot or Spring Dependency Management BOMs.
+Update project dependencies to their latest stable versions, applying only to versions managed by this project — never override versions controlled by Spring
+Boot or Spring Dependency Management BOMs.
 
 ## Important
 
@@ -15,8 +15,7 @@ Run the Gradle Versions Plugin to detect available updates:
 ./gradlew dependencyUpdates
 ```
 
-This produces a report at `build/dependencyUpdates/report.txt` listing all dependencies with available updates.
-Read and analyze the full report.
+This produces a report at `build/dependencyUpdates/report.txt` listing all dependencies with available updates. Read and analyze the full report.
 
 ## Step 2: Identify Which Versions We Manage
 
@@ -57,8 +56,8 @@ Also check whether the **ktlint version** (`version = "..."` inside the `configu
 
 ### ❌ Managed by BOMs (do NOT update these)
 
-Dependencies whose versions come from the **Spring Boot BOM** (`org.springframework.boot` plugin) or the
-**Spring Modulith BOM**. These include, but are not limited to:
+Dependencies whose versions come from the **Spring Boot BOM** (`org.springframework.boot` plugin) or the **Spring Modulith BOM**. These include, but are not
+limited to:
 
 - `org.springframework.boot:spring-boot-starter-*`
 - `org.springframework:spring-*`
@@ -71,8 +70,8 @@ Dependencies whose versions come from the **Spring Boot BOM** (`org.springframew
 - `org.testcontainers:*`
 - `org.junit.*` / `junit-platform-*`
 
-**Rule of thumb**: If a dependency is declared _without_ an explicit version string (no `${property("...")}` or
-hardcoded version), its version comes from a BOM and must NOT be overridden.
+**Rule of thumb**: If a dependency is declared _without_ an explicit version string (no `${property("...")}` or hardcoded version), its version comes from a BOM
+and must NOT be overridden.
 
 ## Step 3: Filter for Stable Versions Only
 
@@ -86,12 +85,11 @@ Reject any version containing these indicators (case-insensitive):
 Before applying updates, verify compatibility:
 
 - **Spring Boot ↔ Spring Modulith**: Check the
-  [Spring Modulith compatibility matrix](https://github.com/spring-projects/spring-modulith#compatibility-matrix) to
-  ensure the Spring Modulith version is compatible with the Spring Boot version.
-- **Kotlin ↔ Spring Boot**: Verify the Kotlin version is supported by the Spring Boot version (check the Spring Boot
-  release notes).
-- **Major version bumps**: For any major version upgrade (e.g., 5.x → 6.x), check the migration guide and note any
-  breaking changes. Flag these for the user instead of silently applying them.
+  [Spring Modulith compatibility matrix](https://github.com/spring-projects/spring-modulith#compatibility-matrix) to ensure the Spring Modulith version is
+  compatible with the Spring Boot version.
+- **Kotlin ↔ Spring Boot**: Verify the Kotlin version is supported by the Spring Boot version (check the Spring Boot release notes).
+- **Major version bumps**: For any major version upgrade (e.g., 5.x → 6.x), check the migration guide and note any breaking changes. Flag these for the user
+  instead of silently applying them.
 
 ## Step 5: Apply Updates
 
@@ -138,8 +136,7 @@ Manually update the version strings in `events-frontend/package.json` to the lat
 
 - Only update to **stable releases** — skip versions containing `alpha`, `beta`, `rc`, `next`, `canary`, `dev`,
   `snapshot`, `preview`.
-- **Major version bumps** (e.g., 3.x → 4.x): Check the migration guide and flag breaking changes for the user instead
-  of silently applying them.
+- **Major version bumps** (e.g., 3.x → 4.x): Check the migration guide and flag breaking changes for the user instead of silently applying them.
 - Keep `oxlint` and `eslint-plugin-oxlint` versions in sync (they share the same release cadence).
 - Keep `vue` and `vue-router` compatible with each other (check Vue ecosystem compatibility).
 

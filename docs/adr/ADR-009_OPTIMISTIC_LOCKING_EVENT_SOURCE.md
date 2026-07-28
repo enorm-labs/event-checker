@@ -18,13 +18,11 @@ Without concurrency control, a race condition can cause **lost updates**. For ex
 - An admin PATCHes source A (writing version N+1) to disable it.
 - The scheduler finishes and writes `markSuccess` using its stale copy (version N), overwriting the admin's `enabled = false`.
 
-The `EventImportService` also threads entity state through multiple save operations in sequence
-(`markRunning` → business logic → `markSuccess`/`markFailed`/`markMisconfigured`). Each step must operate on the
-latest persisted state to avoid overwriting intermediate changes.
+The `EventImportService` also threads entity state through multiple save operations in sequence (`markRunning` → business logic → `markSuccess`/`markFailed`/
+`markMisconfigured`). Each step must operate on the latest persisted state to avoid overwriting intermediate changes.
 
-Other entities (`VenueEntity`, `ArtistEntity`, `PromoterEntity`, `EventEntity`) are single-writer
-(admin CRUD or importer upsert) with no realistic concurrent modification scenarios, so they do
-not justify the overhead of optimistic locking.
+Other entities (`VenueEntity`, `ArtistEntity`, `PromoterEntity`, `EventEntity`) are single-writer (admin CRUD or importer upsert) with no realistic concurrent
+modification scenarios, so they do not justify the overhead of optimistic locking.
 
 ## Decision
 
@@ -36,15 +34,13 @@ Add **Spring Data `@Version` optimistic locking** to `EventSourceEntity` only.
   `WHERE version = ?` in UPDATE statements.
 - If a concurrent modification is detected, Spring throws `OptimisticLockingFailureException`.
 
-The `markRunning` method returns the saved entity so that subsequent status updates
-(`markSuccess`, `markFailed`, `markMisconfigured`) operate on the latest version — preventing stale writes
-throughout the import lifecycle.
+The `markRunning` method returns the saved entity so that subsequent status updates (`markSuccess`, `markFailed`, `markMisconfigured`) operate on the latest
+version — preventing stale writes throughout the import lifecycle.
 
 However, a version conflict can still occur if an external writer (e.g. `ScheduledImportService.resetStuckSources()`)
-modifies the `event_source` row between `markRunning` and the subsequent status update. To handle this,
-all status update methods use a **retry-on-conflict** strategy: on `OptimisticLockingFailureException`, the entity
-is re-fetched by ID to obtain the current version, the status mutation is re-applied, and the save is retried once.
-If the retry also fails, the exception propagates — the scheduler picks up the source on the next tick.
+modifies the `event_source` row between `markRunning` and the subsequent status update. To handle this, all status update methods use a **retry-on-conflict**
+strategy: on `OptimisticLockingFailureException`, the entity is re-fetched by ID to obtain the current version, the status mutation is re-applied, and the save
+is retried once. If the retry also fails, the exception propagates — the scheduler picks up the source on the next tick.
 
 ## Consequences
 

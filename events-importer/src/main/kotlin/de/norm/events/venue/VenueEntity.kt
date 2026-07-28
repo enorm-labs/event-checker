@@ -1,6 +1,5 @@
 package de.norm.events.venue
 
-import de.norm.events.venue.VenueEntity.Companion.fromDomain
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.LastModifiedDate
