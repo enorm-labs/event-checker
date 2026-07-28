@@ -127,11 +127,16 @@ private val GENRE_SYNONYMS: Map<String, String> =
         "neuedeutschehrte" to "Neue Deutsche Härte",
         // Tango
         "tango" to "Tango",
-        // Latin family
+        // Latin family — the Latin-dance styles a club bills per floor (Havanna: "Salsa, Merengue &
+        // Bachata", "Reggaeton, Latin-Pop") all fold onto the one Latin tag, following salsa/cumbia.
         "cumbia" to "Latin",
         "salsa" to "Latin",
         "latin" to "Latin",
         "latinroots" to "Latin",
+        "latinpop" to "Latin",
+        "reggaeton" to "Latin",
+        "merengue" to "Latin",
+        "bachata" to "Latin",
         // Afrobeats
         "afro" to "Afrobeats",
         "afrobeat" to "Afrobeats",
@@ -144,6 +149,7 @@ private val GENRE_SYNONYMS: Map<String, String> =
         "urdurock" to "World Music",
         // Disco
         "disco" to "Disco",
+        "discotunes" to "Disco",
         // Karaoke
         "karaoke" to "Karaoke",
         // Decades / party labels

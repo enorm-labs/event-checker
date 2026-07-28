@@ -79,6 +79,19 @@ enum class EventSource {
     GRETCHEN,
 
     /**
+     * Havanna Berlin – Squarespace Latin dance club in Schöneberg. The venue publishes **no dated
+     * programme**: its `/events` page is a static three-column teaser (one poster plus a "More" button
+     * per night) linking to three undated pages — `/wednesday`, `/friday`, `/saturday` — that describe
+     * the same weekly resident nights (floor-by-floor genres, start time, door price, dance-lesson
+     * note). This importer therefore *derives* dated events, expanding each night page into one
+     * occurrence per week over a rolling horizon. Conditional caching is disabled because the pages
+     * have not changed since 2016 — a 304 would freeze the horizon and the calendar would never
+     * advance. A closure notice on a night page ("… AB DEM 01.07.2026 IN DER SOMMERPAUSE!") suppresses
+     * that night's occurrences from the announced date on.
+     */
+    HAVANNA,
+
+    /**
      * Hole 44 Berlin – WordPress/Events-Manager concert hall; the `/events/` page lists every show as a
      * `li.event-item` (date, start time, title, genre tags, and a `.changes` relocation/cancellation note),
      * each linking to a `/event/<date-slug>/` detail page that adds the promoter, doors time, image, and a

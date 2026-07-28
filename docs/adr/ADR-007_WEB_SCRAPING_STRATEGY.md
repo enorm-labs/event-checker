@@ -382,6 +382,34 @@ over pages in `importEvents()` and concatenating results before returning `Impor
 This keeps pagination a per-importer concern without changing the `EventImporter` interface or the
 framework-level infrastructure.
 
+### Undated Recurring Programmes — Derived Occurrences
+
+Most venues announce individual dated events. A few instead assert a **standing weekly programme**:
+the same resident nights every week, described once, with no dates published anywhere. Havanna is the
+first such source — its `/events` page is a static teaser linking to three undated pages
+(`/wednesday`, `/friday`, `/saturday`), each describing a night that simply runs every week.
+
+Skipping these venues would leave a real, regularly-running programme out of the calendar entirely.
+So the importer **derives** the dates: the venue-specific parser produces an undated recurrence model
+(`HavannaWeeklyNight`) and expands it into one `ScrapedEvent` per week over a rolling horizon
+(8 weeks). Three constraints make this safe:
+
+1. **Stable dated `sourceId`** (`havanna:<date>-<night-slug>`) — every run regenerates the same window,
+   so upserts are idempotent and occurrences rolling out of it are removed by `removeStaleEvents()`,
+   which already scopes cleanup to `today..maxScrapedDate`.
+2. **No conditional requests** — a derived horizon must advance daily, but these pages never change.
+   A 304 would freeze the window and the calendar would silently stop moving forward, so such
+   importers fetch unconditionally and return `null` cache headers (same opt-out as AMT, for a
+   different reason).
+3. **Honour announced closures** — a page carrying a closure notice with a start date ("… AB DEM
+   01.07.2026 IN DER SOMMERPAUSE!") suppresses that night's occurrences from that date on. Without
+   this, a derived schedule keeps asserting parties the venue has publicly called off. A notice with
+   no parseable date is logged rather than acted on: treating a bare "Pause" as an open-ended shutdown
+   would erase the venue from the calendar on a single ambiguous word.
+
+Derived occurrences are a deliberate, bounded inference — never applied to a venue that publishes
+dates, and never extended past the horizon or across a page's announced break.
+
 ### Per-Host Politeness Throttling
 
 Venue websites are typically hosted on modest infrastructure (shared WordPress hosting, small VPS).
