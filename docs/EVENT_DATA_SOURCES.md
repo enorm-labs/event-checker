@@ -782,21 +782,18 @@ Source: [havanna-berlin.de/events](https://www.havanna-berlin.de/events)
 
 *Notes:*
 
-- *Squarespace-based Latin dance club. The `/events` page is a static three-column teaser (poster + "More" button per night), not a
-  programme — it links to three undated pages, `/wednesday`, `/friday` and `/saturday`, that describe the venue's standing weekly
-  resident nights.*
-- *This is the only source in the project that publishes **no dates at all**. Rather than skipping the venue, the importer derives
-  them: each night page is expanded into one dated occurrence per week over a rolling 8-week horizon
-  (`HavannaWeeklyNight.OCCURRENCE_WEEKS`). The `sourceId` is `havanna:<date>-<night-slug>`, so re-running an import is idempotent and
-  occurrences that roll out of the window are cleaned up as stale.*
-- *Because the events are derived rather than announced, conditional requests are disabled: the pages have not changed since 2016, so a
-  304 would freeze the horizon and the calendar would stop advancing.*
-- *A night page may carry a closure notice with a start date; occurrences on or after it are not generated. The notice is read per page —
-  the venue posts it on the night it affects, and nothing on the site says a break extends to the others. As of the snapshot, only
+- *Squarespace-based Latin dance club. The `/events` page is a static three-column teaser (poster + "More" button per night), not a programme — it links to
+  three undated pages, `/wednesday`, `/friday` and `/saturday`, that describe the venue's standing weekly resident nights.*
+- *This is the only source in the project that publishes **no dates at all**. Rather than skipping the venue, the importer derives them: each night page is
+  expanded into one dated occurrence per week over a rolling 8-week horizon (`HavannaWeeklyNight.OCCURRENCE_WEEKS`). The `sourceId` is
+  `havanna:<date>-<night-slug>`, so re-running an import is idempotent and occurrences that roll out of the window are cleaned up as stale.*
+- *Because the events are derived rather than announced, conditional requests are disabled: the pages have not changed since 2016, so a 304 would freeze the
+  horizon and the calendar would stop advancing.*
+- *A night page may carry a closure notice with a start date; occurrences on or after it are not generated. The notice is read per page — the venue posts it on
+  the night it affects, and nothing on the site says a break extends to the others. As of the snapshot, only
   `/wednesday` carries one ("ab dem 01.07.2026"), so Wednesday currently yields no events.*
-- *No lineups: the residents are never named, so events carry no artists. No presale — the door price is the only price quoted. The
-  ladies' free-entry window stays in the description rather than `price_note`, where `detectFree` would read its standalone "free" and
-  flag the whole night as free entry.*
+- *No lineups: the residents are never named, so events carry no artists. No presale — the door price is the only price quoted. The ladies' free-entry window
+  stays in the description rather than `price_note`, where `detectFree` would read its standalone "free" and flag the whole night as free entry.*
 - *No schema changes required.*
 
 ### Paloma Bar

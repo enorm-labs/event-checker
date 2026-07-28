@@ -4,7 +4,6 @@ import de.norm.events.event.EventType
 import de.norm.events.scraper.EventSource
 import de.norm.events.scraper.ScrapedArtist
 import de.norm.events.scraper.ScrapedEvent
-import de.norm.events.scraper.festsaal.FestsaalApiScraper.Companion.NON_CONCERT_EVENT_KEYWORDS
 import de.norm.events.scraper.headlinersFromTitle
 import de.norm.events.scraper.isFestivalTitle
 import de.norm.events.scraper.isNonArtistName

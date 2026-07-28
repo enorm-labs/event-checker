@@ -18,9 +18,8 @@ see [PRODUCT_OVERVIEW.md](./docs/PRODUCT_OVERVIEW.md).
 
 ## Project Status
 
-🚧 **In Development** — This project is not yet live or deployed to any production environment.
-The database schema is still evolving and may change without migration compatibility between versions.
-All schema changes are consolidated into a single initial migration (`V001`) until the first production release.
+🚧 **In Development** — This project is not yet live or deployed to any production environment. The database schema is still evolving and may change without
+migration compatibility between versions. All schema changes are consolidated into a single initial migration (`V001`) until the first production release.
 
 ## TODO
 
@@ -94,9 +93,8 @@ Start applications via IntelliJ or via Gradle like this:
 This will also start the services (database) defined in the [compose.yaml](./compose.yaml) file via
 Spring's [Docker Compose Support](https://docs.spring.io/spring-boot/reference/features/dev-services.html#features.dev-services.docker-compose).
 
-The PostgreSQL database is exposed on host port **56298** by default (mapped from container port 5432).
-Spring Boot discovers the port automatically. To connect manually (e.g. via `psql` or a database GUI),
-use `localhost:56298` with the credentials defined in `compose.yaml` (`admin`/`admin`, database `event_checker`).
+The PostgreSQL database is exposed on host port **56298** by default (mapped from container port 5432). Spring Boot discovers the port automatically. To connect
+manually (e.g. via `psql` or a database GUI), use `localhost:56298` with the credentials defined in `compose.yaml` (`admin`/`admin`, database `event_checker`).
 
 If port 56298 is already in use, override it via the `POSTGRES_HOST_PORT` environment variable:
 
@@ -127,14 +125,13 @@ The shared `http-client.env.json` lives at the `http/` root (IntelliJ resolves i
 1. Start the relevant service: `./gradlew :events-importer:bootRun` and/or `./gradlew :events-bff:bootRun`
 2. Open any `.http` file in IntelliJ → select the **local** environment from the dropdown
 3. Click the green ▶ play button next to a request to execute it
-4. Create requests store response IDs automatically (e.g. `{{venue_id}}`), so subsequent
-   update, delete, and event requests can reference them without manual copy-paste
+4. Create requests store response IDs automatically (e.g. `{{venue_id}}`), so subsequent update, delete, and event requests can reference them without manual
+   copy-paste
 
 #### From the command line (ijhttp CLI)
 
 The same `.http` files can be executed outside IntelliJ using the
-[HTTP Client CLI](https://www.jetbrains.com/help/idea/http-client-cli.html) (`ijhttp`).
-No IntelliJ Ultimate license is required.
+[HTTP Client CLI](https://www.jetbrains.com/help/idea/http-client-cli.html) (`ijhttp`). No IntelliJ Ultimate license is required.
 
 ```bash
 # Install (macOS)
@@ -144,8 +141,8 @@ brew install ijhttp
 ./gradlew httpTest
 ```
 
-The `httpTest` Gradle task runs `full-lifecycle.http` against the **local** environment
-with verbose logging. The importer must be running on port 8081 before you execute it.
+The `httpTest` Gradle task runs `full-lifecycle.http` against the **local** environment with verbose logging. The importer must be running on port 8081 before
+you execute it.
 
 You can also invoke `ijhttp` directly for individual files:
 
@@ -246,8 +243,7 @@ Docs: https://jeremylong.github.io/DependencyCheck/dependency-check-gradle/
 
 #### NVD API Key (recommended)
 
-The NVD rate-limits unauthenticated requests, making the initial database download very slow (~10+ min).
-A free API key brings this down to ~1 minute.
+The NVD rate-limits unauthenticated requests, making the initial database download very slow (~10+ min). A free API key brings this down to ~1 minute.
 
 1. Request a key at https://nvd.nist.gov/developers/request-an-api-key
 2. For **local development**, set it as an environment variable:

@@ -1,7 +1,7 @@
 # Data Model
 
-This document describes the domain model for the Event Checker application. The model is designed to capture music event
-data from Berlin venue websites (e.g. [Astra Kulturhaus](https://www.astra-berlin.de/),
+This document describes the domain model for the Event Checker application. The model is designed to capture music event data from Berlin venue websites
+(e.g. [Astra Kulturhaus](https://www.astra-berlin.de/),
 [Badehaus Berlin](https://badehaus-berlin.com/), [Cassiopeia](https://cassiopeia-berlin.de/),
 [Privatclub](https://privatclub-berlin.de/), [Bi Nuu](https://binuu.de/),
 [Festsaal Kreuzberg](https://festsaal-kreuzberg.de/de), [Lido](https://www.lido-berlin.de/),
@@ -230,9 +230,8 @@ Represents an event promoter or presenter. Shared across events and venues.
 
 ### event_artist (Join Table / LineupEntry)
 
-Links events to artists with role and billing order to model the lineup.
-In the domain model this is represented by the `LineupEntry` class which holds a full `Artist` object;
-the persistence layer (`EventArtistEntity`) maps to this join table using foreign keys.
+Links events to artists with role and billing order to model the lineup. In the domain model this is represented by the `LineupEntry` class which holds a full
+`Artist` object; the persistence layer (`EventArtistEntity`) maps to this join table using foreign keys.
 
 | Field           | Type        | Nullable | Description                         | Example     |
 |-----------------|-------------|----------|-------------------------------------|-------------|
@@ -257,8 +256,8 @@ Composite primary key `(event_id, promoter_id)`.
 
 ### GenreTag
 
-Represents a normalized music genre label used for structured filtering. Genre tags are auto-created during event
-imports from the raw genre text on events. The raw text is preserved for display; these tags enable frontend filtering.
+Represents a normalized music genre label used for structured filtering. Genre tags are auto-created during event imports from the raw genre text on events. The
+raw text is preserved for display; these tags enable frontend filtering.
 
 | Field        | Type          | Nullable | Description                 | Example   |
 |--------------|---------------|----------|-----------------------------|-----------|
@@ -284,14 +283,13 @@ Unique constraint on `(event_id, genre_tag_id)` prevents duplicate tag-event ass
 
 ### Idempotent Imports via `source_id`
 
-Each event has a unique `source_id` (e.g. `astra:2026-06-12-the-adicts`) that identifies it from the import source.
-This allows the importer to use upsert semantics: if an event with the same `source_id` already exists, it gets updated
-rather than duplicated. This is critical for scheduled re-imports.
+Each event has a unique `source_id` (e.g. `astra:2026-06-12-the-adicts`) that identifies it from the import source. This allows the importer to use upsert
+semantics: if an event with the same `source_id` already exists, it gets updated rather than duplicated. This is critical for scheduled re-imports.
 
 ### Rich Domain Model in `events-core`
 
-The Kotlin domain classes in `events-core` use embedded object references (e.g. `Event.venue: Venue`) rather than raw
-foreign key IDs. This makes the domain model expressive and self-documenting. The persistence layer in `events-importer`
+The Kotlin domain classes in `events-core` use embedded object references (e.g. `Event.venue: Venue`) rather than raw foreign key IDs. This makes the domain
+model expressive and self-documenting. The persistence layer in `events-importer`
 and `events-bff` maps between these domain objects and the flat relational schema.
 
 ### Separate `LineupEntry` / `event_artist` Join Entity
@@ -304,8 +302,7 @@ A dedicated join entity (rather than just a list of artist IDs on the event) cap
 This information is displayed prominently on venue websites and is important for the UI.
 
 In the domain model, `LineupEntry` holds a full `Artist` reference (consistent with how `Event`
-references `Venue` and `Promoter`). The persistence layer uses `EventArtistEntity` with foreign key
-IDs to map to the `event_artist` database table.
+references `Venue` and `Promoter`). The persistence layer uses `EventArtistEntity` with foreign key IDs to map to the `event_artist` database table.
 
 ### Inline Price Fields Instead of Separate Table
 
@@ -320,9 +317,8 @@ Pricing is embedded directly on the `event` table as `price_presale`, `price_box
 
 ### Genre Tags vs. Genre Enum
 
-The `genre` field on events is free-text scraped from venue websites. A separate `genre_tag` table with a many-to-many
-join table (`event_genre_tag`) provides normalized genre tags for structured filtering. This approach was chosen over
-an enum because:
+The `genre` field on events is free-text scraped from venue websites. A separate `genre_tag` table with a many-to-many join table (`event_genre_tag`) provides
+normalized genre tags for structured filtering. This approach was chosen over an enum because:
 
 - Scraped genre data is messy and inconsistent across venues (e.g. "Hip-Hop", "Hip Hop", "Rap", "HipHop")
 - Events frequently have multiple genres (e.g. "Indie, Rock, Folk")
@@ -333,15 +329,13 @@ an enum because:
 
 ### External Ticket URL
 
-The `ticket_url` field stores a link to the external ticket shop (eventim.de, ticketshop.live, vvk.link, dice.fm, etc.).
-This is distinct from `source_url` (the venue's own event page). Nearly every event on Berlin venue websites links to
-an external ticket provider, and this information is valuable for users.
+The `ticket_url` field stores a link to the external ticket shop (eventim.de, ticketshop.live, vvk.link, dice.fm, etc.). This is distinct from `source_url` (the
+venue's own event page). Nearly every event on Berlin venue websites links to an external ticket provider, and this information is valuable for users.
 
 ### Event Status for Relocated/Cancelled Events
 
-Berlin venues frequently update event listings to mark events as relocated ("VERLEGT"), cancelled, or postponed.
-The `status` field captures this state so the frontend can display appropriate badges and the importer can update
-events without losing the original record.
+Berlin venues frequently update event listings to mark events as relocated ("VERLEGT"), cancelled, or postponed. The `status` field captures this state so the
+frontend can display appropriate badges and the importer can update events without losing the original record.
 
 ### `slug` Fields on All Main Entities
 

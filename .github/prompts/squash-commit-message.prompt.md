@@ -20,15 +20,14 @@ for readability, not at a fixed column width.
    ```bash
    git --no-pager log --oneline --no-merges $(git merge-base main HEAD)..HEAD
    ```
-2. **Read every commit message** — use `git --no-pager log --format='%B' main..HEAD` (or equivalent) to get the full messages
-   including bodies, not just the subject lines.
-3. **Analyze the combined changeset** — consider all commits together to determine the single most appropriate
-   Conventional Commits _type_ and optional _scope_:
+2. **Read every commit message** — use `git --no-pager log --format='%B' main..HEAD` (or equivalent) to get the full messages including bodies, not just the
+   subject lines.
+3. **Analyze the combined changeset** — consider all commits together to determine the single most appropriate Conventional Commits _type_ and optional _scope_:
     - If the branch introduces a new feature (even alongside docs, CI, refactoring), use `feat`.
     - If the branch is purely a bug fix, use `fix`.
     - If no feature or fix is present, pick the most prominent type (`ci`, `docs`, `build`, `chore`, `refactor`, etc.).
-    - Choose a _scope_ that reflects the primary area of change (e.g., `importer`, `bff`, `frontend`). Omit the scope if
-      changes span the entire project broadly.
+    - Choose a _scope_ that reflects the primary area of change (e.g., `importer`, `bff`, `frontend`). Omit the scope if changes span the entire project
+      broadly.
 4. **Write the squash commit message** with this structure:
    ```
    <type>[optional scope]: <concise summary of the entire branch>

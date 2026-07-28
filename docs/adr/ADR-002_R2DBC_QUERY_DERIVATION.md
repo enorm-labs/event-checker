@@ -8,8 +8,7 @@ Accepted
 
 This project uses a fully reactive stack (WebFlux + R2DBC + Kotlin coroutines). Repositories extend
 `CoroutineCrudRepository` from Spring Data. Spring Data JPA offers very rich
-[derived query method](https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html) support that
-automatically generates queries from method names.
+[derived query method](https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html) support that automatically generates queries from method names.
 
 Spring Data R2DBC supports query derivation as well, but with **some limitations** compared to JPA.
 
@@ -46,18 +45,18 @@ suspend fun updateFirstnameByLastname(firstname: String, lastname: String): Int
 
 ### Schema prefix in `@Query`
 
-Raw `@Query` SQL bypasses the `@Table(schema = "events")` annotation on the entity class. Therefore, table references
-in custom queries **must** include the schema prefix explicitly (e.g. `events.event_artist` instead of just
+Raw `@Query` SQL bypasses the `@Table(schema = "events")` annotation on the entity class. Therefore, table references in custom queries **must** include the
+schema prefix explicitly (e.g. `events.event_artist` instead of just
 `event_artist`).
 
 ## Consequences
 
-- Prefer derived query methods (`findBy*`, `deleteBy*`) over `@Query` when possible — they are simpler and
-  automatically respect `@Table` metadata (including the schema).
+- Prefer derived query methods (`findBy*`, `deleteBy*`) over `@Query` when possible — they are simpler and automatically respect `@Table` metadata (including
+  the schema).
 - For update operations, use `@Modifying` + `@Query` with the fully qualified table name including the `events.`
   schema prefix.
-- If the project ever migrates to a blocking JPA stack, `@Query`-annotated methods could potentially be replaced
-  with derived methods. This is unlikely given the reactive architecture commitment.
+- If the project ever migrates to a blocking JPA stack, `@Query`-annotated methods could potentially be replaced with derived methods. This is unlikely given
+  the reactive architecture commitment.
 
 ## References
 
