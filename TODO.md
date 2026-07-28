@@ -48,6 +48,7 @@ Public name is **Event Junkie**; internal/repo name stays **Event Checker**
 - [x] Add venue description to the venue detail page — `venue.description` column + full API/UI plumbing;
   seeded with hand-written blurbs in `dev-seed.http`. **Follow-up:** scrape descriptions from each venue's
   own website (see "Enrich venues" under Importer / Data) and consider other detail-page metadata.
+- [ ] Add capacity / venue size to the venue detail page
 - [ ] Filter events by venue type
 - [ ] Filter venues by venue type and genre
 - [ ] Browse/see past events — an archive view (decide retention + UX; ties into the housekeeping delete policy under Importer / Data)
