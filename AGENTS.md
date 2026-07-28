@@ -182,6 +182,11 @@ subprojects sharing a root `settings.gradle.kts`, plus a standalone frontend pro
       to `HtmlFetcher`, sharing the same `@Qualifier(SCRAPER_WEB_CLIENT)` throttled `WebClient` (so the same per-host politeness
       and User-Agent apply). Each has a single pure `*ApiScraper.kt` that parses the raw JSON body into `List<ScrapedEvent>` —
       no Overview/Detail split. **Prefer a JSON/API source over HTML whenever one exists** (ADR-007 §"Prefer a JSON / API Source").
+    - **Derived occurrences for undated recurring programmes** — a venue that publishes no dates at all, only a standing weekly
+      programme (currently Havanna: three undated `/wednesday`, `/friday`, `/saturday` pages linked from `/events`), is parsed into
+      an undated recurrence model (`HavannaWeeklyNight`) and expanded into one dated `ScrapedEvent` per week over a rolling horizon.
+      Such importers disable conditional requests (a 304 would freeze the horizon) and honour an announced closure notice on the
+      page. See ADR-007 §"Undated Recurring Programmes". Do **not** apply this to a venue that publishes dates.
 - **Scheduled imports**: The importer uses Spring `@Scheduled` with the `event_source` table for periodic event imports. See ADR-008. Key design:
     - A single `@Scheduled(fixedDelay = 60s)` tick in `ScheduledImportService` queries for due sources.
     - Due sources are imported concurrently via `EventImportService.importConcurrently()`, bounded by the

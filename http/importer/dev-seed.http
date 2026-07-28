@@ -22,6 +22,7 @@
 ###   Festsaal Kreuzberg   — https://festsaal-kreuzberg.de/de/programm/ (Wagtail CMS JSON API)
 ###   Frannz Club          — https://frannz.eu/
 ###   Gretchen             — https://www.gretchen-club.de/
+###   Havanna              — https://www.havanna-berlin.de/events (undated weekly nights, expanded to dated occurrences)
 ###   Hole 44              — https://hole-berlin.de/events/ (WordPress/Events-Manager, list + detail)
 ###   Junction Bar         — https://www.junction-bar.de/ (live music + DJ programs)
 ###   Kantine am Berghain  — https://www.berghain.berlin/de/program/kantine-am-berghain/ (shares BERGHAIN importer)
@@ -766,6 +767,69 @@ Accept: application/json
 
 > {%
     client.test("Gretchen import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Havanna (Hauptstr. 30, Berlin-Schöneberg)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Havanna venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Havanna",
+    "address": "Hauptstr. 30",
+    "city": "Berlin",
+    "postalCode": "10827",
+    "district": "tempelhof-schoeneberg",
+    "latitude": 52.48540,
+    "longitude": 13.35510,
+    "websiteUrl": "https://www.havanna-berlin.de",
+    "description": "A large Latin dance club in Schöneberg spread over several floors, running the same resident nights every week — salsa, merengue and bachata alongside reggaeton, hip hop and chart floors — plus dance lessons before the party."
+}
+
+> {%
+    client.global.set("havanna_venue_id", response.body.id);
+    client.test("Havanna venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Havanna event source ---
+# Links the venue to the HavannaWebsiteImporter.
+# The sourceType "HAVANNA" matches EventSource.HAVANNA.
+# Havanna publishes no dates at all: the importer reads the three undated weekly night pages
+# (/wednesday, /friday, /saturday) linked from /events and derives one dated occurrence per week
+# over a rolling 8-week horizon. Each run regenerates that window, so events shift forward daily
+# and stale ones are cleaned up automatically — hence the daily interval like every other source.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{havanna_venue_id}},
+    "name": "Havanna",
+    "url": "https://www.havanna-berlin.de/events",
+    "sourceType": "HAVANNA",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Havanna event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Havanna import ---
+POST {{importer-host}}/api/admin/event-sources/havanna/import
+Accept: application/json
+
+> {%
+    client.test("Havanna import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}
