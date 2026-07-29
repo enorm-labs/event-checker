@@ -578,4 +578,4 @@ web scraping pitfalls documented in industry literature (see References).
 - [Web Scraping: Introduction, Best Practices & Caveats (Velotio)](https://medium.com/velotio-perspectives/web-scraping-introduction-best-practices-caveats-9cbf4acc8d0f) —
   industry best practices for ethical and resilient scraping
 - [schema.org MusicEvent](https://schema.org/MusicEvent) — structured data vocabulary for music events
-- [EVENT_DATA_SOURCES.md](../EVENT_DATA_SOURCES.md) — full venue analysis with field mappings
+- [EVENT_DATA_SOURCES.md](../EVENT_DATA_SOURCES.md) — venue/promoter inventory, import status, and per-source scraping notes

@@ -10,8 +10,9 @@ starting.
 
 - Run git commands with the pager disabled (`git --no-pager ...`).
 - Read [ADR-007 Web Scraping Strategy](../../docs/adr/ADR-007_WEB_SCRAPING_STRATEGY.md) in full before writing any code — it is the source of truth for
-  architecture, selector strategy, and scraping ethics. Also skim
-  [EVENT_DATA_SOURCES.md](../../docs/EVENT_DATA_SOURCES.md) for the pre-analysed field mapping of the target venue.
+  architecture, selector strategy, and scraping ethics. Also check
+  [EVENT_DATA_SOURCES.md](../../docs/EVENT_DATA_SOURCES.md) for the target venue's row — it records the platform and known quirks, but **not** a field mapping:
+  analyse the live site yourself and map its elements onto [DATA_MODEL.md](../../docs/DATA_MODEL.md) before writing code.
 - Use an existing importer as a template. Pick the closest match to the target's data source:
     - **JSON / API source** (structured feed, no HTML scraping — always prefer this when one exists): `scraper/festsaal/`,
       `scraper/neuezukunft/`, `scraper/madameclaude/` — implement `EventImporter` directly, fetch via `ApiClient`, and parse the raw JSON body in a single
