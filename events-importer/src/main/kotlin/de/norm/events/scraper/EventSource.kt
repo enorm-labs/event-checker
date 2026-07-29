@@ -160,6 +160,19 @@ enum class EventSource {
     SO36,
 
     /**
+     * Supamolly Berlin – retro hand-coded PHP squat venue in Friedrichshain. The whole programme lives on a
+     * single `?p=programm` page (identical to the homepage) as a `<table>` whose event rows carry a
+     * `YYYYMMDDHHMM` `id` — a machine-readable date+time stamp that is both the event date and its stable
+     * identity. Each row pairs a `td.date` cell (weekday icon, `DD.MM.` date, `HH:MM` time, optional flyer
+     * thumbnail) with a `td.evcont` cell holding one `div.even` block per billed act (`.tit` name, optional
+     * `.beschr` note, and an artist reference link). There are no detail pages — `index.php?programm=<id>`
+     * serves the full-size flyer JPEG, not HTML — and no prices, so the single page is the source. The
+     * advertised `rss.php` feed is **not** usable: its item titles render the date as `"Mi 9.2026..09."`,
+     * dropping the day of month entirely.
+     */
+    SUPAMOLLY,
+
+    /**
      * Wild at Heart Berlin – retro hand-coded frameset rockabilly/punk venue in Kreuzberg. The whole concert
      * programme lives on a single `/concerts.php` page (linked from the `topics.htm` nav frame) as a flat
      * `<table>` of `<tr>` rows, each carrying a year-less `Weekday DD.MM.` date (`.datum`), a headliner

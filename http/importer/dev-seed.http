@@ -36,6 +36,7 @@
 ###   Roadrunner's Paradise — http://www.roadrunners-paradise.de/programm.html
 ###   Schokoladen          — https://www.schokoladen-mitte.de/
 ###   SO36                 — https://www.so36.com/tickets
+###   Supamolly            — https://www.supamolly.de/?p=programm (retro PHP single-page listing; row id = date stamp)
 ###   Wild at Heart        — https://www.wildatheartberlin.de/concerts.php (retro frameset single-page listing)
 ### ============================================================
 
@@ -1622,6 +1623,69 @@ Accept: application/json
 
 > {%
     client.test("SO36 import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Supamolly (Jessnerstr. 41, Berlin-Friedrichshain)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Supamolly venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Supamolly",
+    "address": "Jessnerstr. 41",
+    "city": "Berlin",
+    "postalCode": "10247",
+    "district": "friedrichshain-kreuzberg",
+    "latitude": 52.51190,
+    "longitude": 13.47080,
+    "websiteUrl": "https://www.supamolly.de",
+    "description": "A former squat turned collectively run venue near Traveplatz in Friedrichshain, with a donation-based programme of punk, ska, hardcore and experimental concerts alongside theatre, film and neighbourhood socials."
+}
+
+> {%
+    client.global.set("supamolly_venue_id", response.body.id);
+    client.test("Supamolly venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Supamolly event source ---
+# Links the venue to the SupamollyWebsiteImporter.
+# The sourceType "SUPAMOLLY" matches EventSource.SUPAMOLLY.
+# NOTE: the URL is `?p=programm` (the programme page; byte-identical to the homepage but
+# stable if the site's default page ever changes). The advertised `rss.php` feed is NOT
+# usable — its item titles render dates as "Mi 9.2026..09.", dropping the day of month.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{supamolly_venue_id}},
+    "name": "Supamolly",
+    "url": "https://www.supamolly.de/?p=programm",
+    "sourceType": "SUPAMOLLY",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Supamolly event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Supamolly import ---
+# Slug is derived from the source name: "Supamolly" → supamolly.
+POST {{importer-host}}/api/admin/event-sources/supamolly/import
+Accept: application/json
+
+> {%
+    client.test("Supamolly import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}
