@@ -7,8 +7,8 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 
 | Status                              | Meaning                                                                              | Count |
 |-------------------------------------|--------------------------------------------------------------------------------------|------:|
-| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    27 |
-| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |    11 |
+| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    28 |
+| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |    10 |
 | ⛔ [Blocked](#-blocked--deferred)   | Website analyzed, but no usable listings (no programme page, JS-only, or too sparse) |    11 |
 | ❓ [Unanalyzed](#-not-analyzed-yet) | No URL recorded yet — website still needs a first look                               |    24 |
 
@@ -44,9 +44,10 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Roadrunner's Paradise       | http://www.roadrunners-paradise.de/                         | Bar          | Retro HTML; rich data; year missing on some dates |
 | Schokoladen                 | https://www.schokoladen-mitte.de/                           | Club         | Laravel; anchor-based events; genre inside title  |
 | SO36                        | https://www.so36.com/tickets                                | Club         | Cookie wall bypassed via Ticket-Toaster shop      |
+| Supamolly                   | https://www.supamolly.de/?p=programm                        | Club         | Retro PHP; row id is the date stamp; no prices    |
 | Wild at Heart               | https://www.wildatheartberlin.de/                           | Bar          | Retro frameset; concerts.php; year from weekday   |
 
-26 importer classes cover 27 sources (Kantine am Berghain shares the Berghain importer).
+27 importer classes cover 28 sources (Kantine am Berghain shares the Berghain importer).
 
 ## 🔨 Ready to implement
 
@@ -54,7 +55,6 @@ Analyzed and scrapable — the candidates for the next `/scaffold-importer` runs
 
 | Priority | Name                  | URL                                | Type     | Why / what it needs                                        |
 |:--------:|-----------------------|------------------------------------|----------|------------------------------------------------------------|
-|   High   | Supamolly             | https://www.supamolly.de/          | Club     | RSS feed (`rss.php`) + detail pages; flyers, lineups       |
 |   High   | Urban Spree           | https://www.urbanspree.com/        | Club     | Clean static list + detail; date, time, price, description |
 |   High   | Arkaoda               | https://berlin.arkaoda.com/        | Bar      | Clean PHP listings + detail pages, images, RA links        |
 |   High   | Trinity Music         | https://trinitymusic.de/           | Promoter | Cross-venue; rich statuses; also populates `promoter`      |
