@@ -5,7 +5,7 @@ A living catalogue of the known gaps, quirks and missing-data limitations of the
 limitations of the scrape pipeline as it stands.
 
 Related: [ADR-007 Web Scraping Strategy](adr/ADR-007_WEB_SCRAPING_STRATEGY.md) ·
-[EVENT_DATA_SOURCES.md](EVENT_DATA_SOURCES.md) (per-venue field analysis) ·
+[EVENT_DATA_SOURCES.md](EVENT_DATA_SOURCES.md) (source inventory & import status) ·
 [DATA_QUALITY_STRATEGY.md](DATA_QUALITY_STRATEGY.md) (how these get fixed & prevented) · actionable backlog in [../TODO.md](../TODO.md).
 
 Legend: **impact** — 🔴 user-visible missing/wrong data · 🟠 data-quality/noise · 🟢 cosmetic or edge case.
@@ -62,8 +62,9 @@ Legend: **impact** — 🔴 user-visible missing/wrong data · 🟠 data-quality
       `NAME_CORRECTIONS`;
     - 🟢 de-shout lowercases genuine acronyms in the display name (`TV Noir` →
       `Tv Noir`, `Bossa FM` → `Bossa Fm`) — display-only, slugs unaffected.
-- **Coverage gap (not a defect):** JS-rendered / cookie-walled venues aren't importable yet (Playwright deferred, ADR-007). See EVENT_DATA_SOURCES.md for which
-  venues remain.
+- **Coverage gap (not a defect):** JS-rendered venues aren't importable yet (Playwright deferred, ADR-007). A cookie wall is not itself a blocker — SO36 is
+  imported by scraping its Ticket-Toaster shop (`/tickets`) behind the wall. See the **Blocked / deferred** section of
+  [EVENT_DATA_SOURCES.md](EVENT_DATA_SOURCES.md#-blocked--deferred) for which venues remain and what would unblock each.
 
 ---
 
