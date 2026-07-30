@@ -10,7 +10,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    30 |
 | 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |     8 |
 | ⛔ [Blocked](#-blocked--deferred)   | Website analyzed, but no usable listings (no programme page, JS-only, or too sparse) |    11 |
-| ❓ [Unanalyzed](#-not-analyzed-yet) | No URL recorded yet — website still needs a first look                               |    24 |
+| ❓ [Unanalyzed](#-not-analyzed-yet) | No URL recorded yet — website still needs a first look                               |    55 |
 
 "Website analyzed" also means the [data model](DATA_MODEL.md) was checked against that source — to date no source has required a schema change.
 
@@ -89,8 +89,54 @@ per [ADR-007](adr/ADR-007_WEB_SCRAPING_STRATEGY.md)), or applying the Havanna-st
 
 ## ❓ Not analyzed yet
 
-No URL recorded and no website review done. Mostly the techno-club cluster. A first pass should record the URL, check for a server-rendered programme, and move
-the row into one of the groups above.
+No URL recorded and no website review done. A first pass should record the URL, check for a server-rendered programme, and move the row into one of the groups
+above.
+
+### From the Trinity Music location directory
+
+Taken from <https://trinitymusic.de/locations> (48 venues, of which 17 are already tracked above). Each has a page at `trinitymusic.de/locations/<slug>`, so the
+**Trinity Music** promoter source — High priority under [Ready](#-ready-to-implement) — would cover all of them in one importer. Their *own* websites are still
+unreviewed, which is why they sit here: a venue-level importer usually yields richer data than the promoter feed, and Trinity only lists the shows it books.
+
+| Name                 | Type         | Comment                                                          |
+|----------------------|--------------|------------------------------------------------------------------|
+| Admiralspalast       | Theater      | Variety/musical house — check scope before building              |
+| Arena Berlin         | Concert Hall | Eichenstraße complex, together with Sonnenraum and Zenner        |
+| Columbia Theater     | Concert Hall | Columbiadamm, next door to Columbiahalle                         |
+| Columbiahalle        | Concert Hall | Columbiadamm, next door to Columbia Theater                      |
+| Cosmic Comedy Club   | Comedy Club  | Comedy rather than live music — check scope before building      |
+| Frannz Salon         | Club         | Second room of Frannz Club; check the existing FRANNZ importer   |
+| Heimathafen Neukölln | Concert Hall |                                                                  |
+| Humboldtsaal Urania  | Concert Hall | Urania house; Trinity slug is `humboldsaal-urania` (their typo)  |
+| Huxleys Neue Welt    | Concert Hall |                                                                  |
+| Kesselhaus           | Concert Hall | Kulturbrauerei, with Maschinenhaus / Frannz / Alte Kantine       |
+| Kleistsaal Urania    | Concert Hall | Urania house, second hall                                        |
+| LARK                 | Club         | Holzmarkt, with Säälchen                                         |
+| Maschinenhaus        | Concert Hall | Kulturbrauerei, with Kesselhaus / Frannz / Alte Kantine          |
+| Max-Schmeling-Halle  | Arena        | Arena-scale; likely ticketing-platform data                      |
+| Metropol             | Concert Hall | Same building as the imported Mikropol                           |
+| Modus Berlin         | Club         | Formerly Kreuzwerk — Trinity slug is still `kreuzwerk`           |
+| Parkbühne Wuhlheide  | Open Air     | Seasonal                                                         |
+| Passionskirche       | Concert Hall | Church used as a concert venue                                   |
+| Quasimodo            | Club         | Jazz club, below Theater des Westens                             |
+| RBB Sendesaal        | Concert Hall | Broadcast hall; sparse public programme expected                 |
+| Säälchen             | Concert Hall | Holzmarkt, with LARK                                             |
+| Sonnenraum           | Club         | Eichenstraße complex, with Arena Berlin                          |
+| Tempodrom            | Concert Hall |                                                                  |
+| Theater des Westens  | Theater      | Musical theater — check scope before building                    |
+| Theater Im Delphi    | Concert Hall |                                                                  |
+| Uber Arena           | Arena        | Arena-scale; likely ticketing-platform data                      |
+| Uber Eats Music Hall | Concert Hall | Same site as Uber Arena                                          |
+| Ufo im Velodrom      | Concert Hall | Velodrom's smaller hall                                          |
+| Velodrom             | Arena        | Arena-scale; likely ticketing-platform data                      |
+| Zentraler Festplatz  | Open Air     | Event ground, no own programme expected                          |
+| Zitadelle            | Open Air     | Citadel Music Festival; seasonal                                 |
+
+*Several of these are theater, comedy, or arena-scale rooms rather than live-music clubs — settle scope before building, as with Bar jeder Vernunft above.*
+
+### Other
+
+Mostly the techno-club cluster.
 
 | Name               | Type        |
 |--------------------|-------------|
