@@ -1,0 +1,73 @@
+package de.norm.events.slug
+
+import io.kotest.matchers.shouldBe
+import org.junit.jupiter.api.Test
+
+/**
+ * Unit tests for [SlugGenerator].
+ *
+ * The transliteration cases are real names taken from the seeded artist and venue data —
+ * each one a slug that silently lost a letter before the `NON_DECOMPOSING_LATIN`
+ * replacements were added.
+ */
+class SlugGeneratorTest {
+    @Test
+    fun `slugifies plain text`() {
+        SlugGenerator.slugify("My Event") shouldBe "my-event"
+        SlugGenerator.slugify("  Spaced   Out  ") shouldBe "spaced-out"
+        SlugGenerator.slugify("AC/DC") shouldBe "ac-dc"
+    }
+
+    @Test
+    fun `strips accents that decompose to a base letter`() {
+        SlugGenerator.slugify("Motörhead") shouldBe "motorhead"
+        SlugGenerator.slugify("Sigur Rós") shouldBe "sigur-ros"
+        SlugGenerator.slugify("Niño") shouldBe "nino"
+        SlugGenerator.slugify("Håkan") shouldBe "hakan"
+        SlugGenerator.slugify("Beyoğlu") shouldBe "beyoglu"
+    }
+
+    @Test
+    fun `keeps Nordic letters that do not decompose`() {
+        SlugGenerator.slugify("Kėkė Søl") shouldBe "keke-sol"
+        SlugGenerator.slugify("DJ Bjørn") shouldBe "dj-bjorn"
+        SlugGenerator.slugify("Kræk") shouldBe "kraek"
+        SlugGenerator.slugify("Ævestaden") shouldBe "aevestaden"
+        SlugGenerator.slugify("Nils Petter Molvær Trio") shouldBe "nils-petter-molvaer-trio"
+    }
+
+    @Test
+    fun `keeps a non-decomposing letter beside a decomposing one`() {
+        // `ø` maps to its base letter, matching the `ö` next to it — not the
+        // Norwegian `oe` expansion, which would read as "oerloeg".
+        SlugGenerator.slugify("Ørlög") shouldBe "orlog"
+    }
+
+    @Test
+    fun `keeps Icelandic, Polish, Croatian and French letters`() {
+        SlugGenerator.slugify("Þór") shouldBe "thor"
+        SlugGenerator.slugify("Guðrún") shouldBe "gudrun"
+        SlugGenerator.slugify("Łukasz") shouldBe "lukasz"
+        SlugGenerator.slugify("Đorđe") shouldBe "dorde"
+        SlugGenerator.slugify("Cœur") shouldBe "coeur"
+    }
+
+    @Test
+    fun `keeps the German sharp s`() {
+        SlugGenerator.slugify("Revaler Straße") shouldBe "revaler-strasse"
+    }
+
+    @Test
+    fun `keeps the Turkish dotless i`() {
+        SlugGenerator.slugify("Işıl") shouldBe "isil"
+        // The dotted capital decomposes on its own and must stay a single `i`.
+        SlugGenerator.slugify("İstanbul") shouldBe "istanbul"
+    }
+
+    @Test
+    fun `distinguishes names that previously collided on a dropped letter`() {
+        // Both slugged to "sl" before the fix, so two different acts shared one key.
+        SlugGenerator.slugify("Søl") shouldBe "sol"
+        SlugGenerator.slugify("Sæl") shouldBe "sael"
+    }
+}
