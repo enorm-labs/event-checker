@@ -43,6 +43,7 @@
 ###   Supamolly            — https://www.supamolly.de/?p=programm (retro PHP single-page listing; row id = date stamp)
 ###   Urban Spree          — https://www.urbanspree.com/program/ (MODX; descending paginated list + detail)
 ###   Wild at Heart        — https://www.wildatheartberlin.de/concerts.php (retro frameset single-page listing)
+###   Zenner               — https://zenner.berlin/programm (Gatsby/Sanity; page-data.json artefact)
 ### ============================================================
 
 ### ————————————————————————————————————————————————————————————
@@ -2065,6 +2066,70 @@ Accept: application/json
 
 > {%
     client.test("Wild at Heart import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Zenner (Alt-Treptow 14-17, Berlin-Treptow — Treptower Park)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Zenner venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Zenner",
+    "address": "Alt-Treptow 14-17",
+    "city": "Berlin",
+    "postalCode": "12435",
+    "district": "treptow-koepenick",
+    "latitude": 52.48970,
+    "longitude": 13.46660,
+    "websiteUrl": "https://zenner.berlin",
+    "description": "A riverside venue in Treptower Park combining a historic ballroom (Saal), a club, a beer garden and a wine garden, programming electronic concerts, club nights and open-air day parties."
+}
+
+> {%
+    client.global.set("zenner_venue_id", response.body.id);
+    client.test("Zenner venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Zenner event source ---
+# Links the venue to the ZennerWebsiteImporter.
+# The sourceType "ZENNER" matches EventSource.ZENNER.
+# NOTE: the URL is the human-facing `/programm` page, not the JSON artefact. The importer
+# derives `https://zenner.berlin/page-data/programm/page-data.json` from it (a fixed Gatsby
+# convention) and stores the page URL itself as every event's sourceUrl — Zenner publishes
+# no per-event detail pages.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{zenner_venue_id}},
+    "name": "Zenner",
+    "url": "https://zenner.berlin/programm",
+    "sourceType": "ZENNER",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Zenner event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Zenner import ---
+# Slug is derived from the source name: "Zenner" → zenner.
+POST {{importer-host}}/api/admin/event-sources/zenner/import
+Accept: application/json
+
+> {%
+    client.test("Zenner import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}

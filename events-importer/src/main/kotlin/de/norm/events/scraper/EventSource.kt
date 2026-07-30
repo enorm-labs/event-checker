@@ -260,7 +260,31 @@ enum class EventSource {
      * an optional DJ (`.dj`), a flyer image (`/uploads/img/…`), and an optional `.headlines` banner that may
      * embed a `Tickets:<url>` link, a `Beginn HH:MM` start time, or an `Eintritt frei` free-entry note.
      */
-    WILD_AT_HEART;
+    WILD_AT_HEART,
+
+    /**
+     * Zenner Berlin – the Treptower Park riverside venue (Saal, Klub, Biergarten, Weingarten) on a
+     * Gatsby front end backed by a Sanity headless CMS. The rendered `/programm` page is a React
+     * shell, but Gatsby publishes the page's own GraphQL result as a static JSON artefact at
+     * `/page-data/programm/page-data.json` — the whole programme as structured data, so no HTML is
+     * scraped (ADR-007 §"Selector Strategy" priority 1). Each node carries a `typeOfEvent`
+     * (Konzert/Concert/Party/Lesung, plus the non-kind labels "Event" and "Open Air"), the `place`
+     * (room) it happens in, an ISO `eventDate`, a ticket-shop `linkEvent` (Resident Advisor, DICE,
+     * Ticketmaster), a Sanity CDN `image`, and a Portable Text `_rawText` blurb. The `place`
+     * disambiguates "Open Air", which is the SIP! DJ day-party series in the Weingarten but an
+     * ice-skating session or a festival day in the Biergarten.
+     *
+     * Three quirks drive the parser. **`eventDate` is a true UTC instant**, not a local wall clock:
+     * the site converts it in the browser (a `21:45Z` party renders as `23:45` in Berlin), so it is
+     * converted to `Europe/Berlin` — reading it naively would shift every event one to two hours
+     * early and roll late nights onto the wrong day. The payload holds the venue's **whole archive**
+     * (three years of past events for a handful of upcoming ones), so past dates are dropped during
+     * parsing rather than minting a hundred throwaway events per run. And a sibling
+     * `queryShowHidePlaces` block carries the venue's own per-room publish flags, which are honoured
+     * so a programme Zenner has unpublished is not imported. Conditional requests are unused — the
+     * artefact is rebuilt on every content change and upserts are idempotent by `sourceId`.
+     */
+    ZENNER;
 
     /**
      * Prefix for `sourceId` values, derived from the enum name in lowercase.
