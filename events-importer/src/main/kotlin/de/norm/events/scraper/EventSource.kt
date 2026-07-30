@@ -31,6 +31,22 @@ enum class EventSource {
     ALTE_KANTINE,
 
     /**
+     * Arcanoa Berlin – a Kreuzberg live-music bar whose 1990s hand-coded `veranst.htm` is one nested
+     * `<font>`/`<table>` soup with no classes, ids or per-event URLs. The only structure worth anchoring on is
+     * a `font.gesperrt` month heading ("Juli") followed by a single `<p>` holding that month's whole programme
+     * as one run of `<br>`-separated lines — so the parser splits the paragraph's flat text on the German
+     * `Mo 22.07.Live:` entry marker rather than on markup. Each line packs the act and a free-text style tail
+     * into `"<act> - <style>"`, which is split into title and subtitle (never `genre`: tails like
+     * "AfroLatinFolkJazzEthnoBluesSession" would seed junk tags). Dates carry a weekday but **no year**, so the
+     * year comes from [inferYearForWeekday]. Everything else the model wants is simply absent: no images, ticket
+     * links, prices or per-event pages, and the only time on the page is the shared "Veranstaltungsbeginn: 20 Uhr"
+     * line, read once per month block. Two blocks are deliberately ignored — the undated weekly-programme boxes at
+     * the top (the dated listing already carries every occurrence) and the "Mittelaltertreffen immer Mittwoch"
+     * recap, which repeats Wednesdays already listed above it.
+     */
+    ARCANOA,
+
+    /**
      * arkaoda Berlin – the Neukölln outpost of the Istanbul bar/club, on a hand-coded PHP site whose router
      * puts the path in the query string (`?/default/program`, `?/default/detail/id=<n>`). The `?/default/program`
      * listing server-renders one `div.box` per **upcoming** event (past events drop off, so it is short — often
