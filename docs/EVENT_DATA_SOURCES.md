@@ -7,8 +7,8 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 
 | Status                              | Meaning                                                                              | Count |
 |-------------------------------------|--------------------------------------------------------------------------------------|------:|
-| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    32 |
-| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |     6 |
+| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    33 |
+| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |     5 |
 | ⛔ [Blocked](#-blocked--deferred)   | Website analyzed, but no usable listings (no programme page, JS-only, or too sparse) |    11 |
 | ❓ [Unanalyzed](#-not-analyzed-yet) | No URL recorded yet — website still needs a first look                               |    55 |
 
@@ -20,6 +20,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 |-----------------------------|-------------------------------------------------------------|--------------|---------------------------------------------------|
 | Alte Kantine Kulturbrauerei | https://alte-kantine.eu/                                    | Concert Hall |                                                   |
 | AMT                         | https://www.club-amt.berlin                                 | Techno Club  | Webflow; /events → month pages                    |
+| Arcanoa                     | https://www.ssi-media.com/arcanoa/veranst.htm               | Bar          | 1990s HTML; title/date only; year from weekday    |
 | arkaoda                     | https://berlin.arkaoda.com/?/default/program                | Bar          | PHP router; only "Konser" typed; RA link in prose |
 | Astra Kulturhaus            | https://www.astra-berlin.de/                                | Concert Hall | schema.org `MusicEvent`; presale + door prices    |
 | Badehaus                    | https://badehaus-berlin.com/                                | Club         | "AUSVERKAUFT"/"VERLEGT" labels; ticket + FB links |
@@ -51,7 +52,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Urban Spree                 | https://www.urbanspree.com/program/                         | Club         | MODX; listing descending + paginated; walks pages |
 | Wild at Heart               | https://www.wildatheartberlin.de/                           | Bar          | Retro frameset; concerts.php; year from weekday   |
 
-31 importer classes cover 32 sources (Kantine am Berghain shares the Berghain importer).
+32 importer classes cover 33 sources (Kantine am Berghain shares the Berghain importer).
 
 ## 🔨 Ready to implement
 
@@ -64,7 +65,6 @@ Analyzed and scrapable — the candidates for the next `/scaffold-importer` runs
 |  Medium  | Zenner                | https://zenner.berlin/             | Club     | Never analyzed in detail — review the site first          |
 |  Medium  | Landstreicher Booking | https://landstreicher-booking.de/  | Promoter | Structured tour-date table; needs a Berlin-only filter    |
 |  Medium  | Bar jeder Vernunft    | https://www.bar-jeder-vernunft.de/ | Bar      | Multi-day ranges to expand; detail pages for times/prices |
-|   Low    | Arcanoa               | https://www.ssi-media.com/arcanoa/ | Bar      | 1990s HTML; scrapable but very low data quality           |
 
 *Bar jeder Vernunft is theater/cabaret rather than live music — decide whether it belongs in scope before building it.*
 

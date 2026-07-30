@@ -125,6 +125,25 @@ Legend: **impact** — 🔴 user-visible missing/wrong data · 🟠 data-quality
 - 🟠 **Very sparse & stale.** Currently ~1 event; the site leaves past events listed. The year is *inferred from the weekday* (the source omits it), which
   resolves stale past dates correctly but yields events that won't show in today-forward feeds.
 
+### Arcanoa (`scraper/arcanoa/`) — 1990s hand-coded, single page
+
+- 🔴 **Only a title, a date and a style line exist.** The page has no per-event URLs, images, ticket links, prices, sold-out or cancellation markers, so those
+  fields are always null — the poorest source in the set. The one time it publishes is a per-month "Veranstaltungsbeginn: 20 Uhr" line, stored as `startTime` for
+  every event in that month; there is no doors time and no per-event override (the Tuesday jam's own "19-21 Uhr" stays in the subtitle).
+- 🟠 **The same recurring night appears under two title spellings.** The venue hand-types each line, so its Monday open stage is written both `ARCANOA-Open
+  Stage` and `ARCANOA- Open Stage`; only the second has a dash the parser can pad, so the two normalize differently and produce different slugs. Harmless (the
+  dates differ anyway) but visible in a title list.
+- 🟠 **Recurring formats are filtered out of the lineup by a venue-local denylist.** Roughly half the programme is a standing format whose "act" is the format
+  (open stage, jam session, `SpielleuteSession`, medieval night), and there is no structural signal separating those from a billed act — so
+  `RECURRING_FORMAT_PATTERN` drops them by name. Reactive, like the shared `NON_ARTIST_NAMES` denylist: a newly-introduced format is minted as an artist until
+  added.
+- 🟢 **Style tails are not genres.** The free-text tail (`AfroLatinFolkJazzEthnoBluesSession`, `HellCountryBlues`) is kept as the `subtitle`, deliberately not
+  the genre field, so it never seeds bogus genre tags — same call as Duncker.
+- 🟢 **Year inferred from the German weekday** (the `DD.MM.` date omits it), which also resolves the passed events the venue leaves listed — like Roadrunner and
+  Duncker.
+- 🟢 **Private bookings are skipped.** A `geschlossene Gesellschaft` line marks the venue as taken for a private function; it is not a public event and is
+  dropped rather than imported as an untyped one.
+
 ### Badehaus (`scraper/badehaus/`) — WordPress / Events Manager, list + detail
 
 - 🟢 **Title-as-headliner (from the overview).** The overview scraper now extracts the headliner from the title for inferred `CONCERT` events via
