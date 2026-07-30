@@ -3,6 +3,7 @@ package de.norm.events.scraper.arcanoa
 import de.norm.events.scraper.EventSource
 import de.norm.events.scraper.ScrapedArtist
 import de.norm.events.scraper.ScrapedEvent
+import de.norm.events.scraper.arcanoa.ArcanoaOverviewPageScraper.Companion.RECURRING_FORMAT_PATTERN
 import de.norm.events.scraper.buildArtistsForEventType
 import de.norm.events.scraper.inferConcertVenueType
 import de.norm.events.scraper.inferYearForWeekday
