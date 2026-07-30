@@ -12,7 +12,9 @@ import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.awaitBody
 import org.springframework.web.reactive.function.client.awaitExchange
+import java.io.ByteArrayInputStream
 import java.net.URI
+import java.nio.charset.Charset
 
 /**
  * Reactive HTML fetcher with conditional-request support and Jsoup parsing.
@@ -23,6 +25,13 @@ import java.net.URI
  *
  * Jsoup's `parse()` is a CPU-bound blocking call, so it runs on an
  * injected IO dispatcher to avoid blocking the coroutine event loop.
+ *
+ * Response bodies are read as **bytes**, not as a decoded `String`: a retro venue host
+ * (Arcanoa) answers `Content-Type: text/html` with no `charset` parameter while the page
+ * is Latin-1, and Spring's `StringDecoder` falls back to UTF-8 in that case — which turns
+ * every umlaut into a replacement character before a scraper ever sees it. Handing Jsoup
+ * the raw bytes lets it apply the standard detection chain (BOM → HTTP `charset` →
+ * `<meta charset>` → UTF-8), so the declared encoding wins wherever it is stated.
  *
  * Venues whose events come from a JSON/API source rather than a scrapeable HTML page use
  * [ApiClient] instead — it shares the same [WebClient] bean (and therefore the same per-host
@@ -82,8 +91,8 @@ class HtmlFetcher(
      * @return a parsed Jsoup [Document].
      */
     suspend fun fetchDocument(url: String): Document {
-        val html = fetchHtml(url)
-        return parseHtml(html, url)
+        val body = fetchRawBody(url)
+        return parseHtml(body, url)
     }
 
     /**
@@ -91,13 +100,26 @@ class HtmlFetcher(
      *
      * Lower-level convenience method for fetching secondary pages (e.g. event detail pages)
      * where change detection is not needed. Prefer [fetchDocument] when a parsed [Document]
-     * is needed, as it also moves Jsoup parsing to the IO dispatcher. Fails fast with
-     * [HttpFetchException] on any 4xx/5xx so error pages are never parsed as valid event data.
+     * is needed, as it also moves Jsoup parsing to the IO dispatcher and lets Jsoup detect
+     * the page's encoding from its `<meta>` tag. Fails fast with [HttpFetchException] on any
+     * 4xx/5xx so error pages are never parsed as valid event data.
      *
      * @param url the page URL to fetch.
-     * @return the raw HTML body as a string.
+     * @return the raw HTML body as a string, decoded with the charset the server declared
+     *   (UTF-8 when it declared none — the meta tag cannot be honoured without parsing).
      */
     suspend fun fetchHtml(url: String): String {
+        val body = fetchRawBody(url)
+        return String(body.bytes, body.charset())
+    }
+
+    /**
+     * Fetches [url] as raw bytes, failing fast with [HttpFetchException] on any 4xx/5xx.
+     *
+     * The bytes stay undecoded so the caller can apply the page's own declared encoding
+     * (see the class KDoc) rather than Spring's UTF-8 default.
+     */
+    private suspend fun fetchRawBody(url: String): RawBody {
         logger.debug { "Fetching HTML body: $url" }
         return webClient
             .get()
@@ -109,7 +131,7 @@ class HtmlFetcher(
                 if (response.statusCode().isError) {
                     throw HttpFetchException(response.statusCode().value(), url)
                 }
-                response.awaitBody<String>()
+                RawBody(response.awaitBody<ByteArray>(), response.declaredCharsetName())
             }
     }
 
@@ -131,11 +153,11 @@ class HtmlFetcher(
             throw HttpFetchException(response.statusCode().value(), url)
         }
 
-        val body = response.awaitBody<String>()
+        val body = RawBody(response.awaitBody<ByteArray>(), response.declaredCharsetName())
         val newEtag = response.headers().asHttpHeaders().eTag
         val newLastModified = response.headers().asHttpHeaders().getFirst("Last-Modified")
 
-        logger.info { "Fetched ${body.length} chars from $url (newEtag=$newEtag, newLastModified=$newLastModified)" }
+        logger.info { "Fetched ${body.bytes.size} bytes from $url (newEtag=$newEtag, newLastModified=$newLastModified)" }
 
         val document = parseHtml(body, url)
         return FetchResult.Success(
@@ -146,16 +168,41 @@ class HtmlFetcher(
     }
 
     /**
-     * Parses an HTML string into a Jsoup [Document] on the IO dispatcher
-     * to avoid blocking the coroutine event loop.
+     * Parses a raw HTML body into a Jsoup [Document] on the IO dispatcher to avoid blocking
+     * the coroutine event loop.
+     *
+     * The server-declared charset is passed through when there is one; otherwise `null` hands
+     * Jsoup the detection job (BOM, then `<meta charset>`, then UTF-8).
      */
     private suspend fun parseHtml(
-        html: String,
+        body: RawBody,
         baseUri: String
     ): Document =
         withContext(ioDispatcher) {
-            Jsoup.parse(html, baseUri)
+            Jsoup.parse(ByteArrayInputStream(body.bytes), body.charsetName, baseUri)
         }
+
+    /** The charset from the response's `Content-Type`, or `null` when the server declared none. */
+    private fun ClientResponse.declaredCharsetName(): String? =
+        headers()
+            .asHttpHeaders()
+            .contentType
+            ?.charset
+            ?.name()
+
+    /**
+     * An undecoded response body plus the charset name the server declared for it, if any.
+     *
+     * Deliberately not a `data class`: the payload is a [ByteArray], whose identity-based
+     * `equals`/`hashCode` would make generated ones misleading.
+     */
+    private class RawBody(
+        val bytes: ByteArray,
+        val charsetName: String?
+    ) {
+        /** The declared charset, falling back to UTF-8 for an absent or unknown name. */
+        fun charset(): Charset = charsetName?.let { runCatching { Charset.forName(it) }.getOrNull() } ?: Charsets.UTF_8
+    }
 }
 
 /**
