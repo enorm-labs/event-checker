@@ -7,6 +7,16 @@
   `show`, `branch`, etc.). See [git docs](https://git-scm.com/docs/git#Documentation/git.txt---no-pager).
 - **ktlint auto-format first**: When ktlint reports formatting issues, always run `./gradlew ktlintFormat` first to auto-correct them. Only edit files manually
   for issues that ktlint cannot auto-fix.
+- **Reformatting is intentional — keep it**: Files in the working tree are routinely reformatted on purpose (IDE reformat-on-save, `./gradlew ktlintFormat`,
+  `npm run format`). Treat that as deliberate and leave it in place. Never revert, re-fetch, re-download, or otherwise "restore" a file to an earlier shape
+  because its indentation, tabs/spaces, line wrapping, attribute order, or trailing whitespace changed — and don't reformat *back* to a previous style either.
+  Review the content instead: `git --no-pager diff -w` (or `-b`) hides whitespace-only churn. Whitespace-only changes need no report, no explanation, and no
+  action; they are not a signal that something went wrong.
+    - This includes **test fixtures**, notably the scraper HTML snapshots under `events-importer/src/test/resources/scraper/`. A reformatted snapshot is still a
+      valid fixture — Jsoup ignores indentation and attribute order — so a reformat is never on its own a reason to re-capture a page from the live site.
+    - The one real caveat: in HTML, whitespace *between inline elements* affects the text Jsoup returns (`<b>a</b><b>b</b>` yields `ab`, but with a newline
+      between them it yields `a b`). So if a reformat makes a scraper test fail, that is a genuine finding — **raise it with the user**. Do not silently revert
+      the file, and do not loosen the assertion to make it pass.
 - **Build verification**: Always run `./gradlew clean build` after finishing an implementation to verify that all modules compile, tests pass, ktlint and detekt
   checks succeed, and Kover coverage thresholds are met. **Skip this step** when only Markdown documentation (`.md` files) or frontend files
   (`events-frontend/`) were changed — the Gradle build covers the backend modules only.
