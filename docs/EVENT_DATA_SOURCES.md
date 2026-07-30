@@ -7,8 +7,8 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 
 | Status                              | Meaning                                                                              | Count |
 |-------------------------------------|--------------------------------------------------------------------------------------|------:|
-| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    28 |
-| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |    10 |
+| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    29 |
+| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |     9 |
 | ⛔ [Blocked](#-blocked--deferred)   | Website analyzed, but no usable listings (no programme page, JS-only, or too sparse) |    11 |
 | ❓ [Unanalyzed](#-not-analyzed-yet) | No URL recorded yet — website still needs a first look                               |    24 |
 
@@ -45,26 +45,26 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Schokoladen                 | https://www.schokoladen-mitte.de/                           | Club         | Laravel; anchor-based events; genre inside title  |
 | SO36                        | https://www.so36.com/tickets                                | Club         | Cookie wall bypassed via Ticket-Toaster shop      |
 | Supamolly                   | https://www.supamolly.de/?p=programm                        | Club         | Retro PHP; row id is the date stamp; no prices    |
+| Urban Spree                 | https://www.urbanspree.com/program/                         | Club         | MODX; listing descending + paginated; walks pages |
 | Wild at Heart               | https://www.wildatheartberlin.de/                           | Bar          | Retro frameset; concerts.php; year from weekday   |
 
-27 importer classes cover 28 sources (Kantine am Berghain shares the Berghain importer).
+28 importer classes cover 29 sources (Kantine am Berghain shares the Berghain importer).
 
 ## 🔨 Ready to implement
 
 Analyzed and scrapable — the candidates for the next `/scaffold-importer` runs. **Priority** reflects data richness and effort, not venue importance.
 
-| Priority | Name                  | URL                                | Type     | Why / what it needs                                        |
-|:--------:|-----------------------|------------------------------------|----------|------------------------------------------------------------|
-|   High   | Urban Spree           | https://www.urbanspree.com/        | Club     | Clean static list + detail; date, time, price, description |
-|   High   | Arkaoda               | https://berlin.arkaoda.com/        | Bar      | Clean PHP listings + detail pages, images, RA links        |
-|   High   | Trinity Music         | https://trinitymusic.de/           | Promoter | Cross-venue; rich statuses; also populates `promoter`      |
-|   High   | Puschen               | https://puschen.net/berlin/        | Promoter | Consistent format; doors/start, sold-out, cross-venue      |
-|  Medium  | Zenner                | https://zenner.berlin/             | Club     | Never analyzed in detail — review the site first           |
-|  Medium  | Landstreicher Booking | https://landstreicher-booking.de/  | Promoter | Structured tour-date table; needs a Berlin-only filter     |
-|  Medium  | Matrix Club Berlin    | https://www.matrix-berlin.de/      | Club     | Recurring nights; dates, times, genres, DJ lineups         |
-|  Medium  | Bar jeder Vernunft    | https://www.bar-jeder-vernunft.de/ | Bar      | Multi-day ranges to expand; detail pages for times/prices  |
-|   Low    | Soda Club Berlin      | https://www.soda-berlin.de/        | Club     | Recurring nights; list has title/date/image only           |
-|   Low    | Arcanoa               | https://www.ssi-media.com/arcanoa/ | Bar      | 1990s HTML; scrapable but very low data quality            |
+| Priority | Name                  | URL                                | Type     | Why / what it needs                                       |
+|:--------:|-----------------------|------------------------------------|----------|-----------------------------------------------------------|
+|   High   | Arkaoda               | https://berlin.arkaoda.com/        | Bar      | Clean PHP listings + detail pages, images, RA links       |
+|   High   | Trinity Music         | https://trinitymusic.de/           | Promoter | Cross-venue; rich statuses; also populates `promoter`     |
+|   High   | Puschen               | https://puschen.net/berlin/        | Promoter | Consistent format; doors/start, sold-out, cross-venue     |
+|  Medium  | Zenner                | https://zenner.berlin/             | Club     | Never analyzed in detail — review the site first          |
+|  Medium  | Landstreicher Booking | https://landstreicher-booking.de/  | Promoter | Structured tour-date table; needs a Berlin-only filter    |
+|  Medium  | Matrix Club Berlin    | https://www.matrix-berlin.de/      | Club     | Recurring nights; dates, times, genres, DJ lineups        |
+|  Medium  | Bar jeder Vernunft    | https://www.bar-jeder-vernunft.de/ | Bar      | Multi-day ranges to expand; detail pages for times/prices |
+|   Low    | Soda Club Berlin      | https://www.soda-berlin.de/        | Club     | Recurring nights; list has title/date/image only          |
+|   Low    | Arcanoa               | https://www.ssi-media.com/arcanoa/ | Bar      | 1990s HTML; scrapable but very low data quality           |
 
 *Bar jeder Vernunft is theater/cabaret rather than live music — decide whether it belongs in scope before building it.*
 

@@ -293,6 +293,46 @@ class ArtistNameMappingTest {
     }
 
     @Test
+    fun `stripArtistSuffix recovers the act from a hyphenated tour tail ending in a year`() {
+        // Tour labels that name a route or season instead of saying "Tour".
+        stripArtistSuffix("Jawdropped - USA UK EU FALL 2026") shouldBe "Jawdropped"
+        stripArtistSuffix("Some Band - European Winter 1999") shouldBe "Some Band"
+    }
+
+    @Test
+    fun `stripArtistSuffix keeps a stylised number that is part of the name`() {
+        // Only a four-digit 19xx/20xx year at the very end opens the tail.
+        stripArtistSuffix("Blink - 182") shouldBe "Blink - 182"
+        stripArtistSuffix("Front 242") shouldBe "Front 242"
+        stripArtistSuffix("Sum 41 - Berlin 2026 Show") shouldBe "Sum 41 - Berlin 2026 Show"
+    }
+
+    @Test
+    fun `stripArtistSuffix recovers the act from a shouted tour or album tail`() {
+        stripArtistSuffix("Tigercub - NETS TO CATCH THE WIND") shouldBe "Tigercub"
+        stripArtistSuffix("The Notwist - VERTIGO DAYS TOUR") shouldBe "The Notwist"
+    }
+
+    @Test
+    fun `stripArtistSuffix keeps a hyphenated name the shouted-tail rule must not cut`() {
+        // Tail carries lowercase — it is a name, not a shouted tour title.
+        stripArtistSuffix("BAD COMPANY LEGACY - Dave Colwell") shouldBe "BAD COMPANY LEGACY - Dave Colwell"
+        stripArtistSuffix("Sinem - Hatun") shouldBe "Sinem - Hatun"
+        // Head is all-caps, so an all-caps co-bill is never cut down to its first token.
+        stripArtistSuffix("DZ - DEATHRAY") shouldBe "DZ - DEATHRAY"
+        // A one-word shouted tail could be an alias or initialism, so it is left alone.
+        stripArtistSuffix("Someone - ALIEN") shouldBe "Someone - ALIEN"
+    }
+
+    @Test
+    fun `stripArtistSuffix recovers the act from a hyphenated Releaseshow tail`() {
+        stripArtistSuffix("Sinem - Hatun - Releaseshow") shouldBe "Sinem - Hatun"
+        stripArtistSuffix("Some Band - Release Show") shouldBe "Some Band"
+        // Without the dash it is left alone — "Releaseshow" could be part of a name.
+        stripArtistSuffix("Releaseshow") shouldBe "Releaseshow"
+    }
+
+    @Test
     fun `stripArtistSuffix recovers the act from a set-count note`() {
         stripArtistSuffix("Toshìn & The Teleporters - 2 Sets!") shouldBe "Toshìn & The Teleporters"
         stripArtistSuffix("Some Band - 3 Sets") shouldBe "Some Band"
@@ -450,6 +490,7 @@ class ArtistNameMappingTest {
         splitHeadlinerTitle("Simon & Garfunkel") shouldContainExactly listOf("Simon & Garfunkel")
         // Denylist matches even when the source spells the conjunction as "and".
         splitHeadlinerTitle("Simon and Garfunkel") shouldContainExactly listOf("Simon and Garfunkel")
+        splitHeadlinerTitle("BLOOD & SUN") shouldContainExactly listOf("BLOOD & SUN")
         // "X & the Ys" band-name tail, in both & and "and" forms.
         splitHeadlinerTitle("Nick Cave & the Bad Seeds") shouldContainExactly listOf("Nick Cave & the Bad Seeds")
         splitHeadlinerTitle("James and the Cold Gun") shouldContainExactly listOf("James and the Cold Gun")
@@ -468,6 +509,21 @@ class ArtistNameMappingTest {
     }
 
     @Test
+    fun `splitHeadlinerTitle keeps a denylisted act whole when it co-bills with others`() {
+        // The whole-title denylist check cannot fire here, so the guard has to hold at the
+        // segment level: split at the "+" boundaries only, never inside "BLOOD & SUN".
+        splitHeadlinerTitle("BLOOD & SUN + SOCIETY OF THE SILVER CROSS + LINNEA HJERTÉN") shouldContainExactly
+            listOf("BLOOD & SUN", "SOCIETY OF THE SILVER CROSS", "LINNEA HJERTÉN")
+        splitHeadlinerTitle("Pure Obsessions & Red Nights + Nico Amara") shouldContainExactly
+            listOf("Pure Obsessions & Red Nights", "Nico Amara")
+    }
+
+    @Test
+    fun `splitSupportActs keeps a denylisted act whole`() {
+        splitSupportActs("Simon & Garfunkel, Aska") shouldContainExactly listOf("Simon & Garfunkel", "Aska")
+    }
+
+    @Test
     fun `splitHeadlinerTitle keeps a slash inside a single act name when splitOnSlash is false`() {
         // Madame Claude uses "/" inside one act's name, so its co-bills split only on " + ".
         splitHeadlinerTitle("Morimoto / Wong duo", splitOnSlash = false) shouldContainExactly
@@ -483,6 +539,20 @@ class ArtistNameMappingTest {
     }
 
     // --- headlinersFromTitle ---
+
+    @Test
+    fun `headlinersFromTitle extracts no act from a title led by a label's own name`() {
+        // The label's fifteen-year night: "Zweiter Akt" is a programme part, not a performer.
+        headlinersFromTitle("aufnahme + wiedergabe - Fünfzehn Jahre + Zweiter Akt").shouldBeEmpty()
+        headlinersFromTitle("Aufnahme + Wiedergabe").shouldBeEmpty()
+    }
+
+    @Test
+    fun `headlinersFromTitle still extracts acts the label merely promotes`() {
+        // The label is only in the promoter field for these, never leading the title.
+        headlinersFromTitle("TWIN NOIR + HINFORT").map { it.name } shouldContainExactly listOf("TWIN NOIR", "HINFORT")
+        headlinersFromTitle("Escape with Romeo").map { it.name } shouldContainExactly listOf("Escape with Romeo")
+    }
 
     @Test
     fun `headlinersFromTitle drops placeholder fragments from a split title`() {

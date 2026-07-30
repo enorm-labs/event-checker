@@ -37,6 +37,7 @@
 ###   Schokoladen          — https://www.schokoladen-mitte.de/
 ###   SO36                 — https://www.so36.com/tickets
 ###   Supamolly            — https://www.supamolly.de/?p=programm (retro PHP single-page listing; row id = date stamp)
+###   Urban Spree          — https://www.urbanspree.com/program/ (MODX; descending paginated list + detail)
 ###   Wild at Heart        — https://www.wildatheartberlin.de/concerts.php (retro frameset single-page listing)
 ### ============================================================
 
@@ -1686,6 +1687,70 @@ Accept: application/json
 
 > {%
     client.test("Supamolly import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Urban Spree (Revaler Str. 99, Berlin-Friedrichshain — RAW-Gelände)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Urban Spree venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Urban Spree",
+    "address": "Revaler Str. 99",
+    "city": "Berlin",
+    "postalCode": "10245",
+    "district": "friedrichshain-kreuzberg",
+    "latitude": 52.50750,
+    "longitude": 13.45220,
+    "websiteUrl": "https://www.urbanspree.com",
+    "description": "An artist space on the RAW-Gelände combining a gallery, shop and beer garden with a concert hall, programming post-punk, dark wave, metal and indie shows alongside exhibitions."
+}
+
+> {%
+    client.global.set("urban_spree_venue_id", response.body.id);
+    client.test("Urban Spree venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Urban Spree event source ---
+# Links the venue to the UrbanSpreeWebsiteImporter.
+# The sourceType "URBAN_SPREE" matches EventSource.URBAN_SPREE.
+# NOTE: the listing is sorted *descending* by date across the venue's whole archive
+# (200+ pages of nine cards), so the importer walks `?page=N` forward from this entry
+# URL until a page reaches the past — importing page 1 alone would yield only the
+# farthest-future shows.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{urban_spree_venue_id}},
+    "name": "Urban Spree",
+    "url": "https://www.urbanspree.com/program/",
+    "sourceType": "URBAN_SPREE",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Urban Spree event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Urban Spree import ---
+# Slug is derived from the source name: "Urban Spree" → urban-spree.
+POST {{importer-host}}/api/admin/event-sources/urban-spree/import
+Accept: application/json
+
+> {%
+    client.test("Urban Spree import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}
