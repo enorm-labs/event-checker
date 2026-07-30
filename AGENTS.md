@@ -191,11 +191,11 @@ subprojects sharing a root `settings.gradle.kts`, plus a standalone frontend pro
       templates when adding new venue importers.
     - **`AbstractTwoPageWebsiteImporter`** — base class for venues that use the overview → detail pattern, the most common shape in the `scraper/` package. The
       subclasses are deliberately not enumerated here (the list drifts with every new venue —
-      `grep -rl 'AbstractTwoPageWebsiteImporter(' events-importer/src/main/kotlin/de/norm/events/scraper/` is authoritative). Owns the shared
-      overview-fetch → per-event detail-fetch → gap-fill orchestration, including `NotModified` handling and the "degrade to overview
-      data if the detail page fails" fallback. Subclasses implement only `scrapeOverview`, `scrapeDetail`, and `fillGapsFromOverview` (the venue-specific merge
-      strategy). Single-page HTML venues (e.g. `PrivatclubWebsiteImporter`) implement `EventImporter` directly instead. The two-layer strategy itself is the
-      decision recorded in ADR-007; the abstract class is just the implementation vehicle.
+      `grep -rl 'AbstractTwoPageWebsiteImporter(' events-importer/src/main/kotlin/de/norm/events/scraper/` is authoritative). Owns the shared overview-fetch →
+      per-event detail-fetch → gap-fill orchestration, including `NotModified` handling and the "degrade to overview data if the detail page fails" fallback.
+      Subclasses implement only `scrapeOverview`, `scrapeDetail`, and `fillGapsFromOverview` (the venue-specific merge strategy). Single-page HTML venues (e.g.
+      `PrivatclubWebsiteImporter`) implement `EventImporter` directly instead. The two-layer strategy itself is the decision recorded in ADR-007; the abstract
+      class is just the implementation vehicle.
     - **JSON/API importers (`ApiClient`)** — venues whose events come from a structured JSON feed rather than scrapeable HTML (Festsaal Kreuzberg → Wagtail
       headless-CMS REST, Neue Zukunft → Elfsight widget boot API, Madame Claude → WordPress
       `event` REST API with ACF fields) implement `EventImporter` directly and fetch via **`ApiClient`** — the JSON counterpart to `HtmlFetcher`, sharing the
@@ -231,9 +231,14 @@ subprojects sharing a root `settings.gradle.kts`, plus a standalone frontend pro
 ./gradlew koverLog             # Print test coverage summary per module
 ./gradlew koverHtmlReport      # Generate HTML coverage reports
 ./gradlew dependencyUpdates    # Check for newer dependency versions
-./gradlew dependencyCheckAggregate  # OWASP Dependency-Check (CVE scan)
+./gradlew dependencyCheckAggregate --no-configuration-cache  # OWASP Dependency-Check (CVE scan)
 ./gradlew httpTest                  # Run .http files via IntelliJ HTTP Client CLI (requires ijhttp + running importer)
 ```
+
+The **configuration cache** is enabled (`org.gradle.configuration-cache=true` in `gradle.properties`), so repeat builds skip the configuration phase. Every task
+above benefits except `dependencyCheckAggregate` — the OWASP plugin (12.2.2) keeps a `Project` reference in its task state, which cannot be serialized. That
+task still runs correctly without the flag, but the cache entry is discarded on every invocation and the build prints a problems report, so pass
+`--no-configuration-cache` to skip the futile attempt. Both CI workflows that run it already do. Recheck when the plugin is upgraded.
 
 Frontend (`events-frontend/`):
 
@@ -252,14 +257,16 @@ Java version is managed via SDKMAN (`.sdkmanrc` pins `java=25.0.2-tem`; run `sdk
 
 - **Package structure**: `de.norm.events.<module-name>` — organize by feature/domain, not layer.
 - **Kotlin DSL** for all Gradle build scripts (`build.gradle.kts`).
-- **Kotlin 2.3.21** with **Spring Boot 4.0.6**; plugin versions pinned in `settings.gradle.kts` `pluginManagement`.
+- **Kotlin 2.4.0** with **Spring Boot 4.1.0**; plugin versions pinned in `settings.gradle.kts` `pluginManagement`.
 - **ktlint 1.8.0** enforced project-wide via root `subprojects` block; do not override per-module.
 - **detekt 2.0** (`dev.detekt` plugin, migrated from `io.gitlab.arturbosch.detekt`) applied project-wide. Builds upon default config with overrides in root
   `detekt.yml` (currently only `MaxLineLength: 160`). Run `./gradlew detekt` to analyze all modules.
 - **Max line length**: 160 characters (enforced by both `.editorconfig` and `detekt.yml`).
-- Centralized versions in root `build.gradle.kts` (`extra["java.version"]`, `extra["jsoup.version"]`, `extra["kotest.version"]`,
-  `extra["kotlin-logging.version"]`, `extra["mockk.version"]`, `extra["slugify.version"]`, `extra["spring-modulith.version"]`,
-  `extra["springdoc.version"]`); plugin versions in `settings.gradle.kts` `pluginManagement`.
+- Centralized library versions in **`gradle.properties`** (`java.version`, `jsoup.version`, `kotest.version`,
+  `kotlin-logging.version`, `mockk.version`, `mockwebserver.version`, `slugify.version`, `spring-modulith.version`,
+  `springdoc.version`), read in the module build scripts via `property("…")`; plugin versions in `settings.gradle.kts`
+  `pluginManagement`. They live in `gradle.properties` rather than root `extra[...]` because Gradle 10 removes the implicit lookup of parent-project properties
+  that the `extra[...]` form depended on.
 - Use `val` for injected dependencies; constructor injection only (no field injection).
 - Application config files use **`.yaml`** extension (not `.yml`).
 - Kotlin compiler flags: `-Xjsr305=strict` (all modules) and `-Xannotation-default-target=param-property` (BFF + importer) are set in `compilerOptions`.

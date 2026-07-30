@@ -25,7 +25,7 @@ pluginManagement {
         // check this compatibility table: https://detekt.dev/docs/introduction/compatibility/
         // Kotlin 2.4.10 not supported yet
         id("dev.detekt") version "2.0.0-alpha.5"
-        id("com.github.ben-manes.versions") version "0.56.0"
+        id("io.github.ben-manes.versions") version "0.56.0"
         id("org.owasp.dependencycheck") version "12.2.2"
     }
 }

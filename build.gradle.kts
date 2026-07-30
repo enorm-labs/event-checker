@@ -1,16 +1,8 @@
 import dev.detekt.gradle.Detekt
 import org.jlleitschuh.gradle.ktlint.KtlintExtension
 
-// Centralized dependency versions – change here to update all subprojects at once.
-extra["java.version"] = 25
-extra["jsoup.version"] = "1.22.2"
-extra["kotest.version"] = "6.2.3"
-extra["kotlin-logging.version"] = "8.0.4"
-extra["mockk.version"] = "1.14.11"
-extra["mockwebserver.version"] = "4.12.0"
-extra["slugify.version"] = "4.0.1"
-extra["spring-modulith.version"] = "2.1.0"
-extra["springdoc.version"] = "3.0.3"
+// Centralized dependency versions live in `gradle.properties` – change them there to update
+// all subprojects at once.
 
 // Plugins are applied in the subprojects, so that they are only applied to the relevant modules
 plugins {
@@ -21,7 +13,7 @@ plugins {
     id("org.jetbrains.kotlinx.kover")
     id("org.jlleitschuh.gradle.ktlint") apply false
     id("dev.detekt") apply false
-    id("com.github.ben-manes.versions")
+    id("io.github.ben-manes.versions")
     id("org.owasp.dependencycheck")
 }
 
@@ -76,7 +68,7 @@ subprojects {
 // Run `./gradlew koverHtmlReport` to generate an HTML report at build/reports/kover/html/.
 // Run `./gradlew koverLog` to print a coverage summary to the console.
 dependencies {
-    subprojects.forEach { kover(it) }
+    subprojects.forEach { kover(project(it.path)) }
 }
 
 // Per-module report filters do not propagate into this aggregated report, so mirror the

@@ -23,10 +23,9 @@ This project has two categories of dependency versions:
 
 ### ✅ Managed by us (update these)
 
-Versions explicitly pinned in **`settings.gradle.kts`** (plugin versions) and **root `build.gradle.kts`** (`extra[...]`
-properties). Currently:
+Versions explicitly pinned in **`settings.gradle.kts`** (plugin versions) and **`gradle.properties`** (library versions). Currently:
 
-**Root `build.gradle.kts` — library versions:**
+**`gradle.properties` — library versions:**
 
 | Property                  | Dependency                             |
 |---------------------------|----------------------------------------|
@@ -48,7 +47,7 @@ properties). Currently:
 | `org.jetbrains.kotlinx.kover`               | Kover code coverage plugin          |
 | `org.jlleitschuh.gradle.ktlint`             | ktlint Gradle plugin                |
 | `dev.detekt`                                | Detekt static analysis plugin       |
-| `com.github.ben-manes.versions`             | Gradle Versions Plugin              |
+| `io.github.ben-manes.versions`              | Gradle Versions Plugin              |
 | `org.owasp.dependencycheck`                 | OWASP Dependency-Check plugin       |
 
 Also check whether the **ktlint version** (`version = "..."` inside the `configure<KtlintExtension>` block in root
@@ -95,7 +94,7 @@ Before applying updates, verify compatibility:
 
 Edit the version strings in the appropriate files:
 
-- **Library versions** → root `build.gradle.kts` (`extra["..."]` properties)
+- **Library versions** → `gradle.properties` (`*.version` properties)
 - **Plugin versions** → `settings.gradle.kts` (`pluginManagement { plugins { ... } }`)
 - **ktlint version** → root `build.gradle.kts` (`configure<KtlintExtension> { version = "..." }`)
 

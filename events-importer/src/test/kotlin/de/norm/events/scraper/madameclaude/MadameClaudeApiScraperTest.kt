@@ -133,7 +133,7 @@ class MadameClaudeApiScraperTest {
         val quiz = event("madame_claude:music-quiz-154")
         quiz.description shouldContain "Guess the song!"
         quiz.description!! shouldNotContain "<h3>"
-        quiz.description!! shouldNotContain "&nbsp;"
+        quiz.description shouldNotContain "&nbsp;"
     }
 
     @Test
