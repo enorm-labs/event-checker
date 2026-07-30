@@ -193,6 +193,22 @@ enum class EventSource {
     SO36,
 
     /**
+     * Soda Club Berlin – discotheque in the Kulturbrauerei running resident nights (Famous Friday,
+     * Sodalicious, Salsa Sonntag …) on the "disco2app" club CMS. The `/events` page groups the
+     * programme under German month headings, each night a `.event-snippet` card carrying the flyer,
+     * the title, a `/de/events/<slug>` detail link and a **year-less** weekday/day/month calendar
+     * block — so the overview year is inferred from the weekday. Each detail page carries a
+     * schema.org `MusicEvent` JSON-LD block (start date + time, image, canonical URL, status, the
+     * online offer price) plus labelled info boxes the JSON-LD omits: the `Eintritt` admission
+     * price, an `Einlass` **age** limit (not a doors time — the venue publishes none), an
+     * "Abendkasse verfügbar" badge marking door sales, and the untruncated prose blurb
+     * (`p.event-details`). Every listing is a club night, so events are typed
+     * [PARTY][de.norm.events.event.EventType.PARTY] and no artists are derived — the JSON-LD
+     * `performer` is always the placeholder "Unbekannt".
+     */
+    SODA,
+
+    /**
      * Supamolly Berlin – retro hand-coded PHP squat venue in Friedrichshain. The whole programme lives on a
      * single `?p=programm` page (identical to the homepage) as a `<table>` whose event rows carry a
      * `YYYYMMDDHHMM` `id` — a machine-readable date+time stamp that is both the event date and its stable

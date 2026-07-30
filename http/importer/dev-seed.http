@@ -38,6 +38,7 @@
 ###   Roadrunner's Paradise — http://www.roadrunners-paradise.de/programm.html
 ###   Schokoladen          — https://www.schokoladen-mitte.de/
 ###   SO36                 — https://www.so36.com/tickets
+###   Soda Club            — https://www.soda-berlin.de/events (disco2app CMS; list + detail with MusicEvent JSON-LD)
 ###   Supamolly            — https://www.supamolly.de/?p=programm (retro PHP single-page listing; row id = date stamp)
 ###   Urban Spree          — https://www.urbanspree.com/program/ (MODX; descending paginated list + detail)
 ###   Wild at Heart        — https://www.wildatheartberlin.de/concerts.php (retro frameset single-page listing)
@@ -1750,6 +1751,68 @@ Accept: application/json
 
 > {%
     client.test("SO36 import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Soda Club (Schönhauser Allee 36, Berlin-Prenzlauer Berg — Kulturbrauerei)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Soda Club venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Soda Club",
+    "address": "Schönhauser Allee 36",
+    "city": "Berlin",
+    "postalCode": "10435",
+    "district": "pankow",
+    "latitude": 52.53951,
+    "longitude": 13.41180,
+    "websiteUrl": "https://www.soda-berlin.de",
+    "description": "A large discotheque in the Kulturbrauerei in Prenzlauer Berg, running resident nights across five floors — R'n'B, urban dance, charts and 90s/2000s — plus salsa evenings and summer open airs."
+}
+
+> {%
+    client.global.set("soda_venue_id", response.body.id);
+    client.test("Soda Club venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Soda Club event source ---
+# Links the venue to the SodaWebsiteImporter.
+# The sourceType "SODA" matches EventSource.SODA.
+# NOTE: the URL is `/events` (the programme listing), NOT the homepage. The listing's
+# detail links are language-prefixed (`/de/events/<slug>`), which the importer resolves
+# against this entry URL.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{soda_venue_id}},
+    "name": "Soda Club",
+    "url": "https://www.soda-berlin.de/events",
+    "sourceType": "SODA",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Soda Club event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Soda Club import ---
+POST {{importer-host}}/api/admin/event-sources/soda-club/import
+Accept: application/json
+
+> {%
+    client.test("Soda Club import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}
