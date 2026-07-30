@@ -30,6 +30,7 @@
 ###   Lido                 — https://www.lido-berlin.de/
 ###   Loge                 — https://www.loge-berlin.org/event-list (Wix Events warmup JSON + JSON-LD price)
 ###   Madame Claude        — https://madameclaude.de/ (WordPress `event` REST API, ACF-backed)
+###   Matrix               — https://www.matrix-berlin.de/party-in-berlin/ (WordPress; entry → per-month pages)
 ###   Mikropol             — https://mikropol-berlin.de/events/ (WordPress/Events-Manager, list + detail)
 ###   Monarch              — https://kottimonarch.de/programm.php (retro PHP single-page listing)
 ###   Neue Zukunft         — https://neue-zukunft.org/ (Elfsight Event Calendar widget JSON API)
@@ -1260,6 +1261,69 @@ Accept: application/json
 
 > {%
     client.test("Madame Claude import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Matrix (Warschauer Platz 18, Berlin-Friedrichshain — in the S-Bahn arches)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Matrix venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Matrix",
+    "address": "Warschauer Platz 18",
+    "city": "Berlin",
+    "postalCode": "10245",
+    "district": "friedrichshain-kreuzberg",
+    "latitude": 52.50525,
+    "longitude": 13.44930,
+    "websiteUrl": "https://www.matrix-berlin.de",
+    "description": "A large multi-floor mainstream club in the railway arches at Warschauer Straße, open every night of the week with resident DJs playing hip hop, house, afrobeats, reggaeton and chart music."
+}
+
+> {%
+    client.global.set("matrix_venue_id", response.body.id);
+    client.test("Matrix venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Matrix event source ---
+# Links the venue to the MatrixWebsiteImporter.
+# The sourceType "MATRIX" matches EventSource.MATRIX.
+# The URL is the `/party-in-berlin/` programme page, which serves the *current* month; the importer
+# follows the page's own next-month link (`?get_month=<m>&get_year=<yyyy>`) forward until the venue
+# offers none, so the whole announced programme (~3 months) is covered without touching the ~90
+# per-event `/parties/<date>-matrix-<weekday>/` detail pages.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{matrix_venue_id}},
+    "name": "Matrix",
+    "url": "https://www.matrix-berlin.de/party-in-berlin/",
+    "sourceType": "MATRIX",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Matrix event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Matrix import ---
+POST {{importer-host}}/api/admin/event-sources/matrix/import
+Accept: application/json
+
+> {%
+    client.test("Matrix import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}

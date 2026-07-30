@@ -139,6 +139,22 @@ enum class EventSource {
     MADAME_CLAUDE,
 
     /**
+     * Matrix Club Berlin – WordPress club at the Warschauer Straße U-Bahn arches that runs a resident
+     * night every single day ("Party Every Night"). Its `/parties/<date>-matrix-<weekday>/` posts have
+     * per-event pages, but the `/party-in-berlin/` **month** view already carries the identical, fully
+     * expanded content for every night of a month in one server-rendered page — so this importer walks
+     * the month pages (`?get_month=<m>&get_year=<yyyy>`, discovered from the page's own next-month
+     * link) instead of fetching ~90 detail pages per run. Each night is a `div.toggled-item` whose `id`
+     * is a machine-readable `DD-MM-YYYY` date and whose `.toggle-review` half holds the flyer, a
+     * `Weekday DD.MM.YYYY | HH:mmUhr` line, the title, a `•`-separated genre list, an optional starred
+     * promo line, a `<br>`-delimited prose blurb carrying the `► Entry :` door prices, and labelled
+     * `Floors:` / `DJs:` / `Specials:` lists — the DJs and specials being the lineup. Conditional
+     * requests are disabled: the site sends neither ETag nor Last-Modified, and a 304 on the entry page
+     * would say nothing about the later months.
+     */
+    MATRIX,
+
+    /**
      * Mikropol Berlin – WordPress/Events-Manager club in Schöneberg; the `/events/` page lists every show as
      * an `a.event` card (a `DD.MM.YYYY` date, start/doors times, title, an inline support line, and an
      * `Ausverkauft`/`Abgesagt` status class), each linking to an `/event/<date-slug>/` detail page that adds
