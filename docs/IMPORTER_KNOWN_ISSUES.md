@@ -214,6 +214,34 @@ on 44/45 (the one gap is a free-entry night with no shop).
 - 🟢 **Pagination is bounded at 20 pages.** The listing is sorted descending across a 200+-page archive, so the importer walks `?page=N` until a page reaches the
   past. If the venue ever books beyond ~180 upcoming events, or changes the sort order, the cap truncates the import — this is logged as a warning.
 
+### arkaoda (`scraper/arkaoda/`) — hand-coded PHP, list + detail
+
+Assessed against an 82-event walk of the venue's `?/default/detail/id=<n>` range (ids 1240–1321, roughly March–July 2026): every event has a date, a title and a
+flyer; 27 of the 82 carry the `Konser` category and 55 carry none at all.
+
+- 🔴 **No times, prices, sold-out state or genre — for any event.** The venue has no structured field for them anywhere in its markup. Where it mentions them at
+  all they sit in free prose ("€10 Entry on the door", "Live set at 22:00, DJs until 6:00", "tickets at the door"), with no delimiter and no guarantee the value
+  belongs to the event rather than a record being plugged, so they are deliberately not parsed. Every arkaoda event therefore lands with null times and prices.
+  The one prose value that *is* extracted is a `Tickets:`-labelled shop link (in practice Resident Advisor) — a URL is unambiguous once labelled.
+- 🟠 **Artists are derived from the title, and the rule drops as many as it keeps.** There is no lineup markup, no JSON-LD and no `og:` performer field, so the
+  title is the only source — but arkaoda titles are dominated by series, label and collaboration names rather than billings. `arkaodaArtists` therefore refuses
+  any title that still reads as a compound event label after the promoter/series framing is stripped (a spaced dash, an ` x ` collaboration marker, or a
+  `release`/`takeover`/`fundraiser`/`market` word). That is the intended trade — it keeps `Remise Takeover` out of the artist table at the cost of losing the
+  real acts in `Grumpy Pieces release; Harmonious Thelonious (Live) + Saeko Killy (Live)` and `Brokenchord X Luna Vega`. Across the 27 `Konser` events the rule
+  yields artists for roughly half.
+- 🟢 **An unlabelled night is typed by title keyword or `OTHER`, never `CONCERT`.** `Konser` is the only category the site emits, so its absence is the signal
+  that the night is not a plain gig — but it does not say *what* it is. A club night whose title carries no `party`/`rave`/`clubnight` cue (`MNJM`, `FOAM`,
+  `Bar Night: Bent (DJ)`, `Cover`) lands as `OTHER` rather than `PARTY`. Defaulting these to `CONCERT` was rejected: it would also mint each event name as a
+  headliner.
+- 🟢 **A single-act title cannot be told from a series name.** With no dash, ` x ` or event word to reject on, a one-line title is taken as the act — correct for
+  `Juana Aguirre` and `ddwy`, wrong for `Italian Dance Wave` or `Radiant Reciprocity`, which are programme names. This is the same reactive-denylist residue as
+  the cross-cutting entry above.
+- 🟢 **Country tags survive on some act names.** A trailing all-caps code group is stripped (`Marta Warelis (PL/USA)` → `Marta Warelis`), but a spelled-out or
+  mixed form is not (`Apichat Pakwan (Thailand- Live)`) — the same limitation as Urban Spree, for the same reason.
+- 🟢 **Conditional requests never fire.** The server sends neither ETag nor Last-Modified and answers `Cache-Control: no-store, no-cache`, so every run is a full
+  fetch of the listing plus one detail page per event. This is cheap only because the listing shows *upcoming* events alone and is usually a handful of blocks;
+  a season-long listing on this platform would need reconsidering.
+
 ---
 
 ## How to extend this doc

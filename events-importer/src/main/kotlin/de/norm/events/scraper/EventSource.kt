@@ -30,6 +30,23 @@ enum class EventSource {
      */
     ALTE_KANTINE,
 
+    /**
+     * arkaoda Berlin – the Neukölln outpost of the Istanbul bar/club, on a hand-coded PHP site whose router
+     * puts the path in the query string (`?/default/program`, `?/default/detail/id=<n>`). The `?/default/program`
+     * listing server-renders one `div.box` per **upcoming** event (past events drop off, so it is short — often
+     * only a handful of blocks), each carrying a flyer, a `<b>` run with a spaced `DD / MM / YYYY` date, the German
+     * weekday and an optional `// Konser` category, the title, and a CSS-truncated excerpt. The `?/default/detail/id=<n>`
+     * pages repeat that same block markup and add the **untruncated** description, which is the reason they are
+     * fetched at all; the numeric `id` is the stable [ScrapedEvent.sourceId] key. Three quirks drive the parser:
+     * `Konser` (Turkish for concert) is the *only* category the venue ever emits, so an unlabelled event is typed
+     * from its title rather than defaulted to a concert; PHP `addslashes` escapes leak into the rendered title
+     * (`7\" Vinyl`), so they are unescaped before storage; and conditional requests are pointless because the site
+     * sends no ETag/Last-Modified and answers `Cache-Control: no-store`. The venue has no structured field for
+     * times, prices, sold-out state or genre — those appear, if at all, only inside the prose description, from
+     * which just the `Tickets:`-labelled shop link (usually Resident Advisor) is read.
+     */
+    ARKAODA,
+
     /** Astra Kulturhaus Berlin – Kulturhäuser-platform listing on the homepage with per-event detail pages. */
     ASTRA,
 
