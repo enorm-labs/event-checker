@@ -102,9 +102,18 @@ subprojects sharing a root `settings.gradle.kts`, plus a standalone frontend pro
 - **Pagination, sorting & limiting**: All list endpoints accept `Pageable` parameters via query string (`?page=0&size=20&sort=name,asc`). Controllers use
   `@PageableDefault` to declare sensible defaults (20 items per page; venues/artists/promoters sort by `name`, events sort by `eventDate`). Repositories expose
   `findAllBy(pageable: Pageable): Flow<Entity>` for Spring Data to apply
-  `LIMIT`/`OFFSET`/`ORDER BY`. `WebFluxConfiguration` registers `ReactivePageableHandlerMethodArgumentResolver` so WebFlux can resolve `Pageable` from request
-  parameters (not auto-configured unlike Spring MVC). The event list endpoint uses batch loading to avoid N+1 queries: it fetches the current page of events,
-  then bulk-fetches all artist, promoter, and genre tag associations for that page in 3 additional queries (4 queries total per page).
+  `LIMIT`/`OFFSET`/`ORDER BY`. `WebFluxConfiguration` (in **both** the importer and the BFF) registers `StableSortPageableArgumentResolver` so WebFlux can
+  resolve `Pageable` from request parameters (not auto-configured unlike Spring MVC). The event list endpoint uses batch loading to avoid N+1 queries: it
+  fetches the current page of events, then bulk-fetches all artist, promoter, and genre tag associations for that page in 3 additional queries (4 queries total
+  per page).
+    - **`StableSortPageableArgumentResolver`** extends Spring Data's `ReactivePageableHandlerMethodArgumentResolver` and appends `id` as the final sort key.
+      Every list endpoint sorts by a **non-unique** column (`name`, `eventDate`), and `LIMIT`/`OFFSET` gives PostgreSQL no obligation to order tied rows the
+      same way across two queries — so a client paging through could see one row twice and never see another. The tiebreaker is always ascending (within a tie
+      group only the order's *stability* matters) and is skipped when the caller already sorts by `id` or the request is unpaged. **Do not move this to
+      `@PageableDefault`**: that only applies when the request carries no `sort` parameter, and the SPA sends one, so a default-only tiebreaker leaves the real
+      paging path unstable. The resolver and its test are duplicated per module because `events-core` is deliberately free of web dependencies.
+    - The BFF's `EventSearchRepository` builds its `ORDER BY` by hand (filtered event search) and ends it with `e.id ASC` for the same reason; it allowlists
+      sort properties, so the key the resolver appends is ignored there.
 - **API path convention**: All importer admin endpoints live under `/api/admin/<resource>` (e.g. `/api/admin/venues`, `/api/admin/events`).
 - **Module metadata**: Each feature package in the importer has a `*Module.kt` marker class annotated with
   `@ApplicationModule(allowedDependencies = [...])` to declare allowed inter-module dependencies for Spring Modulith verification. Similarly, `events-core` has
@@ -116,6 +125,17 @@ subprojects sharing a root `settings.gradle.kts`, plus a standalone frontend pro
   DTOs — they are a server-side concern computed by the service layer. The slug logic is encapsulated in a dedicated `slug` Spring Modulith module
   (`de.norm.events.slug`) with a `SlugGenerator`
   object singleton (see `SlugGenerator.kt`, `SlugModule.kt`). All feature modules declare `"slug"` in their `allowedDependencies`.
+    - **Transliteration**: Slugify strips accents by normalizing to NFD and dropping non-ASCII, which only works for letters that *decompose* into a base letter
+      plus a combining mark (`ö`→`o`, `å`, `é`, `ñ`, `ğ`, `ş`). A letter that is a single indivisible code point has nothing to strip down to and would be
+      **silently deleted**, so `SlugGenerator` supplies a `NON_DECOMPOSING_LATIN` map of explicit `customReplacements` for `ø æ ð þ ł đ ı ß œ` (both cases).
+      Without it, `Kėkė Søl` → `keke-sl` and `Revaler Straße` → `revaler-strae`, and distinct names collide (`Søl`/`Sæl` → `sl`).
+    - Entries map to the letter's **base form**, not its national expansion, so a slug stays internally consistent with the NFD stripping applied to its other
+      letters: `ø`→`o` beside `ö`→`o`, giving `Ørlög` → `orlog`. **Do not switch to slugify's `locale()` bundles** — `no`/`da` would expand `ø`→`oe` *and*
+      silently rewrite existing `å`→`aa`, and `de` would turn `ö`→`oe`, changing slugs that are already correct. `æ`, `œ`, `ß`, `þ` have no single base letter
+      and take their standard two-letter romanisation. Extend the map as new letters surface.
+    - **Changing the map is a data migration in disguise.** Event slugs self-heal (regenerated on every upsert, matched by `sourceId`), but
+      `AssociationSyncService` resolves artists and promoters **by slug** — so an existing row keyed on the old spelling is missed and re-inserted as a
+      duplicate. Pre-production the answer is a reseed, not a Flyway migration (ADR-005 keeps migrations DDL-only).
 - **Price normalization**: All monetary `BigDecimal` fields (presale, box office) are normalized to scale 2 (`setScale(2, HALF_UP)`)
   at the mapping boundaries where prices enter `EventEntity` — scraper (`ScrapedEvent.toEventEntity()`) and admin API (`EventService`). The
   `BigDecimal.normalizeMoneyScale()` extension function lives in `events-core` (`MoneyExtensions.kt`) as a domain-level concern. This ensures consistent storage
@@ -169,8 +189,10 @@ subprojects sharing a root `settings.gradle.kts`, plus a standalone frontend pro
       `*WebsiteImporter.kt` implementing `EventImporter`, plus pure (no-I/O) parsers: HTML importers use
       `*OverviewPageScraper.kt` / `*DetailPageScraper.kt`, while JSON/API importers use a single `*ApiScraper.kt` (see below). Use existing implementations as
       templates when adding new venue importers.
-    - **`AbstractTwoPageWebsiteImporter`** — base class for venues that use the overview → detail pattern (currently Cassiopeia, Astra, Lido, SO36, and
-      Badehaus). Owns the shared overview-fetch → per-event detail-fetch → gap-fill orchestration, including `NotModified` handling and the "degrade to overview
+    - **`AbstractTwoPageWebsiteImporter`** — base class for venues that use the overview → detail pattern, the most common shape in the `scraper/` package. The
+      subclasses are deliberately not enumerated here (the list drifts with every new venue —
+      `grep -rl 'AbstractTwoPageWebsiteImporter(' events-importer/src/main/kotlin/de/norm/events/scraper/` is authoritative). Owns the shared
+      overview-fetch → per-event detail-fetch → gap-fill orchestration, including `NotModified` handling and the "degrade to overview
       data if the detail page fails" fallback. Subclasses implement only `scrapeOverview`, `scrapeDetail`, and `fillGapsFromOverview` (the venue-specific merge
       strategy). Single-page HTML venues (e.g. `PrivatclubWebsiteImporter`) implement `EventImporter` directly instead. The two-layer strategy itself is the
       decision recorded in ADR-007; the abstract class is just the implementation vehicle.
@@ -335,6 +357,7 @@ Java version is managed via SDKMAN (`.sdkmanrc` pins `java=25.0.2-tem`; run `sdk
 | Artist-name resolution                | `events-importer/src/.../scraper/ArtistNameMapping.kt`                                                    |
 | Event field-level mapping             | `events-importer/src/.../scraper/EventFieldMapping.kt`                                                    |
 | WebFlux Pageable resolver config      | `events-importer/src/.../WebFluxConfiguration.kt`                                                         |
+| Stable-sort Pageable resolver         | `events-importer/src/.../StableSortPageableArgumentResolver.kt` (duplicated in `events-bff`)              |
 | Base integration test class           | `events-importer/src/test/.../BaseControllerTest.kt`                                                      |
 | Full lifecycle integration test       | `events-importer/src/test/.../event/FullLifecycleIntegrationTest.kt`                                      |
 | Testcontainers setup (BFF)            | `events-bff/src/test/.../PostgresTestcontainersConfiguration.kt`                                          |
