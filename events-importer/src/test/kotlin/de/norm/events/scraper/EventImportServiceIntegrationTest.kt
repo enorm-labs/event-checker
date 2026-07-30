@@ -8,13 +8,18 @@ import de.norm.events.event.EventRepository
 import de.norm.events.venue.VenueEntity
 import de.norm.events.venue.VenueRepository
 import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeoutOrNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -28,6 +33,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneOffset
+import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * Integration test for the full event import pipeline with real database records.
@@ -483,7 +489,96 @@ class EventImportServiceIntegrationTest : BaseControllerTest() {
         }
     }
 
+    @Nested
+    inner class ConcurrentImportClaim {
+        /**
+         * Two runs of the same source must not overlap.
+         *
+         * Every import path funnels through a bounded semaphore, so a source can be requested
+         * twice and stay un-started — still IDLE, still `last_import_at IS NULL`, and therefore
+         * still due — for the whole wait. Before the source was claimed with a conditional
+         * UPDATE, both runs would scrape and insert the same events and the loser died on the
+         * `event_slug_key` unique index, rolling back and marking the source FAILED even though
+         * the other run had just succeeded.
+         *
+         * The importer here blocks until both runs have entered, so they genuinely overlap
+         * rather than merely running back to back.
+         */
+        @Test
+        fun `only one of two concurrent runs imports the source`() {
+            runBlocking {
+                val bothStarted = CompletableDeferred<Unit>()
+                val scrapeCount = AtomicInteger()
+                coEvery { mockImporter.importEvents(any(), any(), any()) } coAnswers {
+                    // Hold the first run inside the importer so the second overlaps it, but
+                    // never hang the test if only one run ever gets this far.
+                    scrapeCount.incrementAndGet()
+                    withTimeoutOrNull(OVERLAP_WINDOW_MILLIS) { bothStarted.await() }
+                    ImportResult.Success(
+                        events = listOf(scrapedEvent("cassiopeia:concurrent", "Concurrent Night")),
+                        etag = null,
+                        lastModified = null
+                    )
+                }
+
+                val source = eventSourceRepository.findBySlug("test-source")!!
+                val results =
+                    listOf(
+                        async { eventImportService.importFromSource(source) },
+                        async { eventImportService.importFromSource(source) }
+                    ).also { bothStarted.complete(Unit) }.awaitAll()
+
+                // Exactly one run claimed the source; the other skipped without scraping.
+                scrapeCount.get() shouldBe 1
+                results.count { it.imported } shouldBe 1
+                results.count { !it.imported } shouldBe 1
+                // The skipped run is not a failure — it reports no error and none is recorded.
+                results.all { it.error == null } shouldBe true
+
+                eventRepository.findBySourceIdIn(listOf("cassiopeia:concurrent")).toList() shouldHaveSize 1
+                val updated = eventSourceRepository.findBySlug("test-source")!!
+                updated.status shouldBe ImportStatus.SUCCESS.name
+                updated.lastError.shouldBeNull()
+            }
+        }
+
+        @Test
+        fun `a source left RUNNING by a crashed run is not imported again until it is released`() {
+            runBlocking {
+                val running = eventSourceRepository.findBySlug("test-source")!!
+                eventSourceRepository.save(running.copy(status = ImportStatus.RUNNING.name))
+
+                // The mock importer is a shared Spring bean, so count this test's own scrapes
+                // rather than verifying against its lifetime call count.
+                val scrapeCount = AtomicInteger()
+                coEvery { mockImporter.importEvents(any(), any(), any()) } coAnswers {
+                    scrapeCount.incrementAndGet()
+                    ImportResult.Success(events = emptyList(), etag = null, lastModified = null)
+                }
+
+                val result = eventImportService.importFromSource(eventSourceRepository.findBySlug("test-source")!!)
+
+                result.imported shouldBe false
+                scrapeCount.get() shouldBe 0
+                // ScheduledImportService.resetStuckSources is what releases it, after the
+                // staleness timeout — the claim itself never steals a running source.
+                eventSourceRepository.findBySlug("test-source")!!.status shouldBe ImportStatus.RUNNING.name
+            }
+        }
+    }
+
     // -- Helpers ---
+
+    /** Minimal scraped event for the concurrency tests. */
+    private fun scrapedEvent(
+        sourceId: String,
+        title: String
+    ) = ScrapedEvent(
+        title = title,
+        eventDate = LocalDate.of(2026, 7, 15),
+        sourceId = sourceId,
+        sourceUrl = "https://example.com/event/$sourceId"
+    )
 
     /** Stubs the mock importer to return a successful result with the given events. */
     private fun stubImporterSuccess(events: List<ScrapedEvent>) {
@@ -515,5 +610,10 @@ class EventImportServiceIntegrationTest : BaseControllerTest() {
         @Bean
         @Primary
         fun fixedClock(): Clock = Clock.fixed(Instant.parse("2026-07-01T00:00:00Z"), ZoneOffset.UTC)
+    }
+
+    private companion object {
+        /** Upper bound on how long the first concurrent run waits for the second to enter. */
+        private const val OVERLAP_WINDOW_MILLIS = 5_000L
     }
 }

@@ -95,7 +95,12 @@ Concurrent execution is safe because:
 - **Concurrent artist creation** is handled via a `DataIntegrityViolationException` fallback — if two imports try to create the same artist simultaneously, the
   unique constraint on `artist.slug` catches the duplicate and the loser falls back to a lookup.
 - Each source's **upsert runs in its own transaction** via `TransactionalOperator.executeAndAwait`.
-- **Status updates** (markRunning/markSuccess/markFailed) use `saveWithVersionConflictRetry` off optimistic locking conflicts.
+- **Status updates** (markSuccess/markFailed) use `saveWithVersionConflictRetry` off optimistic locking conflicts.
+- **One run per source** is guaranteed by an atomic claim: a run opens by issuing
+  `UPDATE … SET status = 'RUNNING' … WHERE id = :id AND status <> 'RUNNING'` (`EventSourceRepository.claimForImport`) and imports only when it updated the row.
+  This matters because `status = 'RUNNING'` is not yet set while a request waits for a concurrency permit, so a source can be requested by a manual trigger and
+  *still* look due to a scheduler tick; without the claim both runs scrape and upsert the same events and collide on the `event_slug_key` unique index. A source
+  another run holds is skipped, not failed. See ADR-009 for why optimistic locking cannot serve this purpose.
 
 The manual "import all" endpoint (`POST /api/admin/event-sources/import`) uses the same
 `importConcurrently()` method, benefiting from the same bounded concurrency.

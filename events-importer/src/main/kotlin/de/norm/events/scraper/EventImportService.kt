@@ -114,9 +114,13 @@ class EventImportService(
      * Handles the full lifecycle: delegate to importer → upsert → update metadata.
      * Errors are caught and recorded on the event source rather than propagated.
      *
-     * Status updates (markRunning/markSuccess/markFailed) run outside the
+     * Status updates (the [claimForImport] claim, markSuccess/markFailed) run outside the
      * transactional boundary so they always commit, even if a DB error during
      * upsert marks the transaction as rollback-only.
+     *
+     * The run begins by **claiming** the source (RUNNING only if not already RUNNING). A
+     * source another run already holds is skipped, returning an un-imported result — this is
+     * what keeps two callers from scraping and upserting the same source at once.
      *
      * **Precondition**: The [source] must be a persisted entity fetched from the repository.
      * This method manages the source's import lifecycle status (RUNNING → SUCCESS/FAILED),
@@ -154,7 +158,9 @@ class EventImportService(
             return ImportResultResponse(sourceSlug = source.slug, imported = false, eventCount = 0, error = error)
         }
 
-        val runningSource = markRunning(source)
+        val runningSource =
+            claimForImport(source)
+                ?: return ImportResultResponse(sourceSlug = source.slug, imported = false, eventCount = 0)
 
         return try {
             when (val result = importer.importEvents(runningSource.url, runningSource.etag, runningSource.lastModified)) {
@@ -174,7 +180,7 @@ class EventImportService(
 
                     // Wrap upserts and cleanup in a transaction so partial failures roll back cleanly.
                     // Uses TransactionalOperator instead of @Transactional to keep status updates
-                    // (markRunning/markSuccess/markFailed) outside the transaction boundary —
+                    // (the claim, markSuccess/markFailed) outside the transaction boundary —
                     // they must always commit even if the upsert transaction rolls back.
                     val upsertedCount =
                         transactionalOperator.executeAndAwait {
@@ -196,14 +202,41 @@ class EventImportService(
 
     // -- Event source status management --
 
-    private suspend fun markRunning(source: EventSourceEntity): EventSourceEntity =
-        saveWithVersionConflictRetry(source) {
-            it.copy(
-                status = ImportStatus.RUNNING.name,
-                lastError = null,
-                lastImportAt = Instant.now(clock) // Record when the import started for staleness detection
-            )
+    /**
+     * Claims [source] for this run by moving it to RUNNING, returning the claimed entity — or
+     * `null` when another run already holds the claim, in which case the caller must not import.
+     *
+     * The claim is a conditional UPDATE decided by the database
+     * ([EventSourceRepository.claimForImport]), because a read-then-save in Kotlin cannot
+     * serialize two callers: imports queue on [importSemaphore] before reaching this point, so
+     * the same source can be requested twice and stay visibly un-started for the whole wait.
+     *
+     * The returned entity mirrors the claim in memory rather than re-reading the row. The
+     * conditional UPDATE touches exactly the four columns reproduced here, so the copy matches
+     * what was written, and this keeps the claim to a single round trip. If the caller's
+     * `version` was stale to begin with, the later `markSuccess`/`markFailed` save resolves it
+     * through [saveWithVersionConflictRetry], exactly as it did before the claim existed.
+     *
+     * A source left in RUNNING by a crashed run blocks its own next import until
+     * [ScheduledImportService.resetStuckSources] releases it (default: 30 minutes). That is
+     * the guard the scheduler already relied on — it now also covers a manual trigger, which
+     * previously ignored a RUNNING source and started a second, overlapping run.
+     */
+    private suspend fun claimForImport(source: EventSourceEntity): EventSourceEntity? {
+        val sourceId = requireNotNull(source.id) { "Cannot claim an unpersisted event source" }
+        val claimedAt = Instant.now(clock)
+        if (eventSourceRepository.claimForImport(sourceId, claimedAt) == 0) {
+            logger.info { "Skipping import of '${source.slug}': another import run already holds it" }
+            return null
         }
+        return source.copy(
+            status = ImportStatus.RUNNING.name,
+            lastError = null,
+            // Records when the import started, for the scheduler's staleness detection.
+            lastImportAt = claimedAt,
+            version = source.version?.inc()
+        )
+    }
 
     private suspend fun markSuccess(
         source: EventSourceEntity,
@@ -263,7 +296,7 @@ class EventImportService(
      *
      * An optimistic locking conflict can occur when an external writer (e.g.
      * [ScheduledImportService.resetStuckSources]) modifies the `event_source` row
-     * between `markRunning` and `markSuccess`/`markFailed`, making the in-memory
+     * between the [claimForImport] claim and `markSuccess`/`markFailed`, making the in-memory
      * `@Version` stale. This is a rare but possible race condition (see ADR-009).
      *
      * On conflict, the entity is re-fetched from the database to obtain the latest
