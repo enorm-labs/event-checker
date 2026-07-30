@@ -147,6 +147,10 @@ class EventImportServiceTest {
                 maxConcurrency = EventImportService.DEFAULT_MAX_CONCURRENCY
             )
 
+        // The import claim succeeds by default, so every test below runs the full pipeline.
+        // The relaxed mock would otherwise answer 0 and skip the import as already-claimed.
+        coEvery { eventSourceRepository.claimForImport(any(), any()) } returns 1
+
         // Default stubs: empty collections, save returns input with ID
         coEvery { eventRepository.findBySourceIdIn(any()) } returns emptyFlow()
         coEvery { artistRepository.findBySlugIn(any()) } returns emptyFlow()
@@ -293,7 +297,7 @@ class EventImportServiceTest {
             }
 
         @Test
-        fun `marks source as RUNNING before import`() =
+        fun `claims the source as RUNNING before importing it`() =
             runTest {
                 val src = source()
                 coEvery { cassiopeiaImporter.importEvents(any(), any(), any()) } returns
@@ -301,10 +305,26 @@ class EventImportServiceTest {
 
                 service.importFromSource(src)
 
-                // First save should be markRunning
-                coVerify {
-                    eventSourceRepository.save(match { it.status == ImportStatus.RUNNING.name })
-                }
+                // The RUNNING transition is a conditional UPDATE, not a read-modify-write save,
+                // so that two callers cannot both claim the same source.
+                coVerify { eventSourceRepository.claimForImport(1L, any()) }
+            }
+
+        @Test
+        fun `skips the import when the source is already claimed by another run`() =
+            runTest {
+                val src = source()
+                coEvery { eventSourceRepository.claimForImport(any(), any()) } returns 0
+
+                val result = service.importFromSource(src)
+
+                result.imported shouldBe false
+                result.eventCount shouldBe 0
+                result.error shouldBe null
+                // The losing run must not scrape, upsert, or touch the source's status.
+                coVerify(exactly = 0) { cassiopeiaImporter.importEvents(any(), any(), any()) }
+                coVerify(exactly = 0) { eventSourceRepository.save(any()) }
+                coVerify(exactly = 0) { eventRepository.saveAll(any<Iterable<EventEntity>>()) }
             }
 
         @Test
@@ -833,12 +853,13 @@ class EventImportServiceTest {
                 coEvery { cassiopeiaImporter.importEvents(any(), any(), any()) } returns
                     ImportResult.Success(events = listOf(scrapedEvent()), etag = null, lastModified = null)
 
-                // First save for markRunning succeeds; second save (markSuccess) throws, retry succeeds
+                // The RUNNING claim is an UPDATE, not a save — so markSuccess is the first save.
+                // It throws once, and the retry (the second save) succeeds.
                 var saveCallCount = 0
                 coEvery { eventSourceRepository.save(any()) } answers {
                     saveCallCount++
                     val entity = firstArg<EventSourceEntity>()
-                    if (saveCallCount == 2 && entity.status == ImportStatus.SUCCESS.name) {
+                    if (saveCallCount == 1 && entity.status == ImportStatus.SUCCESS.name) {
                         throw OptimisticLockingFailureException("Version conflict")
                     }
                     entity
@@ -850,8 +871,8 @@ class EventImportServiceTest {
                 result.imported shouldBe true
                 // Verify re-fetch happened
                 coVerify { eventSourceRepository.findById(1L) }
-                // Third save should succeed (the retry)
-                coVerify(atLeast = 3) { eventSourceRepository.save(any()) }
+                // The retry save should have succeeded.
+                coVerify(atLeast = 2) { eventSourceRepository.save(any()) }
             }
 
         @Test
@@ -863,12 +884,13 @@ class EventImportServiceTest {
                 coEvery { cassiopeiaImporter.importEvents(any(), any(), any()) } throws
                     RuntimeException("Network timeout")
 
-                // First save (markRunning) succeeds; second save (markFailed) throws, retry succeeds
+                // The RUNNING claim is an UPDATE, not a save — so markFailed is the first save.
+                // It throws once, and the retry (the second save) succeeds.
                 var saveCallCount = 0
                 coEvery { eventSourceRepository.save(any()) } answers {
                     saveCallCount++
                     val entity = firstArg<EventSourceEntity>()
-                    if (saveCallCount == 2 && entity.status == ImportStatus.FAILED.name) {
+                    if (saveCallCount == 1 && entity.status == ImportStatus.FAILED.name) {
                         throw OptimisticLockingFailureException("Version conflict")
                     }
                     entity

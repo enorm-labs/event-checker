@@ -18,7 +18,7 @@ Without concurrency control, a race condition can cause **lost updates**. For ex
 - An admin PATCHes source A (writing version N+1) to disable it.
 - The scheduler finishes and writes `markSuccess` using its stale copy (version N), overwriting the admin's `enabled = false`.
 
-The `EventImportService` also threads entity state through multiple save operations in sequence (`markRunning` → business logic → `markSuccess`/`markFailed`/
+The `EventImportService` also threads entity state through multiple save operations in sequence (claim → business logic → `markSuccess`/`markFailed`/
 `markMisconfigured`). Each step must operate on the latest persisted state to avoid overwriting intermediate changes.
 
 Other entities (`VenueEntity`, `ArtistEntity`, `PromoterEntity`, `EventEntity`) are single-writer (admin CRUD or importer upsert) with no realistic concurrent
@@ -34,11 +34,17 @@ Add **Spring Data `@Version` optimistic locking** to `EventSourceEntity` only.
   `WHERE version = ?` in UPDATE statements.
 - If a concurrent modification is detected, Spring throws `OptimisticLockingFailureException`.
 
-The `markRunning` method returns the saved entity so that subsequent status updates (`markSuccess`, `markFailed`, `markMisconfigured`) operate on the latest
-version — preventing stale writes throughout the import lifecycle.
+The import run's opening RUNNING transition returns the claimed entity so that subsequent status updates (`markSuccess`, `markFailed`,
+`markMisconfigured`) operate on the latest version — preventing stale writes throughout the import lifecycle.
 
-However, a version conflict can still occur if an external writer (e.g. `ScheduledImportService.resetStuckSources()`)
-modifies the `event_source` row between `markRunning` and the subsequent status update. To handle this, all status update methods use a **retry-on-conflict**
+**Optimistic locking does not, and cannot, prevent two runs importing the same source.** Two writers each calling `save()` to mark a source RUNNING produce a
+version conflict that the retry-on-conflict strategy below resolves by re-fetching and retrying — so the second write succeeds and the duplicate run proceeds.
+Mutual exclusion needs a *conditional* write, which the database decides: `EventSourceRepository.claimForImport` issues
+`UPDATE … SET status = 'RUNNING' … WHERE id = :id AND status <> 'RUNNING'` and returns the affected row count, so exactly one caller claims a source and the
+loser (seeing `0`) skips its run. Optimistic locking remains for its actual purpose — protecting an in-flight import's metadata from concurrent admin edits.
+
+A version conflict can still occur if an external writer (e.g. `ScheduledImportService.resetStuckSources()`)
+modifies the `event_source` row between the claim and the subsequent status update. To handle this, all status update methods use a **retry-on-conflict**
 strategy: on `OptimisticLockingFailureException`, the entity is re-fetched by ID to obtain the current version, the status mutation is re-applied, and the save
 is retried once. If the retry also fails, the exception propagates — the scheduler picks up the source on the next tick.
 

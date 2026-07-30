@@ -72,6 +72,46 @@ interface EventSourceRepository : CoroutineCrudRepository<EventSourceEntity, Lon
     fun findStuckSources(stalenessCutoff: Instant): Flow<EventSourceEntity>
 
     /**
+     * Atomically claims a source for an import run, moving it to RUNNING **only if it is not
+     * already running**.
+     *
+     * This is the serialization point that keeps two import runs off the same source. Testing
+     * the status in Kotlin and then saving cannot do it: every caller reaches
+     * [EventImportService.importFromSource] through a bounded semaphore, so a source can sit
+     * queued — still IDLE, still `last_import_at IS NULL`, and therefore still visible to
+     * [findDueForImport] — long after its import was requested. A scheduler tick landing in
+     * that window starts a second run of the same source, and both then scrape and insert the
+     * same events, which collides on the `event_slug_key` unique index.
+     *
+     * Optimistic locking does not help here, and in fact hides the problem: two writers each
+     * calling `save()` produce a version conflict that
+     * [EventImportService.saveWithVersionConflictRetry] resolves by re-fetching and retrying,
+     * so the second `markRunning` succeeds and the duplicate run proceeds. A conditional
+     * `UPDATE … WHERE status <> 'RUNNING'` is decided by the database instead: exactly one
+     * caller updates a row, and the loser sees `0`.
+     *
+     * `version` is incremented for the same reason [resetAllFailedToIdle] does it — so a
+     * concurrent read-modify-write holding a stale entity cannot silently overwrite the claim.
+     * The caller must account for that increment on the entity it goes on to save.
+     *
+     * @param id the source to claim.
+     * @param startedAt the claim timestamp, recorded as `last_import_at` for staleness detection.
+     * @return `1` when the claim succeeded, `0` when another run already holds it.
+     */
+    @Modifying
+    @Query(
+        """
+        UPDATE events.event_source
+        SET status = '${ImportStatus.S_RUNNING}', last_error = NULL, last_import_at = :startedAt, version = version + 1
+        WHERE id = :id AND status <> '${ImportStatus.S_RUNNING}'
+        """
+    )
+    suspend fun claimForImport(
+        id: Long,
+        startedAt: Instant
+    ): Int
+
+    /**
      * Bulk-resets all enabled, failed or misconfigured event sources to IDLE for retry.
      *
      * Uses a single UPDATE statement instead of fetch-modify-save per source

@@ -136,7 +136,7 @@ classDiagram
         +importAll(): List~ImportResultResponse~
         +importBySlug(slug): ImportResultResponse
         -importFromSource(source): ImportResultResponse
-        -markRunning/markSuccess/markFailed/markMisconfigured()
+        -claimForImport/markSuccess/markFailed/markMisconfigured()
     }
 
     class EventUpsertService {
