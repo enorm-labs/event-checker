@@ -122,5 +122,9 @@ private val ACRONYMS: Set<String> =
         // Act names that are themselves initialisms — kept in caps so they aren't flattened.
         "FKJ",
         "AZ",
-        "DBG"
+        "DBG",
+        // A DJ handle that is the act's own initials; without an entry the two-token
+        // "DJ JC" reads as a shouted word and de-shouts to "DJ Jc" (the standalone
+        // short-initialism rule only covers a single-token name).
+        "JC"
     )

@@ -41,6 +41,9 @@ class ArtistNormalizerTest {
             { canonicalArtistName("FKJ") shouldBe "FKJ" },
             { canonicalArtistName("AZ") shouldBe "AZ" },
             { canonicalArtistName("DBG") shouldBe "DBG" },
+            // An initialism handle inside a multi-token name, where the standalone
+            // short-initialism rule does not apply (Matrix bills "DJ JC & DJ GUS").
+            { canonicalArtistName("DJ JC") shouldBe "DJ JC" },
             // Short all-caps tokens with digits are acronym-like too.
             { canonicalArtistName("MC5") shouldBe "MC5" },
             { canonicalArtistName("UB40") shouldBe "UB40" }
