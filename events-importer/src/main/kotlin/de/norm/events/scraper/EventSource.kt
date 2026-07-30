@@ -173,6 +173,21 @@ enum class EventSource {
     SUPAMOLLY,
 
     /**
+     * Urban Spree Berlin – MODX-based art gallery and concert venue in the RAW-Gelände. The
+     * `/program/` listing is server-rendered, but **descending by date** and paginated nine cards
+     * at a time over the venue's whole archive (200+ pages), so this importer walks `?page=N`
+     * forward from the entry URL until a page reaches the past — "first page only" would import
+     * the farthest-future shows and miss every upcoming one. Each card is an
+     * `a.card[data-dateStart]` carrying a machine-readable `YYYY-MM-DD HH:mm:ss` start, a category
+     * (`Concerts`, `Events`, …), a CSS-truncated title, a price (or `Free`), the original poster
+     * path (`data-imgfeat`), and a link to a `/program/<category>/<slug>.html` detail page. The
+     * detail page supplies the untruncated `h1` title, the promoter, the ticket-shop link, and the
+     * prose description. Conditional requests are disabled: the site sends no ETag/Last-Modified
+     * and answers `Cache-Control: no-store`.
+     */
+    URBAN_SPREE,
+
+    /**
      * Wild at Heart Berlin – retro hand-coded frameset rockabilly/punk venue in Kreuzberg. The whole concert
      * programme lives on a single `/concerts.php` page (linked from the `topics.htm` nav frame) as a flat
      * `<table>` of `<tr>` rows, each carrying a year-less `Weekday DD.MM.` date (`.datum`), a headliner

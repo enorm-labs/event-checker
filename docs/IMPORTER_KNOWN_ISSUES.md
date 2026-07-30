@@ -192,6 +192,28 @@ rather than the rendered DOM — so dates carry full four-digit years and fields
   Roadrunner. DJ names are prefixed `DJ`/`Djs` and split on separators; a `DJ <handle>` is **not**
   de-prefixed (shared with Madame Claude's limitation).
 
+### Urban Spree (`scraper/urbanspree/`) — MODX, descending paginated list + detail
+
+Verified against a full live import (45 upcoming events, July 2026 seed): description, poster, start time and promoter on 45/45; ticket link and presale price
+on 44/45 (the one gap is a free-entry night with no shop).
+
+- 🟢 **The headliner is derived from the title, which the venue writes free-form.** There is no structured artist anywhere on the site — across a 45-event seed
+  the detail pages expose only `Address` / `Promoter` / `Date` / `FB Event` / `Website` rows, no JSON-LD, no `og:` tags, and the ticket link points at 15
+  different shops of which exactly one carried an artist path. So the title is the only source, and the shared tail rules in `stripArtistSuffix` do the cleanup:
+  a four-digit-year tour tail (`Jawdropped - USA UK EU FALL 2026`), a `- Releaseshow` tail (`Sinem - Hatun - Releaseshow`), and a shouted tour/album tail
+  (`Tigercub - NETS TO CATCH THE WIND`). A tour tail that is neither shouted nor keyword-marked would still leak.
+- 🟢 **A label leading the title is suppressed by a curated entry, not a rule.** `aufnahme + wiedergabe - Fünfzehn Jahre + Zweiter Akt` is the label's own
+  fifteen-year night with no performer in the title, handled by a `NON_ARTIST_TITLE_LEADS` entry. It has to be curated: deriving it from the promoter field is
+  **not** viable, because Urban Spree's promoter is frequently the band itself (`WISBORG`, `Pure Obsessions & Red Nights` both promote their own shows), so a
+  "title starts with its promoter" rule would delete correct artists. New labels that title their own events need an entry as they surface.
+- 🟢 **Country/genre tags stay attached to act names** — `ANEMONE (NL)`, `NIGHT NAIL (Dark Wave US/DE)`. The shared `stripArtistSuffix` only strips *format*
+  annotations in parentheses (`(DJ-Set)`, `(Live)`); a parenthesised alias is deliberately kept (`Sickboyrari (Black Kray)`), and the two are not
+  distinguishable without a country/genre vocabulary.
+- 🟢 **No doors time, genre, or box-office price.** None are structured on the page. An `Einlass: HH:MM` line appears in *some* descriptions, but the description
+  is free-form pasted copy where such a line may belong to another show mentioned in the blurb, so it is deliberately not parsed.
+- 🟢 **Pagination is bounded at 20 pages.** The listing is sorted descending across a 200+-page archive, so the importer walks `?page=N` until a page reaches the
+  past. If the venue ever books beyond ~180 upcoming events, or changes the sort order, the cap truncates the import — this is logged as a warning.
+
 ---
 
 ## How to extend this doc

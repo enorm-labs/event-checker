@@ -225,6 +225,13 @@ fun isNonArtistEvent(name: String): Boolean {
  *   "THE BUTLERS - 40 YEARS, SKA & SOULPOWER -"),
  * - a hyphen-separated set-count note "… - <n> Set(s)…" ("Toshìn & The Teleporters - 2 Sets!"
  *   → "Toshìn & The Teleporters"),
+ * - a hyphen-separated tour/edition tail ending in a four-digit year, for the many tour
+ *   labels that name a route or season rather than saying "Tour" ("Jawdropped - USA UK EU
+ *   FALL 2026" → "Jawdropped"). Anchored on a `19xx`/`20xx` year at the very end, so a
+ *   stylised number in a band name ("Blink - 182", "Front 242") is untouched,
+ * - a hyphen-separated German "Releaseshow" tail — the compound spelling the separate
+ *   "<format> Release" / "Release Party" rules below do not cover ("Sinem - Hatun -
+ *   Releaseshow" → "Sinem - Hatun"),
  * - a trailing "Live" / "Live in <city>",
  * - a trailing performance-format annotation, either parenthesized — "(DJ-Set)",
  *   "(Live)", "(Acoustic)", "(Solo)", "(Unplugged)" — or a bare, whitespace-preceded
@@ -248,6 +255,8 @@ fun isNonArtistEvent(name: String): Boolean {
 private val ARTIST_SUFFIX_PATTERN =
     Regex(
         """\s+-\s+(?:\S.*\btour\b|\d+\s+(?:years?|jahre|sets?)\b).*$""" +
+            """|\s+-\s+\S.*\b(?:19|20)\d{2}\s*$""" +
+            """|\s+[-–—]\s*release\s?show\s*$""" +
             """|\s+live(?:\s+in\s+\S.*)?$""" +
             """|\s*\((?:dj[\s-]?set|live|acoustic|akustik|unplugged|solo)\)\s*$""" +
             """|\s+dj[\s-]?set$""" +
@@ -284,7 +293,43 @@ private val ARTIST_SUFFIX_PATTERN =
  */
 fun stripArtistSuffix(name: String): String {
     val stripped = name.trim().replace(ARTIST_SUFFIX_PATTERN, "").trim()
-    return stripped.ifBlank { name.trim() }
+    return stripShoutedTourTail(stripped.ifBlank { name.trim() })
+}
+
+/** Minimum words in a shouted tail before it reads as a tour/album name rather than an act. */
+private const val MIN_SHOUTED_TAIL_WORDS = 2
+
+/** The ` - ` boundary a venue puts between an act and the tour/album name it is touring. */
+private const val HYPHEN_SEPARATOR = " - "
+
+/**
+ * Strips a trailing `" - <SHOUTED TOUR/ALBUM NAME>"` from an act name, the spelling venues
+ * use when the tour is named after a record rather than labelled "Tour" — `"Tigercub - NETS
+ * TO CATCH THE WIND"` → `"Tigercub"`.
+ *
+ * Casing is the whole signal, so it is fenced on three sides to keep a genuinely hyphenated
+ * name intact:
+ *  - the **tail must be fully shouted** (no lowercase letter), so `"BAD COMPANY LEGACY -
+ *    Dave Colwell"` and `"Sinem - Hatun"` keep their second half;
+ *  - the **head must contain a lowercase letter**, so an all-caps co-bill written with a
+ *    hyphen — `"DZ - DEATHRAY"` — is never cut down to its first token;
+ *  - the tail must be at least [MIN_SHOUTED_TAIL_WORDS] words, so a one-word alias or
+ *    initialism after a hyphen is left alone.
+ *
+ * Measured against every event title in a 29-venue seed (1240 titles), the rule fires on
+ * two — both genuine tour tails — so it is deliberately narrow rather than a general
+ * casing heuristic.
+ */
+private fun stripShoutedTourTail(name: String): String {
+    val index = name.lastIndexOf(HYPHEN_SEPARATOR)
+    if (index < 0) return name
+    val head = name.substring(0, index).trim()
+    val tail = name.substring(index + HYPHEN_SEPARATOR.length).trim()
+    val isShoutedTail =
+        tail.split(WHITESPACE).size >= MIN_SHOUTED_TAIL_WORDS &&
+            tail.any { it.isUpperCase() } &&
+            tail.none { it.isLowerCase() }
+    return if (isShoutedTail && head.any { it.isLowerCase() }) head else name
 }
 
 /**
@@ -336,6 +381,40 @@ private val TRAILING_CITY = Regex("""\s+berlin$""")
 
 /** Combining diacritical marks left by NFD normalization; stripped so accents can't defeat a denylist match. */
 private val DIACRITICS = Regex("""\p{Mn}+""")
+
+/**
+ * Record labels and promoters that sometimes **lead a title with their own name** — a
+ * label anniversary or showcase, where every following segment names a part of the
+ * programme rather than an act: `"aufnahme + wiedergabe - Fünfzehn Jahre + Zweiter Akt"`
+ * is the label's fifteen-year night ("Second Act"), and there is no performer in the title
+ * at all.
+ *
+ * Kept separate from [NON_ARTIST_NAMES] because the two are matched differently and must
+ * stay that way. A `NON_ARTIST_NAMES` entry is compared against a *single already-split
+ * act*, so a co-bill like `"Karrera Klub + Some Band"` still yields `Some Band`. An entry
+ * here suppresses the artists for the **whole title**, which is only correct for a name
+ * that cannot also appear as one act among several — so a label that ever bills a real act
+ * after its own name (`"<label> presents <act>"`) does **not** belong in this set.
+ *
+ * Entries are lowercase and whitespace-collapsed; a title matches when it *is* the entry or
+ * opens with it followed by a [TITLE_LEAD_SEPARATOR].
+ */
+private val NON_ARTIST_TITLE_LEADS: Set<String> = setOf("aufnahme + wiedergabe")
+
+/** The punctuation a leading label uses to introduce the event name that follows it. */
+private val TITLE_LEAD_SEPARATOR = Regex("""\s*[-–—:|]\s*""")
+
+/**
+ * True when [title] is nothing but a [NON_ARTIST_TITLE_LEADS] label, or opens with one
+ * followed by a separator — in which case the title names the label's own event and no
+ * part of it is a performer.
+ */
+private fun isLedByNonArtistLabel(title: String): Boolean {
+    val normalized = title.trim().replace(WHITESPACE, " ").lowercase()
+    return NON_ARTIST_TITLE_LEADS.any { lead ->
+        normalized == lead || (normalized.startsWith(lead) && TITLE_LEAD_SEPARATOR.matchesAt(normalized, lead.length))
+    }
+}
 
 private fun isDenylistedNonArtist(name: String): Boolean =
     Normalizer
@@ -420,7 +499,9 @@ private val KNOWN_SINGLE_ACTS: Set<String> =
         "sam & dave",
         "chas & dave",
         "angus & julia stone",
-        "matt & kim"
+        "matt & kim",
+        "blood & sun",
+        "pure obsessions & red nights"
     )
 
 /**
@@ -460,6 +541,18 @@ private val PLUS_ONLY_TITLE_SEPARATOR = Regex("""\s+\+\s+""")
 private val CONJUNCTION_SEPARATOR = Regex("""\s+(?:&|and|und)\s+""", RegexOption.IGNORE_CASE)
 
 /**
+ * True when [name] is a [KNOWN_SINGLE_ACTS] entry — an act whose own name contains a
+ * conjunction. The name's conjunctions are normalized to `&` first, so an `"… and …"`
+ * source spelling still matches the `&`-spelled denylist.
+ *
+ * Checked at the **segment** level (not only against a whole title), so a denylisted act
+ * is kept whole even when it co-bills — `"BLOOD & SUN + SOCIETY OF THE SILVER CROSS"`
+ * splits at the `+` into two acts, not three — and so a support line ("Support: Simon &
+ * Garfunkel") is protected the same way.
+ */
+private fun isKnownSingleAct(name: String): Boolean = name.trim().replace(CONJUNCTION_SEPARATOR, " & ").lowercase() in KNOWN_SINGLE_ACTS
+
+/**
  * Splits a title segment into acts at its conjunctions, deciding **per boundary**
  * so a real co-bill still splits even when another conjunction in the same title
  * is a band-name tail. Conservative: a comma anywhere suppresses splitting (the
@@ -484,6 +577,7 @@ private val CONJUNCTION_SEPARATOR = Regex("""\s+(?:&|and|und)\s+""", RegexOption
  */
 @Suppress("ReturnCount") // Guard clauses for the comma and no-cut cases are clearer than nesting
 fun splitSegmentOnConjunctions(segment: String): List<String> {
+    if (isKnownSingleAct(segment)) return listOf(segment)
     if (segment.contains(',')) return listOf(segment)
 
     val cuts =
@@ -578,8 +672,9 @@ fun splitHeadlinerTitle(
 ): List<String> {
     val trimmed = title.trim()
     if (trimmed.isEmpty()) return listOf(title)
-    // Normalize the "and"/"und" word forms to "&" so a title matches the &-spelled denylist.
-    if (trimmed.replace(CONJUNCTION_SEPARATOR, " & ").lowercase() in KNOWN_SINGLE_ACTS) return listOf(trimmed)
+    // A whole title that is one denylisted act is kept intact before any separator split;
+    // co-billed occurrences are protected per segment inside splitSegmentOnConjunctions.
+    if (isKnownSingleAct(trimmed)) return listOf(trimmed)
 
     val acts =
         trimmed
@@ -641,11 +736,14 @@ private fun stripFramingPrefix(name: String): String {
 fun headlinersFromTitle(
     title: String,
     splitOnSlash: Boolean = true
-): List<ScrapedArtist> =
-    splitHeadlinerTitle(stripSeriesPrefix(title), splitOnSlash)
+): List<ScrapedArtist> {
+    // A title led by a label's own name announces that label's event; nothing in it is an act.
+    if (isLedByNonArtistLabel(title)) return emptyList()
+    return splitHeadlinerTitle(stripSeriesPrefix(title), splitOnSlash)
         .map { stripFramingPrefix(stripArtistSuffix(it)) }
         .filterNot { isNonArtistName(it) }
         .map { ScrapedArtist(name = it, role = "HEADLINER") }
+}
 
 /**
  * Builds an artist list from a headliner title and support act names.
