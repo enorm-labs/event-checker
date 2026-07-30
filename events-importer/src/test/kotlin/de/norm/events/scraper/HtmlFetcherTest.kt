@@ -4,10 +4,12 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldNotContain
+import io.kotest.matchers.types.shouldBeInstanceOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import okio.Buffer
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
@@ -92,6 +94,68 @@ class HtmlFetcherTest {
                 server.enqueue(MockResponse().setResponseCode(200).setBody(body))
 
                 fetcher.fetchHtml(baseUrl() + "/page") shouldBe body
+            }
+    }
+
+    @Nested
+    inner class CharacterEncoding {
+        /** "Eddie & die Bäänd - freie Bühne" — umlauts a naive UTF-8 decode of Latin-1 bytes would destroy. */
+        private val germanTitle = "Eddie & die Bäänd - freie Bühne"
+
+        private fun latin1Page(metaCharset: String) =
+            Buffer().write(
+                """<html><head><meta http-equiv="Content-Type" content="text/html; charset=$metaCharset">""".toByteArray() +
+                    "</head><body><h1>$germanTitle</h1></body></html>".toByteArray(Charsets.ISO_8859_1)
+            )
+
+        @Test
+        fun `fetch decodes a Latin-1 page declared only by its meta tag`() =
+            runTest {
+                // The retro Arcanoa host sends "Content-Type: text/html" with no charset parameter,
+                // so the encoding is knowable only from the document's own meta tag.
+                server.enqueue(
+                    MockResponse()
+                        .setResponseCode(200)
+                        .setHeader("Content-Type", "text/html")
+                        .setBody(latin1Page("iso-8859-1"))
+                )
+
+                val result = fetcher.fetch(baseUrl() + "/veranst.htm")
+
+                result.shouldBeInstanceOf<FetchResult.Success>()
+                result.document.selectFirst("h1")!!.text() shouldBe germanTitle
+            }
+
+        @Test
+        fun `fetch prefers the Content-Type charset over the meta tag`() =
+            runTest {
+                // A stale meta tag must not override what the server actually declares.
+                server.enqueue(
+                    MockResponse()
+                        .setResponseCode(200)
+                        .setHeader("Content-Type", "text/html; charset=ISO-8859-1")
+                        .setBody(latin1Page("utf-8"))
+                )
+
+                val result = fetcher.fetch(baseUrl() + "/veranst.htm")
+
+                result.shouldBeInstanceOf<FetchResult.Success>()
+                result.document.selectFirst("h1")!!.text() shouldBe germanTitle
+            }
+
+        @Test
+        fun `fetchDocument decodes a Latin-1 page declared only by its meta tag`() =
+            runTest {
+                server.enqueue(
+                    MockResponse()
+                        .setResponseCode(200)
+                        .setHeader("Content-Type", "text/html")
+                        .setBody(latin1Page("iso-8859-1"))
+                )
+
+                val document = fetcher.fetchDocument(baseUrl() + "/veranst.htm")
+
+                document.selectFirst("h1")!!.text() shouldBe germanTitle
             }
     }
 

@@ -231,7 +231,10 @@ Key components:
   avoid reinventing boilerplate and ensure consistent handling of blank/missing values.
 - **`HtmlFetcher`** — WebClient wrapper for **HTML** venues handling conditional requests (ETag / Last-Modified) and returning either the parsed HTML document
   or a "not modified" signal. Per-host politeness throttling is applied transparently via a `PerHostThrottlingFilter` registered as a WebClient
-  `ExchangeFilterFunction` (see [Per-Host Politeness Throttling](#per-host-politeness-throttling) below).
+  `ExchangeFilterFunction` (see [Per-Host Politeness Throttling](#per-host-politeness-throttling) below). Response bodies are handed to Jsoup as **bytes**, not
+  as a decoded `String`: a retro host that answers `Content-Type: text/html` with no `charset` parameter while serving a Latin-1 page would otherwise be decoded
+  with Spring's UTF-8 fallback, destroying every umlaut before a scraper sees it. Passing the raw bytes lets Jsoup run its standard detection chain (BOM → HTTP
+  `charset` → `<meta charset>` → UTF-8), so a page's declared encoding wins wherever it is stated.
 - **`ApiClient`** — the JSON/API counterpart to `HtmlFetcher` (see
   [Prefer a JSON / API Source over HTML](#prefer-a-json--api-source-over-html)). `fetchJson(url)` returns the raw response body verbatim for venues whose events
   come from a REST/GraphQL API or a calendar-widget boot endpoint. Both fetchers inject the **same** shared `WebClient` bean (`ScraperHttpClientConfig`), so
