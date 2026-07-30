@@ -45,7 +45,7 @@ updates:
           - "dev.detekt*"
       gradle-plugins:
         patterns:
-          - "com.github.ben-manes*"
+          - "io.github.ben-manes*"
           - "org.jlleitschuh.gradle*"
       owasp:
         patterns:

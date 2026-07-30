@@ -54,8 +54,10 @@ jobs:
 
       # Blocking on purpose: this is the enforced scan. A failure here (real CVE or NVD
       # outage) marks the scheduled run red so it gets attention and retried.
+      # --no-configuration-cache: the Dependency-Check plugin's Aggregate task holds a Project
+      # reference and cannot be serialized into the configuration cache (enabled in gradle.properties).
       - name: Run OWASP Dependency-Check
-        run: ./gradlew dependencyCheckAggregate
+        run: ./gradlew dependencyCheckAggregate --no-configuration-cache
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
 

@@ -151,10 +151,12 @@ jobs:
 
       # Non-blocking: a failure here (e.g. NVD unreachable on a cold cache) is recorded
       # but does not fail the job, so PRs are never blocked by the dependency scan.
+      # --no-configuration-cache: the Dependency-Check plugin's Aggregate task holds a Project
+      # reference and cannot be serialized into the configuration cache (enabled in gradle.properties).
       - name: Run OWASP Dependency-Check
         id: depcheck
         continue-on-error: true
-        run: ./gradlew dependencyCheckAggregate
+        run: ./gradlew dependencyCheckAggregate --no-configuration-cache
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
 
