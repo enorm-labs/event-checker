@@ -202,6 +202,10 @@ subprojects sharing a root `settings.gradle.kts`, plus a standalone frontend pro
       same `@Qualifier(SCRAPER_WEB_CLIENT)` throttled `WebClient` (so the same per-host politeness and User-Agent apply). Each has a single pure
       `*ApiScraper.kt` that parses the raw JSON body into `List<ScrapedEvent>` — no Overview/Detail split. **Prefer a JSON/API source over HTML whenever one
       exists** (ADR-007 §"Prefer a JSON / API Source").
+    - **List + *shared* detail page** — a venue whose calendar lists performance *dates* of a production run (currently Bar jeder Vernunft: 28 calendar cards
+      resolving to 2 show pages) points many events at the same detail URL. Such an importer implements `EventImporter` directly and fetches each **distinct**
+      detail URL once per run, applying the result to every date of that show — rather than extending `AbstractTwoPageWebsiteImporter`, whose per-event fetch
+      would re-request one page 20+ times and be serialised by `PerHostThrottlingFilter`. See ADR-007 §"Shared Detail Pages".
     - **Derived occurrences for undated recurring programmes** — a venue that publishes no dates at all, only a standing weekly programme (currently Havanna:
       three undated `/wednesday`, `/friday`, `/saturday` pages linked from `/events`), is parsed into an undated recurrence model (`HavannaWeeklyNight`) and
       expanded into one dated `ScrapedEvent` per week over a rolling horizon. Such importers disable conditional requests (a 304 would freeze the horizon) and

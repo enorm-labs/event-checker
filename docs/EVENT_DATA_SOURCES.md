@@ -7,8 +7,8 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 
 | Status                              | Meaning                                                                              | Count |
 |-------------------------------------|--------------------------------------------------------------------------------------|------:|
-| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    34 |
-| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |     4 |
+| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    35 |
+| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |     3 |
 | ⛔ [Blocked](#-blocked--deferred)   | Website analyzed, but no usable listings (no programme page, JS-only, or too sparse) |    11 |
 | ❓ [Unanalyzed](#-not-analyzed-yet) | No URL recorded yet — website still needs a first look                               |    55 |
 
@@ -24,6 +24,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | arkaoda                     | https://berlin.arkaoda.com/?/default/program                | Bar          | PHP router; only "Konser" typed; RA link in prose |
 | Astra Kulturhaus            | https://www.astra-berlin.de/                                | Concert Hall | schema.org `MusicEvent`; presale + door prices    |
 | Badehaus                    | https://badehaus-berlin.com/                                | Club         | "AUSVERKAUFT"/"VERLEGT" labels; ticket + FB links |
+| Bar jeder Vernunft          | https://www.bar-jeder-vernunft.de/de/programm/kalender.html | Bar          | Neos; per-date JSON-LD; one show page per run     |
 | Berghain / Panorama Bar     | https://www.berghain.berlin/de/program/                     | Techno Club  | Server-rendered; list + detail                    |
 | Bi Nuu                      | https://binuu.de/                                           | Club         | No genre or prices on site; only via ticket link  |
 | Cassiopeia                  | https://cassiopeia-berlin.de/                               | Club         | Webflow; genre tags, sold-out / cancelled badges  |
@@ -53,20 +54,17 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Wild at Heart               | https://www.wildatheartberlin.de/                           | Bar          | Retro frameset; concerts.php; year from weekday   |
 | Zenner                      | https://zenner.berlin/programm                              | Club         | Gatsby/Sanity page-data JSON; UTC dates; archive  |
 
-33 importer classes cover 34 sources (Kantine am Berghain shares the Berghain importer).
+34 importer classes cover 35 sources (Kantine am Berghain shares the Berghain importer).
 
 ## 🔨 Ready to implement
 
 Analyzed and scrapable — the candidates for the next `/scaffold-importer` runs. **Priority** reflects data richness and effort, not venue importance.
 
-| Priority | Name                  | URL                                | Type     | Why / what it needs                                       |
-|:--------:|-----------------------|------------------------------------|----------|-----------------------------------------------------------|
-|   High   | Trinity Music         | https://trinitymusic.de/           | Promoter | Cross-venue; rich statuses; also populates `promoter`     |
-|   High   | Puschen               | https://puschen.net/berlin/        | Promoter | Consistent format; doors/start, sold-out, cross-venue     |
-|  Medium  | Landstreicher Booking | https://landstreicher-booking.de/  | Promoter | Structured tour-date table; needs a Berlin-only filter    |
-|  Medium  | Bar jeder Vernunft    | https://www.bar-jeder-vernunft.de/ | Bar      | Multi-day ranges to expand; detail pages for times/prices |
-
-*Bar jeder Vernunft is theater/cabaret rather than live music — decide whether it belongs in scope before building it.*
+| Priority | Name                  | URL                               | Type     | Why / what it needs                                    |
+|:--------:|-----------------------|-----------------------------------|----------|--------------------------------------------------------|
+|   High   | Trinity Music         | https://trinitymusic.de/          | Promoter | Cross-venue; rich statuses; also populates `promoter`  |
+|   High   | Puschen               | https://puschen.net/berlin/       | Promoter | Consistent format; doors/start, sold-out, cross-venue  |
+|  Medium  | Landstreicher Booking | https://landstreicher-booking.de/ | Promoter | Structured tour-date table; needs a Berlin-only filter |
 
 ## ⛔ Blocked / deferred
 
@@ -132,7 +130,8 @@ unreviewed, which is why they sit here: a venue-level importer usually yields ri
 | Zentraler Festplatz  | Open Air     | Event ground, no own programme expected                         |
 | Zitadelle            | Open Air     | Citadel Music Festival; seasonal                                |
 
-*Several of these are theater, comedy, or arena-scale rooms rather than live-music clubs — settle scope before building, as with Bar jeder Vernunft above.*
+*Several of these are theater, comedy, or arena-scale rooms rather than live-music clubs — settle scope before building. Bar jeder Vernunft set the precedent
+that such a room is in scope: its programme is imported, with the venue's own genre deciding whether a night is a concert or a staged show.*
 
 ### Other
 

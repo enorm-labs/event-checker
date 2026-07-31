@@ -350,6 +350,24 @@ If a specific venue later requires multi-page support (e.g. a site with server-s
 venue's `*WebsiteImporter`** by looping over pages in `importEvents()` and concatenating results before returning `ImportResult.Success`. This keeps pagination
 a per-importer concern without changing the `EventImporter` interface or the framework-level infrastructure.
 
+### Shared Detail Pages — Fetch Once Per Distinct URL
+
+The list+detail pattern above assumes a one-to-one mapping: one listing entry, one detail page. A venue that programmes **runs** rather than one-off nights
+breaks that assumption. Bar jeder Vernunft's calendar lists one card per *performance date*, but every date of a production links to the same
+`/programmuebersicht/<show>.html` page — at the time of writing 28 calendar cards resolve to 2 show pages.
+
+`AbstractTwoPageWebsiteImporter` fetches a detail page per event, so it would re-request one page 20+ times per import. With
+[per-host throttling](#per-host-politeness-throttling) that is not just wasteful but slow, and it is exactly the kind of load the
+[best practices](#scraping-best-practices) say to keep off a venue's server. Such an importer therefore implements `EventImporter` directly and de-duplicates
+the fetch itself — group the scraped events by their detail URL, fetch each distinct URL once, and apply the parsed result to every event that shares it.
+
+Two consequences follow for the parser split:
+
+1. **The detail scraper does not return a `ScrapedEvent`.** It parses *show-level* data (genre, price range, blurb) with no date of its own, so it returns a
+   small venue model (`BarJederVernunftShow`) that knows how to enrich an occurrence — the same modelling choice as `HavannaWeeklyNight` below.
+2. **`sourceId` cannot be the URL slug**, which is shared by the whole run. It combines the date with the show slug (`bar_jeder_vernunft:<date>-<show-slug>`),
+   keeping upserts idempotent per performance.
+
 ### Undated Recurring Programmes — Derived Occurrences
 
 Most venues announce individual dated events. A few instead assert a **standing weekly programme**:

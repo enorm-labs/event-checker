@@ -67,6 +67,27 @@ enum class EventSource {
     ASTRA,
 
     /**
+     * Bar jeder Vernunft Berlin – the Wilmersdorf Spiegelzelt (cabaret / variety theatre) on a Neos CMS 8.3
+     * site. The `/de/programm/kalender.html` calendar is the entry page: it renders one
+     * `.card-type-calendar` per **performance date** (a residency show appears once per night), each followed
+     * by its own `<script type="application/ld+json">` schema.org `Event` — the authoritative source for the
+     * date, start time, poster image, canonical URL, performer and `offers.availability` (ADR-007
+     * §"Selector Strategy" priority 1). The card markup adds only the show's sub-line and the ticket-shop
+     * link; its date block carries no year, so a card without JSON-LD is skipped rather than guessed at.
+     *
+     * The programme is a run of shows, so **many dates share one `/programmuebersicht/<show>.html` page**.
+     * That page holds the fields the calendar omits — `Genre`, the `Preise` range, and the untruncated blurb
+     * — so this importer fetches each *distinct* show page once per run and applies it to every date of that
+     * show, instead of the per-event detail fetch [AbstractTwoPageWebsiteImporter] would issue (28 calendar
+     * cards currently resolve to 2 pages). The venue stages evening shows rather than gigs, so its own
+     * `Genre` decides the type: a music style (Chanson, Swing, A cappella) is a
+     * [CONCERT][de.norm.events.event.EventType.CONCERT] whose performer becomes the headliner, while a staged
+     * format (Musik-Show, Kabarett, Musical) is a [SHOW][de.norm.events.event.EventType.SHOW] whose name is
+     * not an artist. `robots.txt` disallows `/de/ical/`, so the iCal feed is not used.
+     */
+    BAR_JEDER_VERNUNFT,
+
+    /**
      * Berghain Berlin – the club's own server-rendered programme. One importer serves two source rows built on
      * the identical page template: the main `/de/program/` page (the Berghain building floors — Berghain,
      * Panorama Bar, Säule, Halle — typed [PARTY][de.norm.events.event.EventType.PARTY]) and the
