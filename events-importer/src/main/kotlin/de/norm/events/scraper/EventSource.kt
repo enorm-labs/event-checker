@@ -10,6 +10,19 @@ package de.norm.events.scraper
  */
 enum class EventSource {
     /**
+     * ÆDEN Berlin – WordPress techno club whose `/events` entry page is a bare month index: one
+     * `a.month-button[data-date]` per upcoming month, linking to a fully server-rendered
+     * `/month/?month=YYYY-MM` page. Each month page renders its nights as `.single-accordion` blocks
+     * carrying a `.event-title`, a `.event-time` start time, a `.event-date` in `dd/MM/yyyy Weekday`
+     * form, a comma-separated `.event-genre` list, a `.event-poster` image, an external ticket link
+     * (Resident Advisor / Weeztix) and an `.event-lineup` prose block whose `Lineup:` paragraph lists
+     * the DJs `<br>`-separated. The `aeve`/`oel` post types (the venue's other spaces) never appear on
+     * the month pages, so only the club programme is imported. The month pages carry no prices and no
+     * per-event links, so `sourceId` is built from the date plus the slugified title.
+     */
+    AEDEN,
+
+    /**
      * AMT Club Berlin – Webflow techno club whose `/events` entry page carries no events server-side (the
      * Finsweet CMS-nest list injects them client-side); the programme lives on per-month `/month/<name>`
      * pages instead. Each month page renders every night as a `.div-grid-dan[data-date]` block (a full
