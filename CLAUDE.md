@@ -11,7 +11,11 @@ Slash commands available under `.claude/skills/`:
 - `/code-review` — review the current diff
 - `/codebase-audit` — comprehensive whole-repo review of code + architecture (size, duplication, conventions, simplification)
 - `/commit-message` — generate a commit message from staged changes
+- `/data-quality-audit` — read-only audit of the whole `events` database for data-quality issues
+- `/importer-smoke` — runtime smoke test of a single importer: seed, import, inspect the rows, check for regressions
 - `/improve-test-coverage` — find and fill coverage gaps
+- `/next-importer` — take one venue from 🔨 Ready in `docs/EVENT_DATA_SOURCES.md` to an open PR (scaffold → smoke-test → fix → ship); repeat, or run under
+  `/loop`, to work through the backlog
 - `/open-pr` — branch, commit (Conventional Commits), push, and open a PR in one flow
 - `/scaffold-importer` — scaffold a new venue event importer (scraper) end to end
 - `/squash-commit-message` — write a squash commit message for the current branch

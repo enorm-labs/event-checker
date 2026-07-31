@@ -239,6 +239,25 @@ subprojects sharing a root `settings.gradle.kts`, plus a standalone frontend pro
 ./gradlew httpTest                  # Run .http files via IntelliJ HTTP Client CLI (requires ijhttp + running importer)
 ```
 
+Local importer environment (used by `/importer-smoke` and `/next-importer`; run with no arguments for the full command list):
+
+```bash
+scripts/dev-env.sh status                 # Is the database / importer up?
+scripts/dev-env.sh db-reset               # docker compose down --volumes + fresh Postgres
+scripts/dev-env.sh up                     # bootRun in the background (scheduling off), wait for /actuator/health
+scripts/dev-env.sh down [--db]            # Stop the importer (and optionally the database)
+scripts/dev-env.sh seed-all               # Run http/importer/dev-seed.http via ijhttp — scrapes every venue
+scripts/dev-env.sh seed-one v.json s.json # Register a single venue + event source, print its slug
+scripts/dev-env.sh import <slug>          # Trigger one source's import and poll until it settles
+scripts/dev-env.sh snapshot [file]        # Per-source event counts (regression baseline)
+scripts/dev-env.sh diff-snapshot a b      # Which sources gained or lost events between two snapshots
+scripts/dev-env.sh check <slug>           # Data-quality report for one source
+```
+
+`up` starts the importer with `app.scheduling.enabled=false` so a smoke test scrapes only the source under test rather than every source whose 24h interval
+happens to be due. `bootRun` does not hot-reload — restart (`down` then `up`) after changing Kotlin code, or the smoke test runs the previous build. Runtime
+artefacts (log, PID, snapshots) land in `build/dev-env/`, which is gitignored.
+
 The **configuration cache** is enabled (`org.gradle.configuration-cache=true` in `gradle.properties`), so repeat builds skip the configuration phase. Every task
 above benefits except `dependencyCheckAggregate` — the OWASP plugin (12.2.2) keeps a `Project` reference in its task state, which cannot be serialized. That
 task still runs correctly without the flag, but the cache entry is discarded on every invocation and the build prints a problems report, so pass
@@ -389,3 +408,4 @@ Java version is managed via SDKMAN (`.sdkmanrc` pins `java=25.0.2-tem`; run `sdk
 | ADR: Event-calendar library           | `docs/adr/ADR-011_CALENDAR_LIBRARY.md`                                                                    |
 | Frontend entry point                  | `events-frontend/src/main.ts`                                                                             |
 | IntelliJ HTTP Client requests         | `http/importer/` (admin) and `http/bff/` (public read) `.http` files + shared `http/http-client.env.json` |
+| Local dev environment control script  | `scripts/dev-env.sh` (start/stop the stack, seed sources, trigger imports, inspect + diff the data)       |
