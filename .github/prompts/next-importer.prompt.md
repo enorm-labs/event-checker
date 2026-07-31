@@ -59,8 +59,8 @@ Fixture-based tests are the cheap loop — get them green before touching the da
 
 ### 4. Smoke-test against reality (repeat, max 3 rounds)
 
-Run [`/importer-smoke`](importer-smoke.prompt.md) for the new source. Restart the importer first (`scripts/dev-env.sh down && scripts/dev-env.sh up`) so it
-runs your new code.
+Run [`/importer-smoke`](importer-smoke.prompt.md) for the new source. Restart the importer first (`scripts/dev-env.sh down && scripts/dev-env.sh up`) so it runs
+your new code.
 
 Each round: read the verdict, fix the defect, re-run the unit tests, re-run the smoke test. When you fix a parsing bug, **also add or extend a fixture test that
 would have caught it** — that's what stops the regression from coming back.
