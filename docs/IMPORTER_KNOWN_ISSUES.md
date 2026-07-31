@@ -261,6 +261,27 @@ flyer; 27 of the 82 carry the `Konser` category and 55 carry none at all.
   fetch of the listing plus one detail page per event. This is cheap only because the listing shows *upcoming* events alone and is usually a handful of blocks;
   a season-long listing on this platform would need reconsidering.
 
+### ÆDEN (`scraper/aeden/`) — WordPress, entry page → month pages
+
+Assessed against the July–October 2026 month pages (16 nights). Every night has a date, a start time, a poster and a ticket link; 15 of the 16 carry a genre and
+12 name their DJs.
+
+- 🟠 **No prices and no doors time — for any event.** The month page has no field for either and the venue does not mention them in the blurb; tickets are sold
+  on Resident Advisor / Weeztix, so the price only exists behind the ticket link. Every ÆDEN event therefore lands with null prices and a start time only.
+- 🟠 **DJs are read only from a `Lineup:` paragraph.** The lineup block is prose, and the roster is recognised only when the venue opens a paragraph with
+  `Lineup:` and puts one act per `<br>` line — the format it uses consistently today. A night that announces its acts inside the blurb text instead lands with
+  no artists, and a roster still being built (`Lineup: TBA soon..`, `More TBA soon…`) yields none by design rather than storing the placeholder.
+- 🟢 **Every night is typed `PARTY`.** ÆDEN is a techno club whose programme is DJ nights, and the site emits no category at all, so the type is hardcoded like
+  AMT's. The occasional live-music night (`Bleach Berlin with Deer park & Patch`, a shoegaze bill) is therefore filed as `PARTY` rather than `CONCERT`. Typing
+  from the genre field was rejected: the genres are dance styles (`Techno`, `Trance`) on both kinds of night.
+- 🟢 **`sourceId` is date + slugified title, not a URL.** The month page links no per-event page (the `/aeden/<slug>/` posts exist but are not linked from the
+  programme), so there is no canonical per-event path to key on. A night that is renamed *and* moved would therefore be imported as a second event; a rename
+  alone keeps the date, and a date change alone keeps the title, so a full identity change is the only collision case.
+- 🟢 **Only the club programme is imported.** The site has two further post types for its other spaces (`aeve`, `oel` — the bar/kitchen programme, e.g. "Taco
+  Wednesday", "Afterwork Sunset Garten"). Neither appears on the `/month/` pages, which render club nights only, so they are out of scope.
+- 🟢 **Conditional requests never fire.** Like AMT, the entry page's ETag changes only when a month is added, not when a night inside a month is edited, so
+  caching is deliberately disabled and every run re-fetches the entry plus one page per listed month (4 pages today).
+
 ---
 
 ## How to extend this doc

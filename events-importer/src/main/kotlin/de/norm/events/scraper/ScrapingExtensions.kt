@@ -118,11 +118,26 @@ fun Element.hasVisibleWebflowFlag(
  * article.textLinesAt(".event__subtitle")  // ["+ Support: Jeff Clarke", "ABGESAGT. …note…"]
  * ```
  */
-fun Element.textLinesAt(cssQuery: String): List<String> {
-    val element = selectFirst(cssQuery) ?: return emptyList()
+fun Element.textLinesAt(cssQuery: String): List<String> = selectFirst(cssQuery)?.textLines() ?: emptyList()
+
+/**
+ * Splits this element's own text into its `<br>`-delimited lines, each trimmed, with blank lines
+ * dropped.
+ *
+ * The self-referential counterpart to [textLinesAt], for callers that already hold the element —
+ * e.g. after picking one paragraph out of a prose block (ÆDEN's `Lineup:` roster). Only direct-child
+ * `<br>` elements break a line; text inside nested inline elements is appended to the current line.
+ *
+ * Example:
+ * ```kotlin
+ * // <p>Lineup:<br>Alexa Fluor<br>ALIS.</p>
+ * paragraph.textLines()  // ["Lineup:", "Alexa Fluor", "ALIS."]
+ * ```
+ */
+fun Element.textLines(): List<String> {
     val lines = mutableListOf<String>()
     val current = StringBuilder()
-    for (node in element.childNodes()) {
+    for (node in childNodes()) {
         when {
             node is Element && node.tagName().equals("br", ignoreCase = true) -> {
                 lines.add(current.toString())
