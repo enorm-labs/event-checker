@@ -96,6 +96,34 @@ class VenueControllerTest : BaseControllerTest() {
     }
 
     @Test
+    fun `GET venue by non-numeric ID returns 400, not 500`() {
+        // Passing a slug where the API takes a numeric id is a client error. WebFlux raises a
+        // ServerWebInputException carrying 400, but its cause chain ends in a NumberFormatException;
+        // before GlobalExceptionHandler.handleInvalidInput existed, the cause-chain fallback let the
+        // IllegalArgumentException handler answer 500 with the raw converter message instead.
+        webTestClient
+            .get()
+            .uri("/api/admin/venues/bar-jeder-vernunft")
+            .exchange()
+            .expectStatus()
+            .isBadRequest
+            .expectBody()
+            .jsonPath("$.detail")
+            .isEqualTo("Invalid value 'bar-jeder-vernunft': expected a valid Long.")
+    }
+
+    @Test
+    fun `DELETE venue by non-numeric ID returns 400, not 500`() {
+        // The handler is global, so every /{id} endpoint and verb is covered by the same fix.
+        webTestClient
+            .delete()
+            .uri("/api/admin/venues/bar-jeder-vernunft")
+            .exchange()
+            .expectStatus()
+            .isBadRequest
+    }
+
+    @Test
     fun `GET all venues returns list`() {
         val created = createVenue(VenueRequestFixtures.create(name = "Cassiopeia"))
 
