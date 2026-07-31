@@ -12,12 +12,14 @@ import de.norm.events.scraper.ReservedSlugException
 import de.norm.events.venue.DuplicateVenueSlugException
 import de.norm.events.venue.VenueNotFoundException
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.beans.TypeMismatchException
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ProblemDetail
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.bind.support.WebExchangeBindException
+import org.springframework.web.server.ServerWebInputException
 
 /**
  * Global exception handler that translates domain exceptions into
@@ -123,9 +125,56 @@ class GlobalExceptionHandler {
     }
 
     /**
+     * Handles malformed request input that WebFlux rejects before the controller runs —
+     * most often a path variable or query parameter that cannot be converted to its declared
+     * type (`GET /api/admin/venues/bar-jeder-vernunft` against a `Long` id), but also an
+     * unreadable request body.
+     *
+     * This handler exists to stop [handleIllegalArgument] claiming those requests. WebFlux
+     * already raises a `ServerWebInputException` carrying **400**, but its cause chain ends
+     * in the converter's `NumberFormatException` — an [IllegalArgumentException] — and
+     * Spring's handler lookup falls back to the cause when no handler matches the thrown
+     * type. That turned a correct 400 into a 500 whose detail was the raw converter message
+     * ("For input string: \"bar-jeder-vernunft\""). Declaring the thrown type explicitly wins
+     * the lookup, because an exact-type match takes precedence over a cause-chain match.
+     *
+     * The status is taken from the exception rather than hard-coded, so a subclass carrying a
+     * different code keeps it. [WebExchangeBindException] is such a subclass and continues to
+     * be handled by the more specific [handleValidation], by the same precedence rule.
+     */
+    @ExceptionHandler(ServerWebInputException::class)
+    fun handleInvalidInput(ex: ServerWebInputException): ProblemDetail {
+        logger.debug { "Invalid request input: ${ex.message}" }
+        return ProblemDetail.forStatusAndDetail(ex.statusCode, describeInvalidInput(ex))
+    }
+
+    /**
+     * Builds a client-facing description of an input failure.
+     *
+     * A type mismatch names the rejected value and the type expected — the raw
+     * `"Type mismatch."` reason alone leaves the caller guessing which of several parameters
+     * was wrong. Anything else falls back to the exception's own reason.
+     */
+    private fun describeInvalidInput(ex: ServerWebInputException): String {
+        val mismatch = ex.cause as? TypeMismatchException
+        // Capitalised so a Kotlin `Long` id reads as its declared type, not the JVM primitive "long".
+        val requiredType = mismatch?.requiredType?.simpleName?.replaceFirstChar { it.uppercase() }
+        return if (mismatch != null && requiredType != null) {
+            "Invalid value '${mismatch.value}': expected a valid $requiredType."
+        } else {
+            ex.reason ?: "Request input is invalid."
+        }
+    }
+
+    /**
      * Handles [IllegalArgumentException] thrown when the database contains an enum value
      * that doesn't match any Kotlin enum constant (e.g. an unknown [de.norm.events.event.ArtistRole] or [de.norm.events.event.EventType]
      * from a manual DB edit or future migration).
+     *
+     * Deliberately last-resort: because Spring falls back to the cause chain, this would also
+     * swallow framework exceptions merely *caused* by an [IllegalArgumentException]. Any such
+     * family that is really a client error needs its own handler above — see
+     * [handleInvalidInput].
      */
     @ExceptionHandler(IllegalArgumentException::class)
     fun handleIllegalArgument(ex: IllegalArgumentException): ProblemDetail {
