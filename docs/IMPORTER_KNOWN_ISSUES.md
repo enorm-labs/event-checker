@@ -316,6 +316,37 @@ the seasonality note below). All three rooms share one page and one parser, filt
 - 🟢 **Conditional requests never fire.** The server sends neither ETag nor Last-Modified, so every run is a full fetch of the one listing. That is cheap: one
   page per room, and the page is a single short programme.
 
+### Columbia Theater (`scraper/columbiatheater/`) — WordPress, homepage listing + detail pages
+
+Verified against a live import (August 2026): 98 upcoming events, dates 2026-08-03 → 2027-11-14, none in the past. Coverage is otherwise strong — every event
+has an image and an artist, 97 of 98 have doors *and* start times, 92 have a ticket link and 89 a description.
+
+- 🟠 **No prices, no genre and no sold-out state — for any event.** The venue publishes none of the three anywhere: the detail page's ticket box holds only the
+  shop button and a standing "oder bei anderen Vorverkaufsstellen" line, with no price phase, no `Ausverkauft` badge and no style tag. All 98 events therefore
+  land with null prices, null genre and `sold_out = false`, and the price only exists behind the Eventim link.
+- 🟠 **A rescheduled show stays `POSTPONED` at its new date.** The venue keeps flagging a moved show "Verschoben / Rescheduled" (`data-p`) indefinitely, even
+  once the replacement date is confirmed and ticketed — 6 of the 98 events. The stored date is the new one, so the status reads as a *history* marker rather
+  than "no date yet"; the venue publishes no signal for "rescheduled and now settled".
+- 🟢 **The date comes from the permalink, so a slug without one is dropped.** Both rendered date blocks (`03` / `Aug` on the card, `So. 16.08.` in the header)
+  omit the year unless the event is more than a season away, so the `YYYYMMDD` prefix of `/event/YYYYMMDD-<slug>/` is the only unambiguous date — all 98 current
+  events carry it, as does every entry of the venue's whole sitemap archive. An event published without that prefix resolves no date and is dropped with a
+  warning rather than having its year guessed.
+- 🟢 **Only the first URL of a doubled ticket `href` is kept.** The CMS occasionally emits two shop links concatenated into one attribute
+  (`…&utm_medium=dphttps://www.eventim.de/…`, 2 of 15 pages sampled). Everything from the second `http(s)://` on is dropped, which would also truncate a
+  legitimate href carrying an un-encoded redirect URL — none has been seen.
+- 🟢 **Media presenters are stored as promoters; the actual local promoter is not.** The `präsentiert von …` credit names magazines and radio stations
+  (`DIFFUS`, `MusikBlog`, `FluxFM`), which are stored per the `Promoter` model's "promoter *or presenter*" definition — the same choice as Astra/Lido. The real
+  booking agency appears only as a bare "Örtlicher Veranstalter" **link** (`trinitymusic.de`, `semmel.de`), with no name to store, so it is skipped rather than
+  guessed from the domain.
+- 🟢 **A billing row's acts are split on `+` only, never on commas.** The venue writes a guest's band affiliations in parentheses
+  (`Budgie (SIOUXSIE & THE BANSHEES, THE SLITS)`), so the shared comma-splitting of `splitSupportActs` is deliberately not used and a genuinely
+  comma-separated support line would land as one artist. No such line exists today — every row uses `+`.
+- 🟢 **Conditional requests never fire.** The server sends neither ETag nor Last-Modified, so every run is a full fetch of the homepage plus one detail page per
+  listed event (98 today, serialised by the 200 ms per-host throttle).
+- 🟢 **`ELLE & L's Festival` mints a spurious `Elle` headliner.** The title is promoted to `FESTIVAL` at the persistence boundary, but the lineup was already
+  derived from the scraper's own `CONCERT` inference, so the `&`-split leaves `Elle` behind (`L's Festival` is filtered out). Pre-existing and cross-cutting —
+  Clash and Gretchen have the same shape — → tracked in `TODO.md`.
+
 ---
 
 ## How to extend this doc

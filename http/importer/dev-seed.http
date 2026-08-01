@@ -23,6 +23,7 @@
 ###   Cassiopeia           — https://cassiopeia-berlin.de/club
 ###   Clash                — https://clash-berlin.de/
 ###   Club der Visionäre   — https://clubdervisionaere.com/programm/ (WordPress; one listing, three rooms by colour class)
+###   Columbia Theater     — https://columbia-theater.de/ (WordPress; homepage listing + /event/YYYYMMDD-<slug> detail pages)
 ###   Duncker Club         — https://www.dunckerclub.de/start.html
 ###   Festsaal Kreuzberg   — https://festsaal-kreuzberg.de/de/programm/ (Wagtail CMS JSON API)
 ###   Frannz Club          — https://frannz.eu/
@@ -845,6 +846,68 @@ Accept: application/json
 
 > {%
     client.test("Club der Visionäre import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Columbia Theater (Columbiadamm 9-11, Berlin-Tempelhof — at Tempelhofer Feld)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Columbia Theater venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Columbia Theater",
+    "address": "Columbiadamm 9-11",
+    "city": "Berlin",
+    "postalCode": "10965",
+    "district": "tempelhof-schoeneberg",
+    "latitude": 52.48380,
+    "longitude": 13.38920,
+    "websiteUrl": "https://columbia-theater.de",
+    "description": "A mid-sized concert hall at Tempelhofer Feld, next door to the Columbiahalle, programming touring rock, metal, hip hop and pop acts."
+}
+
+> {%
+    client.global.set("columbia_theater_venue_id", response.body.id);
+    client.test("Columbia Theater venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Columbia Theater event source ---
+# Links the venue to the ColumbiaTheaterWebsiteImporter.
+# The sourceType "COLUMBIA_THEATER" matches EventSource.COLUMBIA_THEATER.
+# NOTE: the URL is the homepage `/` — it *is* the full upcoming programme (one `a.item` card per
+# night), with the times, blurb, tickets and presenters on the `/event/YYYYMMDD-<slug>/` detail
+# pages the importer follows. The WordPress REST API is disabled site-wide (`401 rest_disabled`).
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{columbia_theater_venue_id}},
+    "name": "Columbia Theater",
+    "url": "https://columbia-theater.de/",
+    "sourceType": "COLUMBIA_THEATER",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Columbia Theater event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Columbia Theater import ---
+POST {{importer-host}}/api/admin/event-sources/columbia-theater/import
+Accept: application/json
+
+> {%
+    client.test("Columbia Theater import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}
