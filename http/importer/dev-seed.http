@@ -51,6 +51,7 @@
 ###   UFO im Velodrom      — https://www.velomax.de/events (shares the VELOMAX listing)
 ###   Velodrom             — https://www.velomax.de/events (shares the VELOMAX listing)
 ###   Mikropol             — https://mikropol-berlin.de/events/ (WordPress/Events-Manager, list + detail)
+###   Modus Berlin         — https://modus-berlin.de/events (hand-built; rendered date wins over the slug)
 ###   Monarch              — https://kottimonarch.de/programm.php (retro PHP single-page listing)
 ###   MS Hoppetosse        — https://hoppetosse.berlin/program/ (shares the CLUB_DER_VISIONAERE listing; winter location)
 ###   Neue Zukunft         — https://neue-zukunft.org/ (Elfsight Event Calendar widget JSON API)
@@ -2596,6 +2597,65 @@ Accept: application/json
 
 > {%
     client.test("Mikropol import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Modus Berlin (Ritterstr. 26, Berlin-Kreuzberg)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Modus Berlin venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Modus Berlin",
+    "address": "Ritterstr. 26",
+    "city": "Berlin",
+    "postalCode": "10969",
+    "district": "friedrichshain-kreuzberg",
+    "websiteUrl": "https://modus-berlin.de",
+    "description": "A Kreuzberg club and concert room on the Ritter Butzke grounds, programming touring acts and spoken-word nights."
+}
+
+> {%
+    client.global.set("modus_venue_id", response.body.id);
+    client.test("Modus Berlin venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Modus Berlin event source ---
+# Links the venue to the ModusWebsiteImporter.
+# The sourceType "MODUS" matches EventSource.MODUS.
+# NOTE: the slug encodes a DDMMYY date but keeps the ORIGINAL one when a show moves, so the
+# importer reads the rendered date and uses the slug only as the stable sourceId.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{modus_venue_id}},
+    "name": "Modus Berlin",
+    "url": "https://modus-berlin.de/events",
+    "sourceType": "MODUS",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Modus Berlin event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Modus Berlin import ---
+POST {{importer-host}}/api/admin/event-sources/modus-berlin/import
+Accept: application/json
+
+> {%
+    client.test("Modus Berlin import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}
