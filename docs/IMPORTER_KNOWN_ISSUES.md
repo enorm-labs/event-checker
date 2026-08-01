@@ -347,6 +347,32 @@ has an image and an artist, 97 of 98 have doors *and* start times, 92 have a tic
   derived from the scraper's own `CONCERT` inference, so the `&`-split leaves `Elle` behind (`L's Festival` is filtered out). Pre-existing and cross-cutting —
   Clash and Gretchen have the same shape — → tracked in `TODO.md`.
 
+### Columbiahalle (`scraper/columbiahalle/`) — Contao, single page
+
+Verified against a live import (August 2026): 87 upcoming events, dates 2026-08-07 → 2030-12-28, none in the past. The richest listing of any source so far —
+every event has a date, **both** doors and start times, an image and a promoter; 85 of 87 carry a price and 85 an artist.
+
+- 🟠 **No genre for any event.** The Contao event template has no style/category field at all, and the venue never states one in the blurb. All 87 events land
+  with a null genre, and their type is inferred from the title alone (concert hall → `CONCERT` unless a title keyword says otherwise, which is how the two
+  afterparty nights become `PARTY`).
+- 🟢 **A card carries no month or year of its own.** It states only a weekday and a day of month ("Freitag", "07"); the month comes from the
+  `.eventlist_monat` heading preceding it in document order. A heading the parser cannot read therefore voids the month rather than carrying the previous one
+  forward — those events are skipped with a warning instead of being filed a month early, which is the safer failure but still a silent loss.
+- 🟢 **No per-event page, so identity is the Contao event id.** The "Kalender-Eintrag" links (`veranstaltung/<alias>.html`) serve an **iCal download**, not an
+  HTML page, and carry strictly less than the listing (no prices, promoter, tickets or sold-out state), so they are not followed. Both `sourceId` and
+  `sourceUrl` come from the `div.event_inhalt[id=event_<n>]` id — the same key the venue's own iCal uses as its `UID` — with the listing anchor
+  (`…/veranstaltungen.html#event_9743`) as the URL. An event re-created in the CMS under a new id would import as a second event.
+- 🟢 **A tiered price is stored as its lowest tier.** `VVK: ab 74,99 €` yields `pricePresale = 74.99`, with the raw text kept as the `priceNote` so the
+  "from" qualifier is not lost — a filter on price sees the cheapest ticket, which is the useful reading, but the number alone understates what most seats
+  cost. The same applies to the venue's "zzgl. Gebühr" (plus booking fee) footnote, which is likewise only in the note.
+- 🟢 **25 events have no ticket link and 2 no price at all.** The venue simply omits the button on those cards (typically shows sold elsewhere or already sold
+  out); nothing is parseable that the parser is missing.
+- 🟢 **`OFF DAYS 2026` is minted as a headliner.** It is an event name, not an act, but it matches no structural non-artist filter (no `fest`/`festival`
+  marker) — the reactive-denylist limitation recorded in the cross-cutting section. `Elle & L's Festival` mints `Elle` for the separate, cross-cutting reason
+  tracked in `TODO.md`.
+- 🟢 **Conditional requests never fire.** The server sends neither ETag nor Last-Modified (its Contao page cache answers with `contao-cache: fresh` and an
+  `age` header instead), so every run is a full fetch — of exactly one page, which is cheap.
+
 ---
 
 ## How to extend this doc

@@ -7,8 +7,8 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 
 | Status                              | Meaning                                                                              | Count |
 |-------------------------------------|--------------------------------------------------------------------------------------|------:|
-| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    40 |
-| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |    34 |
+| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    41 |
+| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |    33 |
 | ⛔ [Blocked](#-blocked--deferred)   | Website analyzed, but no usable listings (no programme page, JS-only, or too sparse) |    32 |
 | ❓ [Unanalyzed](#-not-analyzed-yet) | No URL recorded yet — website still needs a first look                               |     0 |
 
@@ -32,6 +32,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Clash Club                  | https://clash-berlin.de/                                    | Club         | WordPress; sparse — no times, prices or text      |
 | Club der Visionäre          | https://clubdervisionaere.com/programm                      | Techno Club  | WordPress; one listing, 3 rooms by CSS class      |
 | Columbia Theater            | https://columbia-theater.de/                                | Concert Hall | WordPress; date in slug; status via `data-*` flag |
+| Columbiahalle               | https://www.columbiahalle.berlin/veranstaltungen.html       | Concert Hall | Contao; one page, month headings carry the year   |
 | Duncker Club                | https://www.dunckerclub.de/                                 | Club         |                                                   |
 | Festsaal Kreuzberg          | https://festsaal-kreuzberg.de/de                            | Concert Hall | Nuxt/Wagtail SSR; `ld+json` empty; no prices      |
 | Frannz Club                 | https://frannz.eu/                                          | Club         |                                                   |
@@ -59,7 +60,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Wild at Heart               | https://www.wildatheartberlin.de/                           | Bar          | Retro frameset; concerts.php; year from weekday   |
 | Zenner                      | https://zenner.berlin/programm                              | Club         | Gatsby/Sanity page-data JSON; UTC dates; archive  |
 
-39 importer classes cover 40 sources (Kantine am Berghain shares the Berghain importer; Club der Visionäre, Sonnenraum and MS Hoppetosse are
+40 importer classes cover 41 sources (Kantine am Berghain shares the Berghain importer; Club der Visionäre, Sonnenraum and MS Hoppetosse are
 three thin importers over one shared listing and parser).
 
 ## 🔨 Ready to implement
@@ -68,7 +69,6 @@ Analyzed and scrapable — the candidates for the next `/scaffold-importer` runs
 
 | Priority | Name                  | URL                                      | Type         | Why / what it needs                                        |
 |:--------:|-----------------------|------------------------------------------|--------------|------------------------------------------------------------|
-|   High   | Columbiahalle         | https://www.columbiahalle.berlin/        | Concert Hall | Contao; /veranstaltungen.html: promoter, doors, prices     |
 |   High   | Golden Gate           | https://goldengate-berlin.de/            | Techno Club  | WordPress; weekday + date + time, lineups, door-only       |
 |   High   | Heimathafen Neukölln  | https://heimathafen-neukoelln.de/        | Concert Hall | WordPress `events` REST API (ACF): dates, status, tickets  |
 |   High   | Huxleys Neue Welt     | https://huxleysneuewelt.de/events        | Concert Hall | WordPress; Einlass + Beginn, support acts, "Ausverkauft"   |
