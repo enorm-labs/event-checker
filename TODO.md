@@ -116,6 +116,13 @@ Strategy & sequencing: [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEG
   resident night uses; Neue Zukunft's recurring entries are monthly and are still imported once, at their start date only (4 of 44 entries — see
   `IMPORTER_KNOWN_ISSUES.md`). Fixing it also needs `NeueZukunftApiScraper`'s `sourceId` to carry the occurrence date (Humboldthain already does), which
   re-mints every existing Neue Zukunft event — so do it as one change, not two.
+- [ ] **Two shared title-parsing rules are too literal, and each currently needs a per-importer workaround.** Both surfaced at LARK, which works around them
+  locally (see `IMPORTER_KNOWN_ISSUES.md`); fixing them centrally changes classification for every venue, so it needs a `--full` re-seed and a diff, not a
+  drive-by edit.
+    - `PARTY_TITLE_KEYWORDS` matches a bare `club` as a substring, so a tour named "… CLUB TOUR" is typed `PARTY` — and a party title mints no artists, so the
+      headliner is lost too. Word-anchor it (as `\brave\b` and `\bkino\b` already are), or drop the bare entry and keep `club night` / `clubnight`.
+    - `ARTIST_SUFFIX_PATTERN` and `stripShoutedTourTail` only recognise the **ASCII hyphen** as the act/tour boundary, so an en- or em-dash tour tail
+      ("Greg Mendez – BEAUTY LAND TOUR") survives into the artist name. Accept `[-–—]` in both.
 - [ ] Add events manually for venues that have no website — plus a plan for keeping those up to date
 
 **Admin tooling & maintenance:**
