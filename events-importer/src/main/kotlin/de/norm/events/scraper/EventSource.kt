@@ -437,6 +437,29 @@ enum class EventSource {
     /** Privatclub Berlin – WordPress-based single-page event listing. */
     PRIVATCLUB,
 
+    /**
+     * Renate (Wilde Renate) Berlin – the Friedrichshain techno club, on WordPress with no `event`
+     * post type in its REST API, so its homepage is the source. Each night is a `.prog-row`
+     * carrying a `.prog-day` weekday, a year-less `.prog-date`, a `.prog-title`, the spaces used
+     * (`.cat-btn`: `CLUB` / `GARTEN`), a Resident Advisor `.ticket-link`, and a `.prog-text` block
+     * holding the per-floor lineup. A trailing `.prog-row.blog-row` carries a news post rather than
+     * an event and is excluded by requiring a date.
+     *
+     * The lineup is the reason to import this venue and the reason it needs care. Floors are
+     * `<strong>` headings — `GREEN (from 22:00) hosted by Kollektiv Lost In`, `BLACK`, `RED`,
+     * `GARDEN` — with the DJs beneath them, but `<strong>` is also used for the venue's slogan
+     * (`Garten für alle!`), for a continuation line (`hosted by Neer`), and for festival blurbs. A
+     * heading therefore opens a floor only when it starts with one of the venue's **actual floor
+     * names**, and an act line is only taken when it is short enough to be a name — the same prose
+     * paragraphs otherwise become artists.
+     *
+     * Dates carry a weekday but no year, so the year comes from [inferYearForWeekday]. The venue
+     * publishes no prices, no images and no per-event page, so `sourceId` is the date plus the
+     * slugified title; its prose is club policy repeated verbatim on every night, so no description
+     * is stored.
+     */
+    RENATE,
+
     /** Roadrunner's Paradise Berlin – retro hand-coded single-page `programm.html` listing (rockabilly/roots). */
     ROADRUNNER,
 
