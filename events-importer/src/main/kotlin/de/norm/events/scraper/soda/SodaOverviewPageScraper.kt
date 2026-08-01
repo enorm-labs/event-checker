@@ -6,6 +6,7 @@ import de.norm.events.scraper.ScrapedEvent
 import de.norm.events.scraper.attrAt
 import de.norm.events.scraper.imgSrcAt
 import de.norm.events.scraper.inferYearForWeekday
+import de.norm.events.scraper.parseGermanMonthAbbreviation
 import de.norm.events.scraper.resolveUrl
 import de.norm.events.scraper.textAt
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -15,7 +16,6 @@ import java.net.URI
 import java.time.Clock
 import java.time.DayOfWeek
 import java.time.LocalDate
-import java.time.Month
 import java.time.MonthDay
 
 /**
@@ -110,37 +110,13 @@ class SodaOverviewPageScraper(
      */
     private fun parseCalendarDate(snippet: Element): LocalDate? {
         val day = snippet.textAt(".event-date-cal-day")?.toIntOrNull()
-        val month = GERMAN_MONTH_ABBREVIATIONS[snippet.textAt(".event-date-cal-month")?.lowercase()]
+        val month = parseGermanMonthAbbreviation(snippet.textAt(".event-date-cal-month"))
         val weekday = GERMAN_WEEKDAYS[snippet.textAt(".event-date-cal-weekday")?.lowercase()]
         val monthDay = if (day == null || month == null) null else runCatching { MonthDay.of(month, day) }.getOrNull()
         return monthDay?.let { inferYearForWeekday(it, weekday, clock) }
     }
 
     private companion object {
-        /**
-         * German month abbreviations as rendered in the calendar block ("Jul", "Aug", "Okt").
-         * Spelled out rather than parsed with a [java.util.Locale.GERMAN] formatter so the
-         * mapping cannot drift with the JDK's CLDR data; the ambiguous March spellings
-         * (`Mär` / `Mrz` / `Maer`) are all accepted.
-         */
-        private val GERMAN_MONTH_ABBREVIATIONS: Map<String, Month> =
-            mapOf(
-                "jan" to Month.JANUARY,
-                "feb" to Month.FEBRUARY,
-                "mär" to Month.MARCH,
-                "mrz" to Month.MARCH,
-                "maer" to Month.MARCH,
-                "apr" to Month.APRIL,
-                "mai" to Month.MAY,
-                "jun" to Month.JUNE,
-                "jul" to Month.JULY,
-                "aug" to Month.AUGUST,
-                "sep" to Month.SEPTEMBER,
-                "okt" to Month.OCTOBER,
-                "nov" to Month.NOVEMBER,
-                "dez" to Month.DECEMBER
-            )
-
         /** Full German weekday names as rendered in the calendar block ("Donnerstag"). */
         private val GERMAN_WEEKDAYS: Map<String, DayOfWeek> =
             mapOf(

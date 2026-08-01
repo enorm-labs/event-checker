@@ -23,6 +23,27 @@ enum class EventSource {
     AEDEN,
 
     /**
+     * Admiralspalast Berlin – the Friedrichstraße variety theatre, on Contao. Its
+     * `/veranstaltungsuebersicht.html` A–Z listing is a **discovery list only**: each tile carries a
+     * production title and an `ab DD.MM.YY` run-start date, but the real schedule lives on the
+     * `/veranstaltung/<slug>.html` page, whose `#eventlist` renders one `.item` row **per
+     * performance** — `.evDay` (`25`), `.evMJ` (`Jan 2027`, German month abbreviation), `.evWdT`
+     * (`Mo, 19:30`), the production title, a per-date Eventim ticket link and the poster. One
+     * production therefore yields several events, so `sourceId` combines the slug with the
+     * performance date.
+     *
+     * `.eventzusatz` carries the venue's own reschedule note, and its two idioms mean opposite
+     * things: `verschoben auf <date>` marks the *original* date (postponed), while `verlegt vom
+     * <date>` marks the *replacement* date and therefore stays scheduled — the shared
+     * [parseEventStatus] would read the latter as `RELOCATED`.
+     *
+     * The event type and genre come from the `/veranstaltungsuebersicht/eventkategorie/<genre>.html`
+     * filter pages, the only place the venue states a category; the listing tiles carry none. No
+     * prices are published anywhere (tickets are sold on Eventim).
+     */
+    ADMIRALSPALAST,
+
+    /**
      * AMT Club Berlin – Webflow techno club whose `/events` entry page carries no events server-side (the
      * Finsweet CMS-nest list injects them client-side); the programme lives on per-month `/month/<name>`
      * pages instead. Each month page renders every night as a `.div-grid-dan[data-date]` block (a full

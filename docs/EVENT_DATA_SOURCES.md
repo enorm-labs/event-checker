@@ -7,8 +7,8 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 
 | Status                              | Meaning                                                                              | Count |
 |-------------------------------------|--------------------------------------------------------------------------------------|------:|
-| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    51 |
-| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |    20 |
+| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    52 |
+| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |    19 |
 | ⛔ [Blocked](#-blocked--deferred)   | Website analyzed, but no usable listings (no programme page, JS-only, or too sparse) |    35 |
 | ❓ [Unanalyzed](#-not-analyzed-yet) | No URL recorded yet — website still needs a first look                               |     0 |
 
@@ -19,6 +19,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Name                        | URL                                                         | Type         | Comment                                           |
 |-----------------------------|-------------------------------------------------------------|--------------|---------------------------------------------------|
 | ÆDEN                        | https://aedenberlin.com/                                    | Techno Club  | WordPress; /events → month pages; no prices       |
+| Admiralspalast              | https://www.admiralspalast.theater/                         | Theater      | Contao; one event per performance row; no prices  |
 | Alte Kantine Kulturbrauerei | https://alte-kantine.eu/                                    | Concert Hall |                                                   |
 | AMT                         | https://www.club-amt.berlin                                 | Techno Club  | Webflow; /events → month pages                    |
 | Arcanoa                     | https://www.ssi-media.com/arcanoa/veranst.htm               | Bar          | 1990s HTML; title/date only; year from weekday    |
@@ -70,7 +71,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Wild at Heart               | https://www.wildatheartberlin.de/                           | Bar          | Retro frameset; concerts.php; year from weekday   |
 | Zenner                      | https://zenner.berlin/programm                              | Club         | Gatsby/Sanity page-data JSON; UTC dates; archive  |
 
-48 importer classes cover 51 sources (Kantine am Berghain shares the Berghain importer; Club der Visionäre, Sonnenraum and MS Hoppetosse are three thin
+49 importer classes cover 52 sources (Kantine am Berghain shares the Berghain importer; Club der Visionäre, Sonnenraum and MS Hoppetosse are three thin
 importers over one shared listing and parser).
 
 ## 🔨 Ready to implement
@@ -79,7 +80,6 @@ Analyzed and scrapable — the candidates for the next `/scaffold-importer` runs
 
 | Priority | Name                  | URL                                      | Type         | Why / what it needs                                        |
 |:--------:|-----------------------|------------------------------------------|--------------|------------------------------------------------------------|
-|  Medium  | Admiralspalast        | https://www.admiralspalast.theater/      | Theater      | Contao; /veranstaltungsuebersicht.html, genre categories   |
 |  Medium  | Humboldthain Club     | https://www.humboldthain.com/            | Techno Club  | Elfsight Event Calendar — as the NEUE_ZUKUNFT importer     |
 |  Medium  | LARK                  | https://larkberlin.com/events/           | Club         | Own listing, "SOLD OUT"; not in the Holzmarkt calendar     |
 |  Medium  | Maxxim Club           | https://www.maxxim-berlin.de/            | Club         | Wix; `Event` JSON-LD plus a German-date programme list     |
