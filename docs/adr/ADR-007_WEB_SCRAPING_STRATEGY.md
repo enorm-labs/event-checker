@@ -456,6 +456,8 @@ cohesive responsibility, keeping the codebase organized as the number of utiliti
 | `Element.hrefAt(cssQuery)`                      | Select `<a>` → `href` attribute → null if not an absolute HTTP URL    |
 | `Element.hasVisibleWebflowFlag(cssQuery, text)` | Webflow `w-condition-invisible` visibility check + text content match |
 | `resolveUrl(baseUrl, href)`                     | Resolve relative URLs against a base URL, pass-through absolute URLs  |
+| `extractEventSlug(url, prefix)`                 | Strip a detail-URL path prefix down to the event's stable slug        |
+| `ISO_DATE_LENGTH`                               | Length of the `YYYY-MM-DD` prefix some platforms bake into that slug  |
 
 **`DateParsingExtensions.kt`** — date and time parsing for the two common formats on venue websites:
 
@@ -466,6 +468,7 @@ cohesive responsibility, keeping the codebase organized as the number of utiliti
 | `parseIsoDate(dateTimeStr)`                     | Extract date from ISO 8601 datetime (e.g. `"2026-05-16T20:00"`)                   |
 | `parseIsoTime(dateTimeStr)`                     | Extract time from ISO 8601 datetime, delegates to `parseTime`                     |
 | `inferYearForWeekday(monthDay, weekday, clock)` | Pick the year for a year-less date using its weekday (retro single-page listings) |
+| `parseGermanMonthAbbreviation(text)`            | German month abbreviation → `Month` (`Okt`, `Dez`, every `Mär`/`März` spelling)   |
 
 **`EventTypeMapping.kt` / `ArtistNameMapping.kt` / `EventFieldMapping.kt`** — domain-level mapping of scraped text to model constants:
 
@@ -474,6 +477,9 @@ cohesive responsibility, keeping the codebase organized as the number of utiliti
 | `mapGermanCategory(category)`          | Maps German category labels ("Konzert", "Party", "Sonstiges") to `EventType` values |
 | `isPlaceholderName(name)`              | Detects placeholder artist names ("TBA", "N.N.") that should not be persisted       |
 | `buildArtistList(title, supportNames)` | Constructs headliner + support artist list from the common title/subtitle pattern   |
+| `parseEventStatus(statusText)`         | German/English status badge → `EventStatus` (sold-out stays a flag, not a status)   |
+| `orderDoorsBeforeStart(doors, start)`  | Recovers a source's transposed doors/start labels by swapping them back             |
+| `stripRelocationPrefix(title)`         | Strips a `"verlegt in(s) <venue> –"` note a venue prepends to a moved show's title  |
 
 **`WixEventsWarmupData.kt`** — platform-level reader for venues on Wix with a Wix Events widget (currently Loge and MAXXIM). The widget renders client-side, but
 Wix server-side-injects the full event data as strict JSON in a `<script type="application/json" id="wix-warmup-data">` block, so that payload is the source

@@ -1,6 +1,7 @@
 package de.norm.events.scraper.mikropol
 
 import de.norm.events.scraper.EventSource
+import de.norm.events.scraper.ISO_DATE_LENGTH
 import de.norm.events.scraper.ScrapedEvent
 import de.norm.events.scraper.UNRESOLVED_EVENT_DATE
 import de.norm.events.scraper.buildArtistsForEventType
@@ -12,6 +13,7 @@ import de.norm.events.scraper.parseGermanDate
 import de.norm.events.scraper.parseIsoDate
 import de.norm.events.scraper.parseTime
 import de.norm.events.scraper.resolveUrl
+import de.norm.events.scraper.stripRelocationPrefix
 import de.norm.events.scraper.textAt
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jsoup.nodes.Document
@@ -110,34 +112,4 @@ class MikropolOverviewPageScraper {
         /** The Events-Manager sold-out class the theme adds to a card's anchor. */
         private const val SOLD_OUT_CLASS = "Ausverkauft"
     }
-}
-
-/** Length of the leading ISO `YYYY-MM-DD` date the venue bakes into every event slug. */
-internal const val ISO_DATE_LENGTH = 10
-
-/**
- * A leading "verlegt in den <venue> –" relocation note Mikropol prepends to a moved show's
- * title (e.g. "-verlegt in den Frannz Club – CULTURE WARS"). The venue encodes a relocation
- * in the title prose rather than a status class, so the note is stripped to recover the real
- * act name ("CULTURE WARS") for both the stored title and the derived headliner; the
- * `RELOCATED` status is set separately from the same "verlegt" keyword via [parseEventStatus].
- * An optional leading dash and the trailing dash separator (`-`/`–`/`—`) are consumed.
- */
-private val RELOCATION_PREFIX_PATTERN =
-    Regex("""^\s*[-–—]?\s*verlegt\s+in\s+.+?\s*[-–—]\s*""", RegexOption.IGNORE_CASE)
-
-/**
- * Strips a leading [RELOCATION_PREFIX_PATTERN] from a title, keeping the input unchanged
- * when there is no such prefix or when stripping would leave nothing. Shared by the overview
- * and detail scrapers, whose relocated titles are identical.
- *
- * Example:
- * ```kotlin
- * stripRelocationPrefix("-verlegt in den Frannz Club – CULTURE WARS") // "CULTURE WARS"
- * stripRelocationPrefix("HOUSE OF PROTECTION")                        // "HOUSE OF PROTECTION"
- * ```
- */
-internal fun stripRelocationPrefix(title: String): String {
-    val stripped = title.replaceFirst(RELOCATION_PREFIX_PATTERN, "").trim()
-    return stripped.ifBlank { title.trim() }
 }

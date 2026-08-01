@@ -209,10 +209,12 @@ fun parseGermanShortDate(text: String?): LocalDate? = parseGerman(text, GERMAN_S
  * ("Jul", "Okt", "Dez"). These are spelled out rather than parsed with a
  * [Locale.GERMAN][java.util.Locale.GERMAN] formatter for two reasons: the JDK's CLDR abbreviations
  * carry a trailing dot, and they spell March `Mrz` where some sites write `Mär` (or `Maer` where
- * the page is not UTF-8 clean). All three March spellings are accepted.
+ * the page is not UTF-8 clean). Every March spelling is accepted, including the full `März` —
+ * German abbreviates each month to three letters *except* March, which venues therefore render
+ * unabbreviated in an otherwise abbreviated column (Metropol writes `Aug.` but `März`).
  *
- * Shared by the venues whose listings render this calendar block — Soda, Velomax and
- * Admiralspalast.
+ * Shared by the venues whose listings render this calendar block — Soda, Velomax, Admiralspalast
+ * and Metropol.
  *
  * Example:
  * ```kotlin
@@ -228,8 +230,10 @@ private val GERMAN_MONTH_ABBREVIATIONS: Map<String, Month> =
         "jan" to Month.JANUARY,
         "feb" to Month.FEBRUARY,
         "mär" to Month.MARCH,
+        "märz" to Month.MARCH,
         "mrz" to Month.MARCH,
         "maer" to Month.MARCH,
+        "maerz" to Month.MARCH,
         "apr" to Month.APRIL,
         "mai" to Month.MAY,
         "jun" to Month.JUNE,

@@ -87,6 +87,35 @@ fun orderDoorsBeforeStart(
 ): Pair<LocalTime?, LocalTime?> = if (doors != null && start != null && doors > start) start to doors else doors to start
 
 /**
+ * A leading "verlegt in den <venue> –" relocation note a venue prepends to a moved show's
+ * title (Mikropol's `"-verlegt in den Frannz Club – CULTURE WARS"`, Metropol's
+ * `"Verlegt ins Bi Nuu – BRKN"`). Such venues encode the relocation in the title prose rather
+ * than a status class, so the note is stripped to recover the real act name for both the stored
+ * title and the derived headliner; the `RELOCATED` status is set separately from the same
+ * "verlegt" keyword via [parseEventStatus]. An optional leading dash and the trailing dash
+ * separator (`-`/`–`/`—`) are consumed. Both German contractions of the preposition are
+ * accepted — Mikropol writes "verlegt **in** den Frannz Club", Metropol "Verlegt **ins** Bi Nuu".
+ */
+private val RELOCATION_PREFIX_PATTERN =
+    Regex("""^\s*[-–—]?\s*verlegt\s+ins?\s+.+?\s*[-–—]\s*""", RegexOption.IGNORE_CASE)
+
+/**
+ * Strips a leading [RELOCATION_PREFIX_PATTERN] from a title, keeping the input unchanged
+ * when there is no such prefix or when stripping would leave nothing.
+ *
+ * Example:
+ * ```kotlin
+ * stripRelocationPrefix("-verlegt in den Frannz Club – CULTURE WARS") // "CULTURE WARS"
+ * stripRelocationPrefix("Verlegt ins Bi Nuu – BRKN")                  // "BRKN"
+ * stripRelocationPrefix("HOUSE OF PROTECTION")                        // "HOUSE OF PROTECTION"
+ * ```
+ */
+fun stripRelocationPrefix(title: String): String {
+    val stripped = title.replaceFirst(RELOCATION_PREFIX_PATTERN, "").trim()
+    return stripped.ifBlank { title.trim() }
+}
+
+/**
  * Trailing noise venues append to an *event title* that must not become part of the stored
  * title (nor of a title-derived headliner artist):
  * - a "Nachholtermin vom <date>" reschedule note or a "Hochverlegung" relocation note,

@@ -497,6 +497,30 @@ enum class EventSource {
     MAXXIM,
 
     /**
+     * Metropol Berlin – the Nollendorfplatz concert hall, on WordPress with the same
+     * Events-Manager plugin as [MIKROPOL] (and the same `/event/<iso-date-slug>` URL shape, so the
+     * date is read from the slug rather than the German rendering). Its whole programme sits
+     * unpaginated on `/events` as `li.event` rows: a `.date` block (`04/` + `Aug. 2026` + a
+     * `HH:mm` start with an `Einlass: HH:mm` doors time in a nested `<small>`), a category link
+     * (`Konzert` / `Party`), an `h2.artist` title with the support acts in a `small.support`
+     * child, and a link to the detail page. The detail page adds the promoter
+     * (`… presents:`), a `.tour` subtitle, the poster, the prose description and the Eventim
+     * ticket link, and re-states the times unambiguously as `Einlass: 19:00 // Beginn: 20:00`.
+     *
+     * Three quirks drive the parser. The venue **transposes the two time labels** on some shows
+     * (`Einlass: 20:00 // Beginn: 19:00`), which the shared `orderDoorsBeforeStart` guard
+     * recovers, and writes an unset start as `0:00`, which is dropped rather than stored as
+     * midnight. A **cancellation** is the `.attention` / `.alert-red` badge, while a show that
+     * moved **out of** the house keeps its listing with a `"Verlegt ins <venue> –"` title prefix
+     * (stripped by `stripRelocationPrefix`, status `RELOCATED`) — the adjacent
+     * `.changes` / `.alert-blue` prose is deliberately *not* read as a status, because a show
+     * moved **into** Metropol carries the same "verlegt" wording and does take place here. The
+     * site publishes **no prices and no sold-out state** at all; tickets are sold off-site on
+     * Eventim.
+     */
+    METROPOL,
+
+    /**
      * Mikropol Berlin – WordPress/Events-Manager club in Schöneberg; the `/events/` page lists every show as
      * an `a.event` card (a `DD.MM.YYYY` date, start/doors times, title, an inline support line, and an
      * `Ausverkauft`/`Abgesagt` status class), each linking to an `/event/<date-slug>/` detail page that adds

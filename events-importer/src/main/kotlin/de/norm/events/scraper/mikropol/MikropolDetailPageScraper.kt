@@ -1,6 +1,7 @@
 package de.norm.events.scraper.mikropol
 
 import de.norm.events.scraper.EventSource
+import de.norm.events.scraper.ISO_DATE_LENGTH
 import de.norm.events.scraper.ScrapedEvent
 import de.norm.events.scraper.UNRESOLVED_EVENT_DATE
 import de.norm.events.scraper.buildArtistsForEventType
@@ -12,6 +13,7 @@ import de.norm.events.scraper.parseEventStatus
 import de.norm.events.scraper.parseGermanDate
 import de.norm.events.scraper.parseIsoDate
 import de.norm.events.scraper.parseTime
+import de.norm.events.scraper.stripRelocationPrefix
 import de.norm.events.scraper.textAt
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jsoup.nodes.Document
