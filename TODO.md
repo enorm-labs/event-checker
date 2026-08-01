@@ -96,6 +96,12 @@ Strategy & sequencing: [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEG
   this (Disney On Ice plays three sessions on one day, Berlin Tattoo two), and its importer works around it by collapsing same-day sessions to the earliest;
   Bar jeder Vernunft and Heimathafen sidestep it because their `sourceId`s carry a time. Fix at the boundary — include the start time in the event slug when
   one is known — rather than per importer.
+- [ ] **Resolve a venue per event, so promoter sources become importable.** An event's venue comes from its `event_source` row
+  (`EventUpsertService.upsertAndCleanup(events, venueId, …)`), one venue for the whole source — so a promoter that books across houses cannot be imported at
+  all. Puschen, Trinity Music and Landstreicher Booking are deferred on exactly this (see EVENT_DATA_SOURCES.md § Blocked); their listings are clean and name
+  the venue per event. Needs a venue resolved per event (matched by name against existing venues, auto-created otherwise) **and** de-duplication against the
+  venue-level sources — ~30 of Puschen's 35 shows are at venues already imported. ADR-sized; also the general answer to a show that moves between houses
+  (Huxleys' relocations).
 - [ ] Enrich venues: type (club/bar/concert hall), description, image/photo, genres, event types
 - [ ] Enrich promoters: description, image, and corrected display names
 - [ ] Check & fix venue districts, addresses, and geo-coordinates
