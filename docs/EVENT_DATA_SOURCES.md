@@ -7,8 +7,8 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 
 | Status                              | Meaning                                                                              | Count |
 |-------------------------------------|--------------------------------------------------------------------------------------|------:|
-| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    57 |
-| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |    14 |
+| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    58 |
+| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |    13 |
 | ⛔ [Blocked](#-blocked--deferred)   | Website analyzed, but no usable listings (no programme page, JS-only, or too sparse) |    35 |
 | ❓ [Unanalyzed](#-not-analyzed-yet) | No URL recorded yet — website still needs a first look                               |     0 |
 
@@ -60,6 +60,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Monarch                     | https://www.kottimonarch.de/                                | Bar          | PHP /programm.php; type + status inline in title   |
 | MS Hoppetosse               | https://hoppetosse.berlin/                                  | Techno Club  | Shares the CdV listing; winter location only       |
 | Neue Zukunft                | https://neue-zukunft.org/                                   | Club         | Elfsight Event Calendar widget API                 |
+| OHM                         | https://ohmberlin.com/                                      | Techno Club  | Year-less dd/MM; only 1–3 nights listed at a time  |
 | Privatclub                  | https://privatclub-berlin.de/                               | Club         | Rich detail pages; genre, presale + AK prices      |
 | Renate                      | https://www.renate.cc/                                      | Techno Club  | Homepage programme; per-floor lineups, no times    |
 | Roadrunner's Paradise       | http://www.roadrunners-paradise.de/                         | Bar          | Retro HTML; rich data; year missing on some dates  |
@@ -76,7 +77,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Wild at Heart               | https://www.wildatheartberlin.de/                           | Bar          | Retro frameset; concerts.php; year from weekday    |
 | Zenner                      | https://zenner.berlin/programm                              | Club         | Gatsby/Sanity page-data JSON; UTC dates; archive   |
 
-56 importer classes cover 57 sources (Kantine am Berghain shares the Berghain importer; Club der Visionäre, Sonnenraum and MS Hoppetosse are three thin
+57 importer classes cover 58 sources (Kantine am Berghain shares the Berghain importer; Club der Visionäre, Sonnenraum and MS Hoppetosse are three thin
 importers over one shared listing and parser).
 
 ## 🔨 Ready to implement
@@ -85,7 +86,6 @@ Analyzed and scrapable — the candidates for the next `/scaffold-importer` runs
 
 | Priority | Name                 | URL                                      | Type         | Why / what it needs                                        |
 |:--------:|----------------------|------------------------------------------|--------------|------------------------------------------------------------|
-|  Medium  | OHM                  | https://ohmberlin.com/                   | Techno Club  | dd/MM + time + lineup; year missing, derive from weekday   |
 |  Medium  | Parkbühne Wuhlheide  | https://www.wuhlheide.de/programm        | Open Air     | Seasonal; ISO dates and "Ausverkauft", but no times        |
 |  Medium  | Quasimodo            | https://quasimodo.club/                  | Club         | Programme is on `.club`; `.de` is a splash page            |
 |  Medium  | Ritter Butzke        | https://club.ritterbutzke.com/           | Techno Club  | `/event/DDMMYY-Slug` links — same shape as Modus Berlin    |

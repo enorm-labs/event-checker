@@ -55,6 +55,7 @@
 ###   Monarch              — https://kottimonarch.de/programm.php (retro PHP single-page listing)
 ###   MS Hoppetosse        — https://hoppetosse.berlin/program/ (shares the CLUB_DER_VISIONAERE listing; winter location)
 ###   Neue Zukunft         — https://neue-zukunft.org/ (Elfsight Event Calendar widget JSON API)
+###   OHM                  — https://ohmberlin.com/ (hand-themed WordPress; year-less dates, 1-3 nights)
 ###   Privatclub           — https://privatclub-berlin.de/
 ###   Renate               — https://www.renate.cc/ (WordPress; homepage programme, per-floor lineups)
 ###   Roadrunner's Paradise — http://www.roadrunners-paradise.de/programm.html
@@ -2843,6 +2844,65 @@ Accept: application/json
 
 > {%
     client.test("Neue Zukunft import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### OHM (Köpenicker Str. 70, Berlin-Mitte — im Tresor-Kraftwerk)
+### ————————————————————————————————————————————————————————————
+
+### --- Create OHM venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "OHM",
+    "address": "Köpenicker Str. 70",
+    "city": "Berlin",
+    "postalCode": "10179",
+    "district": "mitte",
+    "websiteUrl": "https://ohmberlin.com",
+    "description": "A small bass and techno club in the Tresor power-station complex, programming a short rolling window of DJ nights."
+}
+
+> {%
+    client.global.set("ohm_venue_id", response.body.id);
+    client.test("OHM venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create OHM event source ---
+# Links the venue to the OhmWebsiteImporter.
+# The sourceType "OHM" matches EventSource.OHM.
+# NOTE: the venue publishes only 1-3 upcoming nights and renders dates without a year, so a low
+# event count is expected here. The linked /archives page holds only past events and is not crawled.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{ohm_venue_id}},
+    "name": "OHM",
+    "url": "https://ohmberlin.com/",
+    "sourceType": "OHM",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("OHM event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial OHM import ---
+POST {{importer-host}}/api/admin/event-sources/ohm/import
+Accept: application/json
+
+> {%
+    client.test("OHM import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}

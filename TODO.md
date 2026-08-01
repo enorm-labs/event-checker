@@ -63,6 +63,16 @@ Rough priority: **Now** → **Next** → grouped backlog → **Someday / Vision*
 - Known per-importer gaps & missing-data limitations are catalogued in
   [docs/IMPORTER_KNOWN_ISSUES.md](docs/IMPORTER_KNOWN_ISSUES.md) — pull from there when picking up work.
 
+- [ ] **A late-night club event is dropped at midnight while it is still running.** `EventUpsertService.dropPastEvents` compares dates only, so a night the venue
+  lists as `31/07 23:00` — which actually runs until ~06:00 the next morning — disappears from the app at 00:00, hours before it ends. It hits every late-opening
+  club (OHM, Berghain, Tresor, Renate, …), and OHM feels it hardest because its whole horizon is one to three nights. Needs a cutoff that accounts for the start
+  time (e.g. keep an event until `eventDate + 1 day 06:00` when it starts after ~22:00) rather than a per-importer workaround.
+- [ ] **DJ lineup entries keep their performance-format suffix.** `C3D-E (live)` and `Avangelic (DJ-Set)` are stored verbatim from a lineup list, so they resolve
+  to different artist rows than the plain name. `stripArtistSuffix` already handles exactly this tail but is only applied to headliners derived from a *title*
+  ([`headlinersFromTitle`](events-importer/src/main/kotlin/de/norm/events/scraper/ArtistNameMapping.kt)), never to lineups — consistently across AMT, ÆDEN,
+  Renate, Duncker and OHM. Applying it to lineups too is a one-line change per scraper but a cross-cutting data change: it needs a full re-seed and a decision on
+  whether the "(live)" distinction is worth preserving elsewhere first (the model has no `LIVE` `ArtistRole`).
+
 **Data quality — normalize, validate, enrich:**
 
 Strategy & sequencing: [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEGY.md)
