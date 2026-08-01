@@ -324,6 +324,32 @@ enum class EventSource {
      */
     JUNCTION_BAR,
 
+    /**
+     * Kater Berlin – the Holzmarkt techno club (formerly Kater Blau), on WordPress with an `event`
+     * post type whose REST route *is* public but returns no usable data: ACF is not exposed to REST,
+     * so `acf` comes back empty and only id, title and permalink survive. The `/event/<slug>` pages
+     * are likewise near-empty (a heading and nothing else). The **homepage** carries the entire
+     * programme inline instead, so it is the single source.
+     *
+     * Each night is an `article.event[id=event-<postId>]` — the WordPress post id, and the event's
+     * stable identity, since nothing else about a night is fixed. Its header holds a `.date-header`
+     * day and a `.date-title` name; its `.entry-summary` opens with a
+     * `Wd. DD.MM HH:mm — Wd. DD.MM HH:mm` span (start and *end*, the latter usually the following
+     * morning), then an optional Resident Advisor `a.rsvp` ticket link, then free prose.
+     *
+     * That prose is only sometimes a lineup, and the venue marks which: a `____________` rule
+     * introduces a **floor** (`HOPPER`, `ACID BOGEN`, `EXTRA`, sometimes suffixed `by <presenter>`),
+     * and the lines beneath it are that floor's DJs — mapped onto
+     * [ScrapedArtist.stage][de.norm.events.scraper.ScrapedArtist.stage]. Roughly ten of twenty-six
+     * nights are structured that way; the rest are descriptions (a garden evening, a film night, a
+     * residency's schedule notes), and no artists are derived from them rather than minting prose
+     * lines like "free entry till 20:00" as acts.
+     *
+     * Dates carry a weekday but **no year**, so the year comes from [inferYearForWeekday]. The venue
+     * publishes no prices, no images anywhere, and no per-event page worth fetching.
+     */
+    KATER,
+
     /** Lido Berlin – same Kulturhäuser platform as Astra (different theme), homepage listing with detail pages. */
     LIDO,
 

@@ -36,6 +36,7 @@
 ###   Huxleys Neue Welt    — https://huxleysneuewelt.de/events (WordPress/Events-Manager; list + detail, ISO slug date)
 ###   Junction Bar         — https://www.junction-bar.de/ (live music + DJ programs)
 ###   Kantine am Berghain  — https://www.berghain.berlin/de/program/kantine-am-berghain/ (shares BERGHAIN importer)
+###   Kater                — https://www.katerclub.de/ (WordPress; homepage programme, ___ floor rules)
 ###   Lido                 — https://www.lido-berlin.de/
 ###   Loge                 — https://www.loge-berlin.org/event-list (Wix Events warmup JSON + JSON-LD price)
 ###   Madame Claude        — https://madameclaude.de/ (WordPress `event` REST API, ACF-backed)
@@ -1654,6 +1655,68 @@ Accept: application/json
 
 > {%
     client.test("Kantine am Berghain import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Kater (Holzmarktstr. 25, Berlin-Friedrichshain — on the Spree at Holzmarkt)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Kater venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Kater",
+    "address": "Holzmarktstr. 25",
+    "city": "Berlin",
+    "postalCode": "10243",
+    "district": "friedrichshain-kreuzberg",
+    "latitude": 52.51139,
+    "longitude": 13.42528,
+    "websiteUrl": "https://www.katerclub.de",
+    "description": "A techno club and garden on the Spree at Holzmarkt, formerly Kater Blau, with several floors and long weekend-spanning parties."
+}
+
+> {%
+    client.global.set("kater_venue_id", response.body.id);
+    client.test("Kater venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Kater event source ---
+# Links the venue to the KaterWebsiteImporter.
+# The sourceType "KATER" matches EventSource.KATER.
+# NOTE: the URL is the homepage `/` — it carries the whole programme inline. The `event` REST route
+# is public but useless (ACF is not exposed, so `acf` comes back empty) and the `/event/<slug>`
+# pages render only a heading, so neither is fetched.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{kater_venue_id}},
+    "name": "Kater",
+    "url": "https://www.katerclub.de/",
+    "sourceType": "KATER",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Kater event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Kater import ---
+POST {{importer-host}}/api/admin/event-sources/kater/import
+Accept: application/json
+
+> {%
+    client.test("Kater import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}

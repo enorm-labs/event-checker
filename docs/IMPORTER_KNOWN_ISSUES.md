@@ -454,6 +454,33 @@ event has a date, a start time *and* a doors time; 106 have an image and an arti
 - 🟢 **`Corrupted Blood Club Show` is typed `PARTY` and loses its headliner.** The shared title classifier treats `club` as a party keyword, so this one show
   (of 107) is mistyped and, being a party, has no artist derived from its title. The cross-cutting reactive-keyword limitation, not specific to this venue.
 
+### Kater (`scraper/kater/`) — WordPress, single page
+
+Verified against a live import (August 2026): 26 upcoming events, dates 2026-08-01 → 2026-11-20, none in the past. Every event has a date and a start time; the
+ten structured club nights carry a full per-floor lineup.
+
+- 🔴 **No prices and no images — for any event.** The homepage carries neither, the `/event/<slug>` pages render only a heading, and the REST route returns an
+  empty `acf` object, so there is nowhere else to look. Ticket links (Resident Advisor) are present for 19 of 26 events and are the only route to a price.
+- 🟠 **Artists are extracted only from a marked lineup.** The venue draws a `____________` rule above each floor name, and only lines beneath such a rule are
+  read as acts — ten of twenty-six nights. The remaining sixteen summaries are prose (a garden evening's blurb, a film synopsis, a residency's "every tuesday *
+  18:00 – 01:00 *" schedule notes) and yield **no** artists at all. That is deliberate: without the rule there is no structural signal separating a DJ name
+  from a schedule note, and reading every line would mint "free entry till 20:00" and a film plot as performers. The cost is that a genuinely billed act
+  mentioned only in prose (e.g. the garden evenings' "with Nat Gohl") is missed.
+- 🟠 **`Nomadenkino` is typed `PARTY`.** The venue emits no category, so every night defaults to a party unless a title keyword says otherwise — and the shared
+  screening keyword is word-anchored (`\bkino\b`), which a German compound like *Nomadenkino* does not match. The anchor is deliberate (it protects real act
+  names such as "Alkinoos Ioannidis"), so this monthly film night stays mistyped rather than loosening it.
+- 🟢 **Only the start of the opening time span is stored.** Summaries read `Sa. 01.08 22:00 — So. 02.08 10:00`; the model has no end-time field, so the closing
+  half — usually the following morning, and for the long weekend parties two days later — is dropped.
+- 🟢 **The `by <presenter>` tail is stripped from a floor name.** `ACID BOGEN by GOOEY` and plain `ACID BOGEN` are the same floor on different nights, so the
+  tail is removed to make `stage` group across the programme; which collective curated that floor is consequently not stored.
+- 🟢 **A parenthesised act is never split.** `Double Penetration (FLOWWW b2b Joe Cleen)` is one billing whose brackets hold its members, so a line containing
+  `(` is left whole while an unbracketed `X b2b Y` splits into two DJs — the reverse order to Club der Visionäre's split, which would break this name.
+- 🟢 **Free entry is read from the blurb, and only when unqualified.** A summary saying "Free entry summer evenings" marks the event free; the Tuesday
+  residency's "free entry till 20:00" deliberately does **not**, since entry is free for two hours rather than all night. The shared
+  [detectFree][de.norm.events.scraper.detectFree] is not used here because its bare `free` token would trip on any mention of free drinks.
+- 🟢 **Dates carry no year.** Every date is a `DD.MM` with a weekday, so the year comes from [inferYearForWeekday]; the programme currently spans August to
+  November without printing a year anywhere.
+
 ---
 
 ## How to extend this doc
