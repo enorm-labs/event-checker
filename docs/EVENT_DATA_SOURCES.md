@@ -7,8 +7,8 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 
 | Status                              | Meaning                                                                              | Count |
 |-------------------------------------|--------------------------------------------------------------------------------------|------:|
-| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    54 |
-| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |    17 |
+| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    55 |
+| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |    16 |
 | ⛔ [Blocked](#-blocked--deferred)   | Website analyzed, but no usable listings (no programme page, JS-only, or too sparse) |    35 |
 | ❓ [Unanalyzed](#-not-analyzed-yet) | No URL recorded yet — website still needs a first look                               |     0 |
 
@@ -53,6 +53,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Madame Claude               | https://madameclaude.de/                                    | Bar          | WordPress `event` REST API (ACF)                   |
 | Matrix Club Berlin          | https://www.matrix-berlin.de/                               | Club         | WordPress; month pages walked; DJs + door prices   |
 | Max-Schmeling-Halle         | https://www.velomax.de/events                               | Arena        | Shared VELOMAX listing; no sport imported          |
+| Maxxim Club                 | https://www.maxxim-berlin.de/partys                         | Club         | Wix Events warmup JSON; UTC dates; prices inline   |
 | Mikropol                    | https://mikropol-berlin.de/                                 | Club         | Events-Manager list + detail; "verlegt in den …"   |
 | Monarch                     | https://www.kottimonarch.de/                                | Bar          | PHP /programm.php; type + status inline in title   |
 | MS Hoppetosse               | https://hoppetosse.berlin/                                  | Techno Club  | Shares the CdV listing; winter location only       |
@@ -73,7 +74,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Wild at Heart               | https://www.wildatheartberlin.de/                           | Bar          | Retro frameset; concerts.php; year from weekday    |
 | Zenner                      | https://zenner.berlin/programm                              | Club         | Gatsby/Sanity page-data JSON; UTC dates; archive   |
 
-51 importer classes cover 54 sources (Kantine am Berghain shares the Berghain importer; Club der Visionäre, Sonnenraum and MS Hoppetosse are three thin
+54 importer classes cover 55 sources (Kantine am Berghain shares the Berghain importer; Club der Visionäre, Sonnenraum and MS Hoppetosse are three thin
 importers over one shared listing and parser).
 
 ## 🔨 Ready to implement
@@ -82,7 +83,6 @@ Analyzed and scrapable — the candidates for the next `/scaffold-importer` runs
 
 | Priority | Name                 | URL                                      | Type         | Why / what it needs                                        |
 |:--------:|----------------------|------------------------------------------|--------------|------------------------------------------------------------|
-|  Medium  | Maxxim Club          | https://www.maxxim-berlin.de/            | Club         | Wix; `Event` JSON-LD plus a German-date programme list     |
 |  Medium  | Metropol             | https://metropol-berlin.de/              | Concert Hall | One-pager; type + date + time, "VERLEGT"; no prices        |
 |  Medium  | Modus Berlin         | https://modus-berlin.de/events           | Club         | Plain list + detail pages; the slug carries the date       |
 |  Medium  | OHM                  | https://ohmberlin.com/                   | Techno Club  | dd/MM + time + lineup; year missing, derive from weekday   |

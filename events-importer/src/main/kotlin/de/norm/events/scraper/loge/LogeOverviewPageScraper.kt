@@ -5,8 +5,11 @@ import de.norm.events.scraper.EventSource
 import de.norm.events.scraper.ScrapedArtist
 import de.norm.events.scraper.ScrapedEvent
 import de.norm.events.scraper.UNRESOLVED_EVENT_DATE
+import de.norm.events.scraper.WixEventsWarmupData
 import de.norm.events.scraper.buildArtistList
+import de.norm.events.scraper.parseWixSchedule
 import de.norm.events.scraper.resolveUrl
+import de.norm.events.scraper.stringOrNull
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jsoup.nodes.Document
 import tools.jackson.databind.JsonNode
@@ -15,7 +18,7 @@ import tools.jackson.databind.JsonNode
  * Pure parser for Loge's Wix Events listing (`/event-list`) page.
  *
  * Reads every event from the embedded `wix-warmup-data` JSON (see
- * [LogeWixWarmupData]). This overview payload serves two purposes:
+ * [WixEventsWarmupData]). This overview payload serves two purposes:
  * 1. **Discovery** — each entry's `slug` yields the `/event-details/<slug>`
  *    detail URL (and the stable `sourceId`) that
  *    [LogeWebsiteImporter] fetches for the ticket price.
@@ -47,7 +50,7 @@ class LogeOverviewPageScraper {
         document: Document,
         baseUrl: String
     ): List<ScrapedEvent> {
-        val events = LogeWixWarmupData.events(document)
+        val events = WixEventsWarmupData.events(document, EventSource.LOGE)
         if (events == null) {
             return emptyList()
         }
@@ -80,7 +83,7 @@ class LogeOverviewPageScraper {
             return null
         }
 
-        val (eventDate, startTime) = parseLogeSchedule(node.path("scheduling").path("config"))
+        val (eventDate, startTime) = parseWixSchedule(node.path("scheduling").path("config"))
         return ScrapedEvent(
             title = title,
             // Loge is a live-music venue with no category field; default to CONCERT so events aren't

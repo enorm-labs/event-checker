@@ -1,6 +1,5 @@
-package de.norm.events.scraper.loge
+package de.norm.events.scraper
 
-import de.norm.events.scraper.loge.LogeWixWarmupData.WIX_EVENTS_APP_DEF_ID
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jsoup.nodes.Document
 import tools.jackson.databind.JsonNode
@@ -11,24 +10,26 @@ import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeParseException
 
+// Shared reader for the Wix Events payload that Wix server-side-injects into every page
+// hosting a Wix Events widget (currently Loge's /event-list and Maxxim's /partys). Although
+// the widget renders client-side, the full event data is emitted as strict JSON in a
+// `<script type="application/json" id="wix-warmup-data">` block — a stable, machine-readable
+// source (ADR-007 §"Prefer a JSON / API Source") that survives visual redesigns and carries
+// clean ISO timestamps rather than the German date text ("17. Juli 2026") in the rendered cards.
+// Venue-specific field mapping stays in each venue's scraper; only the payload location and
+// the two field readers every Wix venue needs live here.
+
 /**
- * Extracts the Wix Events data payload embedded in Loge's `/event-list` page.
+ * Locates the Wix Events data payload inside a page's `wix-warmup-data` block.
  *
- * Loge runs on Wix with a Wix Events widget. Although the widget renders
- * client-side, Wix server-side-injects the full event data as strict JSON in a
- * `<script type="application/json" id="wix-warmup-data">` block — a stable,
- * machine-readable source (ADR-007 §"Prefer a JSON / API Source") that survives
- * visual redesigns and carries clean ISO timestamps rather than the German
- * date text (`17. Juli 2026`) shown in the rendered cards.
- *
- * The events live at
- * `appsWarmupData → <Wix Events appDefId> → <widget key> → events.events`. The
- * app-definition id [WIX_EVENTS_APP_DEF_ID] is a global Wix constant (identical
- * across every Wix site), while the widget key (`widgetTPASection_…`) is
- * per-page, so the widget node is located by looking for the child that actually
- * carries an `events.events` array rather than hard-coding the key.
+ * The events live at `appsWarmupData → <Wix Events appDefId> → <widget key> →
+ * events.events`. The app-definition id [WIX_EVENTS_APP_DEF_ID] is a global Wix
+ * constant (identical across every Wix site), while the widget key
+ * (`widgetTPASection_…`, `widgetcomp-…`) is per-page, so the widget node is
+ * located by looking for the child that actually carries an `events.events`
+ * array rather than hard-coding the key.
  */
-internal object LogeWixWarmupData {
+internal object WixEventsWarmupData {
     private val logger = KotlinLogging.logger {}
 
     /** The Wix Events app definition id — a global Wix constant shared by every Wix site. */
@@ -44,35 +45,39 @@ internal object LogeWixWarmupData {
      * `null` when the warmup script is absent, unparseable, or carries no Wix
      * Events widget (e.g. an empty program).
      *
-     * @param document the parsed Jsoup document of the `/event-list` overview page.
+     * @param document the parsed Jsoup document of the venue's listing page.
+     * @param source the venue whose page is being read, used only for log context.
      */
     @Suppress(
         "TooGenericExceptionCaught", // A malformed/absent payload must degrade to null, never abort the import
         "ReturnCount" // Sequential null-guards for each extraction step are clearer than nesting
     )
-    fun events(document: Document): JsonNode? {
+    fun events(
+        document: Document,
+        source: EventSource
+    ): JsonNode? {
         val script = document.getElementById(WARMUP_SCRIPT_ID)
         if (script == null) {
-            logger.warn { "No '$WARMUP_SCRIPT_ID' script found on Loge overview page" }
+            logger.warn { "No '$WARMUP_SCRIPT_ID' script found on $source overview page" }
             return null
         }
         val root =
             try {
                 jsonMapper.readTree(script.data())
             } catch (e: Exception) {
-                logger.warn(e) { "Failed to parse Loge wix-warmup-data JSON" }
+                logger.warn(e) { "Failed to parse $source wix-warmup-data JSON" }
                 return null
             }
         val appNode = root.path("appsWarmupData").path(WIX_EVENTS_APP_DEF_ID)
         if (!appNode.isObject) {
-            logger.warn { "No Wix Events app data in Loge warmup payload" }
+            logger.warn { "No Wix Events app data in $source warmup payload" }
             return null
         }
         // The widget key (widgetTPASection_…) is per-page, so find the child that carries the events
         // array. Iterating a JsonNode object yields its property values (same as an array yields elements).
         val events = appNode.firstNotNullOfOrNull { widget -> widget.path("events").path("events").takeIf { it.isArray } }
         if (events == null) {
-            logger.warn { "No events array in Loge Wix Events warmup payload" }
+            logger.warn { "No events array in $source Wix Events warmup payload" }
         }
         return events
     }
@@ -97,7 +102,7 @@ internal fun JsonNode.stringOrNull(field: String): String? {
  * for a missing/unparseable `startDate` or a to-be-decided (`scheduleTbd`) event.
  */
 @Suppress("ReturnCount") // Guard clauses for the missing/unparseable startDate are clearer than nesting
-internal fun parseLogeSchedule(config: JsonNode): Pair<LocalDate?, LocalTime?> {
+internal fun parseWixSchedule(config: JsonNode): Pair<LocalDate?, LocalTime?> {
     val startDate = config.stringOrNull("startDate") ?: return null to null
     val instant =
         try {
@@ -113,5 +118,5 @@ internal fun parseLogeSchedule(config: JsonNode): Pair<LocalDate?, LocalTime?> {
     return zoned.toLocalDate() to zoned.toLocalTime()
 }
 
-/** Default zone for Loge schedules missing a usable `timeZoneId` — every scraped venue is in Berlin. */
+/** Default zone for Wix schedules missing a usable `timeZoneId` — every scraped venue is in Berlin. */
 private val FALLBACK_ZONE: ZoneId = ZoneId.of("Europe/Berlin")

@@ -666,6 +666,25 @@ and a headliner. The 20 titles and dates match the venue's rendered `/events/` l
 - 🟢 **The programme is short and can have gaps.** At capture the venue listed 20 shows but nothing at all between 1 August and 8 October, so a low event count
   is not on its own evidence of a broken importer — the fixture test is what distinguishes the two.
 
+### MAXXIM (`scraper/maxxim/`) — Wix Events warmup JSON, single page
+
+Verified against a live import (1 August 2026): 18 events stored, 2026-08-01 → 2026-08-18, none in the past, every one with a start time, a poster, a description
+and a price. All 18 dates and start times match the venue's own rendered strings in the same payload (`1. August 2026`, `22:00`) exactly.
+
+- 🟠 **Only the upcoming ~2.5 weeks are imported.** The Wix Events widget serves a first page and reports `hasMore: true`; loading the rest needs the authenticated
+  widget API (the `_api/wix-one-events-server/…` paths 404 for an anonymous client), so the import stops at whatever the page ships — 18 nights at capture. The
+  site's `event-pages-sitemap.xml` lists 1762 event pages, but those are overwhelmingly the archive, so it is deliberately not crawled as a workaround. This is
+  the cross-cutting first-page-only limitation recorded at the top of this file.
+- 🟢 **No doors time, genre, ticket URL or lineup — the venue publishes none of them.** The payload carries one time per night (stored as `start_time`), no
+  category and no genre field, and tickets are sold on the Wix event page itself rather than an external shop, so `ticket_url` stays empty and `source_url`
+  already points at the checkout. A live guest is named only inside the free-text title (`Queens Night - SHERY M live`), which is too unreliable to split, so no
+  artists are derived.
+- 🟢 **Every night is typed `PARTY`.** MAXXIM is a club open nightly with a DJ programme and exposes no per-event category, so the type is set by the importer
+  rather than read from the source. Correct for the current programme; a one-off concert would be mistyped.
+- 🟢 **Cancellation, sold-out and tiered-price handling is fixture-only so far.** The live programme showed none of them at capture (`status: 0`, `soldOut:
+  false`, one price tier throughout), so the branches are covered by the hand-crafted `maxxim-overview-edge-cases.html` variant rather than by observed data. The
+  numeric `status` mapping follows Wix's documented enum (`3` = canceled); an unexpected value degrades to `SCHEDULED` rather than mislabelling a night.
+
 ---
 
 ## How to extend this doc
