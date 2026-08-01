@@ -61,6 +61,7 @@
 ###   Quasimodo            — https://quasimodo.club/events (Events-Manager; .club domain, not .de)
 ###   Renate               — https://www.renate.cc/ (WordPress; homepage programme, per-floor lineups)
 ###   Roadrunner's Paradise — http://www.roadrunners-paradise.de/programm.html
+###   Säälchen             — https://www.holzmarkt.com/kalender (Drupal; shared calendar, filtered by location)
 ###   Schokoladen          — https://www.schokoladen-mitte.de/
 ###   SO36                 — https://www.so36.com/tickets
 ###   Soda Club            — https://www.soda-berlin.de/events (disco2app CMS; list + detail with MusicEvent JSON-LD)
@@ -3210,6 +3211,67 @@ Accept: application/json
 
 > {%
     client.test("Roadrunner's Paradise import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Säälchen (Holzmarkt 25, Berlin-Friedrichshain)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Säälchen venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Säälchen",
+    "address": "Holzmarktstr. 25",
+    "city": "Berlin",
+    "postalCode": "10243",
+    "district": "friedrichshain-kreuzberg",
+    "latitude": 52.51157,
+    "longitude": 13.42479,
+    "websiteUrl": "https://www.holzmarkt.com",
+    "description": "The concert hall on the Holzmarkt riverside grounds, programming concerts and cultural events beside the Spree."
+}
+
+> {%
+    client.global.set("saalchen_venue_id", response.body.id);
+    client.test("Säälchen venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Säälchen event source ---
+# Links the venue to the SaalchenWebsiteImporter.
+# The sourceType "SAALCHEN" matches EventSource.SAALCHEN.
+# NOTE: /kalender is ONE calendar for the whole Holzmarkt site (Marktplatz and Holzmarkt 25 too);
+# the importer filters rows on the ".location" span, so the imported count is well below the page's.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{saalchen_venue_id}},
+    "name": "Säälchen",
+    "url": "https://www.holzmarkt.com/kalender",
+    "sourceType": "SAALCHEN",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Säälchen event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Säälchen import ---
+POST {{importer-host}}/api/admin/event-sources/saalchen/import
+Accept: application/json
+
+> {%
+    client.test("Säälchen import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}

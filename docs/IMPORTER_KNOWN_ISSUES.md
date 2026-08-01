@@ -793,6 +793,30 @@ split 16 `CONCERT` / 10 `PARTY`, matching the venue's own category tagging.
 - 🟢 **The presale price is a "from" figure.** The venue writes `ab 30€ (zzgl. Gebühr)`; the numeric field holds 30 and `priceNote` keeps the venue's own wording,
   so the "from" and the booking-fee caveat are not silently lost. A `Tageskasse` box-office price is published for some nights and stored separately.
 
+### Säälchen (`scraper/saalchen/`) — Drupal, one shared calendar filtered by location
+
+Verified against a live import (1 August 2026): 8 events stored, 2026-08-14 → 2026-11-27, none in the past, 0 suspicious rows, every one with a doors time, a
+start time, a poster, a ticket link, a genre and price information. Types split 6 `CONCERT` / 1 `FESTIVAL` / 1 `PARTY`.
+
+- 🟠 **The calendar is the whole Holzmarkt site's, not the venue's.** `/kalender` mixes Säälchen with the Marktplatz flea markets and the Holzmarkt 25 grounds
+  (8 of 13 rows were Säälchen at capture), so rows are filtered on the `.location` span. A rename of that label upstream would silently empty the import — the
+  fixture test asserts the filter on a snapshot that still contains the other locations, so a rename fails the build rather than passing quietly.
+- 🟠 **No descriptions at all.** The AddToCalendar payload is metadata-only for every Säälchen event; the venue writes prose for its Holzmarkt 25 market rows but
+  not for this room, so `description` is empty for all 8.
+- 🟠 **The `.doors` CMS field is unreliable and only a fallback.** The editors fill that single time field inconsistently — it holds the *Einlass* on
+  `Opening Party` (18:00) but the *Beginn* on `Voodoo Jürgens` (20:00, against a 19:00 Einlass) — so the explicitly labelled `Einlass:` / `Beginn:` lines in the
+  notice prose are authoritative. An event whose notice omits a label falls back to that ambiguous span.
+- 🟠 **The price line is free-form, and a tiered price stores no number.** `Eintritt:` is hand-typed: `17,00 €`, `€40 + fees`, a bare `30,00`, and a three-tier
+  `15€ ermäßigt … 25€ Normalpreis … 35€ Förderticket`. A number is stored **only when the line names exactly one amount** — taking the first of three would file
+  the concession price as the ticket price — so 2 of 8 events keep only the verbatim `priceNote`.
+- 🟢 **Two concert titles are event names rather than acts.** `Stegreif Orchester – freeEroica #1` and `#2` store the whole title as the artist (the act is
+  Stegreif Orchester), and `10 Jahre "The Big Brassers" – Jubiläumskonzert & Party` now stores **no** artist: the co-bill splitter cut it into `Jubiläumskonzert`
+  and `Party`, both of which were added to the shared `NON_ARTIST_NAMES` denylist, and the real act sits inside quotes where the splitter does not reach. No
+  artist is better than a wrong one; this is the cross-cutting reactive-denylist limitation recorded at the top of this file.
+- 🟢 **The date comes from the AddToCalendar UTC timestamp.** `atc_date_start` is emitted in UTC (`atc_timezone` says so), so a 20:00 Berlin night reads
+  `19:00:00` in winter and `18:00:00` in summer; it is converted to `Europe/Berlin`. The venue's own `Datum:` line is deliberately not read — one event writes it
+  in English (`October 5, 2026`).
+
 ---
 
 ## How to extend this doc
