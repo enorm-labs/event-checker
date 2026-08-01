@@ -373,6 +373,29 @@ every event has a date, **both** doors and start times, an image and a promoter;
 - 🟢 **Conditional requests never fire.** The server sends neither ETag nor Last-Modified (its Contao page cache answers with `contao-cache: fresh` and an
   `age` header instead), so every run is a full fetch — of exactly one page, which is cheap.
 
+### Golden Gate (`scraper/goldengate/`) — WordPress / Elementor, single page
+
+Verified against a live import (August 2026): the homepage announced three nights, of which **one** was still upcoming and stored. Everything the venue does
+publish is captured — date, start time, night name and full DJ roster — but that is nearly all it publishes.
+
+- 🔴 **Only the current Thursday–Saturday block is announced — at most three nights, often one.** The venue keeps no forward calendar: the homepage carries
+  exactly the current week's Thu/Fri/Sat and nothing beyond. Past nights stay up until the block rolls over and are dropped at persistence time
+  (`EventUpsertService`), so an import late in the week legitimately stores a single event, and a run after the weekend before the page is updated can store
+  none. Zero events is therefore **not** proof of a broken selector here — the fixture test is what distinguishes the two.
+- 🟠 **No prices, tickets, genre, description or images — for any night.** The venue sells at the door only (the page says so once, as a standalone
+  page-level heading rather than per event, so it is not stored as a `priceNote`), links no ticket shop, and publishes no per-event page. The single image in
+  each night's container is a decorative flame divider shared by all three, so no `imageUrl` is taken rather than storing the same GIF on every event.
+- 🟠 **Every night is typed `PARTY`.** Golden Gate is a techno club whose whole programme is DJ nights and which emits no category at all, so the type is
+  fixed like ÆDEN's and AMT's rather than inferred from the night's name (`Klubnacht`, `Donnerdogge` — none of which is an artist).
+- 🟢 **The parser anchors on heading *content*, because Elementor leaves nothing else.** Every element is named with a per-element hash
+  (`elementor-element-7b3297a`) that changes whenever the page is edited, and the theme adds no venue-semantic classes — so a night is recognised by its
+  heading matching the German date pattern, with the next two headings taken as its title and lineup. A restyle that changes the *date wording* (not just the
+  markup) would empty the source; a restyle that only re-hashes the elements will not.
+- 🟢 **`sourceId` is date + slugified title, not a URL.** The venue publishes no per-event page, so a night renamed on the same date imports as a new event and
+  the old row is removed by the stale-event cleanup (it falls inside the scraped date range). Two nights sharing a title on different dates stay distinct.
+- 🟢 **A back-to-back billing is split into two DJs.** `Nyna Curtis & Kisling` becomes two artists — the same accepted trade-off as Club der Visionäre, since
+  nothing in the markup distinguishes a b2b pair from a duo whose name contains an `&`.
+
 ---
 
 ## How to extend this doc
