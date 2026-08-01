@@ -28,6 +28,7 @@
 ###   Duncker Club         — https://www.dunckerclub.de/start.html
 ###   Festsaal Kreuzberg   — https://festsaal-kreuzberg.de/de/programm/ (Wagtail CMS JSON API)
 ###   Frannz Club          — https://frannz.eu/
+###   Golden Gate          — https://goldengate-berlin.de/ (WordPress/Elementor; current Thu–Sat block only)
 ###   Gretchen             — https://www.gretchen-club.de/
 ###   Havanna              — https://www.havanna-berlin.de/events (undated weekly nights, expanded to dated occurrences)
 ###   Hole 44              — https://hole-berlin.de/events/ (WordPress/Events-Manager, list + detail)
@@ -1157,6 +1158,69 @@ Accept: application/json
 
 > {%
     client.test("Frannz Club import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Golden Gate (Dircksenstr. 77-78, Berlin-Mitte — under the S-Bahn arches at Jannowitzbrücke)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Golden Gate venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Golden Gate",
+    "address": "Dircksenstr. 77-78",
+    "city": "Berlin",
+    "postalCode": "10179",
+    "district": "mitte",
+    "latitude": 52.51611,
+    "longitude": 13.41694,
+    "websiteUrl": "https://goldengate-berlin.de",
+    "description": "A small, long-running techno club in the S-Bahn arches at Jannowitzbrucke, open Thursday to Saturday with house and techno DJ nights and door-only entry."
+}
+
+> {%
+    client.global.set("golden_gate_venue_id", response.body.id);
+    client.test("Golden Gate venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Golden Gate event source ---
+# Links the venue to the GoldenGateWebsiteImporter.
+# The sourceType "GOLDEN_GATE" matches EventSource.GOLDEN_GATE.
+# NOTE: the URL is the homepage `/` — it announces only the current Thursday-Saturday block (three
+# nights at a time) as Elementor headings, with no per-event pages, prices, tickets or images.
+# Past nights stay on the page until it rolls over and are dropped at persistence time, so this
+# source legitimately imports as few as one event.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{golden_gate_venue_id}},
+    "name": "Golden Gate",
+    "url": "https://goldengate-berlin.de/",
+    "sourceType": "GOLDEN_GATE",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Golden Gate event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Golden Gate import ---
+POST {{importer-host}}/api/admin/event-sources/golden-gate/import
+Accept: application/json
+
+> {%
+    client.test("Golden Gate import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}

@@ -7,8 +7,8 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 
 | Status                              | Meaning                                                                              | Count |
 |-------------------------------------|--------------------------------------------------------------------------------------|------:|
-| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    41 |
-| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |    33 |
+| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    42 |
+| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |    32 |
 | ⛔ [Blocked](#-blocked--deferred)   | Website analyzed, but no usable listings (no programme page, JS-only, or too sparse) |    32 |
 | ❓ [Unanalyzed](#-not-analyzed-yet) | No URL recorded yet — website still needs a first look                               |     0 |
 
@@ -36,6 +36,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Duncker Club                | https://www.dunckerclub.de/                                 | Club         |                                                   |
 | Festsaal Kreuzberg          | https://festsaal-kreuzberg.de/de                            | Concert Hall | Nuxt/Wagtail SSR; `ld+json` empty; no prices      |
 | Frannz Club                 | https://frannz.eu/                                          | Club         |                                                   |
+| Golden Gate                 | https://goldengate-berlin.de/                               | Techno Club  | Elementor; current Thu–Sat block only; door-only  |
 | Gretchen                    | https://www.gretchen-club.de/                               | Club         |                                                   |
 | Havanna                     | https://www.havanna-berlin.de/                              | Club         | Undated weekly nights; occurrences derived        |
 | Hole 44                     | https://hole-berlin.de/                                     | Concert Hall | Events-Manager; "Abgesagt!" / "VERLEGT!" labels   |
@@ -60,7 +61,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Wild at Heart               | https://www.wildatheartberlin.de/                           | Bar          | Retro frameset; concerts.php; year from weekday   |
 | Zenner                      | https://zenner.berlin/programm                              | Club         | Gatsby/Sanity page-data JSON; UTC dates; archive  |
 
-40 importer classes cover 41 sources (Kantine am Berghain shares the Berghain importer; Club der Visionäre, Sonnenraum and MS Hoppetosse are
+41 importer classes cover 42 sources (Kantine am Berghain shares the Berghain importer; Club der Visionäre, Sonnenraum and MS Hoppetosse are
 three thin importers over one shared listing and parser).
 
 ## 🔨 Ready to implement
@@ -69,7 +70,6 @@ Analyzed and scrapable — the candidates for the next `/scaffold-importer` runs
 
 | Priority | Name                  | URL                                      | Type         | Why / what it needs                                        |
 |:--------:|-----------------------|------------------------------------------|--------------|------------------------------------------------------------|
-|   High   | Golden Gate           | https://goldengate-berlin.de/            | Techno Club  | WordPress; weekday + date + time, lineups, door-only       |
 |   High   | Heimathafen Neukölln  | https://heimathafen-neukoelln.de/        | Concert Hall | WordPress `events` REST API (ACF): dates, status, tickets  |
 |   High   | Huxleys Neue Welt     | https://huxleysneuewelt.de/events        | Concert Hall | WordPress; Einlass + Beginn, support acts, "Ausverkauft"   |
 |   High   | Kater                 | https://www.katerclub.de/                | Techno Club  | WordPress; start–end times, lineups, ticket links          |

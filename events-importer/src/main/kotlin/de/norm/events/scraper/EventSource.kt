@@ -215,6 +215,31 @@ enum class EventSource {
     /** Frannz Club Berlin – WordPress single-page homepage listing; events server-rendered with `event_typ-*` classes, no detail pages. */
     FRANNZ,
 
+    /**
+     * Golden Gate Berlin – the techno club under the S-Bahn arches at Jannowitzbrücke, on a WordPress
+     * site built with the Elementor page builder. Its homepage announces only the **current
+     * Thursday–Saturday block** — three nights at a time, each an Elementor container holding exactly
+     * three headings: a German date line (`Do. 30. Juli 2026 - 23:59`, weekday, full month, year and
+     * the door time), the night's name (`Klubnacht`, `Donnerdogge`), and the DJ roster
+     * `<br>`-separated. Nights that have passed stay on the page until the block rolls over, so an
+     * import late in the week legitimately yields as little as one event once
+     * [EventUpsertService][de.norm.events.scraper.EventUpsertService] has dropped the past-dated ones.
+     *
+     * Elementor names every element with a per-element hash (`elementor-element-7b3297a`) that changes
+     * whenever the page is edited, so there is nothing venue-semantic to anchor on. The parser
+     * therefore walks the `.elementor-heading-title` headings as one ordered stream and keys off
+     * **content**: a heading matching the date pattern opens a night, the next two are its title and
+     * lineup, and the next date heading closes it — which also skips the page's trailing non-event
+     * headings ("Tickets only available at the door.", "SHOPPING").
+     *
+     * Every night is a DJ party, so events are typed [PARTY][de.norm.events.event.EventType.PARTY] and
+     * the roster is billed [DJ][de.norm.events.event.ArtistRole.DJ]. The venue sells at the door only
+     * and publishes no prices, tickets, genres, descriptions, per-event pages or posters — the one
+     * image per container is a decorative flame divider shared by all three — so `sourceId` is built
+     * from the date plus the slugified title.
+     */
+    GOLDEN_GATE,
+
     /** Gretchen Berlin – retro hand-coded single-page homepage listing; each event a `.gig` block with a `.lineup` performer list. */
     GRETCHEN,
 
