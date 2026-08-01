@@ -438,8 +438,8 @@ event has a date, a start time *and* a doors time; 106 have an image and an arti
   qualifier kept as the note, but for almost every show the price exists only behind the ticket link.
 - 🟠 **A relocated show stays on the listing after moving to another house.** Seven events are flagged `RELOCATED`, and the venue uses that note for moves in
   *both* directions — "Das Konzert wird ins Hole44 verlegt" (leaving Huxleys) and "Die Show wird aus dem Metropol ins Huxleys verlegt" (arriving). The former
-  are stored as Huxleys events with a `RELOCATED` status, which is what the source says, but they will happen elsewhere — and if the receiving venue also has
-  an importer, the same show lands twice under two venues. The note text is not stored, so the destination is lost.
+  are stored as Huxleys events with a `RELOCATED` status, which is what the source says, but they will happen elsewhere — and if the receiving venue also has an
+  importer, the same show lands twice under two venues. The note text is not stored, so the destination is lost.
 - 🟢 **The change note is the only signal for two statuses.** Sold-out and cancelled come from a CSS class on the list item (`Ausverkauft` / `Abgesagt`) with a
   matching badge, but a relocation or a new date is announced solely in the listing's free-text `.anderungen` note, which the detail page omits entirely — so
   the merge deliberately keeps the *overview's* status whenever it is non-default. Notes that are not status changes ("Zusatzshow", "Nachholtermin", "Eintritt
@@ -449,10 +449,10 @@ event has a date, a start time *and* a doors time; 106 have an image and an arti
   `.eventname`.
 - 🟢 **Genre and promoter are read from CSS classes.** Both are WordPress taxonomies the theme emits as slugs on the `article` element (`event-tags-electronic`,
   `promoters-trinity-music`), which costs no extra request but means de-slugified display names: a legal form comes back title-cased word by word
-  (`Concert Concept Veranstaltungs Gmbh`) and a stylised genre loses its punctuation (`kpop` → `Kpop`, not `K-Pop`). The sibling `presenters-*` taxonomy
-  (media partners) is deliberately not read as a promoter — de-slugifying a domain-shaped term yields a mangled `Laut De`.
-- 🟢 **`Corrupted Blood Club Show` is typed `PARTY` and loses its headliner.** The shared title classifier treats `club` as a party keyword, so this one show
-  (of 107) is mistyped and, being a party, has no artist derived from its title. The cross-cutting reactive-keyword limitation, not specific to this venue.
+  (`Concert Concept Veranstaltungs Gmbh`) and a stylised genre loses its punctuation (`kpop` → `Kpop`, not `K-Pop`). The sibling `presenters-*` taxonomy (media
+  partners) is deliberately not read as a promoter — de-slugifying a domain-shaped term yields a mangled `Laut De`.
+- 🟢 **`Corrupted Blood Club Show` is typed `PARTY` and loses its headliner.** The shared title classifier treats `club` as a party keyword, so this one show (of
+  107) is mistyped and, being a party, has no artist derived from its title. The cross-cutting reactive-keyword limitation, not specific to this venue.
 
 ### Kater (`scraper/kater/`) — WordPress, single page
 
@@ -463,9 +463,9 @@ ten structured club nights carry a full per-floor lineup.
   empty `acf` object, so there is nowhere else to look. Ticket links (Resident Advisor) are present for 19 of 26 events and are the only route to a price.
 - 🟠 **Artists are extracted only from a marked lineup.** The venue draws a `____________` rule above each floor name, and only lines beneath such a rule are
   read as acts — ten of twenty-six nights. The remaining sixteen summaries are prose (a garden evening's blurb, a film synopsis, a residency's "every tuesday *
-  18:00 – 01:00 *" schedule notes) and yield **no** artists at all. That is deliberate: without the rule there is no structural signal separating a DJ name
-  from a schedule note, and reading every line would mint "free entry till 20:00" and a film plot as performers. The cost is that a genuinely billed act
-  mentioned only in prose (e.g. the garden evenings' "with Nat Gohl") is missed.
+  18:00 – 01:00 *" schedule notes) and yield **no** artists at all. That is deliberate: without the rule there is no structural signal separating a DJ name from
+  a schedule note, and reading every line would mint "free entry till 20:00" and a film plot as performers. The cost is that a genuinely billed act mentioned
+  only in prose (e.g. the garden evenings' "with Nat Gohl") is missed.
 - 🟠 **`Nomadenkino` is typed `PARTY`.** The venue emits no category, so every night defaults to a party unless a title keyword says otherwise — and the shared
   screening keyword is word-anchored (`\bkino\b`), which a German compound like *Nomadenkino* does not match. The anchor is deliberate (it protects real act
   names such as "Alkinoos Ioannidis"), so this monthly film night stays mistyped rather than loosening it.
@@ -487,9 +487,8 @@ Verified against a live import (August 2026): 17 + 22 + 10 events across the thr
 event has a date, a start time, an image and a promoter, and the detail pages carry schema.org Microdata rather than needing CSS selectors.
 
 - 🔴 **Sport is not imported at all.** The halls' biggest strand is handball, volleyball and basketball — 32 of the listing's 85 current entries, 25 of them in
-  the Max-Schmeling-Halle — and the model has no `SPORT` event type. Those entries are skipped rather than filed as `OTHER`, which would bury the concerts
-  among them. So this venue's imported count is *by design* far below what its programme page shows, and a user looking for a Füchse Berlin fixture will not
-  find it.
+  the Max-Schmeling-Halle — and the model has no `SPORT` event type. Those entries are skipped rather than filed as `OTHER`, which would bury the concerts among
+  them. So this venue's imported count is *by design* far below what its programme page shows, and a user looking for a Füchse Berlin fixture will not find it.
 - 🟠 **A show that plays twice in one day keeps only its first session.** The stored event slug is date + venue + title and the column is `UNIQUE`, so a second
   same-day session cannot be inserted — the run would fail the entire import with a duplicate-key error. "Disney On Ice" plays three sessions on 13 March and
   "Berlin Tattoo" two on 7 November; each day keeps its earliest, and the later sessions are dropped with a log line. The venue itself distinguishes them
@@ -505,8 +504,8 @@ event has a date, a start time, an image and a promoter, and the detail pages ca
 
 ### Renate (`scraper/renate/`) — WordPress, single page
 
-Verified against a live import (August 2026): 13 upcoming nights, none in the past, every one with a ticket link and 11 of 13 with a full per-floor lineup —
-84 DJs across the venue's GARDEN, GREEN, BLACK, RED and SECRET floors.
+Verified against a live import (August 2026): 13 upcoming nights, none in the past, every one with a ticket link and 11 of 13 with a full per-floor lineup — 84
+DJs across the venue's GARDEN, GREEN, BLACK, RED and SECRET floors.
 
 - 🔴 **No times, prices, images or descriptions — for any night.** The programme prints a date and a title and nothing else structured; door times appear only
   inside floor headings ("GREEN (from 22:00)") and are per floor rather than per event, so no `startTime` is stored. The prose that does exist is club policy
@@ -546,8 +545,8 @@ source in the project — every event has a date and an image, 140 of 145 have a
 - 🟢 **`performer` is ignored.** It is a copy of the event `name` on all 145 events rather than an act, so artists are derived from the title like any other
   concert hall's, and a title that is an event name rather than a performer (`GeoGuessr World Championship`) mints one anyway — the cross-cutting
   reactive-denylist limitation.
-- 🟢 **A price range is kept in the note.** `offers` publishes `lowPrice` and `highPrice`, and 68 of the 86 priced events span a range; the low price alone
-  would understate what most seats cost, so the range is recorded as `65.00 – 70.75 EUR` alongside it.
+- 🟢 **A price range is kept in the note.** `offers` publishes `lowPrice` and `highPrice`, and 68 of the 86 priced events span a range; the low price alone would
+  understate what most seats cost, so the range is recorded as `65.00 – 70.75 EUR` alongside it.
 - 🟢 **A multi-day run is stored on its opening day.** A congress or esports final publishes a date-only `startDate` with an `endDate` days later; the model has
   no end date, so five such runs are stored as single events with no start time.
 - 🟢 **The machine-readable fields need their own parsing.** `startDate` / `doorTime` carry seconds (`2026-09-01T20:30:00`) and `lowPrice` carries no currency
@@ -588,15 +587,15 @@ start time, a poster and a category; 14 are flagged sold out and 2 postponed. Th
 - 🟠 **No prices and no descriptions at all.** The venue publishes neither anywhere — tickets are sold on Eventim, and a production page carries only its
   schedule, the venue's standing admission policy and its address. 185 of 201 performances do carry a per-date Eventim link.
 - 🟠 **No doors time.** Only the performance start time is published (`Mo, 19:30`).
-- 🟠 **Only concerts get an artist.** The shared `buildArtistsForEventType` mints a headliner from the title for a `CONCERT` and stays silent otherwise, which
-  is right for `TV Noir - die emotionale Musik- Talk- und Spieleshow` but loses the performer of a comedy solo show (`Bülent Ceylan - Diktatürk`). The venue
-  bills no lineup of its own, so the title is the only candidate — 66 of 201 events have an artist.
+- 🟠 **Only concerts get an artist.** The shared `buildArtistsForEventType` mints a headliner from the title for a `CONCERT` and stays silent otherwise, which is
+  right for `TV Noir - die emotionale Musik- Talk- und Spieleshow` but loses the performer of a comedy solo show (`Bülent Ceylan - Diktatürk`). The venue bills
+  no lineup of its own, so the title is the only candidate — 66 of 201 events have an artist.
 - 🟢 **The A–Z listing is discovery only.** Every one of its 100 tiles renders the same `ab DD.MM.YY` run-start date, so the listing cannot date anything; the
   schedule is read from each `/veranstaltung/<slug>.html` page instead. That makes an import one request per production plus one per category — 121 in total,
   spaced by the shared per-host throttle.
-- 🟢 **The category costs 20 extra fetches.** `eventkategorie` filter pages are the only place the venue states a category, so each is walked and its
-  productions take its label. A production listed under several categories keeps the first in the venue's own alphabetical order — stable between imports, but
-  arbitrary. 11 distinct categories are in use; `Kultur`, `Diskussion` and `Podcast` name a framing rather than a form and fall through to the theatre's `SHOW`
+- 🟢 **The category costs 20 extra fetches.** `eventkategorie` filter pages are the only place the venue states a category, so each is walked and its productions
+  take its label. A production listed under several categories keeps the first in the venue's own alphabetical order — stable between imports, but arbitrary. 11
+  distinct categories are in use; `Kultur`, `Diskussion` and `Podcast` name a framing rather than a form and fall through to the theatre's `SHOW`
   default.
 - 🟢 **`AUSVERKAUFT` replaces the ticket link rather than accompanying it.** A sold-out performance drops its Tickets button entirely, so the cell text is the
   only signal — a first pass read the missing link as "not ticketed" and left all 14 unflagged.
