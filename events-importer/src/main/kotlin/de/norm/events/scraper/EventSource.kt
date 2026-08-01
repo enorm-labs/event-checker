@@ -508,6 +508,27 @@ enum class EventSource {
     SUPAMOLLY,
 
     /**
+     * Tempodrom Berlin – the tented concert hall at Möckernstraße, on a ProcessWire site whose
+     * `/programm-und-tickets/` page embeds its **entire** programme as one
+     * `<script type="application/ld+json">` array of schema.org `Event` objects — 145 at the time of
+     * writing, each with `startDate`, `doorTime`, `image`, `description`, `eventStatus` and an
+     * `offers` block carrying `price` / `lowPrice` / `highPrice` and `availability`. The rendered
+     * cards add nothing the JSON-LD lacks, so the structured data is the source (ADR-007 §"Selector
+     * Strategy" priority 1) and no detail page is fetched.
+     *
+     * Two fields the venue publishes are deliberately not used as they stand. `performer.name` is
+     * always a copy of the event `name` rather than an act, so artists are derived from the title
+     * like any other concert hall's. And `location.name` is always "Tempodrom Berlin": the house
+     * has a Große and a Kleine Arena, but which one an event uses appears nowhere in the listing —
+     * only in the site navigation — so it is imported as a single venue rather than two.
+     *
+     * A multi-day run (a congress, an esports final) carries an `endDate` days after its
+     * `startDate` and a date-only `startDate`; it is stored as one event on its opening day, the
+     * model having no end date.
+     */
+    TEMPODROM,
+
+    /**
      * UFO im Velodrom Berlin – the smaller hall configured inside the Velodrom, listed as its own
      * `UFO` location on the shared Velomax programme and served by its own `ufo-velodrom.de` domain.
      * Its nights are the `.ufo` entries on the one listing; see [MAX_SCHMELING_HALLE] for the page

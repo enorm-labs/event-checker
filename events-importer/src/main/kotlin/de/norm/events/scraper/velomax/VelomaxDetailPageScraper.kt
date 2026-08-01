@@ -1,6 +1,5 @@
 package de.norm.events.scraper.velomax
 
-import de.norm.events.event.EventStatus
 import de.norm.events.scraper.ScrapedEvent
 import de.norm.events.scraper.UNRESOLVED_EVENT_DATE
 import de.norm.events.scraper.buildArtistsForEventType
@@ -8,6 +7,7 @@ import de.norm.events.scraper.cleanEventTitle
 import de.norm.events.scraper.extractEventSlug
 import de.norm.events.scraper.inferConcertVenueType
 import de.norm.events.scraper.parseIsoDate
+import de.norm.events.scraper.parseSchemaEventStatus
 import de.norm.events.scraper.parseTime
 import de.norm.events.scraper.resolveUrl
 import de.norm.events.scraper.textAt
@@ -122,20 +122,6 @@ class VelomaxDetailPageScraper {
 
         /** Ticket-shop hosts the halls link to. */
         val TICKET_HOST = Regex("""eventim\.|ticketmaster\.|reservix\.|tickets\.""", RegexOption.IGNORE_CASE)
-
-        /**
-         * Maps a schema.org `eventStatus` URL onto an [EventStatus] name. The vocabulary is an
-         * explicit contract (`EventCancelled`, `EventPostponed`, `EventMovedOnline`,
-         * `EventRescheduled`), so it is matched rather than parsed out of German prose.
-         */
-        fun parseSchemaEventStatus(status: String?): String =
-            when {
-                status == null -> EventStatus.SCHEDULED.name
-                status.endsWith("EventCancelled") -> EventStatus.CANCELLED.name
-                status.endsWith("EventPostponed") || status.endsWith("EventRescheduled") -> EventStatus.POSTPONED.name
-                status.endsWith("EventMovedOnline") -> EventStatus.RELOCATED.name
-                else -> EventStatus.SCHEDULED.name
-            }
     }
 }
 
