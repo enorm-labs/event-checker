@@ -7,8 +7,8 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 
 | Status                              | Meaning                                                                              | Count |
 |-------------------------------------|--------------------------------------------------------------------------------------|------:|
-| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    49 |
-| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |    22 |
+| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    50 |
+| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |    21 |
 | ⛔ [Blocked](#-blocked--deferred)   | Website analyzed, but no usable listings (no programme page, JS-only, or too sparse) |    35 |
 | ❓ [Unanalyzed](#-not-analyzed-yet) | No URL recorded yet — website still needs a first look                               |     0 |
 
@@ -62,13 +62,14 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Soda Club                   | https://www.soda-berlin.de/events                           | Club         | disco2app CMS; `MusicEvent` JSON-LD on details    |
 | Sonnenraum                  | https://clubdervisionaere.com/programm                      | Club         | Shares the CdV listing; Monday live residency     |
 | Supamolly                   | https://www.supamolly.de/?p=programm                        | Club         | Retro PHP; row id is the date stamp; no prices    |
+| Tempodrom                   | https://www.tempodrom.de/programm-und-tickets/              | Concert Hall | schema.org `Event` JSON-LD; whole programme       |
 | UFO im Velodrom             | https://www.velomax.de/events                               | Concert Hall | Shares the VELOMAX listing                        |
 | Urban Spree                 | https://www.urbanspree.com/program/                         | Club         | MODX; listing descending + paginated; walks pages |
 | Velodrom                    | https://www.velomax.de/events                               | Arena        | Shares the VELOMAX listing; Microdata details     |
 | Wild at Heart               | https://www.wildatheartberlin.de/                           | Bar          | Retro frameset; concerts.php; year from weekday   |
 | Zenner                      | https://zenner.berlin/programm                              | Club         | Gatsby/Sanity page-data JSON; UTC dates; archive  |
 
-46 importer classes cover 49 sources (Kantine am Berghain shares the Berghain importer; Club der Visionäre, Sonnenraum and MS Hoppetosse are three thin
+47 importer classes cover 50 sources (Kantine am Berghain shares the Berghain importer; Club der Visionäre, Sonnenraum and MS Hoppetosse are three thin
 importers over one shared listing and parser).
 
 ## 🔨 Ready to implement
@@ -77,7 +78,6 @@ Analyzed and scrapable — the candidates for the next `/scaffold-importer` runs
 
 | Priority | Name                  | URL                                      | Type         | Why / what it needs                                        |
 |:--------:|-----------------------|------------------------------------------|--------------|------------------------------------------------------------|
-|   High   | Tempodrom             | https://www.tempodrom.de/                | Concert Hall | schema.org `Event` JSON-LD with offers; two arenas         |
 |   High   | Tresor                | https://tresorberlin.com/club/events/    | Techno Club  | WordPress; `/event/YYYYMMDD-slug` detail pages             |
 |  Medium  | Admiralspalast        | https://www.admiralspalast.theater/      | Theater      | Contao; /veranstaltungsuebersicht.html, genre categories   |
 |  Medium  | Humboldthain Club     | https://www.humboldthain.com/            | Techno Club  | Elfsight Event Calendar — as the NEUE_ZUKUNFT importer     |

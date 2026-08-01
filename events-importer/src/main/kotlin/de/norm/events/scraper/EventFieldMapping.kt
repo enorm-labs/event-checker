@@ -34,6 +34,36 @@ fun parseEventStatus(statusText: String): String {
 }
 
 /**
+ * Maps a schema.org `eventStatus` URL onto an [EventStatus] name.
+ *
+ * The vocabulary is an explicit machine-readable contract — `EventScheduled`, `EventCancelled`,
+ * `EventPostponed`, `EventRescheduled`, `EventMovedOnline` — so a venue that publishes it is
+ * matched on the term rather than on the German prose [parseEventStatus] has to read. Both the
+ * `http://` and `https://` spellings occur in the wild, and some sites emit the bare term, so only
+ * the trailing term is compared. Anything unrecognized (or absent) is
+ * [SCHEDULED][EventStatus.SCHEDULED].
+ *
+ * `EventMovedOnline` maps to [RELOCATED][EventStatus.RELOCATED]: the show still happens, just not
+ * where it was billed — the closest the model has to "moved".
+ *
+ * Example:
+ * ```kotlin
+ * parseSchemaEventStatus("https://schema.org/EventCancelled")  // "CANCELLED"
+ * parseSchemaEventStatus("http://schema.org/EventRescheduled") // "POSTPONED"
+ * parseSchemaEventStatus(null)                                  // "SCHEDULED"
+ * ```
+ */
+fun parseSchemaEventStatus(status: String?): String {
+    val term = status?.substringAfterLast('/').orEmpty()
+    return when (term) {
+        "EventCancelled" -> EventStatus.CANCELLED.name
+        "EventPostponed", "EventRescheduled" -> EventStatus.POSTPONED.name
+        "EventMovedOnline" -> EventStatus.RELOCATED.name
+        else -> EventStatus.SCHEDULED.name
+    }
+}
+
+/**
  * Returns the (doors, start) pair with doors never later than start.
  *
  * Doors open no later than the show begins, so when a source lists the two in the

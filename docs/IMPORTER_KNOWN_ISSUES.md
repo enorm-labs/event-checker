@@ -531,6 +531,29 @@ Verified against a live import (August 2026): 13 upcoming nights, none in the pa
 - 🟢 **Free entry is left to the shared detector.** Floor headings advertise time-limited offers ("free until 20:00", "FREE til 20:00!") which must not mark a
   night free; only an unqualified `(Free Entry)` in the title does, via the shared `detectFree`.
 
+### Tempodrom (`scraper/tempodrom/`) — schema.org JSON-LD, single page
+
+Verified against a live import (August 2026): 141 events stored from 145 published, dates 2026-08-27 → 2027-12-10, none in the past. The richest structured
+source in the project — every event has a date and an image, 140 of 145 have a start *and* a doors time, 86 a price, and 3 arrive already flagged cancelled.
+
+- 🟠 **Four events a year are lost to same-day runs.** A show that plays twice in one day (`Die Unfassbaren`, `Roncalli`, `Flying Mozart`) is published as two
+  JSON-LD objects with the same title and date, and the shared `deduplicateScrapedEvents` keys on exactly that pair — so the later session is dropped with a
+  warning. This is the same limitation Velomax hits and the reason the event slug needs a start time → tracked in `TODO.md`.
+- 🟠 **No genre and no description for any event.** The JSON-LD carries neither; its `description` field holds the tour or edition name ("The Ca$ino Tour",
+  "Jungle Vibes Edition"), which is stored as the **subtitle** rather than as a blurb, because that is what it is.
+- 🟢 **The Große / Kleine Arena split is not represented.** `location.name` is "Tempodrom Berlin" on all 145 events and the arena appears nowhere else in the
+  listing — only in the site navigation — so the house is imported as one venue. The source inventory previously expected two.
+- 🟢 **`performer` is ignored.** It is a copy of the event `name` on all 145 events rather than an act, so artists are derived from the title like any other
+  concert hall's, and a title that is an event name rather than a performer (`GeoGuessr World Championship`) mints one anyway — the cross-cutting
+  reactive-denylist limitation.
+- 🟢 **A price range is kept in the note.** `offers` publishes `lowPrice` and `highPrice`, and 68 of the 86 priced events span a range; the low price alone
+  would understate what most seats cost, so the range is recorded as `65.00 – 70.75 EUR` alongside it.
+- 🟢 **A multi-day run is stored on its opening day.** A congress or esports final publishes a date-only `startDate` with an `endDate` days later; the model has
+  no end date, so five such runs are stored as single events with no start time.
+- 🟢 **The machine-readable fields need their own parsing.** `startDate` / `doorTime` carry seconds (`2026-09-01T20:30:00`) and `lowPrice` carries no currency
+  sign, so the shared `parseIsoTime` and `parsePriceValue` — which expect the `HH:mm` and `… €` a page *renders* — both return null on them. A first pass
+  silently imported every event with no time and no price because of it.
+
 ---
 
 ## How to extend this doc

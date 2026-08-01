@@ -56,6 +56,7 @@
 ###   Soda Club            — https://www.soda-berlin.de/events (disco2app CMS; list + detail with MusicEvent JSON-LD)
 ###   Sonnenraum           — https://clubdervisionaere.com/programm/ (shares the CLUB_DER_VISIONAERE listing)
 ###   Supamolly            — https://www.supamolly.de/?p=programm (retro PHP single-page listing; row id = date stamp)
+###   Tempodrom            — https://www.tempodrom.de/programm-und-tickets/ (schema.org Event JSON-LD)
 ###   Urban Spree          — https://www.urbanspree.com/program/ (MODX; descending paginated list + detail)
 ###   Wild at Heart        — https://www.wildatheartberlin.de/concerts.php (retro frameset single-page listing)
 ###   Zenner               — https://zenner.berlin/programm (Gatsby/Sanity; page-data.json artefact)
@@ -2890,6 +2891,68 @@ Accept: application/json
 
 > {%
     client.test("Supamolly import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Tempodrom (Möckernstr. 10, Berlin-Kreuzberg — am Anhalter Bahnhof)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Tempodrom venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Tempodrom",
+    "address": "Möckernstr. 10",
+    "city": "Berlin",
+    "postalCode": "10963",
+    "district": "friedrichshain-kreuzberg",
+    "latitude": 52.50250,
+    "longitude": 13.38167,
+    "websiteUrl": "https://www.tempodrom.de",
+    "description": "A tented concert hall by the former Anhalter Bahnhof, with a Grosse and a Kleine Arena hosting concerts, comedy, shows and congresses."
+}
+
+> {%
+    client.global.set("tempodrom_venue_id", response.body.id);
+    client.test("Tempodrom venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Tempodrom event source ---
+# Links the venue to the TempodromWebsiteImporter.
+# The sourceType "TEMPODROM" matches EventSource.TEMPODROM.
+# NOTE: the page embeds the WHOLE programme as one schema.org `Event` JSON-LD array (145 events),
+# so the markup is never selected against and no detail page is fetched. The server sends
+# Last-Modified, so an unchanged programme costs a single 304.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{tempodrom_venue_id}},
+    "name": "Tempodrom",
+    "url": "https://www.tempodrom.de/programm-und-tickets/",
+    "sourceType": "TEMPODROM",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Tempodrom event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Tempodrom import ---
+POST {{importer-host}}/api/admin/event-sources/tempodrom/import
+Accept: application/json
+
+> {%
+    client.test("Tempodrom import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}
