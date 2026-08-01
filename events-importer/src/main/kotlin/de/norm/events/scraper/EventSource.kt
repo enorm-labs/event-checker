@@ -651,6 +651,30 @@ enum class EventSource {
     /** Roadrunner's Paradise Berlin – retro hand-coded single-page `programm.html` listing (rockabilly/roots). */
     ROADRUNNER,
 
+    /**
+     * Säälchen Berlin – the concert hall on the Holzmarkt riverside grounds, on the Holzmarkt's
+     * shared Drupal site. `/kalender` is **one calendar for the whole site**: its `.views-row`
+     * entries cover the Marktplatz flea markets and the Holzmarkt 25 grounds as well, so rows are
+     * filtered on the `.location` span — only `Säälchen` is this venue. Month tabs are in-page
+     * anchors, not extra requests, so one fetch carries the whole programme.
+     *
+     * Each row embeds an **AddToCalendar** widget whose `<var class="atc_*">` values are the
+     * machine-readable part: `atc_date_start` is a **UTC** timestamp (a 20:00 Berlin night reads
+     * `19:00:00` in winter, `18:00:00` in summer), so it is converted to `Europe/Berlin` for the
+     * date. Its `atc_description` carries a hand-typed `Datum / Einlass / Beginn / Ende / Eintritt
+     * / Tickets` block followed by the event's prose, which is the source for the times, the price
+     * and the description.
+     *
+     * **The `.doors` span is not trustworthy and is only a fallback.** The editors fill that single
+     * CMS time field inconsistently — it holds the *Einlass* on one night (`Opening Party`, 18:00)
+     * and the *Beginn* on another (`Voodoo Jürgens`, 20:00 against a 19:00 Einlass) — so the
+     * explicitly labelled prose wins. The `Eintritt:` line is equally free-form (`17,00 €`, `€40 +
+     * fees`, `30,00`, and a three-tier `15€ ermäßigt … 25€ Normalpreis … 35€ Förderticket`), so it
+     * is kept verbatim in `priceNote` and only converted to a number when it names exactly one
+     * amount. Its `Datum:` is not read at all — one event writes it in English (`October 5, 2026`).
+     */
+    SAALCHEN,
+
     /** Schokoladen Mitte Berlin – Laravel-based single-page homepage listing; each event a `div.event` block with an ISO `data-event-date`, no detail pages. */
     SCHOKOLADEN,
 

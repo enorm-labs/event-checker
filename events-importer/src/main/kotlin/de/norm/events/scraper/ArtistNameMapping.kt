@@ -359,7 +359,11 @@ private val NON_ARTIST_NAMES: Set<String> =
         "boheme sauvage",
         "jazz after dark",
         "future bash reloaded",
-        "a dead moon night"
+        "a dead moon night",
+        // Bare event-format words a co-billed title splits off as if they were acts — Säälchen's
+        // `10 Jahre "The Big Brassers" – Jubiläumskonzert & Party` yields both of these.
+        "party",
+        "jubiläumskonzert"
     )
 
 /**
