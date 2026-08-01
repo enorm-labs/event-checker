@@ -178,6 +178,31 @@ enum class EventSource {
      */
     COLUMBIA_THEATER,
 
+    /**
+     * Columbiahalle Berlin – the 3,500-capacity hall at Tempelhofer Feld, on a Contao 5 site whose
+     * `/veranstaltungen.html` page carries the **whole upcoming programme inline**: one
+     * `.eventlist_event` per night, each with the act (`h2`), an optional tour/support line (`h3`),
+     * the booking agency (`.veranstalter`), `Einlass`/`Beginn` times (`.zeit`), `VVK`/`AK` prices
+     * with an optional "zzgl. Gebühr" note (`.preis`), a ticket-shop link, a poster, and the
+     * untruncated blurb in a collapsed `.bandinfo` panel. Nothing needs a second fetch — the
+     * `veranstaltung/<alias>.html` links the cards call "Kalender-Eintrag" serve an **iCal
+     * download**, not an HTML page, and carry strictly less than the listing (no prices, promoter,
+     * tickets or sold-out state).
+     *
+     * Two quirks drive the parser. A card states only its **weekday and day of month** ("Freitag",
+     * "07"); the month and year come from the `.eventlist_monat` heading ("August 2026") that
+     * precedes it in document order, so the two node kinds are walked as one ordered stream and a
+     * heading that fails to parse voids the month rather than carrying the previous one forward.
+     * And the venue publishes **no per-event page**, so both the identity and the URL come from the
+     * Contao event id on `div.event_inhalt[id=event_<n>]` — the same id its iCal export uses as the
+     * `UID` — with the listing anchor (`…/veranstaltungen.html#event_9743`) as [ScrapedEvent.sourceUrl].
+     *
+     * Status is a `.stoerer` sticker (`Ausverkauft` → the sold-out flag, `Abgesagt` → `CANCELLED`,
+     * `Zusatzshow` → neither). The site emits no category and no genre, and sends neither ETag nor
+     * Last-Modified.
+     */
+    COLUMBIAHALLE,
+
     /** Duncker Club Berlin – retro hand-coded single-page `start.html` programme table (goth/wave/indie DJ nights), German `DD.MM.` dates without a year. */
     DUNCKER,
 
