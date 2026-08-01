@@ -34,6 +34,7 @@
 ###   Havanna              — https://www.havanna-berlin.de/events (undated weekly nights, expanded to dated occurrences)
 ###   Heimathafen Neukölln — https://heimathafen-neukoelln.de/wp-json/wp/v2/events (WP REST + ACF; performances array)
 ###   Hole 44              — https://hole-berlin.de/events/ (WordPress/Events-Manager, list + detail)
+###   Humboldthain Club    — https://core.service.elfsight.com/p/boot/?w=<widgetId> (Elfsight widget API; weekly night expanded)
 ###   Huxleys Neue Welt    — https://huxleysneuewelt.de/events (WordPress/Events-Manager; list + detail, ISO slug date)
 ###   Junction Bar         — https://www.junction-bar.de/ (live music + DJ programs)
 ###   Kantine am Berghain  — https://www.berghain.berlin/de/program/kantine-am-berghain/ (shares BERGHAIN importer)
@@ -1540,6 +1541,70 @@ Accept: application/json
 
 > {%
     client.test("Hole 44 import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Humboldthain Club (Hochstr. 46, Berlin-Wedding)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Humboldthain Club venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Humboldthain Club",
+    "address": "Hochstr. 46",
+    "city": "Berlin",
+    "postalCode": "13357",
+    "district": "mitte",
+    "latitude": 52.54494,
+    "longitude": 13.38617,
+    "websiteUrl": "https://www.humboldthain.com",
+    "description": "A techno club in Wedding with an indoor floor and a large garden, running collective-booked house, techno and trance nights."
+}
+
+> {%
+    client.global.set("humboldthain_venue_id", response.body.id);
+    client.test("Humboldthain Club venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Humboldthain Club event source ---
+# Links the venue to the HumboldthainWebsiteImporter.
+# The sourceType "HUMBOLDTHAIN" matches EventSource.HUMBOLDTHAIN.
+# NOTE: the URL is the Elfsight "Event Calendar" widget boot API, not the venue's own page —
+# the widget renders client-side, so humboldthain.com serves no events in its HTML. The widget id
+# comes from the `elfsight-app-<widgetId>` div on that page. As for Neue Zukunft, the boot response
+# carries the whole calendar in one request. The venue's weekly resident night is a single entry
+# with a repeat rule, which the importer expands into one event per occurrence.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{humboldthain_venue_id}},
+    "name": "Humboldthain Club",
+    "url": "https://core.service.elfsight.com/p/boot/?w=ee9a7876-11b1-4268-88e7-84b4d7397c75",
+    "sourceType": "HUMBOLDTHAIN",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Humboldthain Club event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Humboldthain Club import ---
+POST {{importer-host}}/api/admin/event-sources/humboldthain-club/import
+Accept: application/json
+
+> {%
+    client.test("Humboldthain Club import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}

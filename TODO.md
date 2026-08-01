@@ -112,6 +112,10 @@ Strategy & sequencing: [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEG
   multi-language
 - [ ] Update importers to scrape/parse **all** available events via the site's navigation/pagination (not just the first page)
 - [ ] Review events typed `OTHER` — should we add new values to the event-type enum?
+- [ ] Expand Elfsight **monthly** recurrence rules (`repeatPeriod: nthDayInMonth`, `repeatFrequency: monthly`). Humboldthain expands the weekly rules its
+  resident night uses; Neue Zukunft's recurring entries are monthly and are still imported once, at their start date only (4 of 44 entries — see
+  `IMPORTER_KNOWN_ISSUES.md`). Fixing it also needs `NeueZukunftApiScraper`'s `sourceId` to carry the occurrence date (Humboldthain already does), which
+  re-mints every existing Neue Zukunft event — so do it as one change, not two.
 - [ ] Add events manually for venues that have no website — plus a plan for keeping those up to date
 
 **Admin tooling & maintenance:**
@@ -175,6 +179,9 @@ Strategy & sequencing: [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEG
 - [ ] Try [Repomix](https://repomix.com/) (+ [GH Actions](https://repomix.com/guide/github-actions))
 - [ ] Consider a `BACKLOG.md` context-engineering approach
   ([reference](https://www.codecentric.de/wissens-hub/blog/strukturierte-migration-mit-claude-code-context-engineering-statt-prompt-engineering))
+- [ ] Fix `scripts/dev-env.sh diff-snapshot` when the **baseline snapshot is empty** (a fresh database). It uses the `NR == FNR` awk idiom to load the first
+  file, but awk never reads a record from an empty file, so the *second* file is loaded as the baseline and every new source is reported `GONE` / "lost events"
+  instead of `new`. Guard on `FILENAME == ARGV[1]` (or `ARGIND == 1`) instead.
 - Note: IntelliJ Copilot Chat now supports the "Copilot CLI" provider, so global `~/.copilot/skills/` are usable there too.
 
 ## Docs, Repo & Templates

@@ -7,8 +7,8 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 
 | Status                              | Meaning                                                                              | Count |
 |-------------------------------------|--------------------------------------------------------------------------------------|------:|
-| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    52 |
-| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |    19 |
+| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    53 |
+| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |    18 |
 | ⛔ [Blocked](#-blocked--deferred)   | Website analyzed, but no usable listings (no programme page, JS-only, or too sparse) |    35 |
 | ❓ [Unanalyzed](#-not-analyzed-yet) | No URL recorded yet — website still needs a first look                               |     0 |
 
@@ -42,6 +42,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Havanna                     | https://www.havanna-berlin.de/                              | Club         | Undated weekly nights; occurrences derived         |
 | Heimathafen Neukölln        | https://heimathafen-neukoelln.de/                           | Concert Hall | WP REST + ACF; one post, many dated performances   |
 | Hole 44                     | https://hole-berlin.de/                                     | Concert Hall | Events-Manager; "Abgesagt!" / "VERLEGT!" labels    |
+| Humboldthain Club           | https://www.humboldthain.com/                               | Techno Club  | Elfsight widget API; weekly night expanded         |
 | Huxleys Neue Welt           | https://huxleysneuewelt.de/events                           | Concert Hall | Events-Manager; ISO slug date; genre/promoter tags |
 | Junction Bar                | https://www.junction-bar.de/                                | Bar          | Static monthly pages; show times vary by weekday   |
 | Kantine am Berghain         | https://www.berghain.berlin/de/program/kantine-am-berghain/ | Concert Hall | Shares BERGHAIN importer                           |
@@ -71,7 +72,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Wild at Heart               | https://www.wildatheartberlin.de/                           | Bar          | Retro frameset; concerts.php; year from weekday    |
 | Zenner                      | https://zenner.berlin/programm                              | Club         | Gatsby/Sanity page-data JSON; UTC dates; archive   |
 
-49 importer classes cover 52 sources (Kantine am Berghain shares the Berghain importer; Club der Visionäre, Sonnenraum and MS Hoppetosse are three thin
+50 importer classes cover 53 sources (Kantine am Berghain shares the Berghain importer; Club der Visionäre, Sonnenraum and MS Hoppetosse are three thin
 importers over one shared listing and parser).
 
 ## 🔨 Ready to implement
@@ -80,7 +81,6 @@ Analyzed and scrapable — the candidates for the next `/scaffold-importer` runs
 
 | Priority | Name                 | URL                                      | Type         | Why / what it needs                                        |
 |:--------:|----------------------|------------------------------------------|--------------|------------------------------------------------------------|
-|  Medium  | Humboldthain Club    | https://www.humboldthain.com/            | Techno Club  | Elfsight Event Calendar — as the NEUE_ZUKUNFT importer     |
 |  Medium  | LARK                 | https://larkberlin.com/events/           | Club         | Own listing, "SOLD OUT"; not in the Holzmarkt calendar     |
 |  Medium  | Maxxim Club          | https://www.maxxim-berlin.de/            | Club         | Wix; `Event` JSON-LD plus a German-date programme list     |
 |  Medium  | Metropol             | https://metropol-berlin.de/              | Concert Hall | One-pager; type + date + time, "VERLEGT"; no prices        |
