@@ -641,6 +641,30 @@ widget's own upcoming list — six one-off nights plus four Tuesdays of the resi
   including the `Future Bash Reloaded` and `Jazz After Dark` series. `NeueZukunftApiScraper` reads `start.date` alone, so each such series contributes a single
   event and its later occurrences are missing. Unblocking it needs monthly-rule expansion *and* a `sourceId` change (the scraper keys on the bare widget id,
   which cannot distinguish occurrences) — the latter re-mints every Neue Zukunft event → tracked in `TODO.md`.
+### LARK (`scraper/lark/`) — WordPress REST + ACF, JSON source
+
+Verified against a live import (August 2026): 20 events stored, 2026-10-08 → 2027-02-27, none in the past, every one with a doors time, a poster, a ticket link
+and a headliner. The 20 titles and dates match the venue's rendered `/events/` list exactly, in the same order.
+
+- 🟠 **No start time — only doors.** The venue publishes a single time and labels it `Doors` (its detail page renders "Doors 18:30"), so that is what is stored
+  and `start_time` stays empty for every event. The ACF field that *looks* like the answer, `event_doors_time`, is a dead default — `19:00` on 613 of 623 posts
+  regardless of the real time, and later than the start on the 18:30 shows — so it is deliberately unread.
+- 🟠 **No genre and no prices at all.** `event_music_genre` is empty on all 623 posts, `event_entrance_fee` reads `None` throughout, and `event_price` is filled
+  on exactly one. Tickets are sold off-site (Resident Advisor, Eventim, DICE, Loft and several more shops) and the venue quotes no price of its own anywhere.
+- 🟢 **The event type is inferred from the title for the current programme.** `acf.event_type` is filled on only 263 of 623 posts — and on none of the 20
+  upcoming — so those fall through to the shared live-music-venue inference (default `CONCERT`). The venue's own label is trusted when present, with `Live` →
+  concert and `Club` / `Dance` → party.
+- 🟢 **The tour tail is stripped before the event is classified.** `LEILA – 20 SOMETHING CLUB TOUR` is a gig, but the shared keyword classifier matches the bare
+  `club` in its *tour* name and returned `PARTY` — which, being a party, then discarded the headliner too. Classifying the act rather than the tour fixes it
+  here; the shared `PARTY_TITLE_KEYWORDS` entry is the underlying issue → tracked in `TODO.md`.
+- 🟢 **Support acts come from the title, not the act repeater.** The ACF schema has six act slots (name, country, genre, type, links and description per act) and
+  the venue has filled slot 1 on exactly one of 623 posts, so the lineup is read from the title's own `<act> + <act> (support)` idiom instead. Its other co-bill
+  spelling, `w/` (`FEUCHT w/ BELLA, Agua con gas & SENERGI`), is **not** split — the shared splitter does not treat `w/` as a separator and a comma suppresses
+  conjunction splitting — so such a title yields one long "artist". None of the currently-upcoming events use it.
+- 🟢 **An event-name title is still minted as a headliner.** `Zascha HOT MESS Debut at Lark` becomes an artist of that name: the venue types nothing and bills no
+  lineup, so the title is the only candidate. This is the cross-cutting reactive-denylist limitation recorded at the top of this file, not a LARK-specific rule.
+- 🟢 **The programme is short and can have gaps.** At capture the venue listed 20 shows but nothing at all between 1 August and 8 October, so a low event count
+  is not on its own evidence of a broken importer — the fixture test is what distinguishes the two.
 
 ---
 

@@ -399,6 +399,35 @@ enum class EventSource {
      */
     KATER,
 
+    /**
+     * LARK Berlin – the Holzmarktstraße live-music club, on WordPress
+     * with an Advanced Custom Fields `event` post type whose public REST API
+     * (`/wp-json/wp/v2/event`) exposes the whole 600-post archive as structured JSON — no HTML is
+     * scraped (ADR-007 §"Selector Strategy" priority 1).
+     *
+     * The defining quirk is that the venue **overloads WordPress's own post date with the event
+     * date**: `post.date` is the show's date and time while `date_gmt` keeps the publish instant.
+     * That makes the listing natively sortable and orderable by event date — unlike
+     * [HEIMATHAFEN], whose date sits in an unsortable ACF field — so the default
+     * newest-first page already carries every upcoming show and paging stops as soon as a page
+     * reaches the past. The time on that date is what the venue renders as **`Doors`**, so it is
+     * read as the doors time; the separate `acf.event_doors_time` field is a dead default
+     * (`19:00` on 613 of 623 posts, later than the start on some) and is deliberately ignored.
+     *
+     * Status lives **in the title**, not in a field: the venue appends or prefixes `SOLD OUT`,
+     * `(ausverkauft)`, `CANCELLED:` or `(abgesagt)` to the post title, while `acf.event_status`
+     * reads `Scheduled` on all 623 posts. The marker is read and then stripped from the stored
+     * title. Support acts are likewise written into the title, as `<act> + <act> (support)`.
+     *
+     * Of the remaining ACF fields only `event_type`, `event_organizer` (the promoter),
+     * `event_tickets_url` and `event_description` carry data; `event_entrance_fee`
+     * (`None` throughout), `event_music_genre`, `event_card_subtitle` and the six-slot act
+     * repeater are unused defaults. The poster is a WordPress `featured_media` id, resolved for
+     * the upcoming events in one batched `/wp-json/wp/v2/media?include=…` request rather than
+     * with `_embed`, which would triple the listing payload.
+     */
+    LARK,
+
     /** Lido Berlin – same Kulturhäuser platform as Astra (different theme), homepage listing with detail pages. */
     LIDO,
 

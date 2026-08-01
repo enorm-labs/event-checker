@@ -7,8 +7,8 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 
 | Status                              | Meaning                                                                              | Count |
 |-------------------------------------|--------------------------------------------------------------------------------------|------:|
-| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    53 |
-| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |    18 |
+| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    54 |
+| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |    17 |
 | ⛔ [Blocked](#-blocked--deferred)   | Website analyzed, but no usable listings (no programme page, JS-only, or too sparse) |    35 |
 | ❓ [Unanalyzed](#-not-analyzed-yet) | No URL recorded yet — website still needs a first look                               |     0 |
 
@@ -47,6 +47,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Junction Bar                | https://www.junction-bar.de/                                | Bar          | Static monthly pages; show times vary by weekday   |
 | Kantine am Berghain         | https://www.berghain.berlin/de/program/kantine-am-berghain/ | Concert Hall | Shares BERGHAIN importer                           |
 | Kater                       | https://www.katerclub.de/                                   | Techno Club  | Homepage programme; ___ floor rules mark lineups   |
+| LARK                        | https://larkberlin.com/events/                              | Club         | WP REST + ACF; post date is the event date        |
 | Lido                        | https://www.lido-berlin.de/                                 | Concert Hall | Clean slugs; doors + start; "Ausverkauft" badge    |
 | Loge                        | https://www.loge-berlin.org/                                | Club         | Wix; tickets on-site; support via "+" in title     |
 | Madame Claude               | https://madameclaude.de/                                    | Bar          | WordPress `event` REST API (ACF)                   |
@@ -72,7 +73,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Wild at Heart               | https://www.wildatheartberlin.de/                           | Bar          | Retro frameset; concerts.php; year from weekday    |
 | Zenner                      | https://zenner.berlin/programm                              | Club         | Gatsby/Sanity page-data JSON; UTC dates; archive   |
 
-50 importer classes cover 53 sources (Kantine am Berghain shares the Berghain importer; Club der Visionäre, Sonnenraum and MS Hoppetosse are three thin
+51 importer classes cover 54 sources (Kantine am Berghain shares the Berghain importer; Club der Visionäre, Sonnenraum and MS Hoppetosse are three thin
 importers over one shared listing and parser).
 
 ## 🔨 Ready to implement
@@ -81,7 +82,6 @@ Analyzed and scrapable — the candidates for the next `/scaffold-importer` runs
 
 | Priority | Name                 | URL                                      | Type         | Why / what it needs                                        |
 |:--------:|----------------------|------------------------------------------|--------------|------------------------------------------------------------|
-|  Medium  | LARK                 | https://larkberlin.com/events/           | Club         | Own listing, "SOLD OUT"; not in the Holzmarkt calendar     |
 |  Medium  | Maxxim Club          | https://www.maxxim-berlin.de/            | Club         | Wix; `Event` JSON-LD plus a German-date programme list     |
 |  Medium  | Metropol             | https://metropol-berlin.de/              | Concert Hall | One-pager; type + date + time, "VERLEGT"; no prices        |
 |  Medium  | Modus Berlin         | https://modus-berlin.de/events           | Club         | Plain list + detail pages; the slug carries the date       |

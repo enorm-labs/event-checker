@@ -39,6 +39,7 @@
 ###   Junction Bar         — https://www.junction-bar.de/ (live music + DJ programs)
 ###   Kantine am Berghain  — https://www.berghain.berlin/de/program/kantine-am-berghain/ (shares BERGHAIN importer)
 ###   Kater                — https://www.katerclub.de/ (WordPress; homepage programme, ___ floor rules)
+###   LARK                 — https://larkberlin.com/wp-json/wp/v2/event (WP REST + ACF; post date is the event date)
 ###   Lido                 — https://www.lido-berlin.de/
 ###   Loge                 — https://www.loge-berlin.org/event-list (Wix Events warmup JSON + JSON-LD price)
 ###   Madame Claude        — https://madameclaude.de/ (WordPress `event` REST API, ACF-backed)
@@ -1852,6 +1853,70 @@ Accept: application/json
 
 > {%
     client.test("Kater import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### LARK (Holzmarktstr. 15-18, Berlin-Mitte)
+### ————————————————————————————————————————————————————————————
+
+### --- Create LARK venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "LARK",
+    "address": "Holzmarktstr. 15-18",
+    "city": "Berlin",
+    "postalCode": "10179",
+    "district": "mitte",
+    "latitude": 52.51361,
+    "longitude": 13.41889,
+    "websiteUrl": "https://larkberlin.com",
+    "description": "A live-music club in the railway arches on Holzmarktstrasse, programming indie, folk, pop and singer-songwriter shows."
+}
+
+> {%
+    client.global.set("lark_venue_id", response.body.id);
+    client.test("LARK venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create LARK event source ---
+# Links the venue to the LarkWebsiteImporter.
+# The sourceType "LARK" matches EventSource.LARK.
+# NOTE: the URL is the WP REST base for the ACF `event` post type, not the /events/ page.
+# LARK stores the *event* date in WordPress's own post date, so the endpoint's default
+# newest-first ordering is chronological and the importer stops paging as soon as a page
+# reaches the past — one request for the current programme. Posters are resolved in a second
+# batched /wp/v2/media?include=... call.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{lark_venue_id}},
+    "name": "LARK",
+    "url": "https://larkberlin.com/wp-json/wp/v2/event",
+    "sourceType": "LARK",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("LARK event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial LARK import ---
+POST {{importer-host}}/api/admin/event-sources/lark/import
+Accept: application/json
+
+> {%
+    client.test("LARK import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}
