@@ -154,6 +154,30 @@ enum class EventSource {
      */
     CLUB_DER_VISIONAERE,
 
+    /**
+     * Columbia Theater Berlin – the Tempelhofer Feld concert hall, on a bespoke WordPress theme whose
+     * **homepage is the whole upcoming programme**: one `a.item[data-id]` card per night, carrying the
+     * poster, the `.item-title` act, an optional `.item-tour-text` tour name, and one
+     * `.item-support-row` per billing line (`Support:` / `Opener:` / `Special Guest(s):` / `DJ:`, acts
+     * `+`-separated). Every card links to a `/event/YYYYMMDD-<slug>/` detail page, and that
+     * `YYYYMMDD` permalink prefix is the event date — the rendered date blocks carry a German month
+     * abbreviation and usually no year at all. The detail page adds the `.header-date` line
+     * (`Wd. DD.MM.[YY] um HH:mm / Einlass HH:mm`), the prose blurb, the ticket-shop link, and the
+     * `präsentiert von …` media presenters. The WordPress REST API is disabled site-wide (every
+     * `/wp-json/` route 401s `rest_disabled`), so the two HTML pages are the source.
+     *
+     * Three quirks drive the parser. Status is carried by the venue's own machine-readable
+     * `data-c` / `data-m` / `data-p` flags (cancelled / relocated / postponed) on both the card and
+     * the detail page's `.event-content`, with the bilingual `Abgesagt / Canceled` badge text as a
+     * fallback. A **rescheduled show is rendered twice** — once as an `X`-prefixed `data-id`
+     * placeholder sitting at its *original* date, once at its new one — and both link to the same
+     * `/event/` URL, so the placeholder is skipped and only the real entry (flagged `POSTPONED`) is
+     * imported. And a ticket `href` sometimes has **two shop URLs concatenated** into one attribute
+     * (`…utm_medium=dphttps://www.eventim.de/…`), so everything from the second `http(s)://` on is
+     * dropped. The venue publishes no prices, genres or sold-out markers anywhere.
+     */
+    COLUMBIA_THEATER,
+
     /** Duncker Club Berlin – retro hand-coded single-page `start.html` programme table (goth/wave/indie DJ nights), German `DD.MM.` dates without a year. */
     DUNCKER,
 

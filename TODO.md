@@ -87,6 +87,10 @@ Strategy & sequencing: [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEG
 - [ ] **(Decision — ADR candidate)** Curated-vocabulary storage: code vs. data. Move the denylists / synonym maps / corrections (`NON_ARTIST_NAMES`,
   `NAME_CORRECTIONS`, genre synonyms, `ACRONYMS`) from hardcoded Kotlin to steward-editable DB tables so fixes land without a redeploy — vs. keeping them as
   tested code fixed via PR. Spike + ADR before Pillar 4's human-in-the-loop needs live editing; blocks nothing in Pillars 1–3. (Strategy §6.)
+- [ ] **Derive the lineup after the event type is final, not before.** `ScrapedEvent.toEventEntity` promotes a `CONCERT`/`OTHER` title to `FESTIVAL`
+  (`isFestivalTitle`), but every scraper has already built its artists from its *own* type inference, so a festival title still mints headliners — `ELLE & L's
+  Festival` → `Elle` (Columbia Theater), plus the same shape at Clash and Gretchen. Fix once at the boundary (drop the artists when the resolved type is
+  `FESTIVAL`/`PARTY`) rather than per importer.
 - [ ] Enrich venues: type (club/bar/concert hall), description, image/photo, genres, event types
 - [ ] Enrich promoters: description, image, and corrected display names
 - [ ] Check & fix venue districts, addresses, and geo-coordinates
