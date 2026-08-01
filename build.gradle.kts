@@ -58,6 +58,10 @@ subprojects {
     // future release. See: https://openjdk.org/jeps/472
     tasks.withType<Test> {
         jvmArgs("--enable-native-access=ALL-UNNAMED")
+        // The scraper suite parses several hundred KB of HTML fixtures into Jsoup DOMs while the
+        // Testcontainers-backed integration tests hold their Spring contexts in the same worker JVM,
+        // which outgrew Gradle's 512 MB default.
+        maxHeapSize = "1g"
     }
     tasks.withType<JavaExec> {
         jvmArgs("--enable-native-access=ALL-UNNAMED")

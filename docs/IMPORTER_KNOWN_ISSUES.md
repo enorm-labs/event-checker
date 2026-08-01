@@ -554,6 +554,32 @@ source in the project — every event has a date and an image, 140 of 145 have a
   sign, so the shared `parseIsoTime` and `parsePriceValue` — which expect the `HH:mm` and `… €` a page *renders* — both return null on them. A first pass
   silently imported every event with no time and no price because of it.
 
+### Tresor (`scraper/tresor/`) — WordPress, list + detail
+
+Verified against a live import (August 2026): 30 events stored, dates 2026-08-01 → 2026-09-30, none in the past, 152 artist billings across 149 distinct acts,
+every one of them filed on the floor it plays — `Tresor` (91), `Globus` (52) or `Aurora Bar` (9). The 30 permalinks match the live listing exactly.
+
+- 🟠 **Only 6 of 30 events have a start time.** The venue publishes no doors or start time at all; the only clock it gives is the per-artist set slot
+  (`23:00-02:00`) on the event page, and it fills that in only for the nearest nights — the rest of the programme is announced with a lineup but no times. The
+  night's opening set is taken as the event's start time, so a night whose slots are still blank keeps a null one rather than a guessed 23:00.
+- 🟠 **No price, no ticket link, no image and no genre for any event.** The listing and the event pages carry none of them; tickets are sold off-site and the
+  poster art is a CSS background rather than an `<img>`. Every event is typed `PARTY`, which is what all 30 are.
+- 🟠 **Five nights have no lineup.** The four `Singularity` Mondays and one `Tresor New Faces` are published with an empty lineup block (`event-floors-0`) or a
+  `???` placeholder slot. Both are left empty rather than guessed at — the placeholder names nobody.
+- 🟢 **A floor label is reduced to the room it names.** The venue brands the label with the night hosted there (`Globus x Black Rave Culture`,
+  `Tresor New Faces hosted by Grab The Groove / 23h`), which would mint a new stage per event. A label opening with one of the three real rooms is reduced to
+  that room; anything else is kept verbatim, so a genuinely new space still comes through — but the hosting collective is then only visible in the title.
+- 🟢 **Set-format notes and host credits are dropped from the lineup.** The venue decorates an act with its format both bracketed (`Ngly [LIVE]`,
+  `The Ghost [All Night Long]`) and bare (`Shackleton Live`), and bills the curating collective among the DJs (`hosted by HARD WAX`). The note is stripped so
+  one DJ is one artist across nights, and the host credit is dropped because it names a host rather than a performer. Both vocabularies are curated, so a new
+  spelling would come through as part of an act name until it is added.
+- 🟢 **A `b2b` pair is split into both DJs.** `pschukk b2b Robert We` becomes two artists on the same floor, matching Kater, Renate and Club der Visionäre. An
+  act billed on two floors of one night is kept once — `event_artist` is `UNIQUE (event_id, artist_id)` and a second row would fail the whole import.
+- 🟢 **The event page repeats the whole programme in its footer**, in the same markup the listing uses, so the detail parser is scoped to the event's own
+  `main.main-content`. A first pass without that scope filed the entire month's 152 billings under the one night whose own lineup was empty.
+- 🟢 **The standing policy text is cut from the description.** Every event page appends several screens of guest and ticket policy below an underscore rule,
+  identical on all 30 nights; only the blurb above the rule is stored, and 4 events have no blurb of their own at all.
+
 ---
 
 ## How to extend this doc
