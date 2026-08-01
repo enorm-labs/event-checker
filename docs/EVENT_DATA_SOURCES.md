@@ -8,8 +8,8 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Status                              | Meaning                                                                              | Count |
 |-------------------------------------|--------------------------------------------------------------------------------------|------:|
 | ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    48 |
-| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |    26 |
-| ⛔ [Blocked](#-blocked--deferred)   | Website analyzed, but no usable listings (no programme page, JS-only, or too sparse) |    32 |
+| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |    23 |
+| ⛔ [Blocked](#-blocked--deferred)   | Website analyzed, but no usable listings (no programme page, JS-only, or too sparse) |    35 |
 | ❓ [Unanalyzed](#-not-analyzed-yet) | No URL recorded yet — website still needs a first look                               |     0 |
 
 "Website analyzed" also means the [data model](DATA_MODEL.md) was checked against that source — to date no source has required a schema change.
@@ -76,14 +76,11 @@ Analyzed and scrapable — the candidates for the next `/scaffold-importer` runs
 
 | Priority | Name                  | URL                                      | Type         | Why / what it needs                                        |
 |:--------:|-----------------------|------------------------------------------|--------------|------------------------------------------------------------|
-|   High   | Puschen               | https://puschen.net/berlin/              | Promoter     | Consistent format; doors/start, sold-out, cross-venue      |
 |   High   | Renate                | https://www.renate.cc/                   | Techno Club  | Per-floor lineups; club + garden, free-entry notes         |
 |   High   | Tempodrom             | https://www.tempodrom.de/                | Concert Hall | schema.org `Event` JSON-LD with offers; two arenas         |
 |   High   | Tresor                | https://tresorberlin.com/club/events/    | Techno Club  | WordPress; `/event/YYYYMMDD-slug` detail pages             |
-|   High   | Trinity Music         | https://trinitymusic.de/                 | Promoter     | Cross-venue; rich statuses; also populates `promoter`      |
 |  Medium  | Admiralspalast        | https://www.admiralspalast.theater/      | Theater      | Contao; /veranstaltungsuebersicht.html, genre categories   |
 |  Medium  | Humboldthain Club     | https://www.humboldthain.com/            | Techno Club  | Elfsight Event Calendar — as the NEUE_ZUKUNFT importer     |
-|  Medium  | Landstreicher Booking | https://landstreicher-booking.de/        | Promoter     | Structured tour-date table; needs a Berlin-only filter     |
 |  Medium  | LARK                  | https://larkberlin.com/events/           | Club         | Own listing, "SOLD OUT"; not in the Holzmarkt calendar     |
 |  Medium  | Maxxim Club           | https://www.maxxim-berlin.de/            | Club         | Wix; `Event` JSON-LD plus a German-date programme list     |
 |  Medium  | Metropol              | https://metropol-berlin.de/              | Concert Hall | One-pager; type + date + time, "VERLEGT"; no prices        |
@@ -111,6 +108,13 @@ precedent that such a room is in scope: its programme is imported, with the venu
 Analyzed, but there is nothing worth importing today. Revisit when the blocker changes — a redesigned website, adopting a headless browser (deferred
 per [ADR-007](adr/ADR-007_WEB_SCRAPING_STRATEGY.md)), or applying the Havanna-style derived-occurrence approach to undated recurring nights.
 
+**Promoter sources are deferred on a model limitation, not a scraping one.** Puschen, Trinity Music and Landstreicher Booking all publish clean, well-structured
+listings that name the venue per event — Puschen's 35 upcoming shows are spread over ~20 houses. But an event's venue comes from its `event_source` row
+(`EventUpsertService.upsertAndCleanup(events, venueId, …)`), one venue per source, so a promoter's events cannot be attached to the houses they actually play.
+Importing one today would file every show under a pseudo-venue *and* duplicate what the venues' own importers already hold — ~30 of Puschen's 35 are at venues
+already imported. Unblocking them means resolving a venue per event and de-duplicating against the venue-level sources; until then the promoter data reaches us
+anyway, as the `promoter` field on the venues' own events.
+
 | Name                | URL                                 | Type         | Blocker                                          | Unblocked by              |
 |---------------------|-------------------------------------|--------------|--------------------------------------------------|---------------------------|
 | Fluxbau             | https://www.fluxfm.de/fluxbau       | Club         | Angular SPA; ~1 upcoming event at a time         | Headless browser / API    |
@@ -124,6 +128,9 @@ per [ADR-007](adr/ADR-007_WEB_SCRAPING_STRATEGY.md)), or applying the Havanna-st
 | Paloma              | https://www.palomabar.de/           | Bar          | Party names + DJ lineups but **no dates**        | Havanna-style occurrences |
 | Loft                | https://loft.de/                    | Promoter     | Very few events; no year on dates, no times      | Site change               |
 | Greyzone Tickets    | https://www.greyzone-tickets.de/    | Promoter     | Contact info only; ticket service, not a listing | —                         |
+| Landstreicher Booking | https://landstreicher-booking.de/  | Promoter     | Cross-venue; one venue per source (see note)     | Per-event venue resolution |
+| Puschen             | https://puschen.net/berlin/         | Promoter     | Cross-venue; one venue per source (see note)     | Per-event venue resolution |
+| Trinity Music       | https://trinitymusic.de/            | Promoter     | Cross-venue; one venue per source (see note)     | Per-event venue resolution |
 | Arena Berlin        | https://www.arena.berlin/           | Concert Hall | Calendar lists trade fairs only, no concerts     | Site change / promoter    |
 | Frannz Salon        | https://frannz.eu/                  | Club         | Not a separate listing; a floor of Frannz nights | Covered by FRANNZ         |
 | Kesselhaus          | https://www.kesselhaus.net/         | Concert Hall | Angular PWA app shell; no JSON endpoint found    | Headless browser          |
@@ -154,8 +161,8 @@ server-rendered programme, then move the row into [Ready](#-ready-to-implement) 
 Two source lists were worked through completely and are no longer reproduced here:
 
 - The 48 venues of the **Trinity Music location directory** (<https://trinitymusic.de/locations>) — 17 were already imported, the other 31 are now filed above.
-  The **Trinity Music** promoter source still covers all of them in one importer; the venue-level rows stay separate because a venue site usually yields richer
-  data and Trinity only lists the shows it books itself.
+  The venue-level rows are what carries this list now: the **Trinity Music** promoter source itself is deferred (see
+  [Blocked](#-blocked--deferred)), and a venue site usually yields richer data than a promoter listing anyway.
 - The **techno-club cluster** — 26 clubs and bars, of which 13 turned out to be scrapable. The other 13 publish only through Instagram, Facebook or Resident
   Advisor, which makes **Resident Advisor as a source** the single biggest unblocker left on this list.
 
