@@ -7,8 +7,8 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 
 | Status                              | Meaning                                                                              | Count |
 |-------------------------------------|--------------------------------------------------------------------------------------|------:|
-| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    42 |
-| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |    32 |
+| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    43 |
+| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |    31 |
 | ⛔ [Blocked](#-blocked--deferred)   | Website analyzed, but no usable listings (no programme page, JS-only, or too sparse) |    32 |
 | ❓ [Unanalyzed](#-not-analyzed-yet) | No URL recorded yet — website still needs a first look                               |     0 |
 
@@ -39,6 +39,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Golden Gate                 | https://goldengate-berlin.de/                               | Techno Club  | Elementor; current Thu–Sat block only; door-only  |
 | Gretchen                    | https://www.gretchen-club.de/                               | Club         |                                                   |
 | Havanna                     | https://www.havanna-berlin.de/                              | Club         | Undated weekly nights; occurrences derived        |
+| Heimathafen Neukölln        | https://heimathafen-neukoelln.de/                           | Concert Hall | WP REST + ACF; one post, many dated performances  |
 | Hole 44                     | https://hole-berlin.de/                                     | Concert Hall | Events-Manager; "Abgesagt!" / "VERLEGT!" labels   |
 | Junction Bar                | https://www.junction-bar.de/                                | Bar          | Static monthly pages; show times vary by weekday  |
 | Kantine am Berghain         | https://www.berghain.berlin/de/program/kantine-am-berghain/ | Concert Hall | Shares BERGHAIN importer                          |
@@ -61,7 +62,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Wild at Heart               | https://www.wildatheartberlin.de/                           | Bar          | Retro frameset; concerts.php; year from weekday   |
 | Zenner                      | https://zenner.berlin/programm                              | Club         | Gatsby/Sanity page-data JSON; UTC dates; archive  |
 
-41 importer classes cover 42 sources (Kantine am Berghain shares the Berghain importer; Club der Visionäre, Sonnenraum and MS Hoppetosse are
+42 importer classes cover 43 sources (Kantine am Berghain shares the Berghain importer; Club der Visionäre, Sonnenraum and MS Hoppetosse are
 three thin importers over one shared listing and parser).
 
 ## 🔨 Ready to implement
@@ -70,7 +71,6 @@ Analyzed and scrapable — the candidates for the next `/scaffold-importer` runs
 
 | Priority | Name                  | URL                                      | Type         | Why / what it needs                                        |
 |:--------:|-----------------------|------------------------------------------|--------------|------------------------------------------------------------|
-|   High   | Heimathafen Neukölln  | https://heimathafen-neukoelln.de/        | Concert Hall | WordPress `events` REST API (ACF): dates, status, tickets  |
 |   High   | Huxleys Neue Welt     | https://huxleysneuewelt.de/events        | Concert Hall | WordPress; Einlass + Beginn, support acts, "Ausverkauft"   |
 |   High   | Kater                 | https://www.katerclub.de/                | Techno Club  | WordPress; start–end times, lineups, ticket links          |
 |   High   | Max-Schmeling-Halle   | https://www.velomax.de/events            | Arena        | VELOMAX; hall + "Konzert" filter — one importer, 3 halls   |

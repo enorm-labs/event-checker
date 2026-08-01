@@ -257,6 +257,34 @@ enum class EventSource {
     HAVANNA,
 
     /**
+     * Heimathafen Neukölln Berlin – the Karl-Marx-Straße Saal/Studio venue, on WordPress with an
+     * Advanced Custom Fields `events` post type whose public REST API (`/wp-json/wp/v2/events`)
+     * exposes the whole programme as structured JSON — no HTML is scraped (ADR-007 §"Selector
+     * Strategy" priority 1).
+     *
+     * The defining feature is that **one post holds many dated performances**: `acf.event_performances`
+     * is an array (a theatre run reaches 30 entries), each with its own US-format
+     * `performance_date_time` (`11/27/2026 8:00 p.m.`), ticket link, `Einlass ab HH:mm (Saal|Studio)`
+     * note, and `performance_status`. Each performance is expanded into its own event, keyed
+     * `<postId>-<date>-<HHmm>` — the time is part of the identity because a run legitimately plays
+     * twice on one day (matinee plus evening).
+     *
+     * The `performance_status` vocabulary carries what the model needs: `ausverkauft` → the sold-out
+     * flag, `entfallt` → `CANCELLED`, `verlegt` → `RELOCATED`, `freier_eintritt` → the free flag, with
+     * `default`/`premiere`/`restkarten`/`diskussion`/`custom` left `SCHEDULED`. The event type comes
+     * from the venue's own `events_cat-*` taxonomy slug, which `class_list` inlines on every post
+     * (`musik` → concert, `theater`/`amusemang`/`eigenproduktionen`/… → show, `literatur` → reading),
+     * so no second taxonomy request is needed.
+     *
+     * The endpoint returns the **whole archive** (400+ posts, 800+ performances, of which under a
+     * hundred are upcoming) and cannot be filtered on the ACF date server-side, so the importer walks
+     * its ~5 pages and drops past performances while parsing. The 560-term `events_tag` vocabulary
+     * *would* supply a genre, but it mixes genres with formats and needs six more requests to resolve
+     * ids to names, so `genre` is deliberately left null.
+     */
+    HEIMATHAFEN,
+
+    /**
      * Hole 44 Berlin – WordPress/Events-Manager concert hall; the `/events/` page lists every show as a
      * `li.event-item` (date, start time, title, genre tags, and a `.changes` relocation/cancellation note),
      * each linking to a `/event/<date-slug>/` detail page that adds the promoter, doors time, image, and a

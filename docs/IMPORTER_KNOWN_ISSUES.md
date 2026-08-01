@@ -396,6 +396,38 @@ publish is captured — date, start time, night name and full DJ roster — but 
 - 🟢 **A back-to-back billing is split into two DJs.** `Nyna Curtis & Kisling` becomes two artists — the same accepted trade-off as Club der Visionäre, since
   nothing in the markup distinguishes a b2b pair from a duo whose name contains an `&`.
 
+### Heimathafen Neukölln (`scraper/heimathafen/`) — WordPress REST + ACF, JSON source
+
+Verified against a live import (August 2026): 95 upcoming events, dates 2026-09-01 → 2027-09-22, none in the past. The best-covered source so far — every event has a
+date, start time, image, description and a price; 93 of 95 have a doors time and 90 a ticket link.
+
+- 🟠 **No genre for any event.** The venue *does* tag its events, but the `events_tag` vocabulary is 560 terms mixing real genres (Soul, Cumbia, Folktronica)
+  with formats and access notes (Konzert, Premiere, Live Podcast, Buchvorstellung, Gebärdensprache), and the REST payload carries only term **ids** — resolving
+  them to names costs six more requests per import for a field that would then need its own stop-list. `class_list` inlines the slugs, but slugs are lossy
+  (`rb` for R&B, `gebaerdensprache`), so `genre` is deliberately left null. Resolving the taxonomy once and caching it is what would unblock this.
+- 🟠 **Only concerts get artists.** The event type comes from the venue's own category, and `buildArtistsForEventType` mints a headliner from the title only for
+  a `CONCERT`. That is correct here — a theatre or reading title (`DIE KLIMA-MONOLOGE`, `LEBEN GROPIUSSTADT GEBRAUCHSANWEISUNG`) names a production, not a
+  performer — but it means 65 of 95 events store no artist, and the actual cast, which the venue writes into the prose blurb and an unused `acf.event_cast`
+  field, is not extracted.
+- 🟢 **One post expands into many dated events, keyed by date *and* time.** `acf.event_performances` is an array (a run reaches 30 entries), so `sourceId` is
+  `<postId>-<date>-<HHmm>`. The time is part of the key because a run legitimately plays twice on one day; the cost is that correcting a start time re-keys
+  that performance, creating a new row while the stale-event cleanup removes the old one.
+- 🟢 **Concession tiers never reach the price columns.** The venue prices by audience and labels its social tiers with the sales channel too — `Mit Berlin-Pass
+  (Abendkasse)` is €3 and `Für Geflüchtete (Abendkasse)` is €0. Matching `Abendkasse` anywhere in the label stored €3 as *the* door price during the first
+  smoke test (and the €0 tier would have marked the event free), so both label matches are start-anchored and an explicit concession list — including the
+  pay-it-forward `ZUGABE TICKET`, which is priced *above* general admission — is excluded first. Every tier survives verbatim in the `priceNote`.
+- 🟢 **The room is parsed away.** Performance notes read `Einlass ab 18:45 Uhr (Studio)`, naming the venue's two spaces (Saal / Studio). Only the doors time is
+  read; the model has no event-level room field (`ScrapedArtist.stage` is per-artist), so which space a show plays in is lost.
+- 🟢 **Paging a mutable ordered list can miss an event.** The endpoint returns the whole archive ordered by *post* date, and the event date is an ACF field
+  WordPress cannot filter or sort on, so all ~5 pages are walked. If a post is edited mid-walk it shifts position and can be skipped — capturing the five pages
+  minutes apart during development yielded 96 upcoming performances against the live import's 95, for exactly this reason. Harmless in practice: the walk takes
+  about a second, the import runs daily, and upserts are idempotent by `sourceId`.
+- 🟢 **A promoter is read only from one phrasing.** `acf.event_organiser` is free prose: `"Eine Veranstaltung von X"` names a promoter, but `"Eine Veranstaltung
+  des Heimathafen Neukölln in Kooperation mit …"` credits the venue itself and `"Heimathafen Neukölln mit Sophia Keßen und Margret Schütz"` names *performers*.
+  Only the first form is read, so most events store no promoter rather than minting partners and performers as one.
+- 🟢 **Conditional requests are unused.** The REST endpoint sends no ETag or Last-Modified, so every run re-walks the archive; upserts are idempotent by
+  `sourceId`.
+
 ---
 
 ## How to extend this doc
