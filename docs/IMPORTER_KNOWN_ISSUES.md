@@ -580,6 +580,33 @@ every one of them filed on the floor it plays — `Tresor` (91), `Globus` (52) o
 - 🟢 **The standing policy text is cut from the description.** Every event page appends several screens of guest and ticket policy below an underscore rule,
   identical on all 30 nights; only the blurb above the rule is stored, and 4 events have no blurb of their own at all.
 
+### Admiralspalast (`scraper/admiralspalast/`) — Contao, listing + per-production schedules
+
+Verified against a live import (August 2026): 201 performances stored from 100 productions, dates 2026-08-14 → 2027-12-03, none in the past. Every event has a
+start time, a poster and a category; 14 are flagged sold out and 2 postponed. The 100 production links match the live listing exactly.
+
+- 🟠 **No prices and no descriptions at all.** The venue publishes neither anywhere — tickets are sold on Eventim, and a production page carries only its
+  schedule, the venue's standing admission policy and its address. 185 of 201 performances do carry a per-date Eventim link.
+- 🟠 **No doors time.** Only the performance start time is published (`Mo, 19:30`).
+- 🟠 **Only concerts get an artist.** The shared `buildArtistsForEventType` mints a headliner from the title for a `CONCERT` and stays silent otherwise, which
+  is right for `TV Noir - die emotionale Musik- Talk- und Spieleshow` but loses the performer of a comedy solo show (`Bülent Ceylan - Diktatürk`). The venue
+  bills no lineup of its own, so the title is the only candidate — 66 of 201 events have an artist.
+- 🟢 **The A–Z listing is discovery only.** Every one of its 100 tiles renders the same `ab DD.MM.YY` run-start date, so the listing cannot date anything; the
+  schedule is read from each `/veranstaltung/<slug>.html` page instead. That makes an import one request per production plus one per category — 121 in total,
+  spaced by the shared per-host throttle.
+- 🟢 **The category costs 20 extra fetches.** `eventkategorie` filter pages are the only place the venue states a category, so each is walked and its
+  productions take its label. A production listed under several categories keeps the first in the venue's own alphabetical order — stable between imports, but
+  arbitrary. 11 distinct categories are in use; `Kultur`, `Diskussion` and `Podcast` name a framing rather than a form and fall through to the theatre's `SHOW`
+  default.
+- 🟢 **`AUSVERKAUFT` replaces the ticket link rather than accompanying it.** A sold-out performance drops its Tickets button entirely, so the cell text is the
+  only signal — a first pass read the missing link as "not ticketed" and left all 14 unflagged.
+- 🟢 **The venue's two reschedule notes mean opposite things.** `verschoben auf <date>` sits on the abandoned date (postponed), `verlegt vom <date>` on its
+  replacement (going ahead). The shared `parseEventStatus` reads any "verlegt" as `RELOCATED`, which would mark the one certain date as moved, so that idiom is
+  checked first. Both notes are also kept as the event's subtitle.
+- 🟢 **Poster paths resolve against the site root, not the page.** Contao writes them relative (`assets/images/8/…`) under a page-wide
+  `<base href="https://www.admiralspalast.theater/">` — which it emits **unterminated**, so the tag cannot be relied on. Resolving against the production URL
+  instead yields `/veranstaltung/assets/…`, which 404s.
+
 ---
 
 ## How to extend this doc

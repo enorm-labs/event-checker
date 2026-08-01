@@ -4,6 +4,7 @@ import java.time.Clock
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.Month
 import java.time.MonthDay
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
@@ -200,6 +201,45 @@ fun parseGermanDate(text: String?): LocalDate? = parseGerman(text, GERMAN_DATE_F
  * ```
  */
 fun parseGermanShortDate(text: String?): LocalDate? = parseGerman(text, GERMAN_SHORT_DATE_FORMATTER)
+
+/**
+ * Maps a German month abbreviation onto its [Month], case- and punctuation-insensitively.
+ *
+ * Venues that render a calendar block write the month as a three-letter German abbreviation
+ * ("Jul", "Okt", "Dez"). These are spelled out rather than parsed with a
+ * [Locale.GERMAN][java.util.Locale.GERMAN] formatter for two reasons: the JDK's CLDR abbreviations
+ * carry a trailing dot, and they spell March `Mrz` where some sites write `Mär` (or `Maer` where
+ * the page is not UTF-8 clean). All three March spellings are accepted.
+ *
+ * Shared by the venues whose listings render this calendar block — Soda, Velomax and
+ * Admiralspalast.
+ *
+ * Example:
+ * ```kotlin
+ * parseGermanMonthAbbreviation("Okt")   // Month.OCTOBER
+ * parseGermanMonthAbbreviation("mrz.")  // Month.MARCH
+ * parseGermanMonthAbbreviation("Sept")  // null (not an abbreviation these sites render)
+ * ```
+ */
+fun parseGermanMonthAbbreviation(text: String?): Month? = GERMAN_MONTH_ABBREVIATIONS[text?.trim(',', '.', ' ')?.lowercase()]
+
+private val GERMAN_MONTH_ABBREVIATIONS: Map<String, Month> =
+    mapOf(
+        "jan" to Month.JANUARY,
+        "feb" to Month.FEBRUARY,
+        "mär" to Month.MARCH,
+        "mrz" to Month.MARCH,
+        "maer" to Month.MARCH,
+        "apr" to Month.APRIL,
+        "mai" to Month.MAY,
+        "jun" to Month.JUNE,
+        "jul" to Month.JULY,
+        "aug" to Month.AUGUST,
+        "sep" to Month.SEPTEMBER,
+        "okt" to Month.OCTOBER,
+        "nov" to Month.NOVEMBER,
+        "dez" to Month.DECEMBER
+    )
 
 /** Shared null-safe parse for the two German dotted-date formatters. */
 private fun parseGerman(

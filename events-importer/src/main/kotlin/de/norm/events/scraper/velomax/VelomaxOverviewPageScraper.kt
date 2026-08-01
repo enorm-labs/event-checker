@@ -8,6 +8,7 @@ import de.norm.events.scraper.buildArtistsForEventType
 import de.norm.events.scraper.cleanEventTitle
 import de.norm.events.scraper.extractEventSlug
 import de.norm.events.scraper.mapEventType
+import de.norm.events.scraper.parseGermanMonthAbbreviation
 import de.norm.events.scraper.parseTime
 import de.norm.events.scraper.resolveUrl
 import de.norm.events.scraper.textAt
@@ -15,7 +16,6 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import java.time.LocalDate
-import java.time.Month
 
 /**
  * Pure HTML parser for the shared Velomax `/events` listing.
@@ -139,7 +139,7 @@ class VelomaxOverviewPageScraper {
     @Suppress("ReturnCount") // Guard clauses for each missing date part are clearer than nesting
     private fun parseListingDate(entry: Element): LocalDate? {
         val day = entry.textAt(".day")?.trim(',', '.', ' ')?.toIntOrNull() ?: return null
-        val month = GERMAN_MONTH_ABBREVIATIONS[entry.textAt(".month")?.trim(',', '.', ' ')?.lowercase()] ?: return null
+        val month = parseGermanMonthAbbreviation(entry.textAt(".month")) ?: return null
         val year = entry.textAt(".year")?.trim('\'', ' ')?.toIntOrNull() ?: return null
         return runCatching { LocalDate.of(TWENTY_FIRST_CENTURY + year, month, day) }
             .onFailure { logger.warn { "Unparseable Velomax listing date '$day $month $year'" } }
@@ -170,27 +170,5 @@ class VelomaxOverviewPageScraper {
 
         /** Century the listing's two-digit year (`\'26`) belongs to. */
         const val TWENTY_FIRST_CENTURY = 2000
-
-        /**
-         * German month abbreviations as the listing renders them. Spelled out rather than parsed
-         * with a [java.util.Locale.GERMAN] formatter, whose CLDR abbreviations carry trailing dots
-         * and spell March `März` where this site writes `Mrz`.
-         */
-        val GERMAN_MONTH_ABBREVIATIONS: Map<String, Month> =
-            mapOf(
-                "jan" to Month.JANUARY,
-                "feb" to Month.FEBRUARY,
-                "mär" to Month.MARCH,
-                "mrz" to Month.MARCH,
-                "apr" to Month.APRIL,
-                "mai" to Month.MAY,
-                "jun" to Month.JUNE,
-                "jul" to Month.JULY,
-                "aug" to Month.AUGUST,
-                "sep" to Month.SEPTEMBER,
-                "okt" to Month.OCTOBER,
-                "nov" to Month.NOVEMBER,
-                "dez" to Month.DECEMBER
-            )
     }
 }
