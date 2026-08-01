@@ -49,6 +49,7 @@
 ###   MS Hoppetosse        — https://hoppetosse.berlin/program/ (shares the CLUB_DER_VISIONAERE listing; winter location)
 ###   Neue Zukunft         — https://neue-zukunft.org/ (Elfsight Event Calendar widget JSON API)
 ###   Privatclub           — https://privatclub-berlin.de/
+###   Renate               — https://www.renate.cc/ (WordPress; homepage programme, per-floor lineups)
 ###   Roadrunner's Paradise — http://www.roadrunners-paradise.de/programm.html
 ###   Schokoladen          — https://www.schokoladen-mitte.de/
 ###   SO36                 — https://www.so36.com/tickets
@@ -2459,6 +2460,68 @@ Accept: application/json
 
 > {%
     client.test("Privatclub import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Renate (Alt-Stralau 70, Berlin-Friedrichshain — Wilde Renate)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Renate venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Renate",
+    "address": "Alt-Stralau 70",
+    "city": "Berlin",
+    "postalCode": "10245",
+    "district": "friedrichshain-kreuzberg",
+    "latitude": 52.50250,
+    "longitude": 13.46528,
+    "websiteUrl": "https://www.renate.cc",
+    "description": "A warren of a techno club in a derelict Friedrichshain apartment house, with several named floors and a garden that opens in summer."
+}
+
+> {%
+    client.global.set("renate_venue_id", response.body.id);
+    client.test("Renate venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Renate event source ---
+# Links the venue to the RenateWebsiteImporter.
+# The sourceType "RENATE" matches EventSource.RENATE.
+# NOTE: the URL is the homepage `/` — it carries the whole programme inline, including the
+# per-floor lineups. The WP REST API registers no `event` post type and there are no per-event
+# pages, so nothing else is fetched.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{renate_venue_id}},
+    "name": "Renate",
+    "url": "https://www.renate.cc/",
+    "sourceType": "RENATE",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Renate event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Renate import ---
+POST {{importer-host}}/api/admin/event-sources/renate/import
+Accept: application/json
+
+> {%
+    client.test("Renate import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}

@@ -503,6 +503,34 @@ event has a date, a start time, an image and a promoter, and the detail pages ca
 - 🟢 **Conditional requests cover the shared page only.** All three sources fetch the same `velomax.de/events` URL, so each carries its own ETag for the same
   document; a change anywhere on the page re-runs all three. That is cheap and correct, just redundant.
 
+### Renate (`scraper/renate/`) — WordPress, single page
+
+Verified against a live import (August 2026): 13 upcoming nights, none in the past, every one with a ticket link and 11 of 13 with a full per-floor lineup —
+84 DJs across the venue's GARDEN, GREEN, BLACK, RED and SECRET floors.
+
+- 🔴 **No times, prices, images or descriptions — for any night.** The programme prints a date and a title and nothing else structured; door times appear only
+  inside floor headings ("GREEN (from 22:00)") and are per floor rather than per event, so no `startTime` is stored. The prose that does exist is club policy
+  repeated verbatim on every night (cashless, safer-space, awareness team), so no description is stored either — storing it would put four identical paragraphs
+  on all 13 events.
+- 🟠 **Artists are extracted only beneath a recognised floor heading.** The venue reuses `<strong>` for its slogan (`Garten für alle!`), for host credits
+  (`hosted by Neer`) and for festival blurbs, so a heading opens a floor only when it *starts with a floor name* — `GARDEN`, `GREEN`, `BLACK`, `RED`, `SECRET`,
+  `TOP SECRET`. Note the German `GARTEN` is deliberately **not** a floor name: it only ever appears in the slogan, the floor itself being spelled `GARDEN`. Two
+  nights whose text is pure prose (a festival, a themed party) therefore yield no artists at all.
+- 🟠 **An act line is rejected unless it looks like a name.** The same paragraph run carries a workshop timetable, policy sentences and `+ more tba`
+  placeholders alongside the DJs, none of them marked up differently — so a line is taken only when it is at most six words, carries no clock time, is not a
+  `hosted by …` credit and is not a placeholder. A genuinely wordy billing is dropped rather than mangled.
+- 🟢 **An act billed on two floors is kept once.** `event_artist` is `UNIQUE (event_id, artist_id)`, so a label hosting both the garden and the green floor
+  (Remoto Records) would produce two rows for one pair and fail the *entire* import — the first billing wins and keeps its floor. The same constraint Club der
+  Visionäre documents.
+- 🟢 **The markup is not consistent between nights.** Most put each floor heading and act in its own paragraph; some pack a whole night, headings included, into
+  one paragraph split by `<br>`. The parser flattens both to one line stream, which is why a floor is switched on any *line* naming a floor rather than on a
+  paragraph boundary.
+- 🟢 **One night's lineup is mis-split by the venue's own formatting.** On 22 August the source runs a floor heading and its acts together
+  (`Red hosted by Dub & Dal mgt Uta …`), so the management abbreviation `mgt` is stored as an act; on 1 August a name is line-broken mid-way
+  (`Mr. Sian b2b Aidan` / `Harrison`), yielding two fragments. Nothing in the markup distinguishes these from real names.
+- 🟢 **Free entry is left to the shared detector.** Floor headings advertise time-limited offers ("free until 20:00", "FREE til 20:00!") which must not mark a
+  night free; only an unqualified `(Free Entry)` in the title does, via the shared `detectFree`.
+
 ---
 
 ## How to extend this doc
