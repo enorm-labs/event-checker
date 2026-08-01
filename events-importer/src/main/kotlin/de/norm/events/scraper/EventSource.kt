@@ -574,6 +574,30 @@ enum class EventSource {
      */
     NEUE_ZUKUNFT,
 
+    /**
+     * OHM Berlin – the small bass/techno club in the Tresor power-station complex, on a
+     * hand-themed WordPress. Its whole upcoming programme is a `ul.event-list` on the home page,
+     * with **no per-event URLs, prices, images or ticket links** — each `li.event-item` carries
+     * only a `.event-date` (`31/07`), a `.event-time` (`23:00`), an `.event-title` and a
+     * `<br>`-separated `.event-lineup` of DJs. The WordPress REST API answers 401, so the
+     * rendered page is the only source, and `sourceId` is built from the resolved date plus the
+     * slugified title.
+     *
+     * Two properties shape the importer. **The date carries no year and no weekday**, so the year
+     * is resolved with [inferYearForWeekday][de.norm.events.scraper.inferYearForWeekday]'s
+     * weekday-less path: the occurrence nearest today wins, which keeps a night that has just
+     * happened in the current year instead of rolling it twelve months forward. And the venue
+     * publishes an extremely **short horizon** — one to three nights, the rest moving to
+     * `/archives` once past — so a low event count is normal here and is not evidence of a broken
+     * importer; the archive is deliberately not crawled, as it holds only past events.
+     *
+     * Every night is a DJ programme, so events are typed
+     * [PARTY][de.norm.events.event.EventType.PARTY] and the lineup entries are stored as `DJ`
+     * artists. The title is a party/collective name (`Ouch x FemmeDecks`), not an act, so it is
+     * never minted as an artist.
+     */
+    OHM,
+
     /** Privatclub Berlin – WordPress-based single-page event listing. */
     PRIVATCLUB,
 

@@ -733,6 +733,26 @@ poster. The count, titles and dates match the venue's `/events` page exactly, in
   Butzke as "same shape as Modus Berlin". `ModusOverviewPageScraper` / `ModusDetailPageScraper` should be the template when that venue is implemented — quite
   possibly with the same parsers behind a second `EventSource`.
 
+### OHM (`scraper/ohm/`) — hand-themed WordPress, single page
+
+Verified against a live import (1 August 2026): the page listed 2 nights, the scraper parsed both, and **1 was stored** — the other was the previous night, which
+the shared pipeline drops (`Dropped 1 past event(s)`, `EventUpsertService.dropPastEvents`). The stored row matches the live listing exactly: `Animalia`,
+2026-08-01, 23:59, DJs C3D-E (live) / Kia / livwutang / LoLo.
+
+- 🔴 **The venue publishes only 1–3 nights, so this source will normally hold one or two rows.** The rest of the programme moves to `/archives` once past, which
+  is deliberately not crawled (it holds only past events). A low count is therefore *expected* here and is not evidence of a broken importer — the fixture tests
+  are what distinguish the two. This is the thinnest source in the inventory; the venue is nonetheless active (76 nights in the archive at capture).
+- 🟠 **The date has no year and no weekday.** It is resolved with `inferYearForWeekday`'s weekday-less path — the occurrence nearest today wins — which keeps a
+  night that has just happened in the current year instead of rolling it twelve months forward. A date more than ~6 months out would resolve to the wrong year,
+  but the venue's horizon is days, so that case cannot arise in practice.
+- 🟠 **No prices, images, ticket links, descriptions or per-event URLs at all.** The listing is the whole source; `sourceUrl` is the home page for every event
+  and `sourceId` is built from the resolved date plus the slugified title. The WordPress REST API answers 401, so there is no JSON source to prefer.
+- 🟢 **The title is never an artist.** OHM titles are party/collective names (`Ouch x FemmeDecks`, `Animalia`); only the `<br>`-separated `.event-lineup` entries
+  are stored, as `DJ`s.
+- 🟢 **A lineup entry keeps its performance-format suffix** — `C3D-E (live)` is stored verbatim, so it will not resolve to the same artist row as a plain
+  `C3D-E` elsewhere. This is the existing convention for DJ lineups across every club importer (AMT, ÆDEN, Renate, Duncker), not an OHM rule: `stripArtistSuffix`
+  is applied only to headliners derived from a title → tracked in `TODO.md`.
+
 ---
 
 ## How to extend this doc
