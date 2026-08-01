@@ -56,6 +56,7 @@
 ###   MS Hoppetosse        — https://hoppetosse.berlin/program/ (shares the CLUB_DER_VISIONAERE listing; winter location)
 ###   Neue Zukunft         — https://neue-zukunft.org/ (Elfsight Event Calendar widget JSON API)
 ###   OHM                  — https://ohmberlin.com/ (hand-themed WordPress; year-less dates, 1-3 nights)
+###   Parkbühne Wuhlheide  — https://www.wuhlheide.de/programm (October CMS; ISO date in the event URL)
 ###   Privatclub           — https://privatclub-berlin.de/
 ###   Renate               — https://www.renate.cc/ (WordPress; homepage programme, per-floor lineups)
 ###   Roadrunner's Paradise — http://www.roadrunners-paradise.de/programm.html
@@ -2849,6 +2850,7 @@ Accept: application/json
 %}
 
 ### ————————————————————————————————————————————————————————————
+### ————————————————————————————————————————————————————————————
 ### OHM (Köpenicker Str. 70, Berlin-Mitte — im Tresor-Kraftwerk)
 ### ————————————————————————————————————————————————————————————
 
@@ -2903,6 +2905,67 @@ Accept: application/json
 
 > {%
     client.test("OHM import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Parkbühne Wuhlheide (An der Wuhlheide 187, Berlin-Köpenick)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Parkbühne Wuhlheide venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Parkbühne Wuhlheide",
+    "address": "An der Wuhlheide 187",
+    "city": "Berlin",
+    "postalCode": "12459",
+    "district": "treptow-koepenick",
+    "latitude": 52.46177,
+    "longitude": 13.56405,
+    "websiteUrl": "https://www.wuhlheide.de",
+    "description": "A large open-air amphitheatre in the Wuhlheide park, running a seasonal summer programme of touring concerts."
+}
+
+> {%
+    client.global.set("wuhlheide_venue_id", response.body.id);
+    client.test("Parkbühne Wuhlheide venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Parkbühne Wuhlheide event source ---
+# Links the venue to the WuhlheideWebsiteImporter.
+# The sourceType "WUHLHEIDE" matches EventSource.WUHLHEIDE.
+# NOTE: the programme is seasonal (open air), so the listing is short and can be nearly empty in
+# winter. Each event URL ends with an ISO date, which is the date source and the sourceId key.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{wuhlheide_venue_id}},
+    "name": "Parkbühne Wuhlheide",
+    "url": "https://www.wuhlheide.de/programm",
+    "sourceType": "WUHLHEIDE",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Parkbühne Wuhlheide event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Parkbühne Wuhlheide import ---
+POST {{importer-host}}/api/admin/event-sources/parkbuhne-wuhlheide/import
+Accept: application/json
+
+> {%
+    client.test("Parkbühne Wuhlheide import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}
