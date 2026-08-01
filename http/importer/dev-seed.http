@@ -31,6 +31,7 @@
 ###   Golden Gate          — https://goldengate-berlin.de/ (WordPress/Elementor; current Thu–Sat block only)
 ###   Gretchen             — https://www.gretchen-club.de/
 ###   Havanna              — https://www.havanna-berlin.de/events (undated weekly nights, expanded to dated occurrences)
+###   Heimathafen Neukölln — https://heimathafen-neukoelln.de/wp-json/wp/v2/events (WP REST + ACF; performances array)
 ###   Hole 44              — https://hole-berlin.de/events/ (WordPress/Events-Manager, list + detail)
 ###   Junction Bar         — https://www.junction-bar.de/ (live music + DJ programs)
 ###   Kantine am Berghain  — https://www.berghain.berlin/de/program/kantine-am-berghain/ (shares BERGHAIN importer)
@@ -1343,6 +1344,69 @@ Accept: application/json
 
 > {%
     client.test("Havanna import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Heimathafen Neukölln (Karl-Marx-Str. 141, Berlin-Neukölln)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Heimathafen Neukölln venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Heimathafen Neukölln",
+    "address": "Karl-Marx-Str. 141",
+    "city": "Berlin",
+    "postalCode": "12043",
+    "district": "neukoelln",
+    "latitude": 52.47956,
+    "longitude": 13.43918,
+    "websiteUrl": "https://heimathafen-neukoelln.de",
+    "description": "A Neukolln Saal and Studio venue in a historic ballroom, programming concerts, theatre, comedy, readings and its own productions."
+}
+
+> {%
+    client.global.set("heimathafen_venue_id", response.body.id);
+    client.test("Heimathafen Neukölln venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Heimathafen Neukölln event source ---
+# Links the venue to the HeimathafenWebsiteImporter.
+# The sourceType "HEIMATHAFEN" matches EventSource.HEIMATHAFEN.
+# NOTE: the URL is the WP REST base for the ACF-backed `events` post type — a JSON source, no HTML
+# scraping (ADR-007 priority 1). One post holds an `acf.event_performances` array, so each dated
+# performance becomes its own event. The endpoint serves the whole archive and cannot filter on the
+# ACF date, so the importer walks its ~5 pages and drops past performances while parsing.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{heimathafen_venue_id}},
+    "name": "Heimathafen Neukölln",
+    "url": "https://heimathafen-neukoelln.de/wp-json/wp/v2/events",
+    "sourceType": "HEIMATHAFEN",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Heimathafen Neukölln event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Heimathafen Neukölln import ---
+POST {{importer-host}}/api/admin/event-sources/heimathafen-neukoelln/import
+Accept: application/json
+
+> {%
+    client.test("Heimathafen Neukölln import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}
