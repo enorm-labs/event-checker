@@ -315,6 +315,34 @@ enum class EventSource {
     HOLE44,
 
     /**
+     * Humboldthain Club Berlin – the techno club on Hochstraße in Wedding, on WordPress. Its
+     * programme is not in the page at all: the site embeds an Elfsight "Event
+     * Calendar" widget that renders client-side, so — as for [NEUE_ZUKUNFT] — the source is the
+     * widget's public boot API (`core.service.elfsight.com/p/boot/?w=<widgetId>`), which returns
+     * the venue's whole calendar as structured JSON (ADR-007 §"Selector Strategy" priority 1).
+     * Each entry carries an `id`, `name`, a `start.{date,time}`, an HTML `description`, a
+     * `coverImage.url` and `actions[]` (a "Presale Tickets" link).
+     *
+     * Two things set it apart from the other Elfsight venue. Its resident night ("OPEN DECKS &
+     * TISCHTENNIS") is stored as a **single recurring entry** the widget expands in the browser,
+     * so a parser reading only `start.date` would import it once at the series' opening date and
+     * lose every upcoming Tuesday; weekly recurrences are therefore expanded into one event per
+     * occurrence over a rolling horizon, which is also why `sourceId` combines the widget id with
+     * the occurrence date. And the venue writes its lineups as **`ra.co/dj/<slug>` links inside
+     * the HTML description** — a machine-readable DJ roster, unlike the surrounding prose, whose
+     * lineup headings vary from night to night ("Lineup/Musik", "Line-up Live:", "❤️‍🔥 POP:") and
+     * from which no artists are derived.
+     *
+     * Every night is a DJ party, so events are typed [PARTY][de.norm.events.event.EventType.PARTY]
+     * unless the venue prefixes the title `KONZERT:`, its only category marker. The widget's own
+     * `eventType` vocabulary is not one: the venue has filled it with weekday/time labels
+     * ("Samstag, 14:00") that contradict the event's own `start.time`. Prices are quoted only in
+     * the prose ("Abendkasse - 18€", "12€ Early Bird"), the venue publishes no per-event page, and
+     * nothing on the calendar marks a night sold out, cancelled or moved.
+     */
+    HUMBOLDTHAIN,
+
+    /**
      * Huxleys Neue Welt Berlin – the Neukölln concert hall (Hasenheide), on WordPress with an
      * Events-Manager `event` post type whose REST API is not exposed (only the stock post types are
      * registered), so its two HTML pages are the source. The `/events` page lists every upcoming show

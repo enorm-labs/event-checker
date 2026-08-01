@@ -606,6 +606,42 @@ start time, a poster and a category; 14 are flagged sold out and 2 postponed. Th
   `<base href="https://www.admiralspalast.theater/">` — which it emits **unterminated**, so the tag cannot be relied on. Resolving against the production URL
   instead yields `/veranstaltung/assets/…`, which 404s.
 
+### Humboldthain Club (`scraper/humboldthain/`) — Elfsight Event Calendar widget, JSON source
+
+Verified against a live import (August 2026): 10 events stored, 2026-08-01 → 2026-08-25, none in the past, all with a start time and a poster. The rendered
+widget's own upcoming list — six one-off nights plus four Tuesdays of the resident night — matches the stored rows one for one, in the same order.
+
+- 🔴 **No artists on the currently-upcoming nights.** The venue marks up a lineup only as `ra.co/dj/<slug>` links inside the HTML description, which it uses on
+  roughly a fifth of its nights (15 of 77 in the captured calendar, yielding up to 14 DJs each). The rest write the roster as prose under headings that change
+  every night (`Lineup/Musik`, `Line-up Live:`, `❤️‍🔥 POP:`), interleaved with door policy and awareness notes, so nothing is minted from it — the same call as
+  Kater's unmarked prose. All ten currently-upcoming nights happen to fall in the unmarked group.
+- 🟠 **No prices, doors time, genre or per-event page — for any night.** Prices exist only inside the prose, in as many spellings as there are promoters
+  (`Abendkasse - 18€`, `--- 13€ Tickets available at the box office ---`, `12€ Early Bird` / `15€ Normal`), so none is parsed. The widget has no genre field, no
+  doors field and no per-event URL, so every event links back to the venue's landing page.
+- 🟠 **Every night is typed `PARTY`.** Humboldthain is a techno club whose whole programme is DJ nights, so the type is fixed like Golden Gate's and ÆDEN's. The
+  one exception is the venue's own `KONZERT:` title prefix (one night in 77), which types the event `CONCERT` and bills the rest of the title as its headliner.
+- 🟠 **Nothing marks a night sold out, cancelled or moved.** The widget has no status field and the venue writes no badge, so every event stays `SCHEDULED`. A
+  single archived night mentions "verlegt" in its prose, which is deliberately not read as a status.
+- 🟢 **The resident night is a recurrence rule, expanded here.** `OPEN DECKS & TISCHTENNIS` is stored as *one* calendar entry with a weekly repeat rule that the
+  widget expands in the browser; reading only `start.date` would import it once at the series' opening date (long past) and lose every upcoming Tuesday. Weekly
+  rules are expanded into one event per occurrence over a rolling 26-week horizon, bounded by the rule's own end date or occurrence count — which is why
+  `sourceId` is `<widgetId>-<date>` rather than the bare id. Elfsight's monthly `nthDayInMonth` rules are **not** expanded (this venue uses none) and contribute
+  their start date alone.
+- 🟢 **Conditional requests are deliberately unused.** The Elfsight API does send an ETag, but honouring it would freeze the recurrence horizon — the derived
+  occurrences are anchored on "today", so a 304 on an unchanged calendar would stop the window advancing (the same reason Havanna re-fetches every run). Every
+  import re-reads the payload and relies on idempotent `sourceId` upserts; a second import of the same calendar stored the same 10 rows.
+- 🟢 **The widget's own `eventType` field is not a category and is ignored.** The venue has filled it with weekday/time labels (`Samstag, 14:00`,
+  `Donnerstag, 18:00`) rather than event kinds, and they can disagree with the event's own `start.time` — `HUMBI BLEIBT` is labelled `SAMSTAG, 18:00` but carries
+  `start.time` 17:00, and the structured field is what is stored.
+
+### Neue Zukunft (`scraper/neuezukunft/`) — Elfsight Event Calendar widget, JSON source
+
+- 🟠 **Monthly recurring entries are imported once, at their start date only.** The same Elfsight payload shape as Humboldthain above, but Neue Zukunft's
+  recurring entries use Elfsight's *monthly* rules (`repeatPeriod: nthDayInMonth`, and one `custom`/`monthly`) — 4 of 44 entries in the captured fixture,
+  including the `Future Bash Reloaded` and `Jazz After Dark` series. `NeueZukunftApiScraper` reads `start.date` alone, so each such series contributes a single
+  event and its later occurrences are missing. Unblocking it needs monthly-rule expansion *and* a `sourceId` change (the scraper keys on the bare widget id,
+  which cannot distinguish occurrences) — the latter re-mints every Neue Zukunft event → tracked in `TODO.md`.
+
 ---
 
 ## How to extend this doc
