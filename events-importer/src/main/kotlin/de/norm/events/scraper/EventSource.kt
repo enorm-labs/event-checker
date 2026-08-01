@@ -529,6 +529,28 @@ enum class EventSource {
     TEMPODROM,
 
     /**
+     * Tresor Berlin – the Köpenicker Straße techno club in the former Heizkraftwerk, on WordPress
+     * with its REST API disabled site-wide (`401 rest_disabled`), so its two HTML pages are the
+     * source. `/club/events/` lists each night as an `article.event-item` carrying a year-less
+     * `Sa 01.08` date, a title, and the night's lineup already grouped **by floor** —
+     * `.event-floor` → `.floor-name` (`Tresor`, `Globus`, `Aurora Bar`) → `.floor-artist` — which
+     * is the cleanest lineup markup of any venue here and maps straight onto
+     * [ScrapedArtist.stage][de.norm.events.scraper.ScrapedArtist.stage]. The date comes from the
+     * `YYYYMMDD` prefix of the `/event/YYYYMMDD-<slug>/` permalink rather than the rendered card,
+     * which prints no year.
+     *
+     * Each detail page adds a per-artist **set time** (`23:00-02:00`) and a blurb. The model has no
+     * per-artist time, so the night's opening set supplies the event's start time — the venue
+     * publishes no doors or start time of its own. The blurb is followed by an underscore rule and
+     * then several screens of guest and ticket policy repeated on every night, so only the part
+     * above that rule is kept.
+     *
+     * The venue publishes no prices, no images and no ticket link (tickets are sold on Resident
+     * Advisor, mentioned only in the policy prose), and bills an unannounced slot as `???`.
+     */
+    TRESOR,
+
+    /**
      * UFO im Velodrom Berlin – the smaller hall configured inside the Velodrom, listed as its own
      * `UFO` location on the shared Velomax programme and served by its own `ufo-velodrom.de` domain.
      * Its nights are the `.ufo` entries on the one listing; see [MAX_SCHMELING_HALLE] for the page
