@@ -475,6 +475,17 @@ cohesive responsibility, keeping the codebase organized as the number of utiliti
 | `isPlaceholderName(name)`              | Detects placeholder artist names ("TBA", "N.N.") that should not be persisted       |
 | `buildArtistList(title, supportNames)` | Constructs headliner + support artist list from the common title/subtitle pattern   |
 
+**`WixEventsWarmupData.kt`** — platform-level reader for venues on Wix with a Wix Events widget (currently Loge and MAXXIM). The widget renders client-side, but
+Wix server-side-injects the full event data as strict JSON in a `<script type="application/json" id="wix-warmup-data">` block, so that payload is the source
+(priority 1 below) rather than the rendered cards. Only the payload location and the two readers every Wix venue needs live here; the venue's field mapping stays
+in its own scraper.
+
+| Extension / Function                     | Purpose                                                                                       |
+|------------------------------------------|-----------------------------------------------------------------------------------------------|
+| `WixEventsWarmupData.events(doc, source)` | Locates the `events.events` array under the global Wix Events appDefId and the per-page widget |
+| `JsonNode.stringOrNull(field)`           | Trimmed string field → null when missing, JSON `null`, or blank                                |
+| `parseWixSchedule(config)`               | UTC `startDate` + `timeZoneId` → Berlin-local `(LocalDate, LocalTime)`                         |
+
 **Design rationale**: A declarative selector-map approach (mapping field names to CSS selectors) was considered but rejected because each scraped field has
 different extraction logic — sibling traversal, regex extraction from `style` attributes, multi-element date assembly, visibility checks, fallback chains. A
 selector map would only cover the simplest cases (~3 of ~10 fields per scraper), creating a split architecture that is harder to maintain than the current

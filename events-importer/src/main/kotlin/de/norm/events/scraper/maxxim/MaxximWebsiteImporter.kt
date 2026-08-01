@@ -1,0 +1,58 @@
+package de.norm.events.scraper.maxxim
+
+import de.norm.events.scraper.EventImporter
+import de.norm.events.scraper.EventSource
+import de.norm.events.scraper.FetchResult
+import de.norm.events.scraper.HtmlFetcher
+import de.norm.events.scraper.ImportResult
+import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.stereotype.Component
+
+/**
+ * Website importer for MAXXIM's Wix Events programme.
+ *
+ * The whole programme — including prices and sold-out flags — is carried by the
+ * `wix-warmup-data` payload of the single `/partys` page, so the pipeline is one
+ * HTTP request per import cycle:
+ * 1. Fetch `/partys` via [HtmlFetcher] with conditional request support
+ *    (Wix serves a weak `ETag`).
+ * 2. Parse every night out of the embedded JSON via [MaxximOverviewPageScraper].
+ *
+ * No `/event-details/<slug>` page is fetched — unlike Loge, whose price only
+ * appears there.
+ *
+ * @see MaxximOverviewPageScraper for the parsing logic.
+ * @see <a href="https://www.maxxim-berlin.de/partys">MAXXIM programme</a>
+ */
+@Component
+class MaxximWebsiteImporter(
+    private val htmlFetcher: HtmlFetcher
+) : EventImporter {
+    private val logger = KotlinLogging.logger {}
+
+    override val eventSource: EventSource = EventSource.MAXXIM
+
+    private val overviewPageScraper = MaxximOverviewPageScraper()
+
+    override suspend fun importEvents(
+        url: String,
+        etag: String?,
+        lastModified: String?
+    ): ImportResult =
+        when (val fetchResult = htmlFetcher.fetch(url, etag, lastModified)) {
+            is FetchResult.NotModified -> {
+                ImportResult.NotModified
+            }
+
+            is FetchResult.Success -> {
+                val events = overviewPageScraper.scrape(fetchResult.document, url)
+                logger.info { "Scraped ${events.size} event(s) from MAXXIM" }
+
+                ImportResult.Success(
+                    events = events,
+                    etag = fetchResult.etag,
+                    lastModified = fetchResult.lastModified
+                )
+            }
+        }
+}

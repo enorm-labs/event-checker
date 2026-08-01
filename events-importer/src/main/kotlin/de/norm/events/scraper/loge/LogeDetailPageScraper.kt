@@ -7,6 +7,7 @@ import de.norm.events.scraper.UNRESOLVED_EVENT_DATE
 import de.norm.events.scraper.extractEventSlug
 import de.norm.events.scraper.parseIsoDate
 import de.norm.events.scraper.parseTime
+import de.norm.events.scraper.stringOrNull
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jsoup.nodes.Document
 import tools.jackson.databind.JsonNode

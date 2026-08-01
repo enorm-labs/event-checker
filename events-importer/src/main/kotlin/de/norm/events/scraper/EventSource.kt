@@ -478,6 +478,25 @@ enum class EventSource {
     MAX_SCHMELING_HALLE,
 
     /**
+     * MAXXIM Berlin – the Ku'damm party club, on Wix with a Wix Events widget. Its `/partys`
+     * programme page renders client-side, but Wix server-side-injects the widget's full event data
+     * as strict JSON in a `<script id="wix-warmup-data">` block, so that payload is the source
+     * (ADR-007 §"Selector Strategy" priority 1) rather than the rendered cards — see
+     * [WixEventsWarmupData], shared with [LOGE]. Each entry carries the title, a teaser
+     * `description`, the poster (`mainImage.url`), a `scheduling.config` with a **UTC** `startDate`
+     * plus a `timeZoneId`, and a `registration.ticketing` block with the lowest/highest ticket price
+     * and a `soldOut` flag. Reading `startDate` naively would shift every night two hours early and
+     * roll a 22:00 door onto the previous day, so it is converted to `Europe/Berlin`.
+     *
+     * The club opens nightly with a DJ programme and publishes no categories, lineups or genres, so
+     * every night is typed [PARTY][de.norm.events.event.EventType.PARTY] and no artists are derived
+     * (a live guest is named only inside the free-text title). Tickets are sold on the Wix event
+     * page itself, so there is no external `ticketUrl`. The widget serves the upcoming window only
+     * (~18 nights); the archive in `event-pages-sitemap.xml` is deliberately not crawled.
+     */
+    MAXXIM,
+
+    /**
      * Mikropol Berlin – WordPress/Events-Manager club in Schöneberg; the `/events/` page lists every show as
      * an `a.event` card (a `DD.MM.YYYY` date, start/doors times, title, an inline support line, and an
      * `Ausverkauft`/`Abgesagt` status class), each linking to an `/event/<date-slug>/` detail page that adds
