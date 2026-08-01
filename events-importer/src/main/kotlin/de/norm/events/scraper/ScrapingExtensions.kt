@@ -194,3 +194,11 @@ fun extractEventSlug(
     url: String,
     prefix: String = "/events/"
 ): String = URI(url).path.removePrefix(prefix).trimEnd('/')
+
+/**
+ * Length of the leading ISO `YYYY-MM-DD` date that some platforms bake into every event slug
+ * (Mikropol's and Metropol's Events-Manager `/event/2026-09-05-mucco`, Huxleys' equivalent).
+ * Pair with [extractEventSlug] and `parseIsoDate(slug.take(ISO_DATE_LENGTH))` to read the date
+ * from the canonical URL rather than the venue's German rendering.
+ */
+const val ISO_DATE_LENGTH = 10

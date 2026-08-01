@@ -685,6 +685,33 @@ and a price. All 18 dates and start times match the venue's own rendered strings
   false`, one price tier throughout), so the branches are covered by the hand-crafted `maxxim-overview-edge-cases.html` variant rather than by observed data. The
   numeric `status` mapping follows Wix's documented enum (`3` = canceled); an unexpected value degrades to `SCHEDULED` rather than mislabelling a night.
 
+### Metropol (`scraper/metropol/`) — WordPress / Events-Manager, list + detail
+
+Verified against a live import (1 August 2026): 41 events stored, 2026-08-04 → 2027-03-14, none in the past, 0 suspicious rows. The count, the titles and the
+dates match the venue's `/events` listing exactly, in the same order, and the statuses reproduce the three the page marks by hand (1 cancelled, 2 relocated).
+
+- 🔴 **A show relocated *out of* the house is still imported, under Metropol.** The venue keeps a moved show on its listing with a `"Verlegt ins <venue> –"`
+  title prefix; the prefix is stripped and the event stored with status `RELOCATED` (2 of 41 at capture — BRKN, now at Bi Nuu, and Kitty, Daisy & Lewis, now at
+  Huxleys). Both of those houses are themselves imported, so the show exists twice: once correctly under its real venue and once under Metropol with the
+  relocated flag. This follows the Mikropol precedent — an event's venue comes from its `event_source` row, so a per-event venue cannot be resolved (the same
+  model limitation that defers the promoter sources in `EVENT_DATA_SOURCES.md`).
+- 🟠 **The relocation prose is deliberately not read as a status.** A show that moved *into* Metropol carries the same "verlegt" wording in its
+  `.changes` / `.alert-blue` note ("Die Show wird vom Gretchen ins Metropol verlegt") but does take place here, so only the `.attention` / `.alert-red` badge and
+  the title prefix set the status. The consequence is that a relocation the venue announces *only* in that prose, with no badge and no title prefix, is stored as
+  `SCHEDULED`.
+- 🟠 **No prices and no sold-out state anywhere on the site.** Neither the listing nor the detail pages quote a price or mark a show as sold out; tickets are
+  sold off-site (Eventim for most, the promoter's own shop for the party). `price_presale`, `price_box_office` and `sold_out` are therefore empty for all 41
+  events, and a sold-out show is indistinguishable from an available one.
+- 🟠 **No genre on any event.** The venue types events only as `Konzert` / `Party` (mapped to `CONCERT` / `PARTY`) and publishes no genre field, so the genre-tag
+  filters never see a Metropol event.
+- 🟢 **The venue transposes its own doors/start labels on some shows.** Two of 41 read `Einlass: 20:00 // Beginn: 19:00`; the scrapers report both times
+  verbatim and the shared `orderDoorsBeforeStart` guard swaps them at the persistence boundary, exactly as it does for SO36.
+- 🟢 **An unset start time is written as `0:00` and dropped.** Shadow of Intent lists `Einlass: 18:00 // Beginn: 0:00`; storing that as midnight would be worse
+  than storing nothing, because `orderDoorsBeforeStart` would then read the 18:00 doors as "later than the start" and swap the two, inventing an 18:00 start. The
+  event keeps its doors time and no start time.
+- 🟢 **Some detail pages are empty shells.** 9 of 41 render an `.event-text` block with no prose, 3 an `.event-image` block with no `<img>`, and 7 carry no
+  ticket link — all genuine gaps in the venue's own CMS, verified against the live pages, not selector failures.
+
 ---
 
 ## How to extend this doc
