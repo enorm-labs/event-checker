@@ -260,7 +260,7 @@ private val ARTIST_SUFFIX_PATTERN =
             """|\s+live(?:\s+in\s+\S.*)?$""" +
             """|\s*\((?:dj[\s-]?set|live|acoustic|akustik|unplugged|solo)\)\s*$""" +
             """|\s+dj[\s-]?set$""" +
-            """|\s+[-–—]?\s*(?:nachholtermin|hochverlegung)\b.*$""" +
+            """|\s+[-–—(]*\s*(?:nachholtermin|hochverlegung|verschoben)\b.*$""" +
             """|\s+singt\s+\S.*$""" +
             """|\s+(?:album|ep|single|mixtape|record|tape)\s+release(?:\s+(?:party|show|special))?$""" +
             """|\s+release\s+(?:party|show)$""",

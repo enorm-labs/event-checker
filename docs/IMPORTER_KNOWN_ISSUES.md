@@ -712,6 +712,27 @@ dates match the venue's `/events` listing exactly, in the same order, and the st
 - 🟢 **Some detail pages are empty shells.** 9 of 41 render an `.event-text` block with no prose, 3 an `.event-image` block with no `<img>`, and 7 carry no
   ticket link — all genuine gaps in the venue's own CMS, verified against the live pages, not selector failures.
 
+### Modus Berlin (`scraper/modus/`) — hand-built site, list + detail
+
+Verified against a live import (1 August 2026): 17 events stored, 2026-08-27 → 2027-04-13, none in the past, 0 suspicious rows, every one with a start time and a
+poster. The count, titles and dates match the venue's `/events` page exactly, in the same order.
+
+- 🟠 **The slug's date is stale for a moved show and is deliberately not read.** Every event URL encodes a `DDMMYY` date, but the slug is minted once and keeps
+  the *original* date: `160426-LunaSimao` renders as `13.04.2027` under the title "Luna Simao (verschoben aus 2026)". The importer therefore reads the rendered
+  date and uses the slug only as the stable `sourceId` — the opposite priority from Mikropol and Metropol, whose slugs track the real date. The consequence is
+  that if the venue ever stopped rendering a date, the event would be dropped rather than filed under the slug's date.
+- 🟠 **A move is announced only in the title prose.** There is no status class or badge anywhere on the site; `"(verschoben aus 2026)"` in the title is the whole
+  signal, read as `POSTPONED` from the raw title before `cleanEventTitle` strips it. A cancellation or relocation the venue words differently would be stored as
+  `SCHEDULED`.
+- 🟠 **No prices, no sold-out state and no genre.** The venue quotes no price anywhere and sells through third parties (Eventim, its own shop, or the promoter's
+  — Landstreicher Konzerte for several). It publishes no category either, so the type is inferred from the title: the programme is mostly touring concerts, with
+  the recurring "Spree vom Weizen — Poetry Slam & Stand Up Show" correctly recovered as `READING` by the shared title classifier.
+- 🟢 **The doors time is prose, not markup.** The detail `h2` carries the start time, but doors — where given at all — is a line inside the description
+  (`"Doors: 19:30"`, `"Beginn 20:00 // Einlass 19:00"`), so both spellings are read from there. 2 of 17 events name no doors time at all.
+- 🟢 **Modus and Ritter Butzke share a codebase.** The Modus page still ships the Ritter Butzke logo asset and `alt` text, and the Ready list records Ritter
+  Butzke as "same shape as Modus Berlin". `ModusOverviewPageScraper` / `ModusDetailPageScraper` should be the template when that venue is implemented — quite
+  possibly with the same parsers behind a second `EventSource`.
+
 ---
 
 ## How to extend this doc

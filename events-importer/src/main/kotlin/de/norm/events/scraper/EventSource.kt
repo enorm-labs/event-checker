@@ -532,6 +532,25 @@ enum class EventSource {
     MIKROPOL,
 
     /**
+     * Modus Berlin – hand-built, server-rendered club/concert site (the same codebase as
+     * [Ritter Butzke](https://club.ritterbutzke.com), down to the shared logo asset). Its `/events`
+     * page renders the whole programme as `.event-item` tiles — a `figcaption` holding a German
+     * `DD.MM.YYYY` date and an `h2` title, plus a poster — each linking to an
+     * `/event/DDMMYY-<Name>` detail page that adds the ticket shop link (Eventim, the venue's own
+     * shop, or the promoter's), the poster at full size, an `h2` restating the date with the start
+     * time (`24.09.2026 - 20:00`), and a prose description that sometimes carries the doors time as
+     * a `Doors: 19:30` / `Beginn 20:00` line.
+     *
+     * **The date is deliberately *not* read from the slug**, even though it encodes one. The slug is
+     * minted once and keeps the original date when a show moves: `160426-LunaSimao` renders as
+     * `13.04.2027` under the title "Luna Simao (verschoben aus 2026)". The rendered date is
+     * therefore authoritative and the slug is used only as the stable `sourceId`, so a postponed
+     * show keeps its identity across the move instead of being re-minted. The venue publishes no
+     * categories, prices or sold-out state.
+     */
+    MODUS,
+
+    /**
      * Monarch Berlin – retro hand-coded PHP bar/club above Kottbusser Tor; the whole programme lives on a single
      * `/programm.php` page as a flat run of `div` blocks (no per-event URLs), each with a leading bold
      * `Weekday DD/MM/YYYY-HH:MM` date line, a `td#td1` title cell (a `(KONZERT)` suffix marks concerts, an

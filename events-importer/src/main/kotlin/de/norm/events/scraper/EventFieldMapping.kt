@@ -118,7 +118,9 @@ fun stripRelocationPrefix(title: String): String {
 /**
  * Trailing noise venues append to an *event title* that must not become part of the stored
  * title (nor of a title-derived headliner artist):
- * - a "Nachholtermin vom <date>" reschedule note or a "Hochverlegung" relocation note,
+ * - a "Nachholtermin vom <date>" / "(verschoben aus <year>)" reschedule note or a
+ *   "Hochverlegung" relocation note — the note itself is still read as the event's `POSTPONED`
+ *   status, from the *raw* title, before the title is cleaned,
  * - a "(ausverkauft)" / "ausverkauft" sold-out annotation — a status, not a name; Frannz in
  *   particular never derives sold-out from prose, so it is pure noise here, and stripping it
  *   keeps "… (ausverkauft)" and its non-sold-out twin from splitting into two artists,
@@ -130,7 +132,7 @@ fun stripRelocationPrefix(title: String): String {
  */
 private val TITLE_NOISE_PATTERN =
     Regex(
-        """\s+[-–—]?\s*(?:nachholtermin|hochverlegung)\b.*$""" +
+        """\s+[-–—(]*\s*(?:nachholtermin|hochverlegung|verschoben)\b.*$""" +
             """|\s+[-–—(]*\s*ausverkauft!?\s*\)?\s*$""" +
             """|\s+[-–—]\s*$""",
         RegexOption.IGNORE_CASE
@@ -145,6 +147,7 @@ private val TITLE_NOISE_PATTERN =
  * Example:
  * ```kotlin
  * cleanEventTitle("Iggi Kelly Nachholtermin vom 28.04.26-")     // "Iggi Kelly"
+ * cleanEventTitle("Luna Simao (verschoben aus 2026)")           // "Luna Simao"
  * cleanEventTitle("Singalong -Das Mitsing-Event (ausverkauft)") // "Singalong -Das Mitsing-Event"
  * cleanEventTitle("The Adicts")                                 // "The Adicts"
  * ```
