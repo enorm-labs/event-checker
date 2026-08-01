@@ -22,6 +22,7 @@
 ###   Bi Nuu               — https://binuu.de/de/events
 ###   Cassiopeia           — https://cassiopeia-berlin.de/club
 ###   Clash                — https://clash-berlin.de/
+###   Club der Visionäre   — https://clubdervisionaere.com/programm/ (WordPress; one listing, three rooms by colour class)
 ###   Duncker Club         — https://www.dunckerclub.de/start.html
 ###   Festsaal Kreuzberg   — https://festsaal-kreuzberg.de/de/programm/ (Wagtail CMS JSON API)
 ###   Frannz Club          — https://frannz.eu/
@@ -36,12 +37,14 @@
 ###   Matrix               — https://www.matrix-berlin.de/party-in-berlin/ (WordPress; entry → per-month pages)
 ###   Mikropol             — https://mikropol-berlin.de/events/ (WordPress/Events-Manager, list + detail)
 ###   Monarch              — https://kottimonarch.de/programm.php (retro PHP single-page listing)
+###   MS Hoppetosse        — https://hoppetosse.berlin/program/ (shares the CLUB_DER_VISIONAERE listing; winter location)
 ###   Neue Zukunft         — https://neue-zukunft.org/ (Elfsight Event Calendar widget JSON API)
 ###   Privatclub           — https://privatclub-berlin.de/
 ###   Roadrunner's Paradise — http://www.roadrunners-paradise.de/programm.html
 ###   Schokoladen          — https://www.schokoladen-mitte.de/
 ###   SO36                 — https://www.so36.com/tickets
 ###   Soda Club            — https://www.soda-berlin.de/events (disco2app CMS; list + detail with MusicEvent JSON-LD)
+###   Sonnenraum           — https://clubdervisionaere.com/programm/ (shares the CLUB_DER_VISIONAERE listing)
 ###   Supamolly            — https://www.supamolly.de/?p=programm (retro PHP single-page listing; row id = date stamp)
 ###   Urban Spree          — https://www.urbanspree.com/program/ (MODX; descending paginated list + detail)
 ###   Wild at Heart        — https://www.wildatheartberlin.de/concerts.php (retro frameset single-page listing)
@@ -778,6 +781,70 @@ Accept: application/json
 
 > {%
     client.test("Clash import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Club der Visionäre (Am Flutgraben 1, Berlin-Alt-Treptow — on the Flutgraben)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Club der Visionäre venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Club der Visionäre",
+    "address": "Am Flutgraben 1",
+    "city": "Berlin",
+    "postalCode": "12435",
+    "district": "treptow-koepenick",
+    "latitude": 52.49640,
+    "longitude": 13.45030,
+    "websiteUrl": "https://clubdervisionaere.com",
+    "description": "A tiny open-air shack and terrace on the Flutgraben canal, a long-running summer institution for house and minimal techno that runs from the afternoon into the next morning."
+}
+
+> {%
+    client.global.set("club_der_visionaere_venue_id", response.body.id);
+    client.test("Club der Visionäre venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Club der Visionäre event source ---
+# Links the venue to the ClubDerVisionaereWebsiteImporter.
+# The sourceType "CLUB_DER_VISIONAERE" matches EventSource.CLUB_DER_VISIONAERE.
+# NOTE: one page, three venues. This same `/programm/` listing also carries the Sonnenraum
+# and MS Hoppetosse rows (further down this file), which register their own sourceType and
+# keep only their room's nights — the room is carried purely by a colour class on the title
+# (`.cdvRed` / `.sonnenraumYellow` / `.hoppetosseYellow`), so the URL cannot tell them apart.
+# The programme is seasonal: this open-air source is empty in winter, the boat in summer.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{club_der_visionaere_venue_id}},
+    "name": "Club der Visionaere",
+    "url": "https://clubdervisionaere.com/programm/",
+    "sourceType": "CLUB_DER_VISIONAERE",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Club der Visionäre event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Club der Visionäre import ---
+POST {{importer-host}}/api/admin/event-sources/club-der-visionaere/import
+Accept: application/json
+
+> {%
+    client.test("Club der Visionäre import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}
@@ -1642,6 +1709,68 @@ Accept: application/json
 %}
 
 ### ————————————————————————————————————————————————————————————
+### MS Hoppetosse (Eichenstr. 4, Berlin-Alt-Treptow — moored on the Spree)
+### ————————————————————————————————————————————————————————————
+
+### --- Create MS Hoppetosse venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "MS Hoppetosse",
+    "address": "Eichenstr. 4",
+    "city": "Berlin",
+    "postalCode": "12435",
+    "district": "treptow-koepenick",
+    "latitude": 52.49560,
+    "longitude": 13.45140,
+    "websiteUrl": "https://hoppetosse.berlin",
+    "description": "A moored Spree salon boat run by Club der Visionäre as its winter location, with a lower-deck club floor and an upper-deck bar programming house and minimal techno."
+}
+
+> {%
+    client.global.set("ms_hoppetosse_venue_id", response.body.id);
+    client.test("MS Hoppetosse venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create MS Hoppetosse event source ---
+# Links the venue to the MsHoppetosseWebsiteImporter.
+# The sourceType "MS_HOPPETOSSE" matches EventSource.MS_HOPPETOSSE.
+# The URL is the boat's own host, which serves the byte-identical Club der Visionäre
+# listing; the importer keeps only the `.hoppetosseYellow` nights. The boat is the winter
+# location, so a summer import legitimately returns nothing.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{ms_hoppetosse_venue_id}},
+    "name": "MS Hoppetosse",
+    "url": "https://hoppetosse.berlin/program/",
+    "sourceType": "MS_HOPPETOSSE",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("MS Hoppetosse event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial MS Hoppetosse import ---
+POST {{importer-host}}/api/admin/event-sources/ms-hoppetosse/import
+Accept: application/json
+
+> {%
+    client.test("MS Hoppetosse import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
 ### Neue Zukunft (Alt-Stralau 68, Berlin-Friedrichshain — Stralau peninsula)
 ### ————————————————————————————————————————————————————————————
 
@@ -2003,6 +2132,68 @@ Accept: application/json
 
 > {%
     client.test("Soda Club import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Sonnenraum (Am Flutgraben 1, Berlin-Alt-Treptow — next to Club der Visionäre)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Sonnenraum venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Sonnenraum",
+    "address": "Am Flutgraben 1",
+    "city": "Berlin",
+    "postalCode": "12435",
+    "district": "treptow-koepenick",
+    "latitude": 52.49640,
+    "longitude": 13.45030,
+    "websiteUrl": "https://clubdervisionaere.com/sonnenraum/",
+    "description": "The indoor concert room next to Club der Visionäre, hosting the resident Monday live-band night alongside occasional jazz concerts and label parties."
+}
+
+> {%
+    client.global.set("sonnenraum_venue_id", response.body.id);
+    client.test("Sonnenraum venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Sonnenraum event source ---
+# Links the venue to the SonnenraumWebsiteImporter.
+# The sourceType "SONNENRAUM" matches EventSource.SONNENRAUM.
+# The URL is the shared Club der Visionäre `/programm/` listing — the venue's own
+# `/sonnenraum/` page is a description that points back at it — and the importer keeps only
+# the `.sonnenraumYellow` nights.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{sonnenraum_venue_id}},
+    "name": "Sonnenraum",
+    "url": "https://clubdervisionaere.com/programm/",
+    "sourceType": "SONNENRAUM",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Sonnenraum event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Sonnenraum import ---
+POST {{importer-host}}/api/admin/event-sources/sonnenraum/import
+Accept: application/json
+
+> {%
+    client.test("Sonnenraum import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}

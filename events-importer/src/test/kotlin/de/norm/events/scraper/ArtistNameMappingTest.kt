@@ -255,7 +255,11 @@ class ArtistNameMappingTest {
         isGuestSlotLabel("Guest") shouldBe true
         isGuestSlotLabel("Guests") shouldBe true
         isGuestSlotLabel("Gäste") shouldBe true
+        // Club der Visionäre names the format the unbooked slot fills.
+        isGuestSlotLabel("Guest DJs") shouldBe true
+        isGuestSlotLabel("Guest DJ") shouldBe true
         isNonArtistName("+Guest") shouldBe true
+        isNonArtistName("Guest DJs") shouldBe true
     }
 
     @Test

@@ -282,6 +282,40 @@ Assessed against the July–October 2026 month pages (16 nights). Every night ha
 - 🟢 **Conditional requests never fire.** Like AMT, the entry page's ETag changes only when a month is added, not when a night inside a month is edited, so
   caching is deliberately disabled and every run re-fetches the entry plus one page per listed month (4 pages today).
 
+### Club der Visionäre / Sonnenraum / MS Hoppetosse (`scraper/clubdervisionaere/`) — WordPress, one listing for three rooms
+
+Verified against a live import (August 2026): 16 upcoming club nights and 3 Sonnenraum nights, all with a date, a title and a lineup; the boat imported 0 (see
+the seasonality note below). All three rooms share one page and one parser, filtered by the colour class on the title.
+
+- 🔴 **No times, prices, tickets, images, genre or description — for any event, in any of the three rooms.** The programme page carries a date, a title and a
+  lineup and nothing else; there are no per-event pages to enrich from (the WordPress posts have permalinks but the programme never links them), and the
+  `ra.co` links inside the lineup are DJ *profiles*, not ticket shops. Every event therefore lands with those fields null. The only time the page ever prints is
+  a per-act set time (`// The Omniversal Earkestra LIVE from 21:00`), which is deliberately **not** stored as the event's start time — it is when that act
+  plays, not when the night opens.
+- 🟠 **The room is a CSS class, so a theme restyle silently empties a source.** `.cdvRed` / `.sonnenraumYellow` / `.hoppetosseYellow` are the only signal
+  separating three venues on one page — there is no per-room page, category or data attribute, and the WordPress REST API exposes no room either. If the theme
+  renames a class, that room's importer starts returning zero events rather than failing, which is indistinguishable from the off-season case below.
+- 🟠 **Zero events is a normal result, and the venue is seasonal.** The open-air club runs in summer and the boat in winter, so at any time of year one of the
+  two legitimately has no nights on the page (the August import above returned 0 for MS Hoppetosse; the January 2026 snapshot in the tests has 0 for Club der
+  Visionäre). A genuinely broken selector therefore looks exactly like a closed season — the winter fixture test is what distinguishes them.
+- 🟠 **The date of a shared day is inherited, not stated.** The theme prints the date only on the first block of a given day, so a second night on the same date
+  (a boat party and the club afterparty, or the Monday Sonnenraum residency beside a club night) carries an empty date cell and takes the preceding block's
+  date. This is inferred from the page's chronological ordering; a block whose date cell is empty *and* has nothing dated before it is skipped rather than
+  guessed at.
+- 🟠 **Every night is typed `PARTY`.** The site emits no category, and the programme is DJ nights across all three rooms. The Sonnenraum's Monday live-band
+  residency is therefore filed as `PARTY` rather than `CONCERT`; the act itself is still billed `HEADLINER` off the venue's own `LIVE` marker.
+- 🟢 **A lineup line is one act unless it splits unambiguously.** Acts are split at a `b2b` marker and at `&`/`and`/`und` boundaries, but never inside
+  parentheses — `Los Refrescos (Dandy Jack & Argenis Brito)` is one act billed with its members and `Naima (2)` is a Resident Advisor disambiguator, both kept
+  whole. The trade-off cuts both ways: a duo written without brackets is split into two artists (`Foehn & Jerome`, `Alex & Laetitia Katapult` → `Alex` +
+  `Laetitia Katapult`), and a live-project suffix stays attached (`Gwenan (Phase Space Live)` is stored beside plain `Gwenan` as a second artist row, because
+  only a format-word parenthetical like `(Live)` is stripped — the same limitation as Urban Spree's country tags).
+- 🟢 **An act billed twice on one night is kept once.** A live-band member who also plays a DJ set later in the evening (Remain In Love) would otherwise produce
+  two `event_artist` rows for the same pair and hit its unique constraint; the first billing wins, keeping the earlier position and its role.
+- 🟢 **The WordPress REST API is unusable for this venue.** Upcoming events are `future`-status posts, which `/wp-json/wp/v2/posts` omits entirely (and 401s per
+  id), so the rendered page is the only source despite a JSON API being present — the reverse of the usual ADR-007 preference.
+- 🟢 **Conditional requests never fire.** The server sends neither ETag nor Last-Modified, so every run is a full fetch of the one listing. That is cheap: one
+  page per room, and the page is a single short programme.
+
 ---
 
 ## How to extend this doc
