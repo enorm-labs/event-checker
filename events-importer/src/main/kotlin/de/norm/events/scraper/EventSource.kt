@@ -294,6 +294,29 @@ enum class EventSource {
     HOLE44,
 
     /**
+     * Huxleys Neue Welt Berlin – the Neukölln concert hall (Hasenheide), on WordPress with an
+     * Events-Manager `event` post type whose REST API is not exposed (only the stock post types are
+     * registered), so its two HTML pages are the source. The `/events` page lists every upcoming show
+     * as an `li.event-item` grouped under `.month` headings, each carrying a `.date` day cell, a
+     * `.time` line (`Beginn: 20:00 | Einlass: 19:00`), an `.eventname`, an optional `+ Support:` line,
+     * an optional `.anderungen` change note, and a link to its `/event/YYYY-MM-DD-<slug>` detail page
+     * — whose ISO slug prefix is the authoritative date, since the card itself prints only a day and
+     * a month abbreviation.
+     *
+     * The detail page adds the `.tourtitel` tour name, the poster, the Eventim link, the prose blurb,
+     * and — as slugs on its `article` element — the venue's own taxonomies: `event-tags-*` are real
+     * music genres (`electronic`, `indietronica`), `promoters-*` the booking agency. It carries no
+     * heading of its own, so the overview's `.eventname` stays the title through the merge.
+     *
+     * Status comes from three places, because the venue uses three: a CSS class on the list item
+     * (`Ausverkauft` → the sold-out flag, `Abgesagt` → `CANCELLED`), the matching `.canceledsoldout`
+     * badge, and the free-text `.anderungen` note, which is the *only* signal for a show moved to
+     * another date (`verschoben` → `POSTPONED`) or another house (`verlegt` → `RELOCATED`) — the
+     * latter including shows that have moved **away** from Huxleys but stay on its listing.
+     */
+    HUXLEYS,
+
+    /**
      * Junction Bar Berlin – retro hand-coded site imported from the homepage entry, which links to two programs merged
      * into this one source: the live-music listing (`music_html/music.html` → per-month `program/MM_YYYY/MM_YY.html`
      * pages) and the DJ program (`DJ_html/DJ.html`). Each page is a flat sequence of `strong.datum`/`strong.Datum` date
