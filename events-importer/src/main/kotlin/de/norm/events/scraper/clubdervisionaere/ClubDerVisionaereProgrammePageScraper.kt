@@ -4,6 +4,7 @@ import de.norm.events.event.EventType
 import de.norm.events.scraper.ScrapedArtist
 import de.norm.events.scraper.ScrapedEvent
 import de.norm.events.scraper.cleanEventTitle
+import de.norm.events.scraper.clubdervisionaere.ClubDerVisionaereProgrammePageScraper.Companion.FLOOR_LABEL_PATTERN
 import de.norm.events.scraper.inferYearForWeekday
 import de.norm.events.scraper.isNonArtistName
 import de.norm.events.scraper.splitSegmentOnConjunctions

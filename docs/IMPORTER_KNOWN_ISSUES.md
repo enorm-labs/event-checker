@@ -334,13 +334,13 @@ has an image and an artist, 97 of 98 have doors *and* start times, 92 have a tic
 - 🟢 **Only the first URL of a doubled ticket `href` is kept.** The CMS occasionally emits two shop links concatenated into one attribute
   (`…&utm_medium=dphttps://www.eventim.de/…`, 2 of 15 pages sampled). Everything from the second `http(s)://` on is dropped, which would also truncate a
   legitimate href carrying an un-encoded redirect URL — none has been seen.
-- 🟢 **Media presenters are stored as promoters; the actual local promoter is not.** The `präsentiert von …` credit names magazines and radio stations
-  (`DIFFUS`, `MusikBlog`, `FluxFM`), which are stored per the `Promoter` model's "promoter *or presenter*" definition — the same choice as Astra/Lido. The real
-  booking agency appears only as a bare "Örtlicher Veranstalter" **link** (`trinitymusic.de`, `semmel.de`), with no name to store, so it is skipped rather than
-  guessed from the domain.
+- 🟢 **Media presenters are stored as promoters; the actual local promoter is not.** The `präsentiert von …` credit names magazines and radio stations (`DIFFUS`,
+  `MusikBlog`, `FluxFM`), which are stored per the `Promoter` model's "promoter *or presenter*" definition — the same choice as Astra/Lido. The real booking
+  agency appears only as a bare "Örtlicher Veranstalter" **link** (`trinitymusic.de`, `semmel.de`), with no name to store, so it is skipped rather than guessed
+  from the domain.
 - 🟢 **A billing row's acts are split on `+` only, never on commas.** The venue writes a guest's band affiliations in parentheses
-  (`Budgie (SIOUXSIE & THE BANSHEES, THE SLITS)`), so the shared comma-splitting of `splitSupportActs` is deliberately not used and a genuinely
-  comma-separated support line would land as one artist. No such line exists today — every row uses `+`.
+  (`Budgie (SIOUXSIE & THE BANSHEES, THE SLITS)`), so the shared comma-splitting of `splitSupportActs` is deliberately not used and a genuinely comma-separated
+  support line would land as one artist. No such line exists today — every row uses `+`.
 - 🟢 **Conditional requests never fire.** The server sends neither ETag nor Last-Modified, so every run is a full fetch of the homepage plus one detail page per
   listed event (98 today, serialised by the 200 ms per-host throttle).
 - 🟢 **`ELLE & L's Festival` mints a spurious `Elle` headliner.** The title is promoted to `FESTIVAL` at the persistence boundary, but the lineup was already
@@ -363,8 +363,8 @@ every event has a date, **both** doors and start times, an image and a promoter;
   `sourceUrl` come from the `div.event_inhalt[id=event_<n>]` id — the same key the venue's own iCal uses as its `UID` — with the listing anchor
   (`…/veranstaltungen.html#event_9743`) as the URL. An event re-created in the CMS under a new id would import as a second event.
 - 🟢 **A tiered price is stored as its lowest tier.** `VVK: ab 74,99 €` yields `pricePresale = 74.99`, with the raw text kept as the `priceNote` so the
-  "from" qualifier is not lost — a filter on price sees the cheapest ticket, which is the useful reading, but the number alone understates what most seats
-  cost. The same applies to the venue's "zzgl. Gebühr" (plus booking fee) footnote, which is likewise only in the note.
+  "from" qualifier is not lost — a filter on price sees the cheapest ticket, which is the useful reading, but the number alone understates what most seats cost.
+  The same applies to the venue's "zzgl. Gebühr" (plus booking fee) footnote, which is likewise only in the note.
 - 🟢 **25 events have no ticket link and 2 no price at all.** The venue simply omits the button on those cards (typically shows sold elsewhere or already sold
   out); nothing is parseable that the parser is missing.
 - 🟢 **`OFF DAYS 2026` is minted as a headliner.** It is an event name, not an act, but it matches no structural non-artist filter (no `fest`/`festival`
@@ -382,15 +382,15 @@ publish is captured — date, start time, night name and full DJ roster — but 
   exactly the current week's Thu/Fri/Sat and nothing beyond. Past nights stay up until the block rolls over and are dropped at persistence time
   (`EventUpsertService`), so an import late in the week legitimately stores a single event, and a run after the weekend before the page is updated can store
   none. Zero events is therefore **not** proof of a broken selector here — the fixture test is what distinguishes the two.
-- 🟠 **No prices, tickets, genre, description or images — for any night.** The venue sells at the door only (the page says so once, as a standalone
-  page-level heading rather than per event, so it is not stored as a `priceNote`), links no ticket shop, and publishes no per-event page. The single image in
-  each night's container is a decorative flame divider shared by all three, so no `imageUrl` is taken rather than storing the same GIF on every event.
-- 🟠 **Every night is typed `PARTY`.** Golden Gate is a techno club whose whole programme is DJ nights and which emits no category at all, so the type is
-  fixed like ÆDEN's and AMT's rather than inferred from the night's name (`Klubnacht`, `Donnerdogge` — none of which is an artist).
+- 🟠 **No prices, tickets, genre, description or images — for any night.** The venue sells at the door only (the page says so once, as a standalone page-level
+  heading rather than per event, so it is not stored as a `priceNote`), links no ticket shop, and publishes no per-event page. The single image in each night's
+  container is a decorative flame divider shared by all three, so no `imageUrl` is taken rather than storing the same GIF on every event.
+- 🟠 **Every night is typed `PARTY`.** Golden Gate is a techno club whose whole programme is DJ nights and which emits no category at all, so the type is fixed
+  like ÆDEN's and AMT's rather than inferred from the night's name (`Klubnacht`, `Donnerdogge` — none of which is an artist).
 - 🟢 **The parser anchors on heading *content*, because Elementor leaves nothing else.** Every element is named with a per-element hash
-  (`elementor-element-7b3297a`) that changes whenever the page is edited, and the theme adds no venue-semantic classes — so a night is recognised by its
-  heading matching the German date pattern, with the next two headings taken as its title and lineup. A restyle that changes the *date wording* (not just the
-  markup) would empty the source; a restyle that only re-hashes the elements will not.
+  (`elementor-element-7b3297a`) that changes whenever the page is edited, and the theme adds no venue-semantic classes — so a night is recognised by its heading
+  matching the German date pattern, with the next two headings taken as its title and lineup. A restyle that changes the *date wording* (not just the markup)
+  would empty the source; a restyle that only re-hashes the elements will not.
 - 🟢 **`sourceId` is date + slugified title, not a URL.** The venue publishes no per-event page, so a night renamed on the same date imports as a new event and
   the old row is removed by the stale-event cleanup (it falls inside the scraped date range). Two nights sharing a title on different dates stay distinct.
 - 🟢 **A back-to-back billing is split into two DJs.** `Nyna Curtis & Kisling` becomes two artists — the same accepted trade-off as Club der Visionäre, since
@@ -398,23 +398,23 @@ publish is captured — date, start time, night name and full DJ roster — but 
 
 ### Heimathafen Neukölln (`scraper/heimathafen/`) — WordPress REST + ACF, JSON source
 
-Verified against a live import (August 2026): 95 upcoming events, dates 2026-09-01 → 2027-09-22, none in the past. The best-covered source so far — every event has a
-date, start time, image, description and a price; 93 of 95 have a doors time and 90 a ticket link.
+Verified against a live import (August 2026): 95 upcoming events, dates 2026-09-01 → 2027-09-22, none in the past. The best-covered source so far — every event
+has a date, start time, image, description and a price; 93 of 95 have a doors time and 90 a ticket link.
 
 - 🟠 **No genre for any event.** The venue *does* tag its events, but the `events_tag` vocabulary is 560 terms mixing real genres (Soul, Cumbia, Folktronica)
   with formats and access notes (Konzert, Premiere, Live Podcast, Buchvorstellung, Gebärdensprache), and the REST payload carries only term **ids** — resolving
-  them to names costs six more requests per import for a field that would then need its own stop-list. `class_list` inlines the slugs, but slugs are lossy
-  (`rb` for R&B, `gebaerdensprache`), so `genre` is deliberately left null. Resolving the taxonomy once and caching it is what would unblock this.
+  them to names costs six more requests per import for a field that would then need its own stop-list. `class_list` inlines the slugs, but slugs are lossy (`rb`
+  for R&B, `gebaerdensprache`), so `genre` is deliberately left null. Resolving the taxonomy once and caching it is what would unblock this.
 - 🟠 **Only concerts get artists.** The event type comes from the venue's own category, and `buildArtistsForEventType` mints a headliner from the title only for
   a `CONCERT`. That is correct here — a theatre or reading title (`DIE KLIMA-MONOLOGE`, `LEBEN GROPIUSSTADT GEBRAUCHSANWEISUNG`) names a production, not a
   performer — but it means 65 of 95 events store no artist, and the actual cast, which the venue writes into the prose blurb and an unused `acf.event_cast`
   field, is not extracted.
 - 🟢 **One post expands into many dated events, keyed by date *and* time.** `acf.event_performances` is an array (a run reaches 30 entries), so `sourceId` is
-  `<postId>-<date>-<HHmm>`. The time is part of the key because a run legitimately plays twice on one day; the cost is that correcting a start time re-keys
-  that performance, creating a new row while the stale-event cleanup removes the old one.
+  `<postId>-<date>-<HHmm>`. The time is part of the key because a run legitimately plays twice on one day; the cost is that correcting a start time re-keys that
+  performance, creating a new row while the stale-event cleanup removes the old one.
 - 🟢 **Concession tiers never reach the price columns.** The venue prices by audience and labels its social tiers with the sales channel too — `Mit Berlin-Pass
-  (Abendkasse)` is €3 and `Für Geflüchtete (Abendkasse)` is €0. Matching `Abendkasse` anywhere in the label stored €3 as *the* door price during the first
-  smoke test (and the €0 tier would have marked the event free), so both label matches are start-anchored and an explicit concession list — including the
+  (Abendkasse)` is €3 and `Für Geflüchtete (Abendkasse)` is €0. Matching `Abendkasse` anywhere in the label stored €3 as *the* door price during the first smoke
+  test (and the €0 tier would have marked the event free), so both label matches are start-anchored and an explicit concession list — including the
   pay-it-forward `ZUGABE TICKET`, which is priced *above* general admission — is excluded first. Every tier survives verbatim in the `priceNote`.
 - 🟢 **The room is parsed away.** Performance notes read `Einlass ab 18:45 Uhr (Studio)`, naming the venue's two spaces (Saal / Studio). Only the doors time is
   read; the model has no event-level room field (`ScrapedArtist.stage` is per-artist), so which space a show plays in is lost.
