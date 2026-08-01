@@ -58,6 +58,7 @@
 ###   OHM                  — https://ohmberlin.com/ (hand-themed WordPress; year-less dates, 1-3 nights)
 ###   Parkbühne Wuhlheide  — https://www.wuhlheide.de/programm (October CMS; ISO date in the event URL)
 ###   Privatclub           — https://privatclub-berlin.de/
+###   Quasimodo            — https://quasimodo.club/events (Events-Manager; .club domain, not .de)
 ###   Renate               — https://www.renate.cc/ (WordPress; homepage programme, per-floor lineups)
 ###   Roadrunner's Paradise — http://www.roadrunners-paradise.de/programm.html
 ###   Schokoladen          — https://www.schokoladen-mitte.de/
@@ -3025,6 +3026,67 @@ Accept: application/json
 
 > {%
     client.test("Privatclub import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Quasimodo (Kantstr. 12a, Berlin-Charlottenburg)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Quasimodo venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Quasimodo",
+    "address": "Kantstr. 12a",
+    "city": "Berlin",
+    "postalCode": "10623",
+    "district": "charlottenburg-wilmersdorf",
+    "latitude": 52.50597,
+    "longitude": 13.32332,
+    "websiteUrl": "https://quasimodo.club",
+    "description": "Berlin's oldest jazz cellar, off the Ku'damm, programming jazz, blues and soul concerts alongside themed DJ nights."
+}
+
+> {%
+    client.global.set("quasimodo_venue_id", response.body.id);
+    client.test("Quasimodo venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Quasimodo event source ---
+# Links the venue to the QuasimodoWebsiteImporter.
+# The sourceType "QUASIMODO" matches EventSource.QUASIMODO.
+# NOTE: the programme lives on the .club domain — quasimodo.de is only a splash page. The listing
+# card's *mobile* date block is the date source; the detail page carries the category and prices.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{quasimodo_venue_id}},
+    "name": "Quasimodo",
+    "url": "https://quasimodo.club/events",
+    "sourceType": "QUASIMODO",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Quasimodo event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Quasimodo import ---
+POST {{importer-host}}/api/admin/event-sources/quasimodo/import
+Accept: application/json
+
+> {%
+    client.test("Quasimodo import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}

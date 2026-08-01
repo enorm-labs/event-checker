@@ -773,6 +773,26 @@ with the 9 `Ausverkauft` badges — those same 9 are the only events without a p
 - 🟢 **Promoter names are canonicalised by the shared normaliser.** `Landstreicher Konzerte` → `Landstreicher` and `Trinity Music` → `Trinity`, which is the
   documented cross-cutting behaviour recorded at the top of this file, not a Wuhlheide rule.
 
+### Quasimodo (`scraper/quasimodo/`) — WordPress / Events-Manager, list + detail
+
+Verified against a live import (1 August 2026): 26 events stored, 2026-08-01 → 2026-12-19, none in the past, 0 suspicious rows. This is the most complete source
+in the inventory — **every** event has a start time, a doors time, a poster, a ticket link, a description and a presale price, and only 3 lack a genre. Types
+split 16 `CONCERT` / 10 `PARTY`, matching the venue's own category tagging.
+
+- 🟠 **Three concert titles are event names and are minted as artists.** `Marcos Coll – Album Release Concert` (the act is Marcos Coll), `Soul Night ft. Frankie
+  Balou` and `Jazz Night ft. Flow Rea (Est)` (the acts are the names after `ft.`), and `Berlin Beat Invasion No 8` ×2 (a series name). A venue-specific "split on
+  `ft.`" rule was considered and rejected: the same idiom is used for a *guest* on a headliner's own show, where splitting would discard the real headliner. This
+  is the cross-cutting reactive-denylist limitation recorded at the top of this file, not a Quasimodo rule.
+- 🟢 **The programme is on the `.club` domain.** `quasimodo.de` is a splash page with no listing; the source URL must be `quasimodo.club/events`.
+- 🟢 **The date comes from the card's *mobile* block.** Each card renders two date blocks for the two breakpoints: the desktop one abbreviates to `01.` / `Aug.`
+  and leans on the month heading, while `.event-data.visible-xs .date` carries a complete `DD.MM.YYYY - HH:mm`. Reading the mobile block avoids both the
+  abbreviation and the heading. If the venue ever drops the mobile markup, the date is lost rather than mis-parsed — the event is skipped, not guessed at.
+- 🟢 **The category lives only on the detail page**, as an `event-categories-<slug>` class on its `<article>`. The venue marks DJ nights `party`, leaves most
+  concerts untagged, and a night can carry both (`Disco Inferno` is `concerts party`) — so `party` wins and an untagged event falls back to title inference.
+  An event whose detail page fails to fetch therefore keeps the listing's guess, which can leave a DJ night typed `CONCERT` with its event name as an artist.
+- 🟢 **The presale price is a "from" figure.** The venue writes `ab 30€ (zzgl. Gebühr)`; the numeric field holds 30 and `priceNote` keeps the venue's own wording,
+  so the "from" and the booking-fee caveat are not silently lost. A `Tageskasse` box-office price is published for some nights and stored separately.
+
 ---
 
 ## How to extend this doc

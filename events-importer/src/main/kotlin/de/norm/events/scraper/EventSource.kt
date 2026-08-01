@@ -602,6 +602,30 @@ enum class EventSource {
     PRIVATCLUB,
 
     /**
+     * Quasimodo Berlin – the Charlottenburg jazz/blues cellar (Berlin's oldest), on WordPress with
+     * the same Events-Manager plugin as [METROPOL] and [MIKROPOL]. The programme is on the
+     * **`.club` domain**: `quasimodo.de` is only a splash page. `/events` renders the whole
+     * season unpaginated as `a.event-item` cards grouped under German month headings.
+     *
+     * A card carries two date blocks for the two breakpoints, and the **mobile one is the useful
+     * one**: `.event-data.visible-xs .date` holds a complete `DD.MM.YYYY - HH:mm`, so neither the
+     * month heading nor the abbreviated desktop `.day`/`.month` pair has to be read. It also
+     * carries the genre tags (`.event-tags a`, the venue's own taxonomy — Blues, Latin Jazz,
+     * Neo-Soul), a background-image poster and the external ticket-shop link (Eventim, ticket.io,
+     * tixforgigs). Each links to `/events/<slug>-<postId>`, whose trailing id makes the `sourceId`
+     * stable across the venue's recurring series (WE LOVE 80S runs five times, Disco Inferno three).
+     *
+     * The detail page adds the description, the `… präsentiert:` promoter, the full-size poster and
+     * a `<table>` of `Beginn` / `Einlass` / `Vorverkauf` / `Tageskasse` rows — a real presale *and*
+     * box-office price, the presale written as `ab 30€ (zzgl. Gebühr)`, whose "from" and booking-fee
+     * caveats are kept in `priceNote`. It is also the only page carrying the **category**, as an
+     * `event-categories-<slug>` class on its `<article>`: the venue marks its DJ nights `party` and
+     * leaves most concerts untagged, and a night can be tagged both (`Disco Inferno` is
+     * `concerts party`), so `party` wins and an untagged event falls back to title inference.
+     */
+    QUASIMODO,
+
+    /**
      * Renate (Wilde Renate) Berlin – the Friedrichshain techno club, on WordPress with no `event`
      * post type in its REST API, so its homepage is the source. Each night is a `.prog-row`
      * carrying a `.prog-day` weekday, a year-less `.prog-date`, a `.prog-title`, the spaces used
