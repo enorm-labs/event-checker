@@ -33,6 +33,7 @@
 ###   Havanna              — https://www.havanna-berlin.de/events (undated weekly nights, expanded to dated occurrences)
 ###   Heimathafen Neukölln — https://heimathafen-neukoelln.de/wp-json/wp/v2/events (WP REST + ACF; performances array)
 ###   Hole 44              — https://hole-berlin.de/events/ (WordPress/Events-Manager, list + detail)
+###   Huxleys Neue Welt    — https://huxleysneuewelt.de/events (WordPress/Events-Manager; list + detail, ISO slug date)
 ###   Junction Bar         — https://www.junction-bar.de/ (live music + DJ programs)
 ###   Kantine am Berghain  — https://www.berghain.berlin/de/program/kantine-am-berghain/ (shares BERGHAIN importer)
 ###   Lido                 — https://www.lido-berlin.de/
@@ -1468,6 +1469,69 @@ Accept: application/json
 
 > {%
     client.test("Hole 44 import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Huxleys Neue Welt (Hasenheide 107-113, Berlin-Neukölln)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Huxleys Neue Welt venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Huxleys Neue Welt",
+    "address": "Hasenheide 107-113",
+    "city": "Berlin",
+    "postalCode": "10967",
+    "district": "neukoelln",
+    "latitude": 52.48542,
+    "longitude": 13.42361,
+    "websiteUrl": "https://huxleysneuewelt.de",
+    "description": "A 1,600-capacity concert hall in a former ballroom on the Hasenheide, hosting touring rock, metal, hip hop, pop and electronic acts."
+}
+
+> {%
+    client.global.set("huxleys_venue_id", response.body.id);
+    client.test("Huxleys Neue Welt venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Huxleys Neue Welt event source ---
+# Links the venue to the HuxleysWebsiteImporter.
+# The sourceType "HUXLEYS" matches EventSource.HUXLEYS.
+# NOTE: list + detail. The Events-Manager `event` post type is not exposed over the WP REST API
+# (only the stock types are registered) and the theme embeds no JSON-LD, so both pages are scraped.
+# The date comes from the ISO prefix of the `/event/YYYY-MM-DD-<slug>` permalink, since the listing
+# card prints only a day and a month abbreviation.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{huxleys_venue_id}},
+    "name": "Huxleys Neue Welt",
+    "url": "https://huxleysneuewelt.de/events",
+    "sourceType": "HUXLEYS",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Huxleys Neue Welt event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Huxleys Neue Welt import ---
+POST {{importer-host}}/api/admin/event-sources/huxleys-neue-welt/import
+Accept: application/json
+
+> {%
+    client.test("Huxleys Neue Welt import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}

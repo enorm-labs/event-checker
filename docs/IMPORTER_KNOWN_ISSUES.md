@@ -428,6 +428,32 @@ has a date, start time, image, description and a price; 93 of 95 have a doors ti
 - 🟢 **Conditional requests are unused.** The REST endpoint sends no ETag or Last-Modified, so every run re-walks the archive; upserts are idempotent by
   `sourceId`.
 
+### Huxleys Neue Welt (`scraper/huxleys/`) — WordPress / Events-Manager, list + detail
+
+Verified against a live import (August 2026): 107 upcoming events, dates 2026-08-02 → 2028-05-19, none in the past. Coverage is close to complete — **every**
+event has a date, a start time *and* a doors time; 106 have an image and an artist, 103 a ticket link, 94 a description, 59 a genre.
+
+- 🟠 **Prices are almost never published.** 105 of 107 events state none: the venue sells through Eventim and prints a price only occasionally, as a labelled
+  line in the detail page's `Details` box ("VVK: 28 € (zzgl. Gebühr)" — one of eleven sampled pages). That line is parsed when present, with the booking-fee
+  qualifier kept as the note, but for almost every show the price exists only behind the ticket link.
+- 🟠 **A relocated show stays on the listing after moving to another house.** Seven events are flagged `RELOCATED`, and the venue uses that note for moves in
+  *both* directions — "Das Konzert wird ins Hole44 verlegt" (leaving Huxleys) and "Die Show wird aus dem Metropol ins Huxleys verlegt" (arriving). The former
+  are stored as Huxleys events with a `RELOCATED` status, which is what the source says, but they will happen elsewhere — and if the receiving venue also has
+  an importer, the same show lands twice under two venues. The note text is not stored, so the destination is lost.
+- 🟢 **The change note is the only signal for two statuses.** Sold-out and cancelled come from a CSS class on the list item (`Ausverkauft` / `Abgesagt`) with a
+  matching badge, but a relocation or a new date is announced solely in the listing's free-text `.anderungen` note, which the detail page omits entirely — so
+  the merge deliberately keeps the *overview's* status whenever it is non-default. Notes that are not status changes ("Zusatzshow", "Nachholtermin", "Eintritt
+  ab 18 Jahren!") correctly leave the status alone, but only because none of them contains a status keyword; a future note that does would be misread.
+- 🟢 **The detail page has no heading, so the listing owns the title.** The act's name appears there only in the document title with " - Huxleys Neue Welt"
+  appended. The detail scraper strips that suffix so it can stand alone when the listing is unavailable, but a successful merge keeps the listing's
+  `.eventname`.
+- 🟢 **Genre and promoter are read from CSS classes.** Both are WordPress taxonomies the theme emits as slugs on the `article` element (`event-tags-electronic`,
+  `promoters-trinity-music`), which costs no extra request but means de-slugified display names: a legal form comes back title-cased word by word
+  (`Concert Concept Veranstaltungs Gmbh`) and a stylised genre loses its punctuation (`kpop` → `Kpop`, not `K-Pop`). The sibling `presenters-*` taxonomy
+  (media partners) is deliberately not read as a promoter — de-slugifying a domain-shaped term yields a mangled `Laut De`.
+- 🟢 **`Corrupted Blood Club Show` is typed `PARTY` and loses its headliner.** The shared title classifier treats `club` as a party keyword, so this one show
+  (of 107) is mistyped and, being a party, has no artist derived from its title. The cross-cutting reactive-keyword limitation, not specific to this venue.
+
 ---
 
 ## How to extend this doc
