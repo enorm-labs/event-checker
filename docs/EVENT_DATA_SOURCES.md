@@ -7,8 +7,8 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 
 | Status                              | Meaning                                                                              | Count |
 |-------------------------------------|--------------------------------------------------------------------------------------|------:|
-| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    45 |
-| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |    29 |
+| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    48 |
+| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |    26 |
 | ⛔ [Blocked](#-blocked--deferred)   | Website analyzed, but no usable listings (no programme page, JS-only, or too sparse) |    32 |
 | ❓ [Unanalyzed](#-not-analyzed-yet) | No URL recorded yet — website still needs a first look                               |     0 |
 
@@ -49,6 +49,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Loge                        | https://www.loge-berlin.org/                                | Club         | Wix; tickets on-site; support via "+" in title    |
 | Madame Claude               | https://madameclaude.de/                                    | Bar          | WordPress `event` REST API (ACF)                  |
 | Matrix Club Berlin          | https://www.matrix-berlin.de/                               | Club         | WordPress; month pages walked; DJs + door prices  |
+| Max-Schmeling-Halle         | https://www.velomax.de/events                               | Arena        | Shared VELOMAX listing; no sport imported         |
 | Mikropol                    | https://mikropol-berlin.de/                                 | Club         | Events-Manager list + detail; "verlegt in den …"  |
 | Monarch                     | https://www.kottimonarch.de/                                | Bar          | PHP /programm.php; type + status inline in title  |
 | MS Hoppetosse               | https://hoppetosse.berlin/                                  | Techno Club  | Shares the CdV listing; winter location only      |
@@ -60,11 +61,13 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Soda Club                   | https://www.soda-berlin.de/events                           | Club         | disco2app CMS; `MusicEvent` JSON-LD on details    |
 | Sonnenraum                  | https://clubdervisionaere.com/programm                      | Club         | Shares the CdV listing; Monday live residency     |
 | Supamolly                   | https://www.supamolly.de/?p=programm                        | Club         | Retro PHP; row id is the date stamp; no prices    |
+| UFO im Velodrom             | https://www.velomax.de/events                               | Concert Hall | Shares the VELOMAX listing                        |
 | Urban Spree                 | https://www.urbanspree.com/program/                         | Club         | MODX; listing descending + paginated; walks pages |
+| Velodrom                    | https://www.velomax.de/events                               | Arena        | Shares the VELOMAX listing; Microdata details     |
 | Wild at Heart               | https://www.wildatheartberlin.de/                           | Bar          | Retro frameset; concerts.php; year from weekday   |
 | Zenner                      | https://zenner.berlin/programm                              | Club         | Gatsby/Sanity page-data JSON; UTC dates; archive  |
 
-44 importer classes cover 45 sources (Kantine am Berghain shares the Berghain importer; Club der Visionäre, Sonnenraum and MS Hoppetosse are three thin
+45 importer classes cover 48 sources (Kantine am Berghain shares the Berghain importer; Club der Visionäre, Sonnenraum and MS Hoppetosse are three thin
 importers over one shared listing and parser).
 
 ## 🔨 Ready to implement
@@ -73,14 +76,11 @@ Analyzed and scrapable — the candidates for the next `/scaffold-importer` runs
 
 | Priority | Name                  | URL                                      | Type         | Why / what it needs                                        |
 |:--------:|-----------------------|------------------------------------------|--------------|------------------------------------------------------------|
-|   High   | Max-Schmeling-Halle   | https://www.velomax.de/events            | Arena        | VELOMAX; hall + "Konzert" filter — one importer, 3 halls   |
 |   High   | Puschen               | https://puschen.net/berlin/              | Promoter     | Consistent format; doors/start, sold-out, cross-venue      |
 |   High   | Renate                | https://www.renate.cc/                   | Techno Club  | Per-floor lineups; club + garden, free-entry notes         |
 |   High   | Tempodrom             | https://www.tempodrom.de/                | Concert Hall | schema.org `Event` JSON-LD with offers; two arenas         |
 |   High   | Tresor                | https://tresorberlin.com/club/events/    | Techno Club  | WordPress; `/event/YYYYMMDD-slug` detail pages             |
 |   High   | Trinity Music         | https://trinitymusic.de/                 | Promoter     | Cross-venue; rich statuses; also populates `promoter`      |
-|   High   | Ufo im Velodrom       | https://www.velomax.de/events            | Concert Hall | Shares the VELOMAX listing; hall named per event           |
-|   High   | Velodrom              | https://www.velomax.de/events            | Arena        | Shares the VELOMAX listing; hall named per event           |
 |  Medium  | Admiralspalast        | https://www.admiralspalast.theater/      | Theater      | Contao; /veranstaltungsuebersicht.html, genre categories   |
 |  Medium  | Humboldthain Club     | https://www.humboldthain.com/            | Techno Club  | Elfsight Event Calendar — as the NEUE_ZUKUNFT importer     |
 |  Medium  | Landstreicher Booking | https://landstreicher-booking.de/        | Promoter     | Structured tour-date table; needs a Berlin-only filter     |
