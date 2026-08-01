@@ -443,24 +443,28 @@ fun isDjSetFormatLabel(name: String): Boolean = DJ_SET_LABEL_PATTERN.matches(nam
 
 /**
  * An unannounced-guest support slot: a bare "Guest(s)"/"Gäste" collective, optionally
- * written with a leading "+" — venues (Wild at Heart) list a yet-unnamed support act as
- * "+ Guest" in the lineup. It is a billing placeholder for an unnamed act, not a
- * performer, mirroring the "Guests"/"Gäste" [CONJUNCTION_TAIL_COLLECTIVES] that keep an
- * "X & Guests" boundary joined onto one act. Anchored: the whole trimmed,
- * whitespace-collapsed value must be the collective, so a real act whose name merely
- * contains the word (e.g. "Special Guest DJ Foo") is untouched. Kept tight to the guest
- * forms — a standalone "Friends"/"Band" is a plausible real act name, so it is not listed.
+ * written with a leading "+" and optionally naming the format it fills ("Guest DJs" —
+ * Club der Visionäre's spelling for an unbooked slot). Venues (Wild at Heart) list a
+ * yet-unnamed support act as "+ Guest" in the lineup. It is a billing placeholder for an
+ * unnamed act, not a performer, mirroring the "Guests"/"Gäste"
+ * [CONJUNCTION_TAIL_COLLECTIVES] that keep an "X & Guests" boundary joined onto one act.
+ * Anchored: the whole trimmed, whitespace-collapsed value must be the collective, so a
+ * real act whose name merely contains the word (e.g. "Special Guest DJ Foo") is
+ * untouched. Kept tight to the guest forms — a standalone "Friends"/"Band" is a plausible
+ * real act name, so it is not listed.
  */
-private val GUEST_SLOT_PATTERN = Regex("""\+?\s*(?:guests?|gäste|gaeste)""", RegexOption.IGNORE_CASE)
+private val GUEST_SLOT_PATTERN = Regex("""\+?\s*(?:guests?|gäste|gaeste)(?:\s+djs?)?""", RegexOption.IGNORE_CASE)
 
 /**
  * Checks whether [name] is a bare unannounced-guest support slot ("+ Guest", "Guests",
- * "Gäste") rather than a performer. See [GUEST_SLOT_PATTERN]; matching is fully anchored.
+ * "Gäste", "Guest DJs") rather than a performer. See [GUEST_SLOT_PATTERN]; matching is
+ * fully anchored.
  *
  * Example:
  * ```kotlin
  * isGuestSlotLabel("+ Guest")       // true
  * isGuestSlotLabel("Gäste")         // true
+ * isGuestSlotLabel("Guest DJs")     // true
  * isGuestSlotLabel("Guns N' Roses") // false
  * ```
  */

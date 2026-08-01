@@ -130,6 +130,30 @@ enum class EventSource {
      */
     CLASH,
 
+    /**
+     * Club der Visionäre Berlin – the Flutgraben open-air shack, on a hand-coded WordPress theme
+     * whose `/programm/` page is the **single programme for three rooms**: the club itself, the
+     * adjacent [SONNENRAUM] concert space, and the [MS_HOPPETOSSE] boat (the winter location).
+     * `hoppetosse.berlin/program/` serves the byte-identical listing, so which room a night belongs
+     * to is carried **only by the colour class on its title** — `.cdvRed`, `.sonnenraumYellow`,
+     * `.hoppetosseYellow` — and each room is imported as its own source filtered on that class.
+     * The programme is seasonal: the open-air club runs in summer, the boat in winter, so the
+     * off-season room legitimately imports zero events.
+     *
+     * Each night is a `div#programmC > div[id^=post-]` block: a `div.headerTxt` date cell in German
+     * `Wd. D.M.` form (**no year** — inferred from the weekday via [inferYearForWeekday]), the
+     * `p.headerTxt.<room>` title, and a flat run of `<p>` lineup lines — `// <act>` entries grouped
+     * under optional `Main:` / `Chill Floor:` floor headings and `Live Band featuring:` / `DJ Sets:`
+     * billing sections. The date cell is **empty when a night shares its date with the block above**
+     * (a boat party and its club afterparty), so a dateless block inherits the preceding date.
+     *
+     * The WordPress REST API is not usable: upcoming events are `future`-status posts, which
+     * `/wp-json/wp/v2/posts` omits (and 401s per id), so the rendered page is the only source. The
+     * page carries no times, prices, ticket links, images or per-event URLs — the `ra.co` links in
+     * the lineup are DJ profiles, not tickets — so the WordPress post id is the stable `sourceId`.
+     */
+    CLUB_DER_VISIONAERE,
+
     /** Duncker Club Berlin – retro hand-coded single-page `start.html` programme table (goth/wave/indie DJ nights), German `DD.MM.` dates without a year. */
     DUNCKER,
 
@@ -224,6 +248,15 @@ enum class EventSource {
     MONARCH,
 
     /**
+     * MS Hoppetosse Berlin – the moored Spree salon boat that is Club der Visionäre's **winter
+     * location**, sharing that venue's WordPress theme, programme page and importer. Its nights are
+     * the `.hoppetosseYellow` entries on the one listing (`hoppetosse.berlin/program/` serves the
+     * identical page); the boat is dark in summer, so an off-season import legitimately yields no
+     * events. See [CLUB_DER_VISIONAERE] for the page structure and its quirks.
+     */
+    MS_HOPPETOSSE,
+
+    /**
      * Neue Zukunft Berlin – static landing page whose concert programme lives only in an embedded
      * Elfsight "Event Calendar" widget; events read from the widget's public JSON boot API
      * (`core.service.elfsight.com/p/boot/?w=<widgetId>`) rather than the JS-rendered `<div>`.
@@ -257,6 +290,15 @@ enum class EventSource {
      * `performer` is always the placeholder "Unbekannt".
      */
     SODA,
+
+    /**
+     * Sonnenraum Berlin – the indoor concert space next door to Club der Visionäre, sharing that
+     * venue's WordPress theme, programme page and importer. Its own `/sonnenraum/` page is a
+     * description that points the reader back at the programme ("Angekündigt werden diese
+     * Veranstaltungen … unter Programm"), so its nights are simply the `.sonnenraumYellow` entries
+     * on the one listing. See [CLUB_DER_VISIONAERE] for the page structure and its quirks.
+     */
+    SONNENRAUM,
 
     /**
      * Supamolly Berlin – retro hand-coded PHP squat venue in Friedrichshain. The whole programme lives on a

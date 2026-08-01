@@ -7,8 +7,8 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 
 | Status                              | Meaning                                                                              | Count |
 |-------------------------------------|--------------------------------------------------------------------------------------|------:|
-| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    36 |
-| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |    38 |
+| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    39 |
+| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |    35 |
 | ⛔ [Blocked](#-blocked--deferred)   | Website analyzed, but no usable listings (no programme page, JS-only, or too sparse) |    32 |
 | ❓ [Unanalyzed](#-not-analyzed-yet) | No URL recorded yet — website still needs a first look                               |     0 |
 
@@ -30,6 +30,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Bi Nuu                      | https://binuu.de/                                           | Club         | No genre or prices on site; only via ticket link  |
 | Cassiopeia                  | https://cassiopeia-berlin.de/                               | Club         | Webflow; genre tags, sold-out / cancelled badges  |
 | Clash Club                  | https://clash-berlin.de/                                    | Club         | WordPress; sparse — no times, prices or text      |
+| Club der Visionäre          | https://clubdervisionaere.com/programm                      | Techno Club  | WordPress; one listing, 3 rooms by CSS class      |
 | Duncker Club                | https://www.dunckerclub.de/                                 | Club         |                                                   |
 | Festsaal Kreuzberg          | https://festsaal-kreuzberg.de/de                            | Concert Hall | Nuxt/Wagtail SSR; `ld+json` empty; no prices      |
 | Frannz Club                 | https://frannz.eu/                                          | Club         |                                                   |
@@ -44,18 +45,21 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Matrix Club Berlin          | https://www.matrix-berlin.de/                               | Club         | WordPress; month pages walked; DJs + door prices  |
 | Mikropol                    | https://mikropol-berlin.de/                                 | Club         | Events-Manager list + detail; "verlegt in den …"  |
 | Monarch                     | https://www.kottimonarch.de/                                | Bar          | PHP /programm.php; type + status inline in title  |
+| MS Hoppetosse               | https://hoppetosse.berlin/                                  | Techno Club  | Shares the CdV listing; winter location only      |
 | Neue Zukunft                | https://neue-zukunft.org/                                   | Club         | Elfsight Event Calendar widget API                |
 | Privatclub                  | https://privatclub-berlin.de/                               | Club         | Rich detail pages; genre, presale + AK prices     |
 | Roadrunner's Paradise       | http://www.roadrunners-paradise.de/                         | Bar          | Retro HTML; rich data; year missing on some dates |
 | Schokoladen                 | https://www.schokoladen-mitte.de/                           | Club         | Laravel; anchor-based events; genre inside title  |
 | SO36                        | https://www.so36.com/tickets                                | Club         | Cookie wall bypassed via Ticket-Toaster shop      |
 | Soda Club                   | https://www.soda-berlin.de/events                           | Club         | disco2app CMS; `MusicEvent` JSON-LD on details    |
+| Sonnenraum                  | https://clubdervisionaere.com/programm                      | Club         | Shares the CdV listing; Monday live residency     |
 | Supamolly                   | https://www.supamolly.de/?p=programm                        | Club         | Retro PHP; row id is the date stamp; no prices    |
 | Urban Spree                 | https://www.urbanspree.com/program/                         | Club         | MODX; listing descending + paginated; walks pages |
 | Wild at Heart               | https://www.wildatheartberlin.de/                           | Bar          | Retro frameset; concerts.php; year from weekday   |
 | Zenner                      | https://zenner.berlin/programm                              | Club         | Gatsby/Sanity page-data JSON; UTC dates; archive  |
 
-35 importer classes cover 36 sources (Kantine am Berghain shares the Berghain importer).
+38 importer classes cover 39 sources (Kantine am Berghain shares the Berghain importer; Club der Visionäre, Sonnenraum and MS Hoppetosse are
+three thin importers over one shared listing and parser).
 
 ## 🔨 Ready to implement
 
@@ -63,7 +67,6 @@ Analyzed and scrapable — the candidates for the next `/scaffold-importer` runs
 
 | Priority | Name                  | URL                                      | Type         | Why / what it needs                                        |
 |:--------:|-----------------------|------------------------------------------|--------------|------------------------------------------------------------|
-|   High   | Club der Visionäre    | https://clubdervisionaere.com/programm   | Techno Club  | Server-rendered; dates, times and per-floor lineups        |
 |   High   | Columbia Theater      | https://columbia-theater.de/             | Concert Hall | One-page listing; support acts, "Verschoben"; date in slug |
 |   High   | Columbiahalle         | https://www.columbiahalle.berlin/        | Concert Hall | Contao; /veranstaltungen.html: promoter, doors, prices     |
 |   High   | Golden Gate           | https://goldengate-berlin.de/            | Techno Club  | WordPress; weekday + date + time, lineups, door-only       |
@@ -71,7 +74,6 @@ Analyzed and scrapable — the candidates for the next `/scaffold-importer` runs
 |   High   | Huxleys Neue Welt     | https://huxleysneuewelt.de/events        | Concert Hall | WordPress; Einlass + Beginn, support acts, "Ausverkauft"   |
 |   High   | Kater                 | https://www.katerclub.de/                | Techno Club  | WordPress; start–end times, lineups, ticket links          |
 |   High   | Max-Schmeling-Halle   | https://www.velomax.de/events            | Arena        | VELOMAX; hall + "Konzert" filter — one importer, 3 halls   |
-|   High   | MS Hoppetosse         | https://hoppetosse.berlin/               | Techno Club  | Same codebase as Club der Visionaere — one scraper         |
 |   High   | Puschen               | https://puschen.net/berlin/              | Promoter     | Consistent format; doors/start, sold-out, cross-venue      |
 |   High   | Renate                | https://www.renate.cc/                   | Techno Club  | Per-floor lineups; club + garden, free-entry notes         |
 |   High   | Tempodrom             | https://www.tempodrom.de/                | Concert Hall | schema.org `Event` JSON-LD with offers; two arenas         |
@@ -99,7 +101,6 @@ Analyzed and scrapable — the candidates for the next `/scaffold-importer` runs
 |   Low    | Heideglühen           | https://heidegluehen.berlin/aktuell/     | Techno Club  | One event at a time; prose date, set times per DJ          |
 |   Low    | Humboldtsaal Urania   | https://www.urania.de/kalender/          | Concert Hall | One Urania programme; hall unnamed, mostly lectures        |
 |   Low    | Kleistsaal Urania     | https://www.urania.de/kalender/          | Concert Hall | Same programme; the site makes no hall distinction         |
-|   Low    | Sonnenraum            | https://clubdervisionaere.com/programm   | Club         | Club der Visionaere list; room is only a CSS class         |
 |   Low    | Theater Im Delphi     | https://theater-im-delphi.de/programm/   | Concert Hall | WordPress; page also dumps a PHP `var_dump` of records     |
 
 *Several of the rooms above are theater, comedy, or arena-scale rather than live-music clubs — settle scope before building. Bar jeder Vernunft set the
