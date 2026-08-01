@@ -380,6 +380,26 @@ enum class EventSource {
     MATRIX,
 
     /**
+     * Max-Schmeling-Halle Berlin – the Prenzlauer Berg arena, one of three halls run by Velomax and
+     * programmed on **one shared listing** at `velomax.de/events`. Each entry there is an
+     * `a.ticketWrap` carrying the hall as a CSS class (`msh` / `velodrom` / `ufo`) and its own
+     * `.location` label, the venue's own `data-type` (`concert` / `show` / `sport`), the date parts,
+     * and a link to the hall's own domain — so the three halls are imported as three sources off the
+     * one page, filtered on that class (as [CLUB_DER_VISIONAERE] does for its three rooms).
+     *
+     * Each `/events/event/<slug>` detail page carries full **schema.org Event Microdata** — an
+     * `itemprop` `startDate` and `doorTime` with machine-readable `datetime` attributes, an
+     * `eventStatus`, the `performer`, the `organizer`, and the address — which is what the detail
+     * parser reads rather than the rendered markup (ADR-007 §"Selector Strategy" priority 1).
+     *
+     * **Sport is deliberately not imported.** The arena's biggest programme strand is handball,
+     * volleyball and basketball (32 of 85 current entries, mostly here), and the model has no
+     * `SPORT` event type — importing fixtures as `OTHER` would bury the concerts they sit beside.
+     * Only the venue's own `concert` and `show` entries are taken.
+     */
+    MAX_SCHMELING_HALLE,
+
+    /**
      * Mikropol Berlin – WordPress/Events-Manager club in Schöneberg; the `/events/` page lists every show as
      * an `a.event` card (a `DD.MM.YYYY` date, start/doors times, title, an inline support line, and an
      * `Ausverkauft`/`Abgesagt` status class), each linking to an `/event/<date-slug>/` detail page that adds
@@ -465,6 +485,14 @@ enum class EventSource {
     SUPAMOLLY,
 
     /**
+     * UFO im Velodrom Berlin – the smaller hall configured inside the Velodrom, listed as its own
+     * `UFO` location on the shared Velomax programme and served by its own `ufo-velodrom.de` domain.
+     * Its nights are the `.ufo` entries on the one listing; see [MAX_SCHMELING_HALLE] for the page
+     * structure, the Microdata detail pages and the sport exclusion.
+     */
+    UFO_IM_VELODROM,
+
+    /**
      * Urban Spree Berlin – MODX-based art gallery and concert venue in the RAW-Gelände. The
      * `/program/` listing is server-rendered, but **descending by date** and paginated nine cards
      * at a time over the venue's whole archive (200+ pages), so this importer walks `?page=N`
@@ -478,6 +506,15 @@ enum class EventSource {
      * and answers `Cache-Control: no-store`.
      */
     URBAN_SPREE,
+
+    /**
+     * Velodrom Berlin – the Landsberger Allee arena, the second of the three Velomax halls. Its
+     * nights are the `.velodrom` entries on the shared listing; see [MAX_SCHMELING_HALLE] for the
+     * page structure, the Microdata detail pages and the sport exclusion. A show staged in the
+     * hall's smaller [UFO_IM_VELODROM] configuration is labelled by the venue itself, so an event
+     * whose slug mentions "ufo-im-velodrom" but whose `.location` says Velodrom is imported here.
+     */
+    VELODROM,
 
     /**
      * Wild at Heart Berlin – retro hand-coded frameset rockabilly/punk venue in Kreuzberg. The whole concert

@@ -41,6 +41,9 @@
 ###   Loge                 — https://www.loge-berlin.org/event-list (Wix Events warmup JSON + JSON-LD price)
 ###   Madame Claude        — https://madameclaude.de/ (WordPress `event` REST API, ACF-backed)
 ###   Matrix               — https://www.matrix-berlin.de/party-in-berlin/ (WordPress; entry → per-month pages)
+###   Max-Schmeling-Halle  — https://www.velomax.de/events (shared VELOMAX listing; hall by CSS class)
+###   UFO im Velodrom      — https://www.velomax.de/events (shares the VELOMAX listing)
+###   Velodrom             — https://www.velomax.de/events (shares the VELOMAX listing)
 ###   Mikropol             — https://mikropol-berlin.de/events/ (WordPress/Events-Manager, list + detail)
 ###   Monarch              — https://kottimonarch.de/programm.php (retro PHP single-page listing)
 ###   MS Hoppetosse        — https://hoppetosse.berlin/program/ (shares the CLUB_DER_VISIONAERE listing; winter location)
@@ -1963,6 +1966,192 @@ Accept: application/json
 
 > {%
     client.test("Matrix import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Max-Schmeling-Halle (Am Falkplatz, Berlin — Velomax)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Max-Schmeling-Halle venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Max-Schmeling-Halle",
+    "address": "Am Falkplatz",
+    "city": "Berlin",
+    "postalCode": "10437",
+    "district": "pankow",
+    "latitude": 52.54556,
+    "longitude": 13.40361,
+    "websiteUrl": "https://www.max-schmeling-halle.de",
+    "description": "A multi-purpose arena at Falkplatz in Prenzlauer Berg, hosting arena concerts alongside the handball and basketball fixtures that are not imported."
+}
+
+> {%
+    client.global.set("msh_venue_id", response.body.id);
+    client.test("Max-Schmeling-Halle venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Max-Schmeling-Halle event source ---
+# Links the venue to the MaxSchmelingHalleWebsiteImporter.
+# The sourceType "MAX_SCHMELING_HALLE" matches EventSource.MAX_SCHMELING_HALLE.
+# NOTE: all three Velomax halls share ONE listing URL; each source filters it by the hall's CSS
+# class. Sport fixtures are excluded (the model has no SPORT type), so the imported count is well
+# below the number of entries the page shows.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{msh_venue_id}},
+    "name": "Max-Schmeling-Halle",
+    "url": "https://www.velomax.de/events",
+    "sourceType": "MAX_SCHMELING_HALLE",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Max-Schmeling-Halle event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Max-Schmeling-Halle import ---
+POST {{importer-host}}/api/admin/event-sources/max-schmeling-halle/import
+Accept: application/json
+
+> {%
+    client.test("Max-Schmeling-Halle import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### UFO im Velodrom (Paul-Heyse-Str. 26, Berlin — Velomax)
+### ————————————————————————————————————————————————————————————
+
+### --- Create UFO im Velodrom venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "UFO im Velodrom",
+    "address": "Paul-Heyse-Str. 26",
+    "city": "Berlin",
+    "postalCode": "10407",
+    "district": "pankow",
+    "latitude": 52.53056,
+    "longitude": 13.45111,
+    "websiteUrl": "https://www.ufo-velodrom.de",
+    "description": "The smaller hall configured inside the Velodrom, used for mid-sized concerts and listed as its own venue on the Velomax programme."
+}
+
+> {%
+    client.global.set("ufo_venue_id", response.body.id);
+    client.test("UFO im Velodrom venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create UFO im Velodrom event source ---
+# Links the venue to the UfoImVelodromWebsiteImporter.
+# The sourceType "UFO_IM_VELODROM" matches EventSource.UFO_IM_VELODROM.
+# NOTE: all three Velomax halls share ONE listing URL; each source filters it by the hall's CSS
+# class. Sport fixtures are excluded (the model has no SPORT type), so the imported count is well
+# below the number of entries the page shows.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{ufo_venue_id}},
+    "name": "UFO im Velodrom",
+    "url": "https://www.velomax.de/events",
+    "sourceType": "UFO_IM_VELODROM",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("UFO im Velodrom event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial UFO im Velodrom import ---
+POST {{importer-host}}/api/admin/event-sources/ufo-im-velodrom/import
+Accept: application/json
+
+> {%
+    client.test("UFO im Velodrom import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Velodrom (Paul-Heyse-Str. 26, Berlin — Velomax)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Velodrom venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Velodrom",
+    "address": "Paul-Heyse-Str. 26",
+    "city": "Berlin",
+    "postalCode": "10407",
+    "district": "pankow",
+    "latitude": 52.53075,
+    "longitude": 13.45112,
+    "websiteUrl": "https://www.velodrom.de",
+    "description": "A cycling arena at S-Bahnhof Landsberger Allee that doubles as one of Berlin's larger concert venues."
+}
+
+> {%
+    client.global.set("velodrom_venue_id", response.body.id);
+    client.test("Velodrom venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Velodrom event source ---
+# Links the venue to the VelodromWebsiteImporter.
+# The sourceType "VELODROM" matches EventSource.VELODROM.
+# NOTE: all three Velomax halls share ONE listing URL; each source filters it by the hall's CSS
+# class. Sport fixtures are excluded (the model has no SPORT type), so the imported count is well
+# below the number of entries the page shows.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{velodrom_venue_id}},
+    "name": "Velodrom",
+    "url": "https://www.velomax.de/events",
+    "sourceType": "VELODROM",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Velodrom event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Velodrom import ---
+POST {{importer-host}}/api/admin/event-sources/velodrom/import
+Accept: application/json
+
+> {%
+    client.test("Velodrom import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}

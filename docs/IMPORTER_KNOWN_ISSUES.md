@@ -481,6 +481,28 @@ ten structured club nights carry a full per-floor lineup.
 - 🟢 **Dates carry no year.** Every date is a `DD.MM` with a weekday, so the year comes from [inferYearForWeekday]; the programme currently spans August to
   November without printing a year anywhere.
 
+### Max-Schmeling-Halle / Velodrom / UFO im Velodrom (`scraper/velomax/`) — TYPO3, one listing for three halls
+
+Verified against a live import (August 2026): 17 + 22 + 10 events across the three halls, none in the past. The best-structured source in the project — every
+event has a date, a start time, an image and a promoter, and the detail pages carry schema.org Microdata rather than needing CSS selectors.
+
+- 🔴 **Sport is not imported at all.** The halls' biggest strand is handball, volleyball and basketball — 32 of the listing's 85 current entries, 25 of them in
+  the Max-Schmeling-Halle — and the model has no `SPORT` event type. Those entries are skipped rather than filed as `OTHER`, which would bury the concerts
+  among them. So this venue's imported count is *by design* far below what its programme page shows, and a user looking for a Füchse Berlin fixture will not
+  find it.
+- 🟠 **A show that plays twice in one day keeps only its first session.** The stored event slug is date + venue + title and the column is `UNIQUE`, so a second
+  same-day session cannot be inserted — the run would fail the entire import with a duplicate-key error. "Disney On Ice" plays three sessions on 13 March and
+  "Berlin Tattoo" two on 7 November; each day keeps its earliest, and the later sessions are dropped with a log line. The venue itself distinguishes them
+  (sometimes by permalink, sometimes only by start time), so the loss is ours, not the source's → tracked in `TODO.md`.
+- 🟢 **No prices for any event.** The halls sell exclusively through Eventim and print no price on either page; the ticket link is the only route to one.
+- 🟢 **No genre for any event.** The listing's only classification is the three-way `data-type` that decides concert / show / sport.
+- 🟢 **The listing's event type outranks the detail page.** Concert-vs-show is stated *only* as `data-type` on the listing entry; the Microdata says nothing
+  about it, so the merge keeps the listing's value rather than the detail page's title-based inference.
+- 🟢 **A hall's own configuration is trusted over its slug.** "UFO im Velodrom" is a smaller setup inside the Velodrom, and one event's permalink reads
+  `…-ufo-im-velodrom-…` while the listing labels it `Velodrom`. The listing's label wins, so that show is imported as a Velodrom event.
+- 🟢 **Conditional requests cover the shared page only.** All three sources fetch the same `velomax.de/events` URL, so each carries its own ETag for the same
+  document; a change anywhere on the page re-runs all three. That is cheap and correct, just redundant.
+
 ---
 
 ## How to extend this doc
