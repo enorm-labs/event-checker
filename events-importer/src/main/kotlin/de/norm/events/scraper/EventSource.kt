@@ -757,6 +757,29 @@ enum class EventSource {
     WILD_AT_HEART,
 
     /**
+     * Parkbühne Wuhlheide Berlin – the Köpenick open-air amphitheatre, on October CMS. Its
+     * `/programm` page carries the whole season, unpaginated, split into one `.shows` block per
+     * year (`Konzerte 2026`, `Konzerte 2027`). Each `.show` holds a German long date
+     * (`Samstag, 01. August 2026`), an `h2` act, an `h3` tour name, a poster, an
+     * `Ausverkauft` `.statusLabel` and — unless sold out — a Ticketmaster/Eventim link. The
+     * **date is read from the URL instead**: every event links to `/programm/<act>/YYYY-MM-DD`,
+     * an ISO date that needs no German month parsing and doubles as the stable `sourceId`.
+     *
+     * The listing carries no times or prices; the detail page's `<table>` adds `Einlass`,
+     * `Beginn`, a `NN,NN EUR` price (written with the currency spelled out, so the shared
+     * `€`-anchored parser does not apply) and the `Veranstalter` promoter. Two detail-page
+     * quirks: its `h3` is **not** reliably the tour name — a show can put an admin notice there
+     * ("Bitte die Altersbeschränkungen beachten:") — so the subtitle is taken from the listing
+     * only; and a sold-out show simply omits both the price row and the ticket link.
+     *
+     * An act's name may be broken by a `<wbr>` hint (`AnnenMay<wbr>Kantereit`), which Jsoup
+     * renders back as the unbroken `AnnenMayKantereit`. A run of nights by one act is normal
+     * here (AnnenMayKantereit ×3, Nina Chuba ×3), which the per-date URL keeps apart.
+     * `Ausverkauft` sets the sold-out flag, never a status, per the shared convention.
+     */
+    WUHLHEIDE,
+
+    /**
      * Zenner Berlin – the Treptower Park riverside venue (Saal, Klub, Biergarten, Weingarten) on a
      * Gatsby front end backed by a Sanity headless CMS. The rendered `/programm` page is a React
      * shell, but Gatsby publishes the page's own GraphQL result as a static JSON artefact at

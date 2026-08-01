@@ -753,6 +753,26 @@ the shared pipeline drops (`Dropped 1 past event(s)`, `EventUpsertService.dropPa
   `C3D-E` elsewhere. This is the existing convention for DJ lineups across every club importer (AMT, ÆDEN, Renate, Duncker), not an OHM rule: `stripArtistSuffix`
   is applied only to headliners derived from a title → tracked in `TODO.md`.
 
+### Parkbühne Wuhlheide (`scraper/wuhlheide/`) — October CMS, list + detail
+
+Verified against a live import (1 August 2026): 16 events stored, 2026-08-01 → 2027-09-11, none in the past, 0 suspicious rows, **every** event with doors and
+start times, a poster, a promoter and a headliner. The count, titles and dates match the live `/programm` page exactly, and the 9 sold-out flags line up exactly
+with the 9 `Ausverkauft` badges — those same 9 are the only events without a price or a ticket link, because the venue drops both when a show sells out.
+
+- 🟠 **The programme is seasonal, so the listing empties out in winter.** This is an open-air amphitheatre; `/programm` carries the summer season split into one
+  block per year, and outside it the page can be nearly empty. A low count is expected off-season and is not evidence of a broken importer.
+- 🟠 **No descriptions and no genres at all.** The detail page's prose block is house rules ("Bitte beachten Sie die ausgewiesenen Zeiten…"), identical on every
+  page, so it is deliberately not stored as a description — an event-specific text does not exist anywhere on the site. The venue publishes no genre either.
+- 🟢 **A sold-out show has no price.** The `Preis` row and the ticket button are both dropped once a show sells out, so `price_presale` is empty for 9 of 16 —
+  absent rather than wrong. The price that *is* published is a single figure (the cheapest ticket), stored as presale; the venue quotes no box-office price.
+- 🟢 **The detail page's `h3` is not a tour name.** A show can put an admin notice there ("Bitte die Altersbeschränkungen beachten:"), so the subtitle is taken
+  from the listing only, and the detail heading is never read. The consequence is that a tour name published *only* on the detail page would be missed — none
+  currently is.
+- 🟢 **An act name broken by a `<wbr>` hint is restored.** The markup is `AnnenMay<wbr>Kantereit`; Jsoup renders the hint away, so the act is stored as the
+  unbroken `AnnenMayKantereit` rather than split into two words. Verified in the live import, not just the fixture.
+- 🟢 **Promoter names are canonicalised by the shared normaliser.** `Landstreicher Konzerte` → `Landstreicher` and `Trinity Music` → `Trinity`, which is the
+  documented cross-cutting behaviour recorded at the top of this file, not a Wuhlheide rule.
+
 ---
 
 ## How to extend this doc
