@@ -8,8 +8,8 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Status                              | Meaning                                                                              | Count |
 |-------------------------------------|--------------------------------------------------------------------------------------|------:|
 | ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    62 |
-| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |     9 |
-| ⛔ [Blocked](#-blocked--deferred)   | Website analyzed, but no usable listings (no programme page, JS-only, or too sparse) |    35 |
+| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |     8 |
+| ⛔ [Blocked](#-blocked--deferred)   | Website analyzed, but no usable listings (no programme page, JS-only, or too sparse) |    36 |
 | ❓ [Unanalyzed](#-not-analyzed-yet) | No URL recorded yet — website still needs a first look                               |     0 |
 
 "Website analyzed" also means the [data model](DATA_MODEL.md) was checked against that source — to date no source has required a schema change.
@@ -90,7 +90,6 @@ Analyzed and scrapable — the candidates for the next `/scaffold-importer` runs
 
 | Priority | Name                 | URL                                      | Type         | Why / what it needs                                        |
 |:--------:|----------------------|------------------------------------------|--------------|------------------------------------------------------------|
-|  Medium  | Sisyphos             | https://www.sisyphos-berlin.net/         | Techno Club  | Shopify `/pages/tickets`: name, date, price; ticketed only |
 |  Medium  | Uber Arena           | https://www.uber-arena.de/events/all     | Arena        | AEG site, server-rendered; 406 without a browser UA        |
 |  Medium  | Uber Eats Music Hall | https://www.uber-eats-music-hall.de/     | Concert Hall | Same AEG platform as Uber Arena — one scraper shape        |
 |  Medium  | Zitadelle            | https://citadel-music-festival.de/events | Open Air     | Festival site has the concerts; venue site only tours      |
@@ -114,6 +113,12 @@ listings that name the venue per event — Puschen's 35 upcoming shows are sprea
 Importing one today would file every show under a pseudo-venue *and* duplicate what the venues' own importers already hold — ~30 of Puschen's 35 are at venues
 already imported. Unblocking them means resolving a venue per event and de-duplicating against the venue-level sources; until then the promoter data reaches us
 anyway, as the `promoter` field on the venues' own events.
+
+**A handful of tickets is not a programme.** Sisyphos is the case to reason from: its only web presence is a Shopify merch shop, whose `/pages/tickets`
+carried 3 ticketed nights of a single recurring series (`generationS`, one per month) beside the T-shirts, while the club actually runs a programme every
+weekend. Importing those 3 would not be a thin-but-truthful import like OHM's — where the venue publishes its real programme on a short rolling horizon — it
+would present one series per month as if it were the whole programme. The bar is whether the source reflects what the venue is doing, not whether it yields a
+non-zero count.
 
 | Name                  | URL                                 | Type         | Blocker                                          | Unblocked by               |
 |-----------------------|-------------------------------------|--------------|--------------------------------------------------|----------------------------|
@@ -148,6 +153,7 @@ anyway, as the `promoter` field on the venues' own events.
 | Lokschuppen           | https://lokschuppen-berlin.com/     | Techno Club  | Readymag site; the content is JS-only            | Headless browser           |
 | OXI & OXI Garten      | https://oxi-club.de/                | Techno Club  | Domain redirects to Instagram                    | Site change                |
 | RSO                   | https://rso.berlin/                 | Techno Club  | Domain returns 404; no own site found            | Site change / RA           |
+| Sisyphos              | https://www.sisyphos-berlin.net/    | Techno Club  | Shop-only site; 3 ticketed nights, no programme   | RA as a source             |
 | SchwuZ                | https://www.schwuz.de/              | Techno Club  | Between locations; ~2 guest events listed        | New venue / site change    |
 | Sisyfass              | —                                   | Bar          | No website; Instagram and RA only                | Site change                |
 | Strandbad Grünau      | https://strandbadgruenau.de/        | Open Air     | `/events/` is rental marketing, not a programme  | Promoter feed              |
