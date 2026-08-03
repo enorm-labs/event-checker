@@ -823,6 +823,26 @@ start time, a poster, a ticket link, a genre and price information. Types split 
   `19:00:00` in winter and `18:00:00` in summer; it is converted to `Europe/Berlin`. The venue's own `Datum:` line is deliberately not read — one event writes
   it in English (`October 5, 2026`).
 
+### Ritter Butzke (`scraper/ritterbutzke/`) — Modus codebase, own template, list + detail
+
+Verified against a live import (3 August 2026): 29 events stored, 2026-08-07 → 2027-04-10, none in the past, 0 suspicious rows, every one with a start time, a
+poster and a ticket link, and 26 of 29 with a DJ lineup.
+
+- 🟠 **Same codebase as Modus, but no shared selectors.** The venue runs the same hand-built platform (Modus even ships this venue's logo asset) and the same
+  `/event/DDMMYY-<Name>` URL shape, but a different template — Bootstrap grid cards against Modus's `figcaption` tiles — so the two importers share no parsing
+  code. What they do share is the trap: **the slug keeps the original date when a show moves**, proven live here by
+  `310726-DeeportamentCommunityw-NicoMorano-OpenAir-Indoor`, which renders `04.09.2026`. The rendered date is authoritative; the slug is identity only.
+- 🟠 **No doors time, description, genre or price anywhere.** The venue publishes a single `ab HH:mm` opening time (stored as the start time, leaving
+  `doors_time` empty for all 29), no prose, no genre field and no price. Two events are nonetheless flagged free, because their titles say so
+  ("… - free entry until 9pm") and the shared `detectFree` reads the phrase.
+- 🟢 **The DJ lineup is read from a presentational selector.** The `Line Up:` block has no class; its rows are distinguished from the refund notice and video
+  embed that follow only by an inline `padding-left` style. ADR-007 would normally rule that out, but it is the sole discriminator the template offers — a
+  label-only scope collects the legal boilerplate instead. A restyle of that block would silently empty the lineup, which is what the fixture tests guard.
+- 🟢 **Three events store no artist, all correctly.** Community-Rave's lineup is literally `TBA` (dropped by the shared placeholder filter), and Bunte Träumerei
+  and Hippie New Year have no lineup block at all. The event *title* is a night/series name (`House of Rave w/ …`) and is never minted as an act.
+- 🟢 **Several events share a date routinely.** The club runs multiple floors, so two or three nights per date is normal (three on 2026-08-08); the slug's
+  trailing name keeps them apart. `/calendarfile/<id>` is `Disallow`ed by robots.txt and is never fetched.
+
 ---
 
 ## How to extend this doc
