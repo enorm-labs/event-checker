@@ -833,8 +833,8 @@ poster and a ticket link, and 26 of 29 with a DJ lineup.
   code. What they do share is the trap: **the slug keeps the original date when a show moves**, proven live here by
   `310726-DeeportamentCommunityw-NicoMorano-OpenAir-Indoor`, which renders `04.09.2026`. The rendered date is authoritative; the slug is identity only.
 - 🟠 **No doors time, description, genre or price anywhere.** The venue publishes a single `ab HH:mm` opening time (stored as the start time, leaving
-  `doors_time` empty for all 29), no prose, no genre field and no price. Two events are nonetheless flagged free, because their titles say so
-  ("… - free entry until 9pm") and the shared `detectFree` reads the phrase.
+  `doors_time` empty for all 29), no prose, no genre field and no price. Two events are nonetheless flagged free, because their titles say so ("… - free entry
+  until 9pm") and the shared `detectFree` reads the phrase.
 - 🟢 **The DJ lineup is read from a presentational selector.** The `Line Up:` block has no class; its rows are distinguished from the refund notice and video
   embed that follow only by an inline `padding-left` style. ADR-007 would normally rule that out, but it is the sole discriminator the template offers — a
   label-only scope collects the legal boilerplate instead. A restyle of that block would silently empty the lineup, which is what the fixture tests guard.
@@ -845,18 +845,18 @@ poster and a ticket link, and 26 of 29 with a DJ lineup.
 
 ### Uber Arena (`scraper/aeg/`) — AEG/Carbonhouse, list + detail
 
-Verified against a live import (3 August 2026): the listing carried 128 rows, 88 survived the sport filter, and **85 were stored** — the three lost are
-second sessions of a same-day double bill (see below). Range 2026-08-21 → 2028-01-29, none in the past, 0 suspicious rows; every event has a start time and a
-poster, 64 are `CONCERT` and 21 `SHOW`.
+Verified against a live import (3 August 2026): the listing carried 128 rows, 88 survived the sport filter, and **85 were stored** — the three lost are second
+sessions of a same-day double bill (see below). Range 2026-08-21 → 2028-01-29, none in the past, 0 suspicious rows; every event has a start time and a poster,
+64 are `CONCERT` and 21 `SHOW`.
 
-- 🔴 **A production playing twice in one day loses its second session.** `Feuerwerk der Turnkunst` (14:00 + 19:00) and `CAVALLUNA` on two consecutive days
-  (14:00 + 19:00, 13:00 + 17:30) each collide on the stored `event.slug`, which is built from date + venue + title. `EventUpsertService` skips the duplicate with
-  a warning rather than failing the import, so the count is 85 not 88. This is the cross-cutting slug limitation already tracked in `TODO.md` ("A show cannot
-  play twice in one day") — Uber Arena is now the third venue to hit it after Velomax and Bar jeder Vernunft, and the only fix is to include the start time in
-  the slug at the persistence boundary.
+- 🔴 **A production playing twice in one day loses its second session.** `Feuerwerk der Turnkunst` (14:00 + 19:00) and `CAVALLUNA` on two consecutive days (14:
+  00 + 19:00, 13:00 + 17:30) each collide on the stored `event.slug`, which is built from date + venue + title. `EventUpsertService` skips the duplicate with a
+  warning rather than failing the import, so the count is 85 not 88. This is the cross-cutting slug limitation already tracked in `TODO.md` ("A show cannot play
+  twice in one day") — Uber Arena is now the third venue to hit it after Velomax and Bar jeder Vernunft, and the only fix is to include the start time in the
+  slug at the persistence boundary.
 - 🟠 **Sport is deliberately not imported.** The arena is home to ALBA Berlin and the Eisbären: 40 of the 128 rows are `eishockey`, `basketball` or `sport`, and
-  filed as `OTHER` they would bury the 88 concerts, shows and comedy nights they sit among — the same decision as the Velomax halls. Those rows are also the only
-  ones carrying a `00:00 Uhr` placeholder start, so the filter removes that noise too.
+  filed as `OTHER` they would bury the 88 concerts, shows and comedy nights they sit among — the same decision as the Velomax halls. Those rows are also the
+  only ones carrying a `00:00 Uhr` placeholder start, so the filter removes that noise too.
 - 🟠 **No genre on any event.** The venue types events only as `Konzert` / `Show` / `Comedy` (mapped to `CONCERT` / `SHOW`) and publishes no genre field, so the
   genre-tag filters never see an Uber Arena event.
 - 🟢 **A `SHOW` stores no artist, by design.** All 21 are production names (`CAVALLUNA - Die Farben des Lebens`, `Feuerwerk der Turnkunst`), not acts, so the
@@ -876,7 +876,7 @@ and **65 were stored** (see below). Range 2026-09-15 → 2027-10-16, none in the
 
 - 🔴 **A production playing twice in one day loses its second session.** `Der Nussknacker – Grand Classic Ballet mit Orchester` plays 23 December 2026 at 15:00
   and 19:00; the two collide on the stored `event.slug` (date + venue + title) and `EventUpsertService` skips the second with a warning, so the count is 65 not
-  66. Same cross-cutting limitation as at the arena — tracked in `TODO.md` ("A show cannot play twice in one day"); this is the fourth venue to hit it.
+    66. Same cross-cutting limitation as at the arena — tracked in `TODO.md` ("A show cannot play twice in one day"); this is the fourth venue to hit it.
 - 🟠 **The category is a bare number.** Unlike the arena this venue emits no `data-categoryname`, only the platform's numeric `data-category`. The numeric
   taxonomy is decoded from the arena — the tenant that publishes both — and the music hall's own programme corroborates it (comedians under `4`, ballet under
   `5`, bands under `3`). Should AEG renumber it silently, events would be mistyped rather than dropped.
@@ -935,9 +935,9 @@ free-entry flag; 18 of 20 carry a ticket link.
   warning and the count is 20 not 24. This is the cross-cutting limitation tracked in `TODO.md` ("A show cannot play twice in one day") — at 4 of 24 this is the
   worst-hit venue so far, and the boundary fix would recover all four.
 - 🔴 **Prices exist only in a leaked debug dump.** The programme page emits a `var_dump()` of each performance's database row into an HTML comment — 23 fields
-  including `event_BetragAb`/`Bis`, `production_BetragAb`/`Bis` and an `event_EintrittFrei` flag. The rendered page states **no price anywhere**, so that leak is
-  the only source. It is joined on `(production id, start time)` and treated as strictly best-effort: nothing load-bearing depends on it, and the day the venue
-  notices, these events lose their prices and keep everything else. A scraper test asserts exactly that by stripping the comments from the fixture.
+  including `event_BetragAb`/`Bis`, `production_BetragAb`/`Bis` and an `event_EintrittFrei` flag. The rendered page states **no price anywhere**, so that leak
+  is the only source. It is joined on `(production id, start time)` and treated as strictly best-effort: nothing load-bearing depends on it, and the day the
+  venue notices, these events lose their prices and keep everything else. A scraper test asserts exactly that by stripping the comments from the fixture.
 - 🟠 **The per-event amounts are rounded; the production amounts are not.** The dump states `event_BetragAb` "29" where `production_BetragAb` says "29.95" for
   the same performance, so the production-level pair wins wherever it is filled in. Should the venue ever price one date of a run differently, that override
   would be lost.
@@ -964,8 +964,8 @@ organizers and full descriptions it omits. Verified against a live import (3 Aug
 - 🟠 **No prices anywhere.** `cost` and `cost_details` are empty on all 57 events, so the price filters never see one. The club prices at the door and through
   its ticket vendor, and publishes neither figure.
 - 🟠 **No genre on any event.** The `categories` name a format or a language (`Showcase`, `Open Mic`, `Comedy Special`, `English Language`, `Spanish Language`)
-  and never a musical style, so none is stored — filing `Open Mic` as a genre would put formats into a vocabulary of musical styles. Every event is typed `SHOW`,
-  the model having no comedy type.
+  and never a musical style, so none is stored — filing `Open Mic` as a genre would put formats into a vocabulary of musical styles. Every event is typed
+  `SHOW`, the model having no comedy type.
 - 🟠 **Most events share one ticket link.** 49 of them embed the same Universe season listing as a widget `<script>` in their description, which is genuinely
   where those nights are sold but is not a per-date link. An event's own `website` wins where the venue set one (1 event); 7 have neither and are stored without
   a link rather than pointing at the club's front page.
@@ -977,8 +977,8 @@ organizers and full descriptions it omits. Verified against a live import (3 Aug
 - 🟢 **Titles arrive HTML-escaped.** WordPress states `TURBOPAOLO &#8211; …` and `NEW YEAR&#8217;S EVE SPECIAL`; entities are decoded before storage.
 - 🟢 **The club is its own promoter on about half the programme.** 24 events name `Cosmic Comedy Berlin` as organizer, five name a real outside promoter, and 28
   name none. The venue-as-promoter rows are stored as the API states them.
-- 🟢 **Conditional requests are unused.** The plugin's default window runs from *today* to two years out, so the same URL legitimately returns a different payload
-  each day; upserts are idempotent by `sourceId`. The importer follows the API's own `next_rest_url` cursor rather than building page URLs, bounded by a
+- 🟢 **Conditional requests are unused.** The plugin's default window runs from *today* to two years out, so the same URL legitimately returns a different
+  payload each day; upserts are idempotent by `sourceId`. The importer follows the API's own `next_rest_url` cursor rather than building page URLs, bounded by a
   20-page cap that today's two-page programme never approaches.
 
 ### Heideglühen (`scraper/heidegluehen/`) — WordPress, month preview + week page
@@ -995,16 +995,16 @@ start time, an image and a type.
   Beusselstraße — the street the venue itself gives for access — without a house number it never states.
 - 🟠 **No price, no ticket link, no genre.** The party sells at the door only ("Unsere Kasse schließt in der Regel drei Stunden vor Veranstaltungsende") and
   publishes no figure, no shop and no genre field, so the price and genre filters never see one of these events.
-- 🟠 **The lineup exists for one party at a time.** `/aktuell/` is the only page that ever carries a DJ billing, it covers just the imminent party, and the
-  venue posts it a few days ahead ("Das Programm folgt am Dienstag…" until then). The live import on 3 August found none published, so all four parties stored
-  no artists; the parser is covered against an archived page from 6 June that does carry one. A daily import picks each lineup up in the week before its party.
+- 🟠 **The lineup exists for one party at a time.** `/aktuell/` is the only page that ever carries a DJ billing, it covers just the imminent party, and the venue
+  posts it a few days ahead ("Das Programm folgt am Dienstag…" until then). The live import on 3 August found none published, so all four parties stored no
+  artists; the parser is covered against an archived page from 6 June that does carry one. A daily import picks each lineup up in the week before its party.
 - 🟠 **The running order's set times are dropped.** The week page publishes a full `12:00-16:00 Forsberg` schedule beneath the billing, and the model has no
   field for a per-artist set time. Only the names are stored, deduplicated against the billing above so no DJ is counted twice.
 - 🟢 **Lines are read by kind, not position.** An event paragraph mixes a German prose date with one or more highlighted names in **no fixed order** — a plain
   week reads date-then-name, the anniversary weekend name-then-date-then-name. The line that parses as a date is the date, the first `<mark>` is the title and a
   later one the subtitle ("34-Stunden-Weekender"), which is what keeps the anniversary from being titled with its own date.
-- 🟢 **The closing time is kept as the description.** These parties run into the next day (to 06:00, or 22:00 on a 34-hour weekender) and the model stores no
-  end time, so "bis Sonntag, 6 Uhr" is stored as the description rather than dropped.
+- 🟢 **The closing time is kept as the description.** These parties run into the next day (to 06:00, or 22:00 on a 34-hour weekender) and the model stores no end
+  time, so "bis Sonntag, 6 Uhr" is stored as the description rather than dropped.
 - 🟢 **The image is the month's artwork until the lineup lands.** The month page publishes one graphic covering all its dates, so every party shares it; the week
   page carries that party's own flyer and supersedes it when the lineup is applied. Picking it out needs a specific selector — the page also carries the site
   logo and a close button, and only the artwork is a centred photo inside the content column.
@@ -1021,14 +1021,14 @@ The Schöneberg science and culture house. Verified against a live import (3 Aug
   imported against **one "Urania" venue**, which is exactly what all four of those sources describe. The two hall entries that used to sit in
   `EVENT_DATA_SOURCES.md` are replaced by that single row; splitting the programme would mean either guessing or storing every event twice.
 - 🟠 **A lecture is stored as `READING`.** The model has no talk, lecture or panel type, and `READING` is its spoken-word bucket. That is also the fallback for
-  any format label the shared table does not recognise, because the house invents format names freely — `Schönheitssalon` is one of its discussion formats —
-  and filing those as `OTHER` would bury a lecture among the genuinely unclassifiable. A concert, film or exhibition would still be typed correctly, since the
+  any format label the shared table does not recognise, because the house invents format names freely — `Schönheitssalon` is one of its discussion formats — and
+  filing those as `OTHER` would bury a lecture among the genuinely unclassifiable. A concert, film or exhibition would still be typed correctly, since the
   shared table is consulted first.
 - 🟠 **No genre on any event.** The venue publishes a programme strand (`bzw.:BEZIEHUNGSWESEN`, `LANGE LINIEN`, `TOMORROW:jetzt`) and a format label, neither of
   which is a musical genre; both are joined into the subtitle instead, so the genre-tag filters never see a Urania event.
 - 🟠 **Three events publish no admission at all.** 10 of 17 state `"Eintritt: 8 €, ermäßigt: 5 €, Mitglieder: 3 €"` — whose *first* figure is the full price and
-  the rest concessions, so the full price is stored and the whole line kept as the note — and 4 state `"Eintritt frei"` with no figure, which sets the free flag.
-  The remaining 3 say nothing and are stored without a price.
+  the rest concessions, so the full price is stored and the whole line kept as the note — and 4 state `"Eintritt frei"` with no figure, which sets the free
+  flag. The remaining 3 say nothing and are stored without a price.
 - 🟢 **The site's own JSON API was evaluated and rejected.** `/wp-json/reservixapi/v1/events` returns the same 17 events as clean JSON, but carries no urania.de
   event URL — only the external Reservix link, which would be a poor `sourceUrl` and no basis for a stable `sourceId` — and replaces the format label and the
   concession prices with a bare `minPrice`. The rendered pages are the richer source here, against ADR-007's usual JSON-first preference.
