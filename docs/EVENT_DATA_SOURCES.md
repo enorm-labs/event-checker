@@ -7,8 +7,8 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 
 | Status                              | Meaning                                                                              | Count |
 |-------------------------------------|--------------------------------------------------------------------------------------|------:|
-| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    69 |
-| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |     2 |
+| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    70 |
+| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |     1 |
 | ⛔ [Blocked](#-blocked--deferred)   | Website analyzed, but no usable listings (no programme page, JS-only, or too sparse) |    34 |
 | ❓ [Unanalyzed](#-not-analyzed-yet) | No URL recorded yet — website still needs a first look                               |     0 |
 
@@ -63,6 +63,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | MS Hoppetosse               | https://hoppetosse.berlin/                                  | Techno Club  | Shares the CdV listing; winter location only          |
 | Neue Zukunft                | https://neue-zukunft.org/                                   | Club         | Elfsight Event Calendar widget API                    |
 | OHM                         | https://ohmberlin.com/                                      | Techno Club  | Year-less dd/MM; only 1–3 nights listed at a time     |
+| Panke Culture               | https://www.pankeculture.com/programme/                     | Club         | WordPress/Divi; upcoming list only; no event pages   |
 | Parkbühne Wuhlheide         | https://www.wuhlheide.de/programm                           | Open Air     | October CMS; ISO date in URL; seasonal, sold-out      |
 | Privatclub                  | https://privatclub-berlin.de/                               | Club         | Rich detail pages; genre, presale + AK prices         |
 | Quasimodo                   | https://quasimodo.club/events                               | Club         | Events-Manager; .club domain; genre tags + prices     |
@@ -88,7 +89,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Zenner                      | https://zenner.berlin/programm                              | Club         | Gatsby/Sanity page-data JSON; UTC dates; archive      |
 | Zitadelle                   | https://citadel-music-festival.de/events                    | Open Air     | Festival site; WordPress/EM; summer season only       |
 
-68 importer classes cover 69 sources: only Kantine am Berghain has no class of its own, sharing the Berghain importer outright. Three other groups share a
+69 importer classes cover 70 sources: only Kantine am Berghain has no class of its own, sharing the Berghain importer outright. Three other groups share a
 *listing and parser* while keeping one thin `@Component` per venue, so they do not reduce the count — Club der Visionäre, Sonnenraum and MS Hoppetosse; the
 three Velomax halls; and Uber Arena with the Uber Eats Music Hall.
 
@@ -96,12 +97,11 @@ three Velomax halls; and Uber Arena with the Uber Eats Music Hall.
 
 Analyzed and scrapable — the candidates for the next `/scaffold-importer` runs. **Priority** reflects data richness and effort, not venue importance.
 
-Both entries below came out of the 3 August 2026 re-check of the [Blocked](#-blocked--deferred) list, not from new analysis.
+The entry below came out of the 3 August 2026 re-check of the [Blocked](#-blocked--deferred) list, not from new analysis.
 
-| Priority | Name          | URL                                     | Type         | Why / what it needs                                              |
-|:--------:|---------------|-----------------------------------------|--------------|------------------------------------------------------------------|
-|   High   | Panke Culture | https://www.pankeculture.com/programme/ | Club         | Now publishes a dated programme with lineups and start times     |
-|  Medium  | RBB Sendesaal | https://www.roc-berlin.de/kalender/     | Concert Hall | Shared ROC calendar; filter `.ConcertListItem-location` by venue |
+| Priority | Name          | URL                                 | Type         | Why / what it needs                                              |
+|:--------:|---------------|-------------------------------------|--------------|------------------------------------------------------------------|
+|  Medium  | RBB Sendesaal | https://www.roc-berlin.de/kalender/ | Concert Hall | Shared ROC calendar; filter `.ConcertListItem-location` by venue |
 
 *A theater, comedy or arena-scale room is in scope, not just live-music clubs. Bar jeder Vernunft set that precedent — its programme is imported, with the
 venue's own genre deciding whether a night is a concert or a staged show.*
@@ -111,8 +111,8 @@ venue's own genre deciding whether a night is a concert or a staged show.*
 Analyzed, but there is nothing worth importing today. Revisit when the blocker changes — a redesigned website, adopting a headless browser (deferred
 per [ADR-007](adr/ADR-007_WEB_SCRAPING_STRATEGY.md)), or applying the Havanna-style derived-occurrence approach to undated recurring nights.
 
-**Last re-checked 3 August 2026**, every entry. Two moved to [Ready](#-ready-to-implement): Panke Culture now publishes a dated programme, and the ROC calendar
-that carries the RBB Sendesaal's concerts turned out to be server-rendered and venue-attributed. Five had their blocker *change* without unblocking, which is
+**Last re-checked 3 August 2026**, every entry. Two came out of it: Panke Culture, which now publishes a dated programme and has since been
+[imported](#-imported), and the RBB Sendesaal, whose concerts sit in a ROC calendar that turned out to be server-rendered and venue-attributed. Five had their blocker *change* without unblocking, which is
 worth knowing before anyone spends effort on them:
 
 - **Fluxbau** and **The Pearl** are no longer JS-only — both render their programmes server-side now. Adopting a headless browser would not help either: Fluxbau
