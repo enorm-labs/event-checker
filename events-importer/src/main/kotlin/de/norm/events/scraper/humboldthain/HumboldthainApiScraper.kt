@@ -6,6 +6,7 @@ import de.norm.events.scraper.EventSource
 import de.norm.events.scraper.ScrapedArtist
 import de.norm.events.scraper.ScrapedEvent
 import de.norm.events.scraper.headlinersFromTitle
+import de.norm.events.scraper.humboldthain.HumboldthainApiScraper.Companion.TICKET_URL_PATTERN
 import de.norm.events.scraper.isNonArtistName
 import de.norm.events.scraper.parseTime
 import io.github.oshai.kotlinlogging.KotlinLogging

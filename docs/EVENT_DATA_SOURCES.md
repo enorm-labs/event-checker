@@ -47,7 +47,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Junction Bar                | https://www.junction-bar.de/                                | Bar          | Static monthly pages; show times vary by weekday   |
 | Kantine am Berghain         | https://www.berghain.berlin/de/program/kantine-am-berghain/ | Concert Hall | Shares BERGHAIN importer                           |
 | Kater                       | https://www.katerclub.de/                                   | Techno Club  | Homepage programme; ___ floor rules mark lineups   |
-| LARK                        | https://larkberlin.com/events/                              | Club         | WP REST + ACF; post date is the event date        |
+| LARK                        | https://larkberlin.com/events/                              | Club         | WP REST + ACF; post date is the event date         |
 | Lido                        | https://www.lido-berlin.de/                                 | Concert Hall | Clean slugs; doors + start; "Ausverkauft" badge    |
 | Loge                        | https://www.loge-berlin.org/                                | Club         | Wix; tickets on-site; support via "+" in title     |
 | Madame Claude               | https://madameclaude.de/                                    | Bar          | WordPress `event` REST API (ACF)                   |
@@ -56,7 +56,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Maxxim Club                 | https://www.maxxim-berlin.de/partys                         | Club         | Wix Events warmup JSON; UTC dates; prices inline   |
 | Metropol                    | https://metropol-berlin.de/events                           | Concert Hall | Events-Manager list + detail; no prices; "Verlegt" |
 | Mikropol                    | https://mikropol-berlin.de/                                 | Club         | Events-Manager list + detail; "verlegt in den …"   |
-| Modus Berlin                | https://modus-berlin.de/events                              | Club         | List + detail; rendered date wins over stale slug   |
+| Modus Berlin                | https://modus-berlin.de/events                              | Club         | List + detail; rendered date wins over stale slug  |
 | Monarch                     | https://www.kottimonarch.de/                                | Bar          | PHP /programm.php; type + status inline in title   |
 | MS Hoppetosse               | https://hoppetosse.berlin/                                  | Techno Club  | Shares the CdV listing; winter location only       |
 | Neue Zukunft                | https://neue-zukunft.org/                                   | Club         | Elfsight Event Calendar widget API                 |
