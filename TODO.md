@@ -13,7 +13,9 @@ Rough priority: **Now** → **Next** → grouped backlog → **Someday / Vision*
 
 - [ ] Choose a cloud platform / runtime environment (AWS, GCP, …)
 - [ ] Register the domain **event-junkie.de**
+- [ ] Infrastructure as code (Terraform / OpenTofu) — provision the cloud environment reproducibly instead of by hand
 - [ ] Create release + deploy workflows (CI/CD)
+- [ ] A non-public test/staging stage, separate from production
 - [ ] Deploy to the chosen cloud platform
 - [ ] Fix Dependabot security issues → https://github.com/enorm-labs/event-checker/security/dependabot
 - [ ] Go-live checklist: legal, security, SEO, monitoring, alerting, dashboards, backups, recovery
@@ -42,7 +44,7 @@ Rough priority: **Now** → **Next** → grouped backlog → **Someday / Vision*
 
 ## Frontend & BFF
 
-- [ ] Add map to venues overview page
+- [ ] Add map to venues overview page — and consider plotting **today's events** on it (pins showing what's on tonight, not just where the venues are)
 - [x] Add venue description to the venue detail page — `venue.description` column + full API/UI plumbing; seeded with hand-written blurbs in `dev-seed.http`.
   **Follow-up:** scrape descriptions from each venue's own website (see "Enrich venues" under Importer / Data) and consider other detail-page metadata.
 - [ ] Add capacity / venue size to the venue detail page
@@ -52,6 +54,8 @@ Rough priority: **Now** → **Next** → grouped backlog → **Someday / Vision*
 - [ ] Reduce or group the displayed genres — too many distinct tags; needs a grouping/taxonomy decision (UX + data)
 - [ ] Decide whether to display event **descriptions** and **source images** — copyright/licensing plus traffic to small sites; if images: store/cache/proxy vs.
   hotlink vs. omit (see the Legal/Compliance copyright item)
+- [ ] Always show the number of displayed / found events in list views (verify — may already be the case in places)
+- [ ] Make the home page a real entry point into the data — a prominent link to "Browse events", or filtering/searching directly from the home page
 - [ ] Sitemap (still worthwhile for SEO?)
 - [ ] RSS feed for newly imported events
 - [ ] I18N / L10N + translations
@@ -115,6 +119,10 @@ Strategy & sequencing: [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEG
   the venue per event. Needs a venue resolved per event (matched by name against existing venues, auto-created otherwise) **and** de-duplication against the
   venue-level sources — ~30 of Puschen's 35 shows are at venues already imported. ADR-sized; also the general answer to a show that moves between houses
   (Huxleys' relocations).
+- [ ] **List promoters in their own table** in [docs/EVENT_DATA_SOURCES.md](docs/EVENT_DATA_SOURCES.md), separate from the venue rows — they are a different
+  kind of source (cross-venue listings, no own house) and mixing them into the venue tables hides that. Same place to record the duplicate-events question: a
+  promoter's listing largely repeats the shows the venues already publish, so importing one needs de-duplication against the venue-level sources (see the
+  per-event venue resolution item above).
 - [ ] Enrich venues: type (club/bar/concert hall), description, image/photo, genres, event types
 - [ ] Enrich promoters: description, image, and corrected display names
 - [ ] Check & fix venue districts, addresses, and geo-coordinates
@@ -136,13 +144,25 @@ Strategy & sequencing: [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEG
       headliner is lost too. Word-anchor it (as `\brave\b` and `\bkino\b` already are), or drop the bare entry and keep `club night` / `clubnight`.
     - `ARTIST_SUFFIX_PATTERN` and `stripShoutedTourTail` only recognise the **ASCII hyphen** as the act/tour boundary, so an en- or em-dash tour tail ("Greg
       Mendez – BEAUTY LAND TOUR") survives into the artist name. Accept `[-–—]` in both.
-- [ ] Add events manually for venues that have no website — plus a plan for keeping those up to date
+- [ ] **Cover venues that will never have an automatic import** — no website at all, or a programme published only via Instagram / Facebook / Resident Advisor.
+  Needs three things: a recorded list of those venues (in EVENT_DATA_SOURCES.md, with a link to wherever their programme *is* visible), a low-friction way to
+  enter their events by hand (see the admin frontend items below), and a reminder mechanism so checking them doesn't get forgotten.
 
 **Admin tooling & maintenance:**
 
-- [ ] Admin frontend to review, enrich & fix event data in one place — sort/filter events by missing fields; edit artist/promoter names, event types, genres, …
-- [ ] Admin imports-status dashboard — surface import states and especially **failed** imports. Start with Importer API endpoints + an admin IntelliJ HTTP
-  Client collection; a proper admin frontend later. (`EventSourceController` already exposes per-source status + retry — build on it.)
+- [ ] **Admin frontend** — one place to operate the importers and curate the data. Start with Importer API endpoints + an admin IntelliJ HTTP Client
+  collection; the UI can follow. (`EventSourceController` already exposes per-source status + retry — build on it.)
+    - [ ] Pick an admin dashboard template/kit rather than building the shell from scratch
+    - [ ] **Imports status & control** — see per-source import states, especially **failed** imports, and trigger an import on demand
+    - [ ] **Import configuration** — manage sources and their schedules
+    - [ ] **Data-quality overview** — per-metric and per-source view plus a trend chart, fed by the Pillar 1 endpoint + `data_quality_snapshot` snapshots.
+      Two questions to answer first: which fields actually matter for the site (probably titles and everything used for filtering), and which sources have the
+      worst quality / most missing important fields.
+    - [ ] **Data review & fixing** — sort/filter events by missing fields; edit artist/promoter names, event types, genres, …
+    - [ ] **AI-assisted checking & fixing** — cross-check stored data against the event's source page and propose fixes (Spring AI); human-in-the-loop review.
+      Open question: local LLM vs. an API/subscription. Same capability as Pillar 4 above — decide it once, in ADR-012.
+    - [ ] **Manual event entry** — a fast form for venues with no importer, plus reminders/nudges so those venues actually get checked (see the
+      "venues that will never have an automatic import" item above)
 - [ ] Improve importer Swagger UI (match the BFF)
 - [ ] Housekeeping: policy for when to delete old events from the DB
 
@@ -152,7 +172,8 @@ Strategy & sequencing: [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEG
     - [ ] Strategy to implement the remaining importers fast — but still clean, robust, fully tested
     - [ ] Standardize/simplify existing importers + scrapers where it helps
     - [ ] Find venues we may have missed — cross-check [theclubmap.com](https://www.theclubmap.com/music-style/), Resident Advisor, and the web
-    - [ ] Evaluate bars that host DJs / live music / other events as sources
+    - [ ] Evaluate bars that host DJs / live music / other events ("music bars", "event bars") as sources — start by adding **Minimal Bar** to
+      EVENT_DATA_SOURCES.md, then search Berlin for comparable ones
     - [ ] Check promoters already in the DB and scan their sites for events
     - [ ] Cover events at special/one-off locations (e.g. Durchlüften Festival @ Humboldtforum, Tempelhofer Feld, Olympiastadion)
     - [ ] Radio-station event listings (RadioEins, FluxFM, StarFM, …)
@@ -160,6 +181,9 @@ Strategy & sequencing: [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEG
 
 ## Operations & Hardening
 
+- [ ] Exercise the Helm chart / container images locally before deploying (k3d or kind; LocalStack for cloud services?)
+- [ ] Maintenance mode — a downtime page for deploys and outages (frontend + BFF behaviour)
+- [ ] Releasing: define and use a standard release-notes / changelog template
 - [ ] Logging: always attach context (event id, artist id, …)
 - [ ] Checkov scan (if it makes sense)
 - [ ] Infra/tooling update checker beyond Dependabot (Renovate?)
