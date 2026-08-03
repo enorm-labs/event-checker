@@ -180,8 +180,8 @@ rather than the rendered DOM — so dates carry full four-digit years and fields
 
 ### Duncker Club (`scraper/duncker/`) — retro hand-coded, single page
 
-- 🟢 **Every night is typed `PARTY`.** Duncker is a resident-DJ dance club with no other event kind, so the type is a constant, not a scraped/inferred signal —
-  a one-off concert would be mistyped.
+- 🟢 **Every night is typed `PARTY`.** Duncker is a resident-DJ dance club with no other event kind, so the type is a constant, not a scraped/inferred signal — a
+  one-off concert would be mistyped.
 - 🟢 **No structured genre.** The free-text style line ("Rock, Indie, Alternative, Punk") is kept as the `subtitle`, deliberately **not** the genre field, so it
   never seeds bogus genre tags.
 - 🟢 **No show time.** The programme lists only an opening-hour range (`21h-05h`); the opening hour is stored as `doorsTime` and there is no separate start time.
@@ -250,8 +250,8 @@ Assessed against the July–October 2026 month pages (16 nights). Every night ha
 - 🟢 **`sourceId` is date + slugified title, not a URL.** The month page links no per-event page (the `/aeden/<slug>/` posts exist but are not linked from the
   programme), so there is no canonical per-event path to key on. A night that is renamed *and* moved would therefore be imported as a second event; a rename
   alone keeps the date, and a date change alone keeps the title, so a full identity change is the only collision case.
-- 🟢 **Conditional requests are deliberately disabled — do not "optimize" them back on.** Like AMT, the entry page's ETag changes only when a month is added,
-  not when a night inside a month is edited, so honouring it would freeze the programme at whatever was last captured.
+- 🟢 **Conditional requests are deliberately disabled — do not "optimize" them back on.** Like AMT, the entry page's ETag changes only when a month is added, not
+  when a night inside a month is edited, so honouring it would freeze the programme at whatever was last captured.
 
 ### Club der Visionäre / Sonnenraum / MS Hoppetosse (`scraper/clubdervisionaere/`) — WordPress, one listing for three rooms
 
@@ -396,7 +396,7 @@ event has a date, a start time *and* a doors time; 106 have an image and an arti
   `presenters-*` taxonomy (media partners) is deliberately not read as a promoter — de-slugifying a domain-shaped term yields a mangled `Laut De`.
 - 🟢 **`Corrupted Blood Club Show` is typed `PARTY` and loses its headliner.** The shared title classifier treats `club` as a party keyword, so this one show (of
     107) is mistyped and, being a party, has no artist derived from its title. The cross-cutting reactive-keyword limitation, not specific to this venue →
-  tracked in `TODO.md`.
+         tracked in `TODO.md`.
 
 ### Kater (`scraper/kater/`) — WordPress, single page
 
@@ -690,6 +690,7 @@ start time, a poster, a ticket link, a genre and price information. Types split 
   `Jubiläumskonzert`
   and `Party`, both of which were added to the shared `NON_ARTIST_NAMES` denylist, and the real act sits inside quotes where the splitter does not reach. No
   artist is better than a wrong one; this is the cross-cutting reactive-denylist limitation recorded at the top of this file.
+
 ### Ritter Butzke (`scraper/ritterbutzke/`) — Modus codebase, own template, list + detail
 
 Verified against a live import (3 August 2026): 29 events stored, 2026-08-07 → 2027-04-10, none in the past, 0 suspicious rows, every one with a start time, a
