@@ -954,6 +954,33 @@ free-entry flag; 18 of 20 carry a ticket link.
   `EventImporter` directly rather than using the per-event detail fetch — the same reason as Bar jeder Vernunft. A production page that fails leaves its dates
   with the programme row's teaser and thumbnail instead of the full blurb and photo.
 
+### Cosmic Comedy Club (`scraper/cosmiccomedy/`) — The Events Calendar REST API
+
+Berlin's long-running English-language stand-up club, imported entirely from the plugin's own REST API rather than the `Event` JSON-LD its listing page also
+embeds — the JSON-LD covers only the page's current view (22 events at capture) where the API returns the whole upcoming programme (57), plus the categories,
+organizers and full descriptions it omits. Verified against a live import (3 August 2026): **57 of 57 stored**, range 2026-08-07 → 2026-12-31, none in the past,
+0 suspicious rows. Every event has a start time, a poster, a description and a type; 50 of 57 carry a ticket link.
+
+- 🟠 **No prices anywhere.** `cost` and `cost_details` are empty on all 57 events, so the price filters never see one. The club prices at the door and through
+  its ticket vendor, and publishes neither figure.
+- 🟠 **No genre on any event.** The `categories` name a format or a language (`Showcase`, `Open Mic`, `Comedy Special`, `English Language`, `Spanish Language`)
+  and never a musical style, so none is stored — filing `Open Mic` as a genre would put formats into a vocabulary of musical styles. Every event is typed `SHOW`,
+  the model having no comedy type.
+- 🟠 **Most events share one ticket link.** 49 of them embed the same Universe season listing as a widget `<script>` in their description, which is genuinely
+  where those nights are sold but is not a per-date link. An event's own `website` wins where the venue set one (1 event); 7 have neither and are stored without
+  a link rather than pointing at the club's front page.
+- 🟢 **Only a `Comedy Special` names a performer.** That category is the club's own marker for a named act rather than the house showcase, and those six titles
+  are all `"<Performer> – <Show>"`, so the part before the dash becomes the artist. The 51 recurring showcase and open-mic nights name no one and correctly get
+  none. A special without the dash — the one uncategorised guest show — yields no artist rather than a guess.
+- 🟢 **The description is HTML that opens with a script.** The API returns the raw post body, whose first element is the Universe ticket widget, so it is parsed
+  and flattened rather than tag-stripped; the widget's JavaScript would otherwise land in the stored description.
+- 🟢 **Titles arrive HTML-escaped.** WordPress states `TURBOPAOLO &#8211; …` and `NEW YEAR&#8217;S EVE SPECIAL`; entities are decoded before storage.
+- 🟢 **The club is its own promoter on about half the programme.** 24 events name `Cosmic Comedy Berlin` as organizer, five name a real outside promoter, and 28
+  name none. The venue-as-promoter rows are stored as the API states them.
+- 🟢 **Conditional requests are unused.** The plugin's default window runs from *today* to two years out, so the same URL legitimately returns a different payload
+  each day; upserts are idempotent by `sourceId`. The importer follows the API's own `next_rest_url` cursor rather than building page URLs, bounded by a
+  20-page cap that today's two-page programme never approaches.
+
 ---
 
 ## How to extend this doc

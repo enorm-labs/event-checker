@@ -224,6 +224,31 @@ enum class EventSource {
      */
     COLUMBIAHALLE,
 
+    /**
+     * Cosmic Comedy Berlin – the English-language stand-up club on Schönhauser Allee, imported
+     * entirely from its **The Events Calendar** REST API (`/wp-json/tribe/events/v1/events`).
+     *
+     * The plugin's own API is preferred over the `Event` JSON-LD the listing page also embeds:
+     * the JSON-LD covers only the page's current view (22 events at capture) where the API returns
+     * the whole upcoming programme (57), plus the categories, tags, organizers and full
+     * descriptions the JSON-LD omits. The API hands back its own `next_rest_url` cursor, which the
+     * importer walks rather than building page URLs itself; its default window runs from today to
+     * two years out, so no past-date filter is needed.
+     *
+     * Everything the club programmes is comedy, so every event is a `SHOW`. The `categories` name a
+     * format or a language (`Showcase`, `Open Mic`, `Comedy Special`, `English Language`) and never
+     * a musical genre, so none is stored. A `Comedy Special` is the club's own marker for a named
+     * act rather than the house showcase, and those titles are all `"<Performer> – <Show>"`, so the
+     * part before the dash becomes the artist — the recurring nights name no one and get none.
+     *
+     * The club publishes **no prices at all** (`cost` and `cost_details` are empty on every event).
+     * The ticket link is the event's `website` where set, else the Universe listing embedded as a
+     * widget `<script>` in the description — the club's season listing, so most nights share one
+     * URL. Titles and taxonomy names arrive HTML-escaped and the description is raw HTML opening
+     * with that widget script, so both are decoded and flattened before storage.
+     */
+    COSMIC_COMEDY,
+
     /** Duncker Club Berlin – retro hand-coded single-page `start.html` programme table (goth/wave/indie DJ nights), German `DD.MM.` dates without a year. */
     DUNCKER,
 
