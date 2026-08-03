@@ -303,6 +303,28 @@ enum class EventSource {
     HAVANNA,
 
     /**
+     * Heideglühen – the open-air techno party in a former nursery off Beusselstraße, whose whole
+     * published programme is **one month at a time**. `/monatsvorschau/` lists the current month's
+     * Saturdays (four or five) in a single WordPress rich-text block and is replaced wholesale each
+     * month; there are no per-event pages, no archive and no ticket shop — the party sells at the
+     * door only, and publishes no price.
+     *
+     * Each event is one `<p>` mixing two kinds of line in **no fixed order**: a German prose date
+     * ("Samstag, 1. August 2026, 12 Uhr (bis Sonntag, 6 Uhr)") and one or more highlighted `<mark>`
+     * names. A plain week reads date-then-name; the anniversary weekend reads name-then-date-then-
+     * name. Lines are therefore classified by kind, not position: the one that parses as a date is
+     * the date, the first `<mark>` is the title, a later one the subtitle. Since the model stores
+     * no end time and this party runs into the next day, the "bis …" tail is kept as the
+     * description. One party per date and no per-event URL, so the date is the `sourceId`.
+     *
+     * `/aktuell/` ("Diese Woche") carries the imminent party alone and is the only place a **DJ
+     * lineup** appears — `"Antal // Rush Hour, NL"` per line, then a running order the model has
+     * nowhere to store. It is fetched after the month page and applied to the matching date; the
+     * venue posts each lineup only days ahead, so on most days it adds nothing.
+     */
+    HEIDEGLUEHEN,
+
+    /**
      * Heimathafen Neukölln Berlin – the Karl-Marx-Straße Saal/Studio venue, on WordPress with an
      * Advanced Custom Fields `events` post type whose public REST API (`/wp-json/wp/v2/events`)
      * exposes the whole programme as structured JSON — no HTML is scraped (ADR-007 §"Selector

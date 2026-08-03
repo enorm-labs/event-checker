@@ -981,6 +981,36 @@ organizers and full descriptions it omits. Verified against a live import (3 Aug
   each day; upserts are idempotent by `sourceId`. The importer follows the API's own `next_rest_url` cursor rather than building page URLs, bounded by a
   20-page cap that today's two-page programme never approaches.
 
+### Heideglühen (`scraper/heidegluehen/`) — WordPress, month preview + week page
+
+An open-air techno party in a former nursery off Beusselstraße. Verified against a live import (3 August 2026): the month page listed 5 Saturdays and **4 were
+stored**, 1 August having already passed and being dropped at the persistence boundary. Range 2026-08-08 → 2026-08-29, 0 suspicious rows; every party has a
+start time, an image and a type.
+
+- 🔴 **Four dates is the whole programme.** `/monatsvorschau/` carries the current month and is replaced wholesale at the end of it — there is no archive, no
+  pagination and no per-event page. The venue simply does not publish further ahead, so a low count is its actual output and not a truncated import. It also
+  means a party is only ever visible for a few weeks before it happens.
+- 🟠 **The venue publishes no street address.** Only coordinates (52°32'17.1"N 13°19'41.6"E) and transit directions; the imprint's Seestraße address is the
+  operator's office, several kilometres away, and is deliberately *not* used. The seeded venue therefore carries the site's own coordinates and names
+  Beusselstraße — the street the venue itself gives for access — without a house number it never states.
+- 🟠 **No price, no ticket link, no genre.** The party sells at the door only ("Unsere Kasse schließt in der Regel drei Stunden vor Veranstaltungsende") and
+  publishes no figure, no shop and no genre field, so the price and genre filters never see one of these events.
+- 🟠 **The lineup exists for one party at a time.** `/aktuell/` is the only page that ever carries a DJ billing, it covers just the imminent party, and the
+  venue posts it a few days ahead ("Das Programm folgt am Dienstag…" until then). The live import on 3 August found none published, so all four parties stored
+  no artists; the parser is covered against an archived page from 6 June that does carry one. A daily import picks each lineup up in the week before its party.
+- 🟠 **The running order's set times are dropped.** The week page publishes a full `12:00-16:00 Forsberg` schedule beneath the billing, and the model has no
+  field for a per-artist set time. Only the names are stored, deduplicated against the billing above so no DJ is counted twice.
+- 🟢 **Lines are read by kind, not position.** An event paragraph mixes a German prose date with one or more highlighted names in **no fixed order** — a plain
+  week reads date-then-name, the anniversary weekend name-then-date-then-name. The line that parses as a date is the date, the first `<mark>` is the title and a
+  later one the subtitle ("34-Stunden-Weekender"), which is what keeps the anniversary from being titled with its own date.
+- 🟢 **The closing time is kept as the description.** These parties run into the next day (to 06:00, or 22:00 on a 34-hour weekender) and the model stores no
+  end time, so "bis Sonntag, 6 Uhr" is stored as the description rather than dropped.
+- 🟢 **The image is the month's artwork until the lineup lands.** The month page publishes one graphic covering all its dates, so every party shares it; the week
+  page carries that party's own flyer and supersedes it when the lineup is applied. Picking it out needs a specific selector — the page also carries the site
+  logo and a close button, and only the artwork is a centred photo inside the content column.
+- 🟢 **The month's shared name-drop is not attached to any party.** The page opens with an "Unter anderem mit: …" list of every DJ playing that month, which
+  belongs to no single date; it carries no date of its own and is therefore never parsed as an event.
+
 ---
 
 ## How to extend this doc
