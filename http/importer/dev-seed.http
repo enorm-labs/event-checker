@@ -33,6 +33,7 @@
 ###   Golden Gate          — https://goldengate-berlin.de/ (WordPress/Elementor; current Thu–Sat block only)
 ###   Gretchen             — https://www.gretchen-club.de/
 ###   Havanna              — https://www.havanna-berlin.de/events (undated weekly nights, expanded to dated occurrences)
+###   Heideglühen          — https://heidegluehen.berlin/monatsvorschau/ (one month at a time; lineup on /aktuell/)
 ###   Heimathafen Neukölln — https://heimathafen-neukoelln.de/wp-json/wp/v2/events (WP REST + ACF; performances array)
 ###   Hole 44              — https://hole-berlin.de/events/ (WordPress/Events-Manager, list + detail)
 ###   Humboldthain Club    — https://core.service.elfsight.com/p/boot/?w=<widgetId> (Elfsight widget API; weekly night expanded)
@@ -1493,6 +1494,73 @@ Accept: application/json
 
 > {%
     client.test("Havanna import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Heideglühen (Beusselstraße, Berlin-Moabit — former nursery, coordinates only)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Heideglühen venue ---
+# The venue publishes coordinates and transit directions but no street address, so the
+# latitude/longitude are its own (52°32'17.1"N 13°19'41.6"E) and the address is the street it
+# names for access, without a house number it never states.
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Heideglühen",
+    "address": "Beusselstraße",
+    "city": "Berlin",
+    "postalCode": "10553",
+    "district": "mitte",
+    "latitude": 52.53808,
+    "longitude": 13.32822,
+    "websiteUrl": "https://heidegluehen.berlin",
+    "description": "An open-air techno party in a former nursery off Beusselstraße, running one long Saturday-into-Sunday session a week through the season."
+}
+
+> {%
+    client.global.set("heidegluehen_venue_id", response.body.id);
+    client.test("Heideglühen venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Heideglühen event source ---
+# Links the venue to the HeidegluehenWebsiteImporter.
+# The sourceType "HEIDEGLUEHEN" matches EventSource.HEIDEGLUEHEN.
+# NOTE: the URL is the month preview, which is the venue's whole published programme — four or
+# five dates, replaced wholesale each month. A low event count is the venue's actual output. The
+# importer additionally fetches /aktuell/ for the imminent party's DJ lineup, which the venue
+# posts only a few days ahead.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{heidegluehen_venue_id}},
+    "name": "Heideglühen",
+    "url": "https://heidegluehen.berlin/monatsvorschau/",
+    "sourceType": "HEIDEGLUEHEN",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Heideglühen event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Heideglühen import ---
+# Slug is derived from the source name, with the umlaut dropped: "Heideglühen" → heidegluhen.
+POST {{importer-host}}/api/admin/event-sources/heidegluhen/import
+Accept: application/json
+
+> {%
+    client.test("Heideglühen import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}

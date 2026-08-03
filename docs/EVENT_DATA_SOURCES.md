@@ -7,8 +7,8 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 
 | Status                              | Meaning                                                                              | Count |
 |-------------------------------------|--------------------------------------------------------------------------------------|------:|
-| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    67 |
-| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |     3 |
+| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    68 |
+| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |     2 |
 | ⛔ [Blocked](#-blocked--deferred)   | Website analyzed, but no usable listings (no programme page, JS-only, or too sparse) |    36 |
 | ❓ [Unanalyzed](#-not-analyzed-yet) | No URL recorded yet — website still needs a first look                               |     0 |
 
@@ -41,6 +41,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Golden Gate                 | https://goldengate-berlin.de/                               | Techno Club  | Elementor; current Thu–Sat block only; door-only   |
 | Gretchen                    | https://www.gretchen-club.de/                               | Club         |                                                    |
 | Havanna                     | https://www.havanna-berlin.de/                              | Club         | Undated weekly nights; occurrences derived         |
+| Heideglühen                 | https://heidegluehen.berlin/monatsvorschau/                 | Techno Club  | One month at a time; DJ lineup on /aktuell/        |
 | Heimathafen Neukölln        | https://heimathafen-neukoelln.de/                           | Concert Hall | WP REST + ACF; one post, many dated performances   |
 | Hole 44                     | https://hole-berlin.de/                                     | Concert Hall | Events-Manager; "Abgesagt!" / "VERLEGT!" labels    |
 | Humboldthain Club           | https://www.humboldthain.com/                               | Techno Club  | Elfsight widget API; weekly night expanded         |
@@ -86,7 +87,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Zenner                      | https://zenner.berlin/programm                              | Club         | Gatsby/Sanity page-data JSON; UTC dates; archive   |
 | Zitadelle                   | https://citadel-music-festival.de/events                    | Open Air     | Festival site; WordPress/EM; summer season only    |
 
-66 importer classes cover 67 sources: only Kantine am Berghain has no class of its own, sharing the Berghain importer outright. Three other groups share a
+67 importer classes cover 68 sources: only Kantine am Berghain has no class of its own, sharing the Berghain importer outright. Three other groups share a
 *listing and parser* while keeping one thin `@Component` per venue, so they do not reduce the count — Club der Visionäre, Sonnenraum and MS Hoppetosse; the
 three Velomax halls; and Uber Arena with the Uber Eats Music Hall.
 
@@ -96,7 +97,6 @@ Analyzed and scrapable — the candidates for the next `/scaffold-importer` runs
 
 | Priority | Name                 | URL                                      | Type         | Why / what it needs                                        |
 |:--------:|----------------------|------------------------------------------|--------------|------------------------------------------------------------|
-|   Low    | Heideglühen          | https://heidegluehen.berlin/aktuell/     | Techno Club  | One event at a time; prose date, set times per DJ          |
 |   Low    | Humboldtsaal Urania  | https://www.urania.de/kalender/          | Concert Hall | One Urania programme; hall unnamed, mostly lectures        |
 |   Low    | Kleistsaal Urania    | https://www.urania.de/kalender/          | Concert Hall | Same programme; the site makes no hall distinction         |
 
