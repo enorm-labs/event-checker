@@ -11,7 +11,8 @@ Rough priority: **Now** → **Next** → grouped backlog → **Someday / Vision*
 
 ## 🔴 Now (path to go-live)
 
-- [ ] Choose a cloud platform / runtime environment (AWS, GCP, …)
+- [ ] Choose a cloud platform / runtime environment — options, criteria, pricing and a recommendation (Hetzner Cloud + k3s) are written up in
+  [ADR-012](docs/adr/ADR-012_CLOUD_PLATFORM.md); **decide and move the ADR from Proposed to Accepted**
 - [ ] Register the domain **event-junkie.de**
 - [ ] Infrastructure as code (Terraform / OpenTofu) — provision the cloud environment reproducibly instead of by hand
 - [ ] Create release + deploy workflows (CI/CD)
@@ -207,6 +208,8 @@ Strategy & sequencing: [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEG
 
 ## Operations & Hardening
 
+- [ ] Containerise `events-frontend` (multi-stage Node build → nginx serving `dist/`): history-mode `try_files` fallback, immutable caching for `/assets/*` +
+  `no-cache` for `index.html`, and a relative `/api` base URL so one image serves every stage (see [ADR-012](docs/adr/ADR-012_CLOUD_PLATFORM.md))
 - [ ] Exercise the Helm chart / container images locally before deploying (k3d or kind; LocalStack for cloud services?)
 - [ ] Maintenance mode — a downtime page for deploys and outages (frontend + BFF behaviour)
 - [ ] Releasing: define and use a standard release-notes / changelog template
