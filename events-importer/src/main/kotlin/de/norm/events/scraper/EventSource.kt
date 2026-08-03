@@ -807,6 +807,25 @@ enum class EventSource {
     UBER_ARENA,
 
     /**
+     * Uber Eats Music Hall Berlin – the arena's smaller neighbour, on the **same Carbonhouse
+     * tenant** as [UBER_ARENA]: same `/events/all` listing shape, same
+     * `/events/detail/<slug>/<YYYY-MM-DD-HHMM>` URLs, same detail-page fields, and even the same
+     * asset bucket (its posters are served from `uber-arena.production.carbonhouse.com`). One
+     * parser pair therefore serves both, as the Velomax halls share theirs.
+     *
+     * Two tenant differences are handled in that shared parser. This venue emits only the numeric
+     * `data-category`, not the `data-categoryname` the arena publishes, so the platform's numeric
+     * taxonomy — decoded from the arena, which emits both — supplies the label. And it abbreviates
+     * its month in German (`Sep. `, `Mär `) where the arena writes it numerically (`08.`).
+     *
+     * Its `#tickets` block also renders a **self-link before** the real AXS shop link with
+     * identical classes, so the ticket URL is taken as the first link pointing off the venue's own
+     * host rather than simply the first one. Being a music hall it has no resident team, but the
+     * shared sport filter still applies.
+     */
+    UBER_EATS_MUSIC_HALL,
+
+    /**
      * UFO im Velodrom Berlin – the smaller hall configured inside the Velodrom, listed as its own
      * `UFO` location on the shared Velomax programme and served by its own `ufo-velodrom.de` domain.
      * Its nights are the `.ufo` entries on the one listing; see [MAX_SCHMELING_HALLE] for the page
