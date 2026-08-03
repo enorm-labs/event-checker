@@ -648,6 +648,29 @@ enum class EventSource {
      */
     RENATE,
 
+    /**
+     * Ritter Butzke Berlin – the Kreuzberg techno club, on the **same hand-built codebase as
+     * [MODUS]** (Modus even ships this venue's logo asset), but a different template: `/events`
+     * renders Bootstrap grid cards rather than Modus's `figcaption` tiles, so the two share no
+     * selectors. What they *do* share is the trait that matters — every event links to
+     * `/event/DDMMYY-<Name>`, and **that slug keeps the original date when a show moves**. One of
+     * the 29 events at capture proved it: `310726-DeeportamentCommunityw-NicoMorano-OpenAir-Indoor`
+     * renders `04.09.2026` on both the card and the detail page. The rendered date is therefore
+     * authoritative and the slug serves only as the stable `sourceId`.
+     *
+     * A card carries the poster, a `DD.MM.YY` date and the title; the detail page restates the
+     * date in full (`DD.MM.YYYY`), adds an `ab HH:mm` start time, the ticket shop (a pretix widget
+     * whose `event` attribute holds the URL, or a Resident Advisor button), and a `Line Up:` block
+     * listing the night's DJs one per row. Every night is a DJ party, so events are typed
+     * [PARTY][de.norm.events.event.EventType.PARTY], the lineup is stored as `DJ` artists, and the
+     * title — an event/series name (`House of Rave w/ …`) — is never minted as an act.
+     *
+     * The club runs several floors, so **two or three events share a date routinely**; the slug's
+     * trailing name is what keeps them apart. `/calendarfile/<id>` is `Disallow`ed by robots.txt
+     * and is never fetched.
+     */
+    RITTER_BUTZKE,
+
     /** Roadrunner's Paradise Berlin – retro hand-coded single-page `programm.html` listing (rockabilly/roots). */
     ROADRUNNER,
 

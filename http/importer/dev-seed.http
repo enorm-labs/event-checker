@@ -60,6 +60,7 @@
 ###   Privatclub           — https://privatclub-berlin.de/
 ###   Quasimodo            — https://quasimodo.club/events (Events-Manager; .club domain, not .de)
 ###   Renate               — https://www.renate.cc/ (WordPress; homepage programme, per-floor lineups)
+###   Ritter Butzke        — https://club.ritterbutzke.com/events (same codebase as Modus; stale slug dates)
 ###   Roadrunner's Paradise — http://www.roadrunners-paradise.de/programm.html
 ###   Säälchen             — https://www.holzmarkt.com/kalender (Drupal; shared calendar, filtered by location)
 ###   Schokoladen          — https://www.schokoladen-mitte.de/
@@ -3150,6 +3151,68 @@ Accept: application/json
 
 > {%
     client.test("Renate import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Ritter Butzke (Ritterstr. 26, Berlin-Kreuzberg)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Ritter Butzke venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Ritter Butzke",
+    "address": "Ritterstr. 26",
+    "city": "Berlin",
+    "postalCode": "10969",
+    "district": "friedrichshain-kreuzberg",
+    "latitude": 52.50438,
+    "longitude": 13.40707,
+    "websiteUrl": "https://club.ritterbutzke.com",
+    "description": "A long-running Kreuzberg techno club in a former factory, running several floors a night."
+}
+
+> {%
+    client.global.set("ritter_butzke_venue_id", response.body.id);
+    client.test("Ritter Butzke venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Ritter Butzke event source ---
+# Links the venue to the RitterButzkeWebsiteImporter.
+# The sourceType "RITTER_BUTZKE" matches EventSource.RITTER_BUTZKE.
+# NOTE: same codebase as Modus but a different template, so the two share no selectors. As at
+# Modus, the /event/DDMMYY-<Name> slug keeps the ORIGINAL date when a show moves, so the importer
+# reads the rendered date and uses the slug only as the stable sourceId.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{ritter_butzke_venue_id}},
+    "name": "Ritter Butzke",
+    "url": "https://club.ritterbutzke.com/events",
+    "sourceType": "RITTER_BUTZKE",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Ritter Butzke event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Ritter Butzke import ---
+POST {{importer-host}}/api/admin/event-sources/ritter-butzke/import
+Accept: application/json
+
+> {%
+    client.test("Ritter Butzke import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}

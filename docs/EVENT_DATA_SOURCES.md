@@ -7,8 +7,8 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 
 | Status                              | Meaning                                                                              | Count |
 |-------------------------------------|--------------------------------------------------------------------------------------|------:|
-| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    61 |
-| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |    10 |
+| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    62 |
+| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |     9 |
 | ⛔ [Blocked](#-blocked--deferred)   | Website analyzed, but no usable listings (no programme page, JS-only, or too sparse) |    35 |
 | ❓ [Unanalyzed](#-not-analyzed-yet) | No URL recorded yet — website still needs a first look                               |     0 |
 
@@ -65,6 +65,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Privatclub                  | https://privatclub-berlin.de/                               | Club         | Rich detail pages; genre, presale + AK prices      |
 | Quasimodo                   | https://quasimodo.club/events                               | Club         | Events-Manager; .club domain; genre tags + prices  |
 | Renate                      | https://www.renate.cc/                                      | Techno Club  | Homepage programme; per-floor lineups, no times    |
+| Ritter Butzke               | https://club.ritterbutzke.com/events                        | Techno Club  | Modus codebase, own template; stale slug dates     |
 | Roadrunner's Paradise       | http://www.roadrunners-paradise.de/                         | Bar          | Retro HTML; rich data; year missing on some dates  |
 | Säälchen                    | https://www.holzmarkt.com/kalender                          | Concert Hall | Drupal; shared calendar filtered by location       |
 | Schokoladen                 | https://www.schokoladen-mitte.de/                           | Club         | Laravel; anchor-based events; genre inside title   |
@@ -80,7 +81,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Wild at Heart               | https://www.wildatheartberlin.de/                           | Bar          | Retro frameset; concerts.php; year from weekday    |
 | Zenner                      | https://zenner.berlin/programm                              | Club         | Gatsby/Sanity page-data JSON; UTC dates; archive   |
 
-60 importer classes cover 61 sources (Kantine am Berghain shares the Berghain importer; Club der Visionäre, Sonnenraum and MS Hoppetosse are three thin
+61 importer classes cover 62 sources (Kantine am Berghain shares the Berghain importer; Club der Visionäre, Sonnenraum and MS Hoppetosse are three thin
 importers over one shared listing and parser).
 
 ## 🔨 Ready to implement
@@ -89,7 +90,6 @@ Analyzed and scrapable — the candidates for the next `/scaffold-importer` runs
 
 | Priority | Name                 | URL                                      | Type         | Why / what it needs                                        |
 |:--------:|----------------------|------------------------------------------|--------------|------------------------------------------------------------|
-|  Medium  | Ritter Butzke        | https://club.ritterbutzke.com/           | Techno Club  | `/event/DDMMYY-Slug` links — same shape as Modus Berlin    |
 |  Medium  | Sisyphos             | https://www.sisyphos-berlin.net/         | Techno Club  | Shopify `/pages/tickets`: name, date, price; ticketed only |
 |  Medium  | Uber Arena           | https://www.uber-arena.de/events/all     | Arena        | AEG site, server-rendered; 406 without a browser UA        |
 |  Medium  | Uber Eats Music Hall | https://www.uber-eats-music-hall.de/     | Concert Hall | Same AEG platform as Uber Arena — one scraper shape        |
