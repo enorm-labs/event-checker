@@ -1011,6 +1011,34 @@ start time, an image and a type.
 - 🟢 **The month's shared name-drop is not attached to any party.** The page opens with an "Unter anderem mit: …" list of every DJ playing that month, which
   belongs to no single date; it carries no date of its own and is therefore never parsed as an event.
 
+### Urania (`scraper/urania/`) — WordPress, calendar + event pages
+
+The Schöneberg science and culture house. Verified against a live import (3 August 2026): **17 of 17 stored**, range 2026-09-03 → 2026-11-05, none in the past,
+0 suspicious rows. Every event has a start time, a poster, a description, a ticket link and its billed speakers.
+
+- 🔴 **The house has two halls and no source says which one an event is in.** The Urania programmes the Humboldtsaal and the Kleistsaal, but neither the
+  calendar, the event pages, the Reservix shop, nor the site's own `/wp-json/reservixapi/v1/events` endpoint attributes an event to either. Events are therefore
+  imported against **one "Urania" venue**, which is exactly what all four of those sources describe. The two hall entries that used to sit in
+  `EVENT_DATA_SOURCES.md` are replaced by that single row; splitting the programme would mean either guessing or storing every event twice.
+- 🟠 **A lecture is stored as `READING`.** The model has no talk, lecture or panel type, and `READING` is its spoken-word bucket. That is also the fallback for
+  any format label the shared table does not recognise, because the house invents format names freely — `Schönheitssalon` is one of its discussion formats —
+  and filing those as `OTHER` would bury a lecture among the genuinely unclassifiable. A concert, film or exhibition would still be typed correctly, since the
+  shared table is consulted first.
+- 🟠 **No genre on any event.** The venue publishes a programme strand (`bzw.:BEZIEHUNGSWESEN`, `LANGE LINIEN`, `TOMORROW:jetzt`) and a format label, neither of
+  which is a musical genre; both are joined into the subtitle instead, so the genre-tag filters never see a Urania event.
+- 🟠 **Three events publish no admission at all.** 10 of 17 state `"Eintritt: 8 €, ermäßigt: 5 €, Mitglieder: 3 €"` — whose *first* figure is the full price and
+  the rest concessions, so the full price is stored and the whole line kept as the note — and 4 state `"Eintritt frei"` with no figure, which sets the free flag.
+  The remaining 3 say nothing and are stored without a price.
+- 🟢 **The site's own JSON API was evaluated and rejected.** `/wp-json/reservixapi/v1/events` returns the same 17 events as clean JSON, but carries no urania.de
+  event URL — only the external Reservix link, which would be a poor `sourceUrl` and no basis for a stable `sourceId` — and replaces the format label and the
+  concession prices with a bare `minPrice`. The rendered pages are the richer source here, against ADR-007's usual JSON-first preference.
+- 🟢 **The poster is lazy-loaded.** Event pages put the image URL in `data-src` and leave `src` empty, so reading `src` yields nothing at all.
+- 🟢 **Two tails are stripped off the billing line.** A space-padded dash introduces a note about the evening (`"Yoshua Yaffa - in englischer Sprache"`) and
+  `"et al."` stands in for panellists the venue did not name; neither becomes a person. Speakers are stored as headliners, the model's roles being only
+  `HEADLINER`, `SUPPORT` and `DJ`.
+- 🟢 **The calendar owns the date.** Each day is a `div.c-event-calendar_day[data-day]` whose attribute states day, weekday, month and year in one token
+  (`03-do-09-2026`), where the event page renders German prose. One day may hold more than one event; 16 day blocks carried 17 events at capture.
+
 ---
 
 ## How to extend this doc

@@ -907,6 +907,31 @@ enum class EventSource {
     UFO_IM_VELODROM,
 
     /**
+     * Urania Berlin – the Schöneberg science and culture house, whose `/kalender/` page carries its
+     * whole upcoming programme server-rendered with no pagination. Each day is a
+     * `div.c-event-calendar_day[data-day]` whose attribute states the full date in one token
+     * (`03-do-09-2026`), and each item carries a clock, the programme strand, the title, the format
+     * label, the billed speakers, a Reservix ticket link and a link to its own `/event/<slug>/`
+     * page, which adds the poster, the prose and the admission line.
+     *
+     * **The house has two halls — the Humboldtsaal and the Kleistsaal — and no source says which
+     * one an event is in.** Not the calendar, not the event pages, not the Reservix shop, and not
+     * the site's own `/wp-json/reservixapi/v1/events` endpoint. Events are therefore imported
+     * against the house rather than split between its halls, which is exactly what the source
+     * describes. That endpoint was also evaluated as the primary source and rejected despite
+     * ADR-007's JSON-first preference: it carries no urania.de event URL, only the external ticket
+     * link, and replaces the format label and concession prices with a bare `minPrice`.
+     *
+     * The Urania programmes talks, so the model's spoken-word type ([de.norm.events.event.EventType.READING])
+     * is the fallback for any format label the shared table does not recognise — the house invents
+     * format names freely (`Schönheitssalon` is one of its discussion formats) and filing those as
+     * `OTHER` would bury a lecture among the genuinely unclassifiable. Admission reads
+     * `"Eintritt: 8 €, ermäßigt: 5 €, Mitglieder: 3 €"`, whose first figure is the full price and
+     * the rest concessions, or `"Eintritt frei"` with no figure at all.
+     */
+    URANIA,
+
+    /**
      * Urban Spree Berlin – MODX-based art gallery and concert venue in the RAW-Gelände. The
      * `/program/` listing is server-rendered, but **descending by date** and paginated nine cards
      * at a time over the venue's whole archive (200+ pages), so this importer walks `?page=N`

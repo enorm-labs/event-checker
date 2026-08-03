@@ -7,8 +7,8 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 
 | Status                              | Meaning                                                                              | Count |
 |-------------------------------------|--------------------------------------------------------------------------------------|------:|
-| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    68 |
-| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |     2 |
+| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    69 |
+| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |     0 |
 | ⛔ [Blocked](#-blocked--deferred)   | Website analyzed, but no usable listings (no programme page, JS-only, or too sparse) |    36 |
 | ❓ [Unanalyzed](#-not-analyzed-yet) | No URL recorded yet — website still needs a first look                               |     0 |
 
@@ -81,13 +81,14 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Uber Arena                  | https://www.uber-arena.de/events/all                        | Arena        | AEG CMS; list + detail; no sport imported          |
 | Uber Eats Music Hall        | https://www.uber-eats-music-hall.de/events/all              | Concert Hall | Shares the Uber Arena parsers; month names, no cats |
 | UFO im Velodrom             | https://www.velomax.de/events                               | Concert Hall | Shares the VELOMAX listing                         |
+| Urania                      | https://www.urania.de/kalender/                             | Concert Hall | One house; no source attributes an event to a hall |
 | Urban Spree                 | https://www.urbanspree.com/program/                         | Club         | MODX; listing descending + paginated; walks pages  |
 | Velodrom                    | https://www.velomax.de/events                               | Arena        | Shares the VELOMAX listing; Microdata details      |
 | Wild at Heart               | https://www.wildatheartberlin.de/                           | Bar          | Retro frameset; concerts.php; year from weekday    |
 | Zenner                      | https://zenner.berlin/programm                              | Club         | Gatsby/Sanity page-data JSON; UTC dates; archive   |
 | Zitadelle                   | https://citadel-music-festival.de/events                    | Open Air     | Festival site; WordPress/EM; summer season only    |
 
-67 importer classes cover 68 sources: only Kantine am Berghain has no class of its own, sharing the Berghain importer outright. Three other groups share a
+68 importer classes cover 69 sources: only Kantine am Berghain has no class of its own, sharing the Berghain importer outright. Three other groups share a
 *listing and parser* while keeping one thin `@Component` per venue, so they do not reduce the count — Club der Visionäre, Sonnenraum and MS Hoppetosse; the
 three Velomax halls; and Uber Arena with the Uber Eats Music Hall.
 
@@ -95,13 +96,11 @@ three Velomax halls; and Uber Arena with the Uber Eats Music Hall.
 
 Analyzed and scrapable — the candidates for the next `/scaffold-importer` runs. **Priority** reflects data richness and effort, not venue importance.
 
-| Priority | Name                 | URL                                      | Type         | Why / what it needs                                        |
-|:--------:|----------------------|------------------------------------------|--------------|------------------------------------------------------------|
-|   Low    | Humboldtsaal Urania  | https://www.urania.de/kalender/          | Concert Hall | One Urania programme; hall unnamed, mostly lectures        |
-|   Low    | Kleistsaal Urania    | https://www.urania.de/kalender/          | Concert Hall | Same programme; the site makes no hall distinction         |
+**Empty: every analyzed and scrapable source has an importer.** Growing the coverage now means analyzing new venues (adding them here or to Blocked), or
+revisiting a [Blocked](#-blocked--deferred) one whose site has since changed.
 
-*Several of the rooms above are theater, comedy, or arena-scale rather than live-music clubs — settle scope before building. Bar jeder Vernunft set the
-precedent that such a room is in scope: its programme is imported, with the venue's own genre deciding whether a night is a concert or a staged show.*
+*When a candidate is added: a theater, comedy or arena-scale room is in scope, not just live-music clubs. Bar jeder Vernunft set that precedent — its programme
+is imported, with the venue's own genre deciding whether a night is a concert or a staged show.*
 
 ## ⛔ Blocked / deferred
 
