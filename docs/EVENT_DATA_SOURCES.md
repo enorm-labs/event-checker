@@ -8,8 +8,8 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Status                              | Meaning                                                                              | Count |
 |-------------------------------------|--------------------------------------------------------------------------------------|------:|
 | ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    69 |
-| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |     0 |
-| ⛔ [Blocked](#-blocked--deferred)   | Website analyzed, but no usable listings (no programme page, JS-only, or too sparse) |    36 |
+| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |     2 |
+| ⛔ [Blocked](#-blocked--deferred)   | Website analyzed, but no usable listings (no programme page, JS-only, or too sparse) |    34 |
 | ❓ [Unanalyzed](#-not-analyzed-yet) | No URL recorded yet — website still needs a first look                               |     0 |
 
 "Website analyzed" also means the [data model](DATA_MODEL.md) was checked against that source — to date no source has required a schema change.
@@ -96,19 +96,39 @@ three Velomax halls; and Uber Arena with the Uber Eats Music Hall.
 
 Analyzed and scrapable — the candidates for the next `/scaffold-importer` runs. **Priority** reflects data richness and effort, not venue importance.
 
-**Empty: every analyzed and scrapable source has an importer.** Growing the coverage now means analyzing new venues (adding them here or to Blocked), or
-revisiting a [Blocked](#-blocked--deferred) one whose site has since changed.
+Both entries below came out of the 3 August 2026 re-check of the [Blocked](#-blocked--deferred) list, not from new analysis.
 
-*When a candidate is added: a theater, comedy or arena-scale room is in scope, not just live-music clubs. Bar jeder Vernunft set that precedent — its programme
-is imported, with the venue's own genre deciding whether a night is a concert or a staged show.*
+| Priority | Name          | URL                                     | Type         | Why / what it needs                                              |
+|:--------:|---------------|-----------------------------------------|--------------|------------------------------------------------------------------|
+|   High   | Panke Culture | https://www.pankeculture.com/programme/ | Club         | Now publishes a dated programme with lineups and start times     |
+|  Medium  | RBB Sendesaal | https://www.roc-berlin.de/kalender/     | Concert Hall | Shared ROC calendar; filter `.ConcertListItem-location` by venue |
+
+*A theater, comedy or arena-scale room is in scope, not just live-music clubs. Bar jeder Vernunft set that precedent — its programme is imported, with the
+venue's own genre deciding whether a night is a concert or a staged show.*
 
 ## ⛔ Blocked / deferred
 
 Analyzed, but there is nothing worth importing today. Revisit when the blocker changes — a redesigned website, adopting a headless browser (deferred
 per [ADR-007](adr/ADR-007_WEB_SCRAPING_STRATEGY.md)), or applying the Havanna-style derived-occurrence approach to undated recurring nights.
 
-**Promoter sources are deferred on a model limitation, not a scraping one.** Puschen, Trinity Music and Landstreicher Booking all publish clean, well-structured
-listings that name the venue per event — Puschen's 35 upcoming shows are spread over ~20 houses. But an event's venue comes from its `event_source` row
+**Last re-checked 3 August 2026**, every entry. Two moved to [Ready](#-ready-to-implement): Panke Culture now publishes a dated programme, and the ROC calendar
+that carries the RBB Sendesaal's concerts turned out to be server-rendered and venue-attributed. Five had their blocker *change* without unblocking, which is
+worth knowing before anyone spends effort on them:
+
+- **Fluxbau** and **The Pearl** are no longer JS-only — both render their programmes server-side now. Adopting a headless browser would not help either: Fluxbau
+  publishes 2 dated events beside undated weekly series, and The Pearl exactly one. They are thin-programme problems now, not rendering ones.
+- **Arena Berlin** moved to The Events Calendar, so scraping it would be trivial — but all 5 entries are trade fairs (deGUT, BUCHBERLIN, Einstieg Berlin). The
+  blocker was never the markup.
+- **Prachtwerk** gained a Programm page that is empty (Squarespace reports `itemCount: 0`). Its gigs are real but reach the web only through Loft's listing,
+  which names Prachtwerk more often than any other house.
+- **Loft** was blocked on thin, year-less dates; its redesign turned it into a full cross-venue promoter listing, so it now shares the promoter blocker below.
+
+**Artliners Berlin**'s domain stopped resolving altogether. Bohnengold, OXI and Zuckerzauber still redirect to Facebook or Instagram — their HTTPS is broken, so
+they answer only over `http://`.
+
+**Promoter sources are deferred on a model limitation, not a scraping one.** Puschen, Trinity Music, Landstreicher Booking and — since its 2026 redesign — Loft
+all publish clean, well-structured listings that name the venue per event: Puschen's 35 upcoming shows are spread over ~20 houses, Loft's 135 over about the
+same. But an event's venue comes from its `event_source` row
 (`EventUpsertService.upsertAndCleanup(events, venueId, …)`), one venue per source, so a promoter's events cannot be attached to the houses they actually play.
 Importing one today would file every show under a pseudo-venue *and* duplicate what the venues' own importers already hold — ~30 of Puschen's 35 are at venues
 already imported. Unblocking them means resolving a venue per event and de-duplicating against the venue-level sources; until then the promoter data reaches us
@@ -122,26 +142,24 @@ non-zero count.
 
 | Name                  | URL                                 | Type         | Blocker                                          | Unblocked by               |
 |-----------------------|-------------------------------------|--------------|--------------------------------------------------|----------------------------|
-| Fluxbau               | https://www.fluxfm.de/fluxbau       | Club         | Angular SPA; ~1 upcoming event at a time         | Headless browser / API     |
+| Fluxbau               | https://www.fluxfm.de/fluxbau       | Club         | Server-rendered now, but 2 dated events + series | More events / occurrences  |
 | Sage Club             | https://www.sage-club.de/           | Club         | TYPO3; `/programm/` renders navigation only      | Headless browser           |
-| The Pearl             | https://thepearl-berlin.de/         | Club         | `/programm/` is JS-rendered; no events in HTML   | Headless browser           |
+| The Pearl             | https://thepearl-berlin.de/         | Club         | `/programm/` renders now, but holds one event    | More events                |
 | Prince Charles        | https://princecharlesberlin.com/    | Club         | No own listings; links out to Resident Advisor   | RA as a source             |
-| Artliners Berlin      | https://artliners-berlin.com/       | Club         | Events posted as image flyers only               | Site change / OCR          |
-| Prachtwerk            | https://www.prachtwerkberlin.com/   | Bar          | Squarespace landing page; no programme page      | Site change                |
-| Panke Culture         | https://www.pankeculture.com/       | Club         | No programme page; events via social/newsletter  | Site change                |
+| Artliners Berlin      | —                                   | Club         | Domain no longer resolves; site gone             | New site                   |
+| Prachtwerk            | https://www.prachtwerkberlin.com/   | Bar          | Has a Programm page now, but it is empty         | Site change                |
 | Wiener Blut           | https://www.wienerblut.org/         | Bar          | Impressum-only page                              | Site change                |
 | Paloma                | https://www.palomabar.de/           | Bar          | Party names + DJ lineups but **no dates**        | Havanna-style occurrences  |
-| Loft                  | https://loft.de/                    | Promoter     | Very few events; no year on dates, no times      | Site change                |
+| Loft                  | https://loft.de/                    | Promoter     | Cross-venue; one venue per source (see note)     | Per-event venue resolution |
 | Greyzone Tickets      | https://www.greyzone-tickets.de/    | Promoter     | Contact info only; ticket service, not a listing | —                          |
 | Landstreicher Booking | https://landstreicher-booking.de/   | Promoter     | Cross-venue; one venue per source (see note)     | Per-event venue resolution |
 | Puschen               | https://puschen.net/berlin/         | Promoter     | Cross-venue; one venue per source (see note)     | Per-event venue resolution |
 | Trinity Music         | https://trinitymusic.de/            | Promoter     | Cross-venue; one venue per source (see note)     | Per-event venue resolution |
-| Arena Berlin          | https://www.arena.berlin/           | Concert Hall | Calendar lists trade fairs only, no concerts     | Site change / promoter     |
+| Arena Berlin          | https://www.arena.berlin/veranstaltungen/ | Concert Hall | Tribe calendar now, but trade fairs only   | Site change / promoter     |
 | Frannz Salon          | https://frannz.eu/                  | Club         | Not a separate listing; a floor of Frannz nights | Covered by FRANNZ          |
 | Kesselhaus            | https://www.kesselhaus.net/         | Concert Hall | Angular PWA app shell; no JSON endpoint found    | Headless browser           |
 | Maschinenhaus         | https://www.kesselhaus.net/         | Concert Hall | Shares the Kesselhaus app — same blocker         | Headless browser           |
 | Passionskirche        | —                                   | Concert Hall | No own website (akanthus.de lapsed to spam)      | Site change / promoter     |
-| RBB Sendesaal         | https://www.roc-berlin.de/          | Concert Hall | No venue programme; classical dates on RSB / ROC | Scope decision             |
 | Theater des Westens   | https://www.stage-entertainment.de/ | Theater      | Stage portal; one musical, dates in ticket shop  | Scope decision             |
 | Zentraler Festplatz   | https://berliner-festplatz.de/      | Open Air     | Rental ground; "Events" page is social embeds    | Site change                |
 | ://about blank        | https://aboutblank.li/              | Techno Club  | `/next` carries no events in the HTML            | Site change / RA           |
