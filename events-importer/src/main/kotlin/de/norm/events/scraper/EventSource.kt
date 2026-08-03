@@ -786,6 +786,27 @@ enum class EventSource {
     TRESOR,
 
     /**
+     * Uber Arena Berlin – the Friedrichshain arena (formerly Mercedes-Benz Arena) on AEG's own CMS,
+     * the platform it shares with [UBER_EATS_MUSIC_HALL]. Its `/events/all` page renders the whole
+     * programme server-side and unpaginated — 128 entries at capture — as `div[data-categoryname]`
+     * rows. Each carries the venue's own category, a `.m-date__*` span group holding the weekday,
+     * day, month, year and `HH:mm Uhr` start, an `.event-title`, an `ab NN,NN €` from-price, a
+     * thumbnail, and a link to `/events/detail/<slug>/<YYYY-MM-DD-HHMM>` whose path segment makes
+     * the `sourceId` unique per performance (a tournament runs the same slug over many dates).
+     *
+     * **Sport is deliberately not imported**, following the [MAX_SCHMELING_HALLE] precedent: the
+     * arena is home to ALBA Berlin and the Eisbären, and 40 of the 128 entries are `eishockey`,
+     * `basketball` or `sport` — filed as `OTHER` they would bury the 88 concerts, shows and comedy
+     * nights they sit among. Those rows are also the only ones carrying a `00:00 Uhr` placeholder
+     * start, so the filter removes that noise too.
+     *
+     * The detail page adds what the row cannot: the `Einlass` doors time, the prose description and
+     * the external AXS ticket-shop link. Its `h1` appends "in der Uber Arena" to the act, so the
+     * listing's cleaner title is kept instead.
+     */
+    UBER_ARENA,
+
+    /**
      * UFO im Velodrom Berlin – the smaller hall configured inside the Velodrom, listed as its own
      * `UFO` location on the shared Velomax programme and served by its own `ufo-velodrom.de` domain.
      * Its nights are the `.ufo` entries on the one listing; see [MAX_SCHMELING_HALLE] for the page

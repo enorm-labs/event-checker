@@ -843,6 +843,30 @@ poster and a ticket link, and 26 of 29 with a DJ lineup.
 - 🟢 **Several events share a date routinely.** The club runs multiple floors, so two or three nights per date is normal (three on 2026-08-08); the slug's
   trailing name keeps them apart. `/calendarfile/<id>` is `Disallow`ed by robots.txt and is never fetched.
 
+### Uber Arena (`scraper/uberarena/`) — AEG CMS, list + detail
+
+Verified against a live import (3 August 2026): the listing carried 128 rows, 88 survived the sport filter, and **85 were stored** — the three lost are
+second sessions of a same-day double bill (see below). Range 2026-08-21 → 2028-01-29, none in the past, 0 suspicious rows; every event has a start time and a
+poster, 64 are `CONCERT` and 21 `SHOW`.
+
+- 🔴 **A production playing twice in one day loses its second session.** `Feuerwerk der Turnkunst` (14:00 + 19:00) and `CAVALLUNA` on two consecutive days
+  (14:00 + 19:00, 13:00 + 17:30) each collide on the stored `event.slug`, which is built from date + venue + title. `EventUpsertService` skips the duplicate with
+  a warning rather than failing the import, so the count is 85 not 88. This is the cross-cutting slug limitation already tracked in `TODO.md` ("A show cannot
+  play twice in one day") — Uber Arena is now the third venue to hit it after Velomax and Bar jeder Vernunft, and the only fix is to include the start time in
+  the slug at the persistence boundary.
+- 🟠 **Sport is deliberately not imported.** The arena is home to ALBA Berlin and the Eisbären: 40 of the 128 rows are `eishockey`, `basketball` or `sport`, and
+  filed as `OTHER` they would bury the 88 concerts, shows and comedy nights they sit among — the same decision as the Velomax halls. Those rows are also the only
+  ones carrying a `00:00 Uhr` placeholder start, so the filter removes that noise too.
+- 🟠 **No genre on any event.** The venue types events only as `Konzert` / `Show` / `Comedy` (mapped to `CONCERT` / `SHOW`) and publishes no genre field, so the
+  genre-tag filters never see an Uber Arena event.
+- 🟢 **A `SHOW` stores no artist, by design.** All 21 are production names (`CAVALLUNA - Die Farben des Lebens`, `Feuerwerk der Turnkunst`), not acts, so the
+  shared `buildArtistsForEventType` correctly derives none; the 64 concerts all carry a headliner.
+- 🟢 **Three events have no price.** The `6K UNITED!` dates render a non-breaking space where the `ab NN,NN €` from-price normally sits; that becomes neither a
+  zero nor an empty note. The price the venue does publish is the cheapest ticket, stored as presale with the "ab" wording kept in `priceNote`.
+- 🟢 **A detail fetch that degrades costs only the extras.** Two of the 88 detail pages returned no heading during the live run (both parse fine on retry, so it
+  was transient), and those events were stored from listing data alone — losing the doors time, description and ticket link, but nothing else. 6 of 85 have no
+  doors time and 5 no ticket link for this and similar reasons.
+
 ---
 
 ## How to extend this doc
