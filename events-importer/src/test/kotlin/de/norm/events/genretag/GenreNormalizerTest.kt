@@ -114,6 +114,41 @@ class GenreNormalizerTest {
     }
 
     @Test
+    fun `staging formats and framings are dropped rather than tagged as genres`() {
+        // Audit T-4: these leaked into the genre-tag vocabulary from venues that file a staging
+        // format in their genre field. `show`/`konzert` only veto the standalone word, so the
+        // hyphenated compounds needed their own keys.
+        normalizeGenre("Musik-Show").shouldBeEmpty()
+        normalizeGenre("Musik-Kabarett").shouldBeEmpty()
+        normalizeGenre("Comedy").shouldBeEmpty()
+        normalizeGenre("Ballett").shouldBeEmpty()
+        normalizeGenre("Tanz").shouldBeEmpty()
+        normalizeGenre("Diskussion").shouldBeEmpty()
+        normalizeGenre("Kultur").shouldBeEmpty()
+        normalizeGenre("Kunst").shouldBeEmpty()
+        normalizeGenre("Tribute").shouldBeEmpty()
+        normalizeGenre("Anime").shouldBeEmpty()
+        normalizeGenre("Berlin").shouldBeEmpty()
+    }
+
+    // Audit T-10: Huxleys emits genres as de-slugified CSS classes, so the stylised spelling
+    // arrives punctuation-free as "Kpop" while another venue writes "K-Pop" — two tag rows.
+    @Test
+    fun `folds the punctuation-stripped K-Pop spelling onto one tag`() {
+        normalizeGenre("Kpop").shouldContainExactly("K-Pop")
+        normalizeGenre("K-Pop").shouldContainExactly("K-Pop")
+        normalizeGenre("k pop").shouldContainExactly("K-Pop")
+    }
+
+    @Test
+    fun `a real genre beside a dropped format still survives`() {
+        // The stop-list must not swallow a label that also names a style.
+        normalizeGenre("Berlin Techno").shouldContainExactly("Techno")
+        normalizeGenre("Comedy, Soul").shouldContainExactly("Soul")
+        normalizeGenre("Tribute, Rock").shouldContainExactly("Rock")
+    }
+
+    @Test
     fun `hip hop soul rnb oldschool newschool`() {
         normalizeGenre("Hip Hop, Soul, RnB, Oldschool, Newschool")
             .shouldContainExactlyInAnyOrder("Hip Hop", "Soul", "R&B", "Old School", "New School")

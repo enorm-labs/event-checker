@@ -24,7 +24,7 @@ class AdmiralspalastDetailPageScraperTest {
     private fun scrape(
         fixture: String,
         slug: String,
-        genre: String? = null
+        category: String? = null
     ): List<ScrapedEvent> {
         val url = "https://www.admiralspalast.theater/veranstaltung/$slug.html"
         val html =
@@ -32,7 +32,7 @@ class AdmiralspalastDetailPageScraperTest {
                 .getResourceAsStream("scraper/admiralspalast/$fixture")!!
                 .bufferedReader()
                 .readText()
-        return scraper.scrape(Jsoup.parse(html, url), url, genre)
+        return scraper.scrape(Jsoup.parse(html, url), url, category)
     }
 
     @Test
@@ -54,7 +54,8 @@ class AdmiralspalastDetailPageScraperTest {
         event.title shouldBe "ABBA Gold - The Concert Show #Emotion"
         event.startTime shouldBe LocalTime.of(19, 30)
         event.eventType shouldBe EventType.SHOW.name
-        event.genre shouldBe "Show"
+        // The category drives the type only — it names a staging format, not a musical style.
+        event.genre shouldBe null
         event.status shouldBe EventStatus.SCHEDULED.name
         event.ticketUrl.shouldNotBeNull().shouldStartWith("https://www.eventim.de/")
         event.imageUrl.shouldNotBeNull().shouldStartWith("https://www.admiralspalast.theater/assets/images/")
@@ -83,7 +84,8 @@ class AdmiralspalastDetailPageScraperTest {
     fun `maps the venue's category onto an event type`() {
         val comedy = scrape("admiralspalast-detail-single.html", "bodo-wartke-antigone", "Comedy").first()
         comedy.eventType shouldBe EventType.SHOW.name
-        comedy.genre shouldBe "Comedy"
+        // "Comedy" is the venue's own category and is never stored as a genre.
+        comedy.genre shouldBe null
 
         val konzert = scrape("admiralspalast-detail-single.html", "bodo-wartke-antigone", "Konzert").first()
         konzert.eventType shouldBe EventType.CONCERT.name

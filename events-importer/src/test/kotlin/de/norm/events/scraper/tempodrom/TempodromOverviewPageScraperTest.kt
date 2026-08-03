@@ -122,6 +122,25 @@ class TempodromOverviewPageScraperTest {
         events.none { it.ticketUrl != null && it.ticketUrl == it.sourceUrl } shouldBe true
     }
 
+    // The JSON-LD is script content, which Jsoup hands back undecoded, and the CMS escapes what it
+    // writes there. Left raw, "&amp;" reached the title, the derived headliner and both slugs
+    // (`scala-amp-kolacny-brothers`), and hid the `&` from the co-bill splitter.
+    @Test
+    fun `decodes the HTML entities the venue leaves in its JSON-LD`() {
+        events.map { it.title }.none { it.contains("&amp;") } shouldBe true
+        events.flatMap { it.artists }.map { it.name }.none { it.contains("&amp;") } shouldBe true
+
+        event("beisenherz_und_polak-friendly_fire_2026-09-13_19").title shouldBe "Beisenherz & Polak - Friendly Fire"
+    }
+
+    @Test
+    fun `keeps a decoded ampersand act whole instead of splitting it into two headliners`() {
+        // Decoding exposes the `&` to the co-bill splitter; this choir is one act, not two.
+        val scala = events.first { it.title == "Scala & Kolacny Brothers" }
+
+        scala.artists shouldContainExactly listOf(ScrapedArtist("Scala & Kolacny Brothers", "HEADLINER"))
+    }
+
     @Test
     fun `returns no events for a page without JSON-LD`() {
         scraper.scrape(Jsoup.parse("<html><body><main></main></body></html>", baseUrl)).shouldBeEmpty()

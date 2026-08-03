@@ -58,6 +58,10 @@ private val GENRE_SYNONYMS: Map<String, String> =
         "shoegaze" to "Shoegaze",
         // Pop family
         "pop" to "Pop",
+        // Huxleys emits its genres as de-slugified CSS classes, so the stylised spelling arrives
+        // punctuation-free as "Kpop" while another venue writes "K-Pop". [lookupKey] strips the
+        // hyphen, so both share this key and resolve to the one tag.
+        "kpop" to "K-Pop",
         "deutschpop" to "Pop",
         "altpop" to "Pop",
         "elektropop" to "Pop",
@@ -221,7 +225,25 @@ private val NON_GENRE_TOKENS: Set<String> =
         "flinta",
         "mnnerparty",
         "fetish",
-        "berbenautika"
+        "berbenautika",
+        // Staging formats and framings venues file in a genre field. `show`/`konzert`/`lesung`
+        // above only veto the standalone word, so the hyphenated compounds need their own keys
+        // ([lookupKey] strips the hyphen: "Musik-Show" → "musikshow"). A mixed label that also
+        // names a real style still resolves via the word-level synonym match, which runs first.
+        "musikshow",
+        "musikkabarett",
+        "kabarett",
+        "comedy",
+        "tanz",
+        "ballett",
+        "diskussion",
+        "kultur",
+        "kunst",
+        "tribute",
+        // A city is a place, not a style; "Berlin Techno" still resolves to Techno.
+        "berlin",
+        // A medium whose soundtrack spans every style.
+        "anime"
     )
 
 /**

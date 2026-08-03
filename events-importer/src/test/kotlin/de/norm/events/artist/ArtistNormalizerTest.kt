@@ -106,4 +106,26 @@ class ArtistNormalizerTest {
     fun `falls back to the trimmed input for blank names`() {
         canonicalArtistName("   ") shouldBe ""
     }
+
+    // Audit T-10: the Berlin punk band is written "OXO86" by SO36 and "Oxo 86" by Huxleys. Its
+    // digit keeps it out of the de-shouter (a stylised token), so the spellings never converged
+    // and the act sat in two artist rows.
+    @Test
+    fun `folds a curated spelling variant onto one act`() {
+        assertAll(
+            { canonicalArtistName("OXO86") shouldBe "Oxo 86" },
+            { canonicalArtistName("Oxo 86") shouldBe "Oxo 86" },
+            { canonicalArtistName("oxo86") shouldBe "Oxo 86" }
+        )
+    }
+
+    @Test
+    fun `does not fold two acts that merely share a normalized key`() {
+        // "Paul K" is a DJ billed at Ritter Butzke, "Paulk" a live act at Badehaus — same letters,
+        // different acts. Only a curated entry may merge artists, and there is none for these.
+        assertAll(
+            { canonicalArtistName("Paul K") shouldBe "Paul K" },
+            { canonicalArtistName("Paulk") shouldBe "Paulk" }
+        )
+    }
 }

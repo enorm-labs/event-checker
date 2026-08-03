@@ -6,10 +6,12 @@ import de.norm.events.event.EventType
 import de.norm.events.scraper.ScrapedEvent
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
+import io.kotest.matchers.string.shouldNotContain
 import org.junit.jupiter.api.Test
 import java.time.Clock
 import java.time.LocalDate
@@ -62,6 +64,26 @@ class LarkApiScraperTest {
         event.status shouldBe EventStatus.SCHEDULED.name
         event.soldOut shouldBe false
         event.artists.map { it.name } shouldContainExactly listOf("Ben Morgan")
+    }
+
+    // Audit T-8: acf.event_description is markup, not text — it arrives with <p class="p1">
+    // wrappers and <a href> links, and one event's whole description is a single anchor tag.
+    // Stored raw, those tags reached the frontend verbatim.
+    @Test
+    fun `scrapePage renders the HTML description down to plain text`() {
+        val descriptions = events.mapNotNull { it.description }
+
+        descriptions.shouldNotBeEmpty()
+        descriptions.forEach { description ->
+            description shouldNotContain "<p"
+            description shouldNotContain "<a "
+            description shouldNotContain "</a>"
+            description shouldNotContain "href="
+            description shouldNotContain "&amp;"
+            description shouldNotContain "&#8211;"
+        }
+        // The visible text survives the strip.
+        eventTitled("Ben Morgan").description.shouldNotBeNull() shouldContain "Ben Morgan"
     }
 
     @Test

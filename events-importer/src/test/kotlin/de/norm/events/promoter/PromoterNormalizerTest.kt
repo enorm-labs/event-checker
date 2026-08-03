@@ -132,4 +132,37 @@ class PromoterNormalizerTest {
             { isNonPromoterName("MIND Enterprises GmbH (wf)") shouldBe false }
         )
     }
+
+    // Audit T-9: two Loge promoters kept the presenter verb they head their billings with.
+    @Test
+    fun `strips a trailing presenter verb`() {
+        assertAll(
+            {
+                canonicalPromoterName("porcupine records & little league shows prsnt:") shouldBe
+                    "porcupine records & little league shows"
+            },
+            { canonicalPromoterName("Geisburg Records prsnt:") shouldBe "Geisburg" },
+            { canonicalPromoterName("Kaenguruh präsentiert") shouldBe "Kaenguruh" }
+        )
+    }
+
+    @Test
+    fun `keeps Presents where it is part of the brand name`() {
+        // "AEG Presents" is the company's actual trading name, not a verb — stripping it would
+        // leave the unusable "Aeg".
+        canonicalPromoterName("AEG Presents") shouldBe "Aeg Presents"
+    }
+
+    // Audit T-10: spelling variants that fragmented one promoter into several rows.
+    @Test
+    fun `folds curated spelling variants onto one promoter`() {
+        assertAll(
+            { canonicalPromoterName("radioeins") shouldBe "radioeins" },
+            { canonicalPromoterName("Radio Eins") shouldBe "radioeins" },
+            { canonicalPromoterName("tipBerlin") shouldBe "tip Berlin" },
+            { canonicalPromoterName("tip Berlin") shouldBe "tip Berlin" },
+            { canonicalPromoterName("KKT") shouldBe "KKT" },
+            { canonicalPromoterName("KKT GmbH – Kikis Kleiner Tourneeservice") shouldBe "KKT" }
+        )
+    }
 }

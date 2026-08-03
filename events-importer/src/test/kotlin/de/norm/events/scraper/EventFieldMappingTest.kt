@@ -34,6 +34,17 @@ class EventFieldMappingTest {
         cleanEventTitle("Ausverkauft Tour Show") shouldBe "Ausverkauft Tour Show"
     }
 
+    // Audit T-13: a venue's own markup decides how much space lands between two words — a stray
+    // double space in the CMS ("Adventurous Juan  (DJ-Set)") or a line break inside the heading.
+    @Test
+    fun `cleanEventTitle collapses runs of whitespace`() {
+        cleanEventTitle("Adventurous Juan  (DJ-Set)") shouldBe "Adventurous Juan (DJ-Set)"
+        cleanEventTitle("Lucas Lauriente –  Stand Up 2026") shouldBe "Lucas Lauriente – Stand Up 2026"
+        cleanEventTitle("Some\nAct\tName") shouldBe "Some Act Name"
+        // Collapsing runs first keeps the tail patterns keyed on a single space.
+        cleanEventTitle("Iggi Kelly  Nachholtermin vom 28.04.26-") shouldBe "Iggi Kelly"
+    }
+
     // --- detectFree ---
 
     @Test

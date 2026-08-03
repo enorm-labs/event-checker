@@ -36,18 +36,51 @@ package de.norm.events.artist
 // case-insensitive, so the resolved artist row is unaffected.
 
 /**
- * Returns the de-shouted display form of an artist [raw] name (see file header).
- * Casing-only: no words are added or removed. Falls back to the trimmed input
- * when normalization would leave nothing.
+ * Returns the de-shouted display form of an artist [raw] name (see file header),
+ * then applies any curated [NAME_CORRECTIONS] entry. Algorithmically casing-only:
+ * no words are added or removed except by an explicit correction. Falls back to the
+ * trimmed input when normalization would leave nothing.
  */
 fun canonicalArtistName(raw: String): String {
     val trimmed = raw.trim()
     val tokens = trimmed.split(WHITESPACE_REGEX).filter { it.isNotBlank() }
     // A whole name that is a single short all-caps token is an initialism/stylisation
     // ("JJ", "MØ"), not a shouted word — keep it verbatim rather than minting "Jj"/"Mø".
-    if (tokens.size == 1 && tokens[0].isShortStandaloneInitialism()) return tokens[0]
-    return tokens.joinToString(" ") { it.deshoutWord() }.ifBlank { trimmed }
+    val canonical =
+        if (tokens.size == 1 && tokens[0].isShortStandaloneInitialism()) {
+            tokens[0]
+        } else {
+            tokens.joinToString(" ") { it.deshoutWord() }.ifBlank { trimmed }
+        }
+    return NAME_CORRECTIONS[canonical.normalizedKey()] ?: canonical
 }
+
+/**
+ * Known spelling/spacing variants of one act, keyed on the [normalizedKey] of the
+ * de-shouted name and mapped to the spelling to display.
+ *
+ * This is the *only* way a word is ever changed here: the casing rules above cannot fold
+ * a variant that differs by a space or a hyphen, because doing so algorithmically is
+ * unsafe for band names. The key is punctuation- and space-insensitive, so one entry
+ * covers every spacing variant with the same letters.
+ *
+ * Only add an entry when the two spellings are unambiguously the **same act** — this
+ * merges artist entities, so a wrong entry silently collapses two real acts into one.
+ * A same-letters coincidence is not enough: "Paul K" (a DJ billed at Ritter Butzke) and
+ * "Paulk" (a live act at Badehaus) share a key and are deliberately *not* folded.
+ */
+private val NAME_CORRECTIONS: Map<String, String> =
+    mapOf(
+        // The Berlin punk band, written "OXO86" by one venue and "Oxo 86" by another. Its digit
+        // keeps it out of the de-shouter (a stylised token), so the two spellings never converge.
+        "oxo86" to "Oxo 86"
+    )
+
+/** Lowercased, punctuation- and space-free lookup key for a name. */
+private fun String.normalizedKey(): String = lowercase().replace(NON_WORD_REGEX, "")
+
+/** Everything except letters (incl. German umlauts) and digits — used to normalize a name for lookup. */
+private val NON_WORD_REGEX = Regex("""[^a-z0-9äöüßø]""")
 
 /**
  * Whether the token is a standalone short initialism to keep verbatim: only letters,

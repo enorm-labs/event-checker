@@ -161,6 +161,49 @@ class FrannzOverviewPageScraperTest {
     }
 
     @Nested
+    inner class RelocationStatus {
+        // The venue announces a show that moved *out* of the house as a title suffix. Left unread
+        // it was stored SCHEDULED at a venue it will not play, with the note baked into both the
+        // title and the title-derived headliner ("Mad Tsai -verlegt ins Gretchen-" as an artist).
+        @Test
+        fun `reads a moved-out show as RELOCATED and keeps the note out of the title and artist`() {
+            val html =
+                """
+                <article id="post-1" class="events event_typ-konzert">
+                    <h2 class="event-title">MAD TSAI -verlegt ins Gretchen-</h2>
+                    <div class="event-day">26</div>
+                    <div class="event-month">September</div>
+                </article>
+                """.trimIndent()
+
+            val event = scraper.scrape(Jsoup.parse(html, baseUrl), baseUrl).single()
+
+            event.status shouldBe "RELOCATED"
+            event.title shouldBe "MAD TSAI"
+            event.title shouldNotContain "verlegt"
+            event.artists shouldContainExactly listOf(ScrapedArtist(name = "MAD TSAI", role = "HEADLINER"))
+        }
+
+        // The mirror case, and the reason the status is read from the title and never the subtitle:
+        // every "verlegt" in the fixture belongs to a show that moved *into* Frannz and is stated
+        // in the sub-title ("Die Show wird aus dem Prachtwerk ins Frannz verlegt!"). Those do take
+        // place here and must stay SCHEDULED. This event also carries a "– HOCHVERLEGUNG" title
+        // tail, which cleanEventTitle strips without it becoming a status.
+        @Test
+        fun `keeps a show that moved into the house SCHEDULED`() {
+            val movedIn = scrape().first { it.title == "OCT (ON COMPANY TIME)" }
+
+            movedIn.subtitle shouldContain "ins Frannz verlegt"
+            movedIn.status shouldBe "SCHEDULED"
+        }
+
+        @Test
+        fun `leaves an ordinary show SCHEDULED`() {
+            scrape().first { it.title == "Freshlyground" }.status shouldBe "SCHEDULED"
+        }
+    }
+
+    @Nested
     inner class DescriptionCleaning {
         // Regression for the copilot.events Markdown that Frannz renders raw: a leading `-` list
         // bullet on the "Tickets im VVK …" line hid it from the strip, and inline `[label](url)`

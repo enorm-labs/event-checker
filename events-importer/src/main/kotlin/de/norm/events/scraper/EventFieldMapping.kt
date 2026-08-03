@@ -121,6 +121,10 @@ fun stripRelocationPrefix(title: String): String {
  * - a "Nachholtermin vom <date>" / "(verschoben aus <year>)" reschedule note or a
  *   "Hochverlegung" relocation note — the note itself is still read as the event's `POSTPONED`
  *   status, from the *raw* title, before the title is cleaned,
+ * - a "-verlegt ins <venue>-" moved-house note (Frannz spells the relocation as a *suffix* where
+ *   Metropol uses the "Verlegt ins <venue> –" prefix [stripRelocationPrefix] handles) — likewise
+ *   read as the event's `RELOCATED` status from the raw title first. Anchored on the following
+ *   "ins"/"nach" so a title merely containing the word is never truncated,
  * - a "(ausverkauft)" / "ausverkauft" sold-out annotation — a status, not a name; Frannz in
  *   particular never derives sold-out from prose, so it is pure noise here, and stripping it
  *   keeps "… (ausverkauft)" and its non-sold-out twin from splitting into two artists,
@@ -132,7 +136,7 @@ fun stripRelocationPrefix(title: String): String {
  */
 private val TITLE_NOISE_PATTERN =
     Regex(
-        """\s+[-–—(]*\s*(?:nachholtermin|hochverlegung|verschoben)\b.*$""" +
+        """\s+[-–—(]*\s*(?:nachholtermin|hochverlegung|verschoben|verlegt\s+(?:ins|nach))\b.*$""" +
             """|\s+[-–—(]*\s*ausverkauft!?\s*\)?\s*$""" +
             """|\s+[-–—]\s*$""",
         RegexOption.IGNORE_CASE
@@ -144,18 +148,30 @@ private val TITLE_NOISE_PATTERN =
  * 28.04.26-" → "Iggi Kelly". Returns the input unchanged when there is no such tail, or
  * when stripping would leave nothing.
  *
+ * Runs of whitespace are collapsed to a single space first. A venue's own markup decides
+ * how much space lands between two words — a line break inside the heading, a stray double
+ * space in the CMS — and that is presentation, not part of the name ("Adventurous Juan
+ * (DJ-Set)", "Lucas Lauriente – Stand Up 2026"). Collapsing before the tail patterns run also
+ * keeps those patterns keyed on a single space, and normalizes the title a headliner is
+ * derived from.
+ *
  * Example:
  * ```kotlin
  * cleanEventTitle("Iggi Kelly Nachholtermin vom 28.04.26-")     // "Iggi Kelly"
  * cleanEventTitle("Luna Simao (verschoben aus 2026)")           // "Luna Simao"
  * cleanEventTitle("Singalong -Das Mitsing-Event (ausverkauft)") // "Singalong -Das Mitsing-Event"
+ * cleanEventTitle("Adventurous Juan  (DJ-Set)")                 // "Adventurous Juan (DJ-Set)"
  * cleanEventTitle("The Adicts")                                 // "The Adicts"
  * ```
  */
 fun cleanEventTitle(title: String): String {
-    val stripped = title.trim().replace(TITLE_NOISE_PATTERN, "").trim()
-    return stripped.ifBlank { title.trim() }
+    val collapsed = title.trim().replace(WHITESPACE_RUN, " ")
+    val stripped = collapsed.replace(TITLE_NOISE_PATTERN, "").trim()
+    return stripped.ifBlank { collapsed }
 }
+
+/** A run of whitespace (including a line break) inside a title, collapsed to one space. */
+private val WHITESPACE_RUN = Regex("""\s+""")
 
 /**
  * Free-entry phrases unambiguous enough to detect from any text field (title or

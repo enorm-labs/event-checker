@@ -12,6 +12,8 @@ import de.norm.events.scraper.refineConcertVenueType
 import de.norm.events.scraper.splitHeadlinerTitle
 import de.norm.events.scraper.stripArtistSuffix
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.jsoup.Jsoup
+import org.jsoup.nodes.TextNode
 import org.jsoup.parser.Parser
 import tools.jackson.databind.JsonNode
 import tools.jackson.databind.json.JsonMapper
@@ -204,7 +206,7 @@ internal class LarkApiScraper(
             event =
                 ScrapedEvent(
                     title = title,
-                    description = acf.stringOrNull("event_description"),
+                    description = acf.stringOrNull("event_description")?.let(::htmlToPlainText)?.takeIf { it.isNotBlank() },
                     eventType = eventType,
                     eventDate = startedAt.toLocalDate(),
                     // The venue renders this time as "Doors"; it publishes no separate start time.
@@ -326,3 +328,27 @@ private fun JsonNode.stringOrNull(field: String): String? = path(field).asString
  * hand-rolled table so every entity the venue can emit is covered.
  */
 private fun decodeHtml(raw: String): String = Parser.unescapeEntities(raw.trim(), false).trim()
+
+/**
+ * Renders `acf.event_description` — which is *markup*, not text — down to a plain-text blurb.
+ *
+ * The venue writes the field in the WordPress editor, so it arrives carrying `<p class="p1">`
+ * wrappers and `<a href>` links, and one event's whole description is a single anchor tag. Stored
+ * raw those tags reached the frontend verbatim, so the markup is parsed and only its visible text
+ * kept: `<br>` and `<p>` become line breaks, an anchor collapses to its label (the URL is dropped,
+ * the same call Frannz makes for its Markdown links), and entities decode as a side effect of
+ * reading the text out of the parse tree.
+ */
+private fun htmlToPlainText(raw: String): String {
+    val fragment = Jsoup.parseBodyFragment(raw)
+    fragment.select("br").forEach { it.replaceWith(TextNode("\n")) }
+    fragment.select("p").forEach { it.appendChild(TextNode("\n")) }
+    return fragment
+        .wholeText()
+        .replace('\r', '\n')
+        .replace(BLANK_LINE_RUN, "\n\n")
+        .trim()
+}
+
+/** Three or more consecutive newlines, collapsed to one blank line. */
+private val BLANK_LINE_RUN = Regex("""\n{3,}""")

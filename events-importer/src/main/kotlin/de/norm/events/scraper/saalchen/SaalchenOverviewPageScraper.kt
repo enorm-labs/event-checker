@@ -117,7 +117,9 @@ class SaalchenOverviewPageScraper {
             sourceUrl = sourceUrl,
             sourceId = "${EventSource.SAALCHEN.sourceIdPrefix}$slug",
             ticketUrl = row.hrefAt("a.link-ticket"),
-            genre = category,
+            // `.event-category` names a staging format (`Konzert`, `Kultur`, `Kunst`), not a musical
+            // style, so it drives the event type only and is deliberately not stored as the genre —
+            // the same call as Admiralspalast. The venue publishes no genre field of its own.
             pricePresale = parseSinglePrice(entrance),
             // The Eintritt line is free-form (tiered prices, "+ fees", a bare "30,00"), so the
             // venue's own wording is kept whenever it names one.

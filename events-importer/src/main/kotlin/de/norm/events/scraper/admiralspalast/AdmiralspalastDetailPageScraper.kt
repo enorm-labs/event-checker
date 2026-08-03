@@ -60,13 +60,14 @@ class AdmiralspalastDetailPageScraper {
      * @param document the parsed Jsoup document of the production page.
      * @param sourceUrl the production's URL, used as [ScrapedEvent.sourceUrl] and to derive the
      *   slug half of each [ScrapedEvent.sourceId].
-     * @param genre the category the venue files this production under, or `null` when it appears on
-     *   no filter page.
+     * @param category the category the venue files this production under, or `null` when it appears
+     *   on no filter page. It drives [ScrapedEvent.eventType] only — see [parsePerformance] for why
+     *   it is deliberately not stored as the genre.
      */
     fun scrape(
         document: Document,
         sourceUrl: String,
-        genre: String?
+        category: String?
     ): List<ScrapedEvent> {
         val slug = extractEventSlug(sourceUrl, PRODUCTION_PATH_PREFIX).removeSuffix(PAGE_SUFFIX)
         val rows = document.select("$EVENT_LIST .item")
@@ -74,7 +75,7 @@ class AdmiralspalastDetailPageScraper {
         @Suppress("TooGenericExceptionCaught") // Intentional: skip individual malformed rows without aborting the whole import
         return rows.mapNotNull { row ->
             try {
-                parsePerformance(row, sourceUrl, slug, genre)
+                parsePerformance(row, sourceUrl, slug, category)
             } catch (e: Exception) {
                 logger.warn(e) { "Failed to parse an Admiralspalast performance on $sourceUrl, skipping" }
                 null
@@ -82,13 +83,23 @@ class AdmiralspalastDetailPageScraper {
         }
     }
 
-    /** Parses one `.item` performance row, or `null` when it carries no title or no usable date. */
+    /**
+     * Parses one `.item` performance row, or `null` when it carries no title or no usable date.
+     *
+     * The [category] drives [ScrapedEvent.eventType] and is deliberately **not** stored as the
+     * genre. The venue's `eventkategorie` vocabulary names a staging format, not a musical style —
+     * `Konzert`, `Show`, `Lesung`, `Podcast`, `Comedy`, `Tanz`, `Ballett`, `Diskussion`, `Kultur` —
+     * so filing it as the genre made 96 events read as genre-tagged while carrying no style at all
+     * ("Konzert" as the genre of a concert), and pushed the format labels into the genre-tag
+     * vocabulary. The category is already the event *type*; the house publishes no genre anywhere,
+     * so none is stored.
+     */
     @Suppress("ReturnCount") // Guard clauses for the required title and date are clearer than nesting
     private fun parsePerformance(
         row: Element,
         sourceUrl: String,
         slug: String,
-        genre: String?
+        category: String?
     ): ScrapedEvent? {
         val title = row.textAt(TITLE)?.let(::cleanEventTitle)
         if (title == null) {
@@ -103,13 +114,12 @@ class AdmiralspalastDetailPageScraper {
         }
 
         val note = row.textAt(RESCHEDULE_NOTE)
-        val eventType = mapEventType(genre, GENRE_EVENT_TYPES) ?: EventType.SHOW.name
+        val eventType = mapEventType(category, GENRE_EVENT_TYPES) ?: EventType.SHOW.name
 
         return ScrapedEvent(
             title = title,
             subtitle = note,
             eventType = eventType,
-            genre = genre,
             eventDate = eventDate,
             startTime = parseTime(row.textAt(WEEKDAY_AND_TIME)?.substringAfter(',')?.trim()),
             imageUrl = row.attrAt("img", "src")?.let { resolveUrl(siteRoot(sourceUrl), it) },
