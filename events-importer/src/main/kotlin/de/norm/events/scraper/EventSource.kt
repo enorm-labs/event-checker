@@ -912,7 +912,33 @@ enum class EventSource {
      * so a programme Zenner has unpublished is not imported. Conditional requests are unused — the
      * artefact is rebuilt on every content change and upserts are idempotent by `sourceId`.
      */
-    ZENNER;
+    ZENNER,
+
+    /**
+     * Zitadelle Spandau – the Renaissance fortress whose entire event calendar is the **Citadel
+     * Music Festival**, the open-air concert series staged in its courtyard each summer. The venue's
+     * own site is a museum site; the programme lives at `citadel-music-festival.de`, which is what
+     * this imports. The season is small — under a dozen dates, rendered in full with no pagination.
+     *
+     * WordPress with the Events Manager plugin, but the grid is a hand-written child-theme template
+     * (`article.cmf-card`) rather than the plugin's markup: an `h3.cmf-title`, a machine-readable
+     * `time[datetime]`, a `.cmf-time` start, a `data-status` badge, and a link to
+     * `/event/<YYYY-MM-DD-slug>`. The plugin's `event` post type is **not** exposed through the
+     * WordPress REST API, so despite ADR-007's JSON-first preference there is no API to read.
+     *
+     * The detail page adds the `Einlass` doors time (which may read `tba`), a `.tour-title`
+     * subtitle, the `.eventnotes` prose, an external shop link (Eventim or Ticketmaster), and the
+     * presenters ("präsentiert von: Flux FM, tip Berlin"), stored as promoters as at the Columbia
+     * Theater — the promoter proper is only a taxonomy slug with no display name anywhere.
+     *
+     * Two traps. Every card's `aria-label` ends "– Ausverkauft" **regardless of the actual state**,
+     * a broken template string; `data-status` is what tracks reality. And a relocated show is
+     * badged `Abgesagt` with a separate `.aenderungen` line explaining the move ("Wird in die
+     * Columbiahalle verlegt"), so that line — not the badge — decides between `CANCELLED` and
+     * `RELOCATED`, and is kept at the head of the description so the status says where the show
+     * went. The site publishes no prices at all, only shop links.
+     */
+    ZITADELLE;
 
     /**
      * Prefix for `sourceId` values, derived from the enum name in lowercase.

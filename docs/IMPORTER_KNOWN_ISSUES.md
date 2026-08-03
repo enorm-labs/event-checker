@@ -894,6 +894,34 @@ and **65 were stored** (see below). Range 2026-09-15 → 2027-10-16, none in the
 - 🟢 **Four events have no price.** The two cancelled dates, the job fair and one concert simply omit the `ab NN,NN €` span; that becomes neither a zero nor an
   empty note. As at the arena the published price is the cheapest ticket, stored as presale with the "ab" wording kept in `priceNote`.
 
+### Zitadelle (`scraper/zitadelle/`) — Citadel Music Festival, WordPress/Events Manager
+
+The fortress's own site is a museum site; its concert programme is the **Citadel Music Festival**, the open-air series staged in the courtyard, published at
+`citadel-music-festival.de`. Verified against a live import (3 August 2026): the listing carried 8 cards and **all 8 were stored**, range 2026-08-15 →
+2027-08-13, none in the past, 0 suspicious rows. Every event has a start time, a poster, a type and an artist.
+
+- 🟠 **Eight events is the whole programme.** This is a summer season, not a year-round house: the site lists the current August plus whatever is already
+  announced for the next. A low count here is the venue's actual output, not a truncated import — there is no pagination to walk and nothing hidden behind a
+  filter.
+- 🟠 **No prices anywhere.** The site publishes only shop links (Eventim, Ticketmaster); no event states a price, so the price filters never see one. Two events
+  state no shop either, and are stored without a ticket link.
+- 🟠 **No genre on any event.** The WordPress taxonomy carries a category (`event-categories-konzerte`) but no genre field, so the genre-tag filters never see a
+  Zitadelle event.
+- 🟠 **Every event is typed `CONCERT`, including where the taxonomy is silent.** Only 5 of the 8 carry an `event-categories-*` class; the rest are typed as
+  concerts anyway because the series programmes nothing else. Were the venue to add a non-music date without categorising it, it would be mistyped.
+- 🟢 **A relocated show is badged as cancelled.** `OFF DAYS` (19 August) carries an `Abgesagt` badge, but the `.aenderungen` line beneath it says "Wird in die
+  Columbiahalle verlegt. Tickets behalten ihre Gültigkeit!" — the show moved, it is not off. That line decides the status (`RELOCATED`, not `CANCELLED`) and is
+  kept at the head of the description, because the status alone does not say where the show went.
+- 🟢 **The card `aria-label` is a broken template.** Every card's label ends "– Ausverkauft" regardless of the actual state, so an importer reading it would mark
+  the whole programme sold out. The `data-status` attribute is what tracks reality and is what this reads; 3 of 8 are genuinely sold out.
+- 🟢 **The listing poster comes out of a CSS custom property.** Cards render no `<img>` — the image is `style="--bg: url('…')"`. That is a presentational source,
+  used against the usual preference of ADR-007 only because the listing offers no other; the detail page's `<img>` supersedes it whenever that fetch succeeds.
+- 🟢 **The promoter is stored from the presenters, not the promoter taxonomy.** The `promoters-<slug>` class on the `<article>` is a slug with no display name
+  anywhere on the page, so inventing its capitalisation was rejected; the rendered "präsentiert von" names are stored instead, as at the Columbia Theater.
+- 🟢 **The site spells one media partner two ways.** `tip Berlin` on one event and `Tip` on another resolve to two promoter entities. Folding them would need a
+  `NAME_CORRECTIONS` entry, and the bare "Tip" is too ambiguous to key on safely. `Flux FM` is folded — it shares a normalized key with the `FluxFM` and
+  `fluxfm` spellings the Columbia Theater, Frannz and Heimathafen sources use, so one entry merges all four onto the station's own casing.
+
 ---
 
 ## How to extend this doc

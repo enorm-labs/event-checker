@@ -173,5 +173,9 @@ private val NAME_CORRECTIONS: Map<String, String> =
         "trinty" to "Trinity",
         "radioactve" to "Radioactive",
         "allrooms" to "All Rooms",
-        "loft" to "Loft Concerts"
+        "loft" to "Loft Concerts",
+        // Three sources, three spellings — "FluxFM" (Columbia Theater, Frannz), "fluxfm"
+        // (Heimathafen) and "Flux FM" (Zitadelle), the last of which de-shouts to "Flux Fm".
+        // All four share this key, so one entry folds them onto the station's own casing.
+        "fluxfm" to "FluxFM"
     )
