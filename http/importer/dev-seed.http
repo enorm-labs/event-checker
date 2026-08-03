@@ -48,6 +48,7 @@
 ###   MAXXIM               — https://www.maxxim-berlin.de/partys (Wix Events warmup JSON; nightly DJ programme)
 ###   Metropol             — https://metropol-berlin.de/events (WordPress/Events-Manager, list + detail, ISO slug date)
 ###   Tresor               — https://tresorberlin.com/club/events/ (WordPress; list + detail, floor lineups)
+###   Uber Arena           — https://www.uber-arena.de/events/all (AEG CMS; sport excluded)
 ###   UFO im Velodrom      — https://www.velomax.de/events (shares the VELOMAX listing)
 ###   Velodrom             — https://www.velomax.de/events (shares the VELOMAX listing)
 ###   Mikropol             — https://mikropol-berlin.de/events/ (WordPress/Events-Manager, list + detail)
@@ -2417,6 +2418,67 @@ Accept: application/json
 
 > {%
     client.test("Tresor import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Uber Arena (Mühlenstr. 12-30, Berlin-Friedrichshain)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Uber Arena venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Uber Arena",
+    "address": "Mühlenstr. 12-30",
+    "city": "Berlin",
+    "postalCode": "10243",
+    "district": "friedrichshain-kreuzberg",
+    "latitude": 52.50506,
+    "longitude": 13.44339,
+    "websiteUrl": "https://www.uber-arena.de",
+    "description": "Berlin's largest indoor arena on the Spree, hosting touring concerts, shows and comedy alongside its resident sport teams."
+}
+
+> {%
+    client.global.set("uber_arena_venue_id", response.body.id);
+    client.test("Uber Arena venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Uber Arena event source ---
+# Links the venue to the UberArenaWebsiteImporter.
+# The sourceType "UBER_ARENA" matches EventSource.UBER_ARENA.
+# NOTE: sport fixtures are excluded (the model has no SPORT type), as at the Velomax halls — the
+# arena is home to ALBA Berlin and the Eisbären, so the imported count is well below the page's.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{uber_arena_venue_id}},
+    "name": "Uber Arena",
+    "url": "https://www.uber-arena.de/events/all",
+    "sourceType": "UBER_ARENA",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Uber Arena event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Uber Arena import ---
+POST {{importer-host}}/api/admin/event-sources/uber-arena/import
+Accept: application/json
+
+> {%
+    client.test("Uber Arena import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}
