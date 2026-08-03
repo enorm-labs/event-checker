@@ -152,7 +152,18 @@ private val STRIP_WORDS: Set<String> =
         "live",
         "records",
         "production",
-        "productions"
+        "productions",
+        // Presenter *verbs* a promoter appends to its own name when it heads a billing
+        // ("porcupine records & little league shows prsnt:"). Punctuation is stripped before the
+        // lookup, so the trailing colon is already handled.
+        //
+        // The plain English "presents" is deliberately **absent**: it is a brand word as often as a
+        // verb — "AEG Presents" is the company's actual name, and stripping it would leave "Aeg".
+        "prsnt",
+        "prsnts",
+        "presenting",
+        "präsentiert",
+        "präsentieren"
     )
 
 /**
@@ -177,5 +188,16 @@ private val NAME_CORRECTIONS: Map<String, String> =
         // Three sources, three spellings — "FluxFM" (Columbia Theater, Frannz), "fluxfm"
         // (Heimathafen) and "Flux FM" (Zitadelle), the last of which de-shouts to "Flux Fm".
         // All four share this key, so one entry folds them onto the station's own casing.
-        "fluxfm" to "FluxFM"
+        "fluxfm" to "FluxFM",
+        // The station spells itself in one lowercase word; one venue writes it "Radio Eins".
+        // Both share this key, so the entry folds them onto the broadcaster's own branding.
+        "radioeins" to "radioeins",
+        // "tipBerlin" (one venue) and "tip Berlin" (another) are the city magazine. The bare "Tip"
+        // a third venue prints is deliberately **not** folded in — too ambiguous a word to key on
+        // safely, as recorded in IMPORTER_KNOWN_ISSUES.
+        "tipberlin" to "tip Berlin",
+        // The tour agency appears both abbreviated and under its full trading name. De-shouting
+        // lowercases the acronym to "Kkt", so the entry also restores its own capitals.
+        "kkt" to "KKT",
+        "kktgmbhkikiskleinertourneeservice" to "KKT"
     )

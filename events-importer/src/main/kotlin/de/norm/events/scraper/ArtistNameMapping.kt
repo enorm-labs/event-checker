@@ -82,6 +82,23 @@ private val PLACEHOLDER_NAMES =
     setOf("tba", "tbd", "tbc", "tba.", "tbd.", "tbc.", "nn", "n.n.", "nn.")
 
 /**
+ * A "more acts to come" lineup continuation — `+ more`, `& more`, `and more`, `+ more tba`,
+ * `more tba`, `und mehr`. Venues close an unfinished billing with one of these, and a lineup parser
+ * that splits on `+` hands it over as if it were the next act (Kater stored `+ more` and
+ * `+ more Tba` as artists).
+ *
+ * A **bare** "More" deliberately does not match: it is a real band name (the NWOBHM act). The
+ * placeholder is only recognised with a lead-in (`+`/`&`/`and`/`und`) or a trailing
+ * `tba`/`tbc`/`tbd`, either of which marks it as a continuation rather than a name.
+ */
+private val MORE_TO_COME_PATTERN =
+    Regex(
+        """^(?:[+&]|and|und)\s*(?:more|mehr)(?:\s+(?:tba|tbc|tbd))?\.*$""" +
+            """|^(?:more|mehr)\s+(?:tba|tbc|tbd)\.*$""",
+        RegexOption.IGNORE_CASE
+    )
+
+/**
  * Checks whether [name] is a placeholder rather than a real artist name.
  *
  * Returns `true` for common "to be announced" abbreviations like
@@ -89,17 +106,22 @@ private val PLACEHOLDER_NAMES =
  *
  * Example:
  * ```kotlin
- * isPlaceholderName("TBA")    // true
- * isPlaceholderName("t.b.a.") // true
- * isPlaceholderName("N.N.")   // true
- * isPlaceholderName("Aska")   // false
+ * isPlaceholderName("TBA")     // true
+ * isPlaceholderName("t.b.a.")  // true
+ * isPlaceholderName("N.N.")    // true
+ * isPlaceholderName("+ more")  // true
+ * isPlaceholderName("more tba")// true
+ * isPlaceholderName("More")    // false (a real band name)
+ * isPlaceholderName("Aska")    // false
  * ```
  */
 fun isPlaceholderName(name: String): Boolean {
     val trimmed = name.trim().lowercase()
     val dotFree = trimmed.replace(".", "")
     // Check both with and without dots to handle "TBA", "T.B.A.", "N.N." etc.
-    return dotFree in PLACEHOLDER_NAMES || trimmed in PLACEHOLDER_NAMES
+    return dotFree in PLACEHOLDER_NAMES ||
+        trimmed in PLACEHOLDER_NAMES ||
+        MORE_TO_COME_PATTERN.containsMatchIn(trimmed)
 }
 
 /**
@@ -509,7 +531,8 @@ private val KNOWN_SINGLE_ACTS: Set<String> =
         "angus & julia stone",
         "matt & kim",
         "blood & sun",
-        "pure obsessions & red nights"
+        "pure obsessions & red nights",
+        "scala & kolacny brothers"
     )
 
 /**
@@ -591,6 +614,7 @@ fun splitSegmentOnConjunctions(segment: String): List<String> {
     val cuts =
         CONJUNCTION_SEPARATOR
             .findAll(segment)
+            .filter { !isInsideBrackets(segment, it.range.first) }
             .filter { match ->
                 segment
                     .substring(match.range.last + 1)
@@ -600,16 +624,50 @@ fun splitSegmentOnConjunctions(segment: String): List<String> {
                     CONJUNCTION_TAIL_MARKERS
             }.map { it.range }
             .toList()
-    if (cuts.isEmpty()) return listOf(segment)
+    return cutAt(segment, cuts)
+}
 
-    val acts = mutableListOf<String>()
+/**
+ * True when [index] sits inside a `(…)` or `[…]` group in [text].
+ *
+ * A separator inside brackets belongs to an act's own parenthetical — a band affiliation
+ * (`David J (Bauhaus / Love & Rockets)`), a member list (`Los Refrescos (Dandy Jack & Argenis
+ * Brito)`) or a format note — never to a co-bill, so splitting there tears one act into fragments
+ * and leaves an unbalanced bracket behind (`Rockets)`). Club der Visionäre's lineup parser has
+ * always had this guard; this is the shared title-level counterpart.
+ *
+ * An unclosed bracket only ever makes the guard *more* conservative (everything after it is treated
+ * as inside), which keeps a malformed title whole rather than fragmenting it.
+ */
+private fun isInsideBrackets(
+    text: String,
+    index: Int
+): Boolean {
+    var depth = 0
+    for (i in 0 until index) {
+        when (text[i]) {
+            '(', '[' -> depth++
+            ')', ']' -> if (depth > 0) depth--
+        }
+    }
+    return depth > 0
+}
+
+/** Splits [text] at the given separator [cuts], dropping the separators themselves. */
+private fun cutAt(
+    text: String,
+    cuts: List<IntRange>
+): List<String> {
+    if (cuts.isEmpty()) return listOf(text)
+
+    val parts = mutableListOf<String>()
     var start = 0
     for (range in cuts) {
-        acts.add(segment.substring(start, range.first))
+        parts.add(text.substring(start, range.first))
         start = range.last + 1
     }
-    acts.add(segment.substring(start))
-    return acts
+    parts.add(text.substring(start))
+    return parts
 }
 
 /** Hard separators that always delimit acts in a support/lineup line: comma, plus, slash. */
@@ -684,9 +742,18 @@ fun splitHeadlinerTitle(
     // co-billed occurrences are protected per segment inside splitSegmentOnConjunctions.
     if (isKnownSingleAct(trimmed)) return listOf(trimmed)
 
+    val separator = if (splitOnSlash) SAFE_TITLE_SEPARATOR else PLUS_ONLY_TITLE_SEPARATOR
+    // Bracket-aware: a `/` or `+` inside a parenthetical belongs to that act's own affiliation
+    // list, not to a co-bill — see [isInsideBrackets].
+    val hardCuts =
+        separator
+            .findAll(trimmed)
+            .filter { !isInsideBrackets(trimmed, it.range.first) }
+            .map { it.range }
+            .toList()
+
     val acts =
-        trimmed
-            .split(if (splitOnSlash) SAFE_TITLE_SEPARATOR else PLUS_ONLY_TITLE_SEPARATOR)
+        cutAt(trimmed, hardCuts)
             .flatMap { splitSegmentOnConjunctions(it) }
             .map { it.trim() }
             .filter { it.isNotBlank() }
@@ -730,6 +797,54 @@ private fun stripFramingPrefix(name: String): String {
 }
 
 /**
+ * A leading role label that specifically marks a **support** billing, as opposed to the wider
+ * [ROLE_LABEL_PREFIX] (which also covers `feat.` / `w/` guest credits). Used to decide the role of
+ * a title segment before its label is stripped.
+ */
+private val SUPPORT_ROLE_PREFIX =
+    Regex("""^(?:div\.?\s*supports?|special\s+guests?|supports?|openers?)\s*:""", RegexOption.IGNORE_CASE)
+
+/**
+ * A leading role or event-**format** label the venue puts in front of the act it bills —
+ * `Support:`, `Opener:`, `Record Release:`, `Listening Session:`. It names the slot or what the
+ * night *is*, not who plays, so it must not become part of the artist name (Admiralspalast stored
+ * `Support: A.A. Williams`, Loge `Record Release: Pair`, Tresor
+ * `Listening Session: Drexciya - Neptune's Lair`).
+ *
+ * The colon is **required**, unlike [ROLE_LABEL_PREFIX] which makes it optional. That is safe where
+ * that pattern is used — on names already extracted from a `Support:` subtitle, where a bare lead-in
+ * is expected — but not against an arbitrary title, where it would maim a real act whose name opens
+ * with one of these words (`Support Lesbiens`, `Session Victim`).
+ */
+private val ARTIST_LABEL_PREFIX =
+    Regex(
+        """^(?:div\.?\s*supports?|special\s+guests?|supports?|openers?""" +
+            """|listening\s+session|record\s+release|record\s+launch|album\s+release|release\s+show)\s*:\s*""",
+        RegexOption.IGNORE_CASE
+    )
+
+/**
+ * Strips a leading role or event-format label ([ARTIST_LABEL_PREFIX]) from a scraped act name, so
+ * the performer remains.
+ *
+ * The title-level counterpart of [stripArtistSuffix], and applied in the same places: to headliners
+ * derived from a title, and to a lineup line at a venue that bills a format in front of the act.
+ * Returns the input unchanged when there is no such prefix, or when stripping would leave nothing.
+ *
+ * Example:
+ * ```kotlin
+ * stripArtistPrefix("Support: A.A. Williams")         // "A.A. Williams"
+ * stripArtistPrefix("Record Release: Margot Erkner")  // "Margot Erkner"
+ * stripArtistPrefix("Listening Session: Drexciya")    // "Drexciya"
+ * stripArtistPrefix("Support Lesbiens")               // "Support Lesbiens" (no colon — a real band)
+ * ```
+ */
+fun stripArtistPrefix(name: String): String {
+    val stripped = name.trim().replaceFirst(ARTIST_LABEL_PREFIX, "").trim()
+    return stripped.ifBlank { name.trim() }
+}
+
+/**
  * Turns an event title into its headliner artist entries: strip a recurring-series
  * "#<n>:" prefix via [stripSeriesPrefix] so the billed acts remain, split co-billed
  * acts via [splitHeadlinerTitle], strip an "A night with …" framing prefix and any
@@ -748,9 +863,13 @@ fun headlinersFromTitle(
     // A title led by a label's own name announces that label's event; nothing in it is an act.
     if (isLedByNonArtistLabel(title)) return emptyList()
     return splitHeadlinerTitle(stripSeriesPrefix(title), splitOnSlash)
-        .map { stripFramingPrefix(stripArtistSuffix(it)) }
-        .filterNot { isNonArtistName(it) }
-        .map { ScrapedArtist(name = it, role = "HEADLINER") }
+        .map { segment ->
+            // The role is decided from the *raw* segment, before its label is stripped: a title
+            // that bills "… + Support: A.A. Williams" names a support act, not a second headliner.
+            val role = if (SUPPORT_ROLE_PREFIX.containsMatchIn(segment.trim())) "SUPPORT" else "HEADLINER"
+            stripFramingPrefix(stripArtistPrefix(stripArtistSuffix(segment))) to role
+        }.filterNot { (name, _) -> isNonArtistName(name) }
+        .map { (name, role) -> ScrapedArtist(name = name, role = role) }
 }
 
 /**

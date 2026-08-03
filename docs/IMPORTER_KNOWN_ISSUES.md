@@ -510,6 +510,11 @@ start time, a poster and a category; 14 are flagged sold out and 2 postponed. Th
   walked and its productions take its label; a production listed under several keeps the first in the venue's own alphabetical order — stable between imports,
   but arbitrary. 11 distinct categories are in use; `Kultur`, `Diskussion` and `Podcast` name a framing rather than a form and fall through to the theatre's
   `SHOW` default.
+- 🟠 **No genre on any event.** The `eventkategorie` label is a staging format (`Konzert`, `Show`, `Lesung`, `Podcast`, `Comedy`, `Tanz`, `Ballett`), never a
+  musical style, so it drives the event *type* only and is deliberately not stored as the genre. It used to be, which made 96 events read as genre-tagged while
+  carrying no style ("Konzert" as the genre of a concert) and pushed the format labels into the genre-tag vocabulary. Two of the eleven categories — `Musical`
+  and `Klassik` — *are* genres and are lost with the rest; since a production listed under several categories keeps an arbitrary one (above), they were not
+  reliable genre statements. The house publishes no genre field anywhere.
 
 ### Humboldthain Club (`scraper/humboldthain/`) — Elfsight Event Calendar widget, JSON source
 
@@ -672,11 +677,14 @@ split 16 `CONCERT` / 10 `PARTY`, matching the venue's own category tagging.
 ### Säälchen (`scraper/saalchen/`) — Drupal, one shared calendar filtered by location
 
 Verified against a live import (1 August 2026): 8 events stored, 2026-08-14 → 2026-11-27, none in the past, 0 suspicious rows, every one with a doors time, a
-start time, a poster, a ticket link, a genre and price information. Types split 6 `CONCERT` / 1 `FESTIVAL` / 1 `PARTY`.
+start time, a poster, a ticket link and price information. Types split 6 `CONCERT` / 1 `FESTIVAL` / 1 `PARTY`.
 
 - 🟠 **The calendar is the whole Holzmarkt site's, not the venue's.** `/kalender` mixes Säälchen with the Marktplatz flea markets and the Holzmarkt 25 grounds (8
   of 13 rows were Säälchen at capture), so rows are filtered on the `.location` span. A rename of that label upstream would silently empty the import — the
   fixture test asserts the filter on a snapshot that still contains the other locations, so a rename fails the build rather than passing quietly.
+- 🟠 **No genre on any event.** `.event-category` names a staging format (`Konzert`, `Kultur`, `Kunst`), not a musical style, so it drives the event *type* only
+  and is deliberately not stored as the genre — the same call as Admiralspalast. Filing it as one made every event read as genre-tagged while stating no style
+  at all. The venue publishes no genre field of its own, so the genre-tag filters never see a Säälchen event.
 - 🟠 **No descriptions at all.** The AddToCalendar payload is metadata-only for every Säälchen event; the venue writes prose for its Holzmarkt 25 market rows but
   not for this room, so `description` is empty for all 8.
 - 🟠 **The `.doors` CMS field is unreliable and only a fallback.** The editors fill that single time field inconsistently — it holds the *Einlass* on

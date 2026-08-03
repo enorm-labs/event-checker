@@ -5,6 +5,7 @@ import de.norm.events.event.EventType
 import de.norm.events.scraper.EventSource
 import de.norm.events.scraper.ScrapedArtist
 import de.norm.events.scraper.ScrapedEvent
+import de.norm.events.scraper.cleanEventTitle
 import de.norm.events.scraper.detectFree
 import de.norm.events.scraper.headlinersFromTitle
 import de.norm.events.scraper.isNonArtistName
@@ -124,6 +125,10 @@ class MadameClaudeApiScraper {
                 ?.rendered
                 .blankToNull()
                 ?.let { Parser.unescapeEntities(it, false) }
+                // The venue's editor leaves a stray double space in some titles
+                // ("Adventurous Juan  (DJ-Set)"); the shared cleanup collapses whitespace runs and
+                // strips the trailing notes every other scraper already routes its title through.
+                ?.let(::cleanEventTitle)
                 .blankToNull()
         if (title == null) {
             logger.warn { "Madame Claude event '$slug' has no title, skipping" }

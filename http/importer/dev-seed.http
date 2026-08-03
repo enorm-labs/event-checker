@@ -2879,6 +2879,8 @@ Content-Type: application/json
     "city": "Berlin",
     "postalCode": "10969",
     "district": "friedrichshain-kreuzberg",
+    "latitude": 52.50438,
+    "longitude": 13.40707,
     "websiteUrl": "https://modus-berlin.de",
     "description": "A Kreuzberg club and concert room on the Ritter Butzke grounds, programming touring acts and spoken-word nights."
 }
@@ -3126,6 +3128,8 @@ Content-Type: application/json
     "city": "Berlin",
     "postalCode": "10179",
     "district": "mitte",
+    "latitude": 52.51083,
+    "longitude": 13.42056,
     "websiteUrl": "https://ohmberlin.com",
     "description": "A small bass and techno club in the Tresor power-station complex, programming a short rolling window of DJ nights."
 }

@@ -8,6 +8,7 @@ import de.norm.events.scraper.cleanEventTitle
 import de.norm.events.scraper.hrefAt
 import de.norm.events.scraper.imgSrcAt
 import de.norm.events.scraper.mapEventType
+import de.norm.events.scraper.parseEventStatus
 import de.norm.events.scraper.parsePriceValue
 import de.norm.events.scraper.parseTime
 import de.norm.events.scraper.refineConcertVenueType
@@ -42,10 +43,16 @@ import java.util.Locale
  * - **No year in the rendered date** — only day number + full German month name
  *   (`11` + `Juli`). The year is inferred as the nearest future occurrence,
  *   mirroring [de.norm.events.scraper.privatclub.PrivatclubOverviewPageScraper].
- * - **No structured status markers** — words like "ausverkauft" / "verlegt" only
- *   appear inside free-text descriptions (e.g. "ihrer restlos *ausverkauften*
- *   Tour"), so deriving sold-out / cancelled from prose would produce false
- *   positives. Every event is therefore left `SCHEDULED` and not sold out.
+ * - **No structured status markers** — no badge or CSS class states a status. The
+ *   *description* is not read for one: words like "ausverkauft" / "verlegt" turn up
+ *   in ordinary prose there (e.g. "ihrer restlos *ausverkauften* Tour"), so deriving
+ *   a status from it would produce false positives, and `soldOut` is consequently
+ *   never set. The **title** is different — the venue appends the note deliberately
+ *   and tersely ("MAD TSAI -verlegt ins Gretchen-"), so the status is read from the
+ *   raw title via [parseEventStatus] before [cleanEventTitle] strips that same note.
+ *   This mirrors Metropol, which reads its `"Verlegt ins <venue> –"` title prefix the
+ *   same way. A show that moved *out* of the house is therefore stored `RELOCATED`
+ *   rather than silently `SCHEDULED` at a venue it will not play.
  *
  * The stable per-event identity is the WordPress post id (`<article id="post-9874">`),
  * used for both the `sourceId` and a `#post-<id>` deep-link `sourceUrl` back into
@@ -110,6 +117,9 @@ class FrannzOverviewPageScraper(
             logger.warn { "Frannz event article has no title, skipping" }
             return null
         }
+        // Read the status off the *raw* title first — cleanEventTitle strips the very note it is
+        // derived from ("… -verlegt ins Gretchen-", "… Nachholtermin vom …").
+        val status = parseEventStatus(rawTitle)
         // Strip a trailing "Nachholtermin vom …" reschedule note the venue appends to moved shows.
         val title = cleanEventTitle(rawTitle)
 
@@ -149,6 +159,7 @@ class FrannzOverviewPageScraper(
             ticketUrl = article.hrefAt(".entry-content-wrap a[href*=\"shop.copilot.events\"]"),
             pricePresale = pricePresale,
             priceBoxOffice = priceBoxOffice,
+            status = status,
             artists = buildArtistsForEventType(title, subtitle, eventType),
             promoters = parsePromoters(article.textAt("h4.event-otitle"))
         )

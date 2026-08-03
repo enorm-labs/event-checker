@@ -86,7 +86,16 @@ class AssociationSyncService(
      *   artists referenced by the scraped events.
      */
     private suspend fun resolveAllArtists(scrapedEvents: List<ScrapedEvent>): Map<String, ArtistEntity> {
-        val allArtistSlugs = scrapedEvents.flatMap { it.artists }.map { SlugGenerator.slugify(it.name) }.toSet()
+        // Canonicalize *before* slugging, as the promoter path does. De-shouting alone never
+        // changes the slug (it is casing-only, and slugs are case-insensitive), but a curated
+        // NAME_CORRECTIONS entry can — "OXO86" resolves to "Oxo 86", i.e. slug `oxo-86` rather
+        // than `oxo86`. Slugging the raw name here would then look up a different row than
+        // resolveOrCreateArtist creates, and the two spellings would stay fragmented.
+        val allArtistSlugs =
+            scrapedEvents
+                .flatMap { it.artists }
+                .map { SlugGenerator.slugify(canonicalArtistName(it.name)) }
+                .toSet()
         val artistCache =
             artistRepository
                 .findBySlugIn(allArtistSlugs)
@@ -94,13 +103,12 @@ class AssociationSyncService(
                 .associateBy { it.slug }
                 .toMutableMap()
 
-        // Auto-create only the artists not already in the database. The stored display
-        // name is de-shouted first (casing-only, see canonicalArtistName) so an act isn't
-        // frozen SHOUTING by whichever venue imported it first; slugs are case-insensitive,
-        // so this never changes which artist row a name resolves to.
+        // Auto-create only the artists not already in the database. The stored display name is
+        // canonicalized first (see canonicalArtistName): de-shouting so an act isn't frozen
+        // SHOUTING by whichever venue imported it first, plus any curated spelling correction.
         scrapedEvents
             .flatMap { it.artists }
-            .distinctBy { SlugGenerator.slugify(it.name) }
+            .distinctBy { SlugGenerator.slugify(canonicalArtistName(it.name)) }
             .forEach { resolveOrCreateArtist(canonicalArtistName(it.name), artistCache) }
 
         return artistCache
@@ -168,7 +176,7 @@ class AssociationSyncService(
             val desiredArtistIds = mutableSetOf<Long>()
 
             for ((index, scrapedArtist) in desiredArtists.withIndex()) {
-                val slug = SlugGenerator.slugify(scrapedArtist.name)
+                val slug = SlugGenerator.slugify(canonicalArtistName(scrapedArtist.name))
                 val artistId = requireNotNull(artistCache[slug]?.id) { "Artist '$slug' must be resolved before syncing associations" }
                 desiredArtistIds.add(artistId)
 

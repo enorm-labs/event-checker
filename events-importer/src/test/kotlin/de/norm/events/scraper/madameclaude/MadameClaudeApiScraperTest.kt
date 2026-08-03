@@ -150,4 +150,19 @@ class MadameClaudeApiScraperTest {
     fun `returns an empty list for an empty array`() {
         scraper.scrape("[]").shouldBeEmpty()
     }
+
+    // Audit T-13: this scraper was the one that never routed its title through the shared cleanup,
+    // so the venue editor's stray double space reached the stored title verbatim.
+    @Test
+    fun `collapses a whitespace run in the title`() {
+        val json =
+            """
+            [{"id":1,"slug":"adventurous-juan","date":"2026-08-06T23:00:00",
+              "title":{"rendered":"Adventurous Juan  (DJ-Set)"},"acf":{}}]
+            """.trimIndent()
+
+        val event = scraper.scrape(json).single()
+
+        event.title shouldBe "Adventurous Juan (DJ-Set)"
+    }
 }

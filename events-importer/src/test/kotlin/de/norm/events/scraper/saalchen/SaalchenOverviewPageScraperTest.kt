@@ -55,7 +55,8 @@ class SaalchenOverviewPageScraperTest {
         frytz.startTime shouldBe LocalTime.of(20, 0)
         frytz.pricePresale shouldBe BigDecimal("36.95")
         frytz.priceNote shouldBe "36,95€"
-        frytz.genre shouldBe "Konzert"
+        // `.event-category` is a staging format, so it types the event but is not stored as a genre.
+        frytz.genre shouldBe null
         frytz.sourceUrl shouldBe "https://www.holzmarkt.com/veranstaltung/frytz-tour-2026"
         frytz.ticketUrl!! shouldStartWith "https://landstreicher-konzerte.de/"
         frytz.imageUrl!! shouldStartWith "https://www.holzmarkt.com/sites/default/files/"

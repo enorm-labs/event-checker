@@ -108,6 +108,27 @@ class ArtistNameMappingTest {
         isPlaceholderName("DJ Shadow") shouldBe false
     }
 
+    // Audit T-6: Kater's lineup parser split on "+" and handed the venue's unfinished-billing
+    // marker over as the next act, storing "+ more" and "+ more Tba" as artists.
+    @Test
+    fun `isPlaceholderName returns true for a more-to-come lineup continuation`() {
+        isPlaceholderName("+ more") shouldBe true
+        isPlaceholderName("+ more tba") shouldBe true
+        isPlaceholderName("+ more Tba") shouldBe true
+        isPlaceholderName("& more") shouldBe true
+        isPlaceholderName("and more") shouldBe true
+        isPlaceholderName("und mehr") shouldBe true
+        isPlaceholderName("more tba") shouldBe true
+    }
+
+    @Test
+    fun `isPlaceholderName keeps a bare More, which is a real band name`() {
+        // The NWOBHM act "More" must survive; only a lead-in or a trailing TBA marks a placeholder.
+        isPlaceholderName("More") shouldBe false
+        isPlaceholderName("More Than Life") shouldBe false
+        isPlaceholderName("Moremore") shouldBe false
+    }
+
     // --- isNonArtistLabel ---
 
     @Test
@@ -279,6 +300,65 @@ class ArtistNameMappingTest {
         splitSegmentOnConjunctions("Morimoto / Wong duo") shouldBe listOf("Morimoto / Wong duo")
         // Backing-band article tail stays joined.
         splitSegmentOnConjunctions("Scott Hepple & The Sun Band") shouldBe listOf("Scott Hepple & The Sun Band")
+    }
+
+    // Audit T-5: a conjunction inside a parenthetical belongs to that act's own affiliation list,
+    // never to a co-bill. Splitting there tore one act into fragments and left an unbalanced
+    // bracket behind — Frannz Club stored "David J (Bauhaus", "Love" and "Rockets)".
+    @Test
+    fun `splitSegmentOnConjunctions never cuts inside brackets`() {
+        splitSegmentOnConjunctions("Los Refrescos (Dandy Jack & Argenis Brito)") shouldBe
+            listOf("Los Refrescos (Dandy Jack & Argenis Brito)")
+        splitSegmentOnConjunctions("Gum [Hofkonzert & Support]") shouldBe listOf("Gum [Hofkonzert & Support]")
+        // A conjunction outside the bracket still cuts.
+        splitSegmentOnConjunctions("Anemone (NL) & Foo") shouldBe listOf("Anemone (NL)", "Foo")
+    }
+
+    // Audit T-7: a role or event-format label in front of the act became part of the artist name —
+    // Admiralspalast stored "Support: A.A. Williams", Loge "Record Release: Pair".
+    @Test
+    fun `stripArtistPrefix removes role and event-format labels`() {
+        stripArtistPrefix("Support: A.A. Williams") shouldBe "A.A. Williams"
+        stripArtistPrefix("Opener: Warwolf") shouldBe "Warwolf"
+        stripArtistPrefix("Record Release: Margot Erkner") shouldBe "Margot Erkner"
+        stripArtistPrefix("RECORD RELEASE: PAIR") shouldBe "PAIR"
+        stripArtistPrefix("Listening Session: Drexciya") shouldBe "Drexciya"
+    }
+
+    @Test
+    fun `stripArtistPrefix leaves a real name that merely opens with such a word`() {
+        // The colon is required, so these are untouched.
+        stripArtistPrefix("Recording Angels") shouldBe "Recording Angels"
+        stripArtistPrefix("Session Victim") shouldBe "Session Victim"
+        stripArtistPrefix("Support Lesbiens") shouldBe "Support Lesbiens"
+        // Stripping that would leave nothing keeps the input.
+        stripArtistPrefix("Support:") shouldBe "Support:"
+    }
+
+    @Test
+    fun `headlinersFromTitle bills a labelled support act as SUPPORT and drops the label`() {
+        headlinersFromTitle("Chelsea Wolfe + Support: A.A. Williams") shouldBe
+            listOf(
+                ScrapedArtist("Chelsea Wolfe", "HEADLINER"),
+                ScrapedArtist("A.A. Williams", "SUPPORT")
+            )
+        // An event-format lead-in is stripped without changing the role.
+        headlinersFromTitle("RECORD RELEASE: PAIR + WESTHAFEN") shouldBe
+            listOf(
+                ScrapedArtist("PAIR", "HEADLINER"),
+                ScrapedArtist("WESTHAFEN", "HEADLINER")
+            )
+    }
+
+    @Test
+    fun `splitHeadlinerTitle keeps a parenthesised affiliation list whole`() {
+        splitHeadlinerTitle("David J (Bauhaus / Love & Rockets)") shouldBe
+            listOf("David J (Bauhaus / Love & Rockets)")
+        splitHeadlinerTitle("Budgie (Siouxsie & The Banshees, The Slits)") shouldBe
+            listOf("Budgie (Siouxsie & The Banshees, The Slits)")
+        // A genuine co-bill outside the brackets still splits.
+        splitHeadlinerTitle("David J (Bauhaus) + Tom Verlaine") shouldBe
+            listOf("David J (Bauhaus)", "Tom Verlaine")
     }
 
     // --- stripArtistSuffix ---

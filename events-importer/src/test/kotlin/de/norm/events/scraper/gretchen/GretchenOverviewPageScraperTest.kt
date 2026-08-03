@@ -177,7 +177,33 @@ class GretchenOverviewPageScraperTest {
                 name shouldNotContain "Hosted by"
                 name shouldNotContain "Live Visuals"
                 name shouldNotContain "Opening DJ-Set"
+                name shouldNotContain "verlegt"
             }
+        }
+
+        // The venue writes its relocation note two ways. The sentence form ("Die Show wird aus dem
+        // Gretchen in das Metropol verlegt.") is long enough for the ten-word prose guard, but the
+        // terse form is only three words and was billed as a support act — a live import stored
+        // "verlegt vom Frannz" as an artist of the relocated Mad Tsai show.
+        @Test
+        fun `drops a terse relocation note that is too short for the prose guard`() {
+            val html =
+                """
+                <div class="gig">
+                    <div class="gig_top">
+                        <span class="date">Sa. <strong>26.09.2026</strong><br> Doors: 19.30 <br/>Show: 20.30</span>
+                    </div>
+                    <div class="gig_main"><div class="scroll nano"><div class="text nano-content">
+                        <span class="title">Rap<h2><a href="detail.php?id=9001">Trinity presents: MAD TSAI - The Bite Back Tour</a></h2></span>
+                        <span class="box"></span><span class="lineup"><p>Mad Tsai<br/></p></span>
+                        <span class="box"></span><span class="lineup">verlegt vom Frannz</span>
+                    </div></div></div>
+                </div>
+                """.trimIndent()
+
+            val event = scraper.scrape(Jsoup.parse(html, baseUrl), baseUrl).single()
+
+            event.artists shouldContainExactly listOf(ScrapedArtist("Mad Tsai", "HEADLINER"))
         }
 
         @Test

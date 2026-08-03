@@ -387,11 +387,15 @@ class GretchenOverviewPageScraper {
     /**
      * True when a lineup line is a non-performer credit or note rather than an act:
      * a "Hosted by …" / "Live Visuals by …" credit, an "Ersatztermin vom …"
-     * rescheduled-date note, an instrument-credited member list ("… (Bass), …
-     * (Drums)"), or a bare "+ (special) guests" placeholder. These share the trailing
-     * `.lineup` with the real acts, so they must be filtered before billing.
+     * rescheduled-date note, a "verlegt vom <venue>" relocation note, an
+     * instrument-credited member list ("… (Bass), … (Drums)"), or a bare
+     * "+ (special) guests" placeholder. These share the trailing `.lineup` with the
+     * real acts, so they must be filtered before billing.
      */
-    private fun isCreditOrNoteLine(line: String): Boolean = DROP_LINE_PATTERN.containsMatchIn(line) || INSTRUMENT_CREDIT_PATTERN.containsMatchIn(line)
+    private fun isCreditOrNoteLine(line: String): Boolean =
+        DROP_LINE_PATTERN.containsMatchIn(line) ||
+            INSTRUMENT_CREDIT_PATTERN.containsMatchIn(line) ||
+            SCHEDULE_NOTE_PATTERN.containsMatchIn(line)
 
     /**
      * Strips a leading role/credit prefix so the billed performer remains — "Support:
@@ -501,6 +505,23 @@ class GretchenOverviewPageScraper {
         private val DROP_LINE_PATTERN =
             Regex(
                 """^(?:hosted\s+by\b|live\s+visuals?\b|ersatztermin\b|\+\s*(?:special\s+)?guests?\s*$)""",
+                RegexOption.IGNORE_CASE
+            )
+
+        /**
+         * A lineup line carrying a scheduling note rather than an act — "verlegt vom Frannz",
+         * "verschoben auf den 12.03.".
+         *
+         * [isProseNote] only catches the venue's *sentence* form ("Die Show wird aus dem Gretchen
+         * in das Metropol verlegt." — ten words), so the terse form slipped through and was billed
+         * as a support act. Matched anywhere in the line, since the note is written with and
+         * without a leading subject; the verbs are German scheduling terms that do not occur in act
+         * names, and `ersatztermin` / `nachholtermin` are listed here as well as in
+         * [DROP_LINE_PATTERN] so a note prefixed with a subject is caught too.
+         */
+        private val SCHEDULE_NOTE_PATTERN =
+            Regex(
+                """\b(?:verlegt|verschoben|ersatztermin|nachholtermin)\b""",
                 RegexOption.IGNORE_CASE
             )
 

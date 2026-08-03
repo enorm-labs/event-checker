@@ -88,7 +88,8 @@ class AdmiralspalastWebsiteImporterTest {
             result.shouldBeInstanceOf<ImportResult.Success>()
             // Antigone appears on the Comedy filter page, which is the only place a category exists.
             val antigone = result.events.first { it.sourceUrl == antigoneUrl }
-            antigone.genre shouldBe "Comedy"
+            // The category types the production; it is not stored as a genre.
+            antigone.genre shouldBe null
             antigone.eventType shouldBe EventType.SHOW.name
         }
 

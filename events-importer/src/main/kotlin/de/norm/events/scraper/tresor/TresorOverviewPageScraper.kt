@@ -9,6 +9,7 @@ import de.norm.events.scraper.cleanEventTitle
 import de.norm.events.scraper.extractEventSlug
 import de.norm.events.scraper.isNonArtistName
 import de.norm.events.scraper.resolveUrl
+import de.norm.events.scraper.stripArtistPrefix
 import de.norm.events.scraper.textAt
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jsoup.nodes.Document
@@ -146,6 +147,9 @@ private fun splitActs(slot: String): List<String> =
     slot
         .split(B2B_SEPARATOR)
         .map(::stripSetFormatNote)
+        // The venue also bills a format in *front* of the act ("Listening Session: Drexciya —
+        // Neptune's Lair"); that names the slot, not the performer.
+        .map(::stripArtistPrefix)
         .filter { it.isNotBlank() && !isUnannouncedAct(it) && !HOST_CREDIT.containsMatchIn(it) }
 
 /** Removes a trailing set-format note, unless it is all the slot says — then the name stands. */
