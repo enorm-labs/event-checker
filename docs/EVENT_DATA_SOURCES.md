@@ -7,8 +7,8 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 
 | Status                              | Meaning                                                                              | Count |
 |-------------------------------------|--------------------------------------------------------------------------------------|------:|
-| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    66 |
-| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |     4 |
+| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    67 |
+| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |     3 |
 | ⛔ [Blocked](#-blocked--deferred)   | Website analyzed, but no usable listings (no programme page, JS-only, or too sparse) |    36 |
 | ❓ [Unanalyzed](#-not-analyzed-yet) | No URL recorded yet — website still needs a first look                               |     0 |
 
@@ -34,6 +34,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Club der Visionäre          | https://clubdervisionaere.com/programm                      | Techno Club  | WordPress; one listing, 3 rooms by CSS class       |
 | Columbia Theater            | https://columbia-theater.de/                                | Concert Hall | WordPress; date in slug; status via `data-*` flag  |
 | Columbiahalle               | https://www.columbiahalle.berlin/veranstaltungen.html       | Concert Hall | Contao; one page, month headings carry the year    |
+| Cosmic Comedy Club          | https://comedyclubberlin.com/wp-json/tribe/events/v1/events | Comedy Club  | The Events Calendar REST API; cursor-paged; no prices |
 | Duncker Club                | https://www.dunckerclub.de/                                 | Club         |                                                    |
 | Festsaal Kreuzberg          | https://festsaal-kreuzberg.de/de                            | Concert Hall | Nuxt/Wagtail SSR; `ld+json` empty; no prices       |
 | Frannz Club                 | https://frannz.eu/                                          | Club         |                                                    |
@@ -85,7 +86,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Zenner                      | https://zenner.berlin/programm                              | Club         | Gatsby/Sanity page-data JSON; UTC dates; archive   |
 | Zitadelle                   | https://citadel-music-festival.de/events                    | Open Air     | Festival site; WordPress/EM; summer season only    |
 
-65 importer classes cover 66 sources: only Kantine am Berghain has no class of its own, sharing the Berghain importer outright. Three other groups share a
+66 importer classes cover 67 sources: only Kantine am Berghain has no class of its own, sharing the Berghain importer outright. Three other groups share a
 *listing and parser* while keeping one thin `@Component` per venue, so they do not reduce the count — Club der Visionäre, Sonnenraum and MS Hoppetosse; the
 three Velomax halls; and Uber Arena with the Uber Eats Music Hall.
 
@@ -95,7 +96,6 @@ Analyzed and scrapable — the candidates for the next `/scaffold-importer` runs
 
 | Priority | Name                 | URL                                      | Type         | Why / what it needs                                        |
 |:--------:|----------------------|------------------------------------------|--------------|------------------------------------------------------------|
-|   Low    | Cosmic Comedy Club   | https://comedyclubberlin.com/events/     | Comedy Club  | `Event` JSON-LD via The Events Calendar; check scope       |
 |   Low    | Heideglühen          | https://heidegluehen.berlin/aktuell/     | Techno Club  | One event at a time; prose date, set times per DJ          |
 |   Low    | Humboldtsaal Urania  | https://www.urania.de/kalender/          | Concert Hall | One Urania programme; hall unnamed, mostly lectures        |
 |   Low    | Kleistsaal Urania    | https://www.urania.de/kalender/          | Concert Hall | Same programme; the site makes no hall distinction         |
