@@ -843,7 +843,7 @@ poster and a ticket link, and 26 of 29 with a DJ lineup.
 - 🟢 **Several events share a date routinely.** The club runs multiple floors, so two or three nights per date is normal (three on 2026-08-08); the slug's
   trailing name keeps them apart. `/calendarfile/<id>` is `Disallow`ed by robots.txt and is never fetched.
 
-### Uber Arena (`scraper/uberarena/`) — AEG CMS, list + detail
+### Uber Arena (`scraper/aeg/`) — AEG/Carbonhouse, list + detail
 
 Verified against a live import (3 August 2026): the listing carried 128 rows, 88 survived the sport filter, and **85 were stored** — the three lost are
 second sessions of a same-day double bill (see below). Range 2026-08-21 → 2028-01-29, none in the past, 0 suspicious rows; every event has a start time and a
@@ -866,6 +866,33 @@ poster, 64 are `CONCERT` and 21 `SHOW`.
 - 🟢 **A detail fetch that degrades costs only the extras.** Two of the 88 detail pages returned no heading during the live run (both parse fine on retry, so it
   was transient), and those events were stored from listing data alone — losing the doors time, description and ticket link, but nothing else. 6 of 85 have no
   doors time and 5 no ticket link for this and similar reasons.
+
+### Uber Eats Music Hall (`scraper/aeg/`) — shares the Uber Arena parsers
+
+The arena's neighbour runs the **same AEG/Carbonhouse tenant** — same listing markup, same detail-page fields, even the same asset bucket — so both venues are
+thin importers over one parser pair, as the Velomax halls are. Verified against a live import (3 August 2026): the listing carried 66 rows, none of them sport,
+and **65 were stored** (see below). Range 2026-09-15 → 2027-10-16, none in the past, 0 suspicious rows; every event has a start time and a poster, 47 are
+`CONCERT`, 17 `SHOW` and 1 `OTHER`.
+
+- 🔴 **A production playing twice in one day loses its second session.** `Der Nussknacker – Grand Classic Ballet mit Orchester` plays 23 December 2026 at 15:00
+  and 19:00; the two collide on the stored `event.slug` (date + venue + title) and `EventUpsertService` skips the second with a warning, so the count is 65 not
+  66. Same cross-cutting limitation as at the arena — tracked in `TODO.md` ("A show cannot play twice in one day"); this is the fourth venue to hit it.
+- 🟠 **The category is a bare number.** Unlike the arena this venue emits no `data-categoryname`, only the platform's numeric `data-category`. The numeric
+  taxonomy is decoded from the arena — the tenant that publishes both — and the music hall's own programme corroborates it (comedians under `4`, ballet under
+  `5`, bands under `3`). Should AEG renumber it silently, events would be mistyped rather than dropped.
+- 🟠 **One event carries no category at all.** The `STICKS & STONES` job fair is filed under id `0`, which the scraper leaves untyped; it lands as `OTHER`. That
+  is truthful — it is neither a concert nor a staged show — but it is the venue's classification, not ours.
+- 🟠 **No genre on any event.** As at the arena, the platform publishes no genre field, so the genre-tag filters never see one of these events.
+- 🟢 **Cancellations are read from the title.** A cancelled date keeps its row and is prefixed `ABGESAGT:`; that prefix becomes `CANCELLED` and is stripped from
+  the stored name (`ABGESAGT: Ryan Adams` → `Ryan Adams`). It is the only place either venue states a scheduling status, and the arena's current programme
+  happens to contain none.
+- 🟢 **The ticket link is taken as the first off-host link.** This venue's `#tickets` block renders a **self-link before** the AXS shop link with identical
+  classes, and follows the block with links to other events, so "the first `a.btn-tix`" would store the event's own URL. All 62 stored ticket links are AXS
+  ones; the 3 events without a link are ones whose detail fetch degraded or that announce no shop yet.
+- 🟢 **A `SHOW` stores no artist, by design.** The 17 are production names (`Der Nussknacker – Grand Classic Ballet mit Orchester`), not acts, so the shared
+  `buildArtistsForEventType` correctly derives none.
+- 🟢 **Four events have no price.** The two cancelled dates, the job fair and one concert simply omit the `ab NN,NN €` span; that becomes neither a zero nor an
+  empty note. As at the arena the published price is the cheapest ticket, stored as presale with the "ab" wording kept in `priceNote`.
 
 ---
 

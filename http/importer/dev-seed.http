@@ -49,6 +49,7 @@
 ###   Metropol             — https://metropol-berlin.de/events (WordPress/Events-Manager, list + detail, ISO slug date)
 ###   Tresor               — https://tresorberlin.com/club/events/ (WordPress; list + detail, floor lineups)
 ###   Uber Arena           — https://www.uber-arena.de/events/all (AEG CMS; sport excluded)
+###   Uber Eats Music Hall — https://www.uber-eats-music-hall.de/events/all (shares the UBER_ARENA platform)
 ###   UFO im Velodrom      — https://www.velomax.de/events (shares the VELOMAX listing)
 ###   Velodrom             — https://www.velomax.de/events (shares the VELOMAX listing)
 ###   Mikropol             — https://mikropol-berlin.de/events/ (WordPress/Events-Manager, list + detail)
@@ -2479,6 +2480,67 @@ Accept: application/json
 
 > {%
     client.test("Uber Arena import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Uber Eats Music Hall (Uber Platz 2, Berlin-Friedrichshain)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Uber Eats Music Hall venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Uber Eats Music Hall",
+    "address": "Uber Platz 2",
+    "city": "Berlin",
+    "postalCode": "10243",
+    "district": "friedrichshain-kreuzberg",
+    "latitude": 52.50410,
+    "longitude": 13.44251,
+    "websiteUrl": "https://www.uber-eats-music-hall.de",
+    "description": "Mid-size concert hall next door to the Uber Arena, programming touring bands, comedy and staged shows."
+}
+
+> {%
+    client.global.set("uber_eats_music_hall_venue_id", response.body.id);
+    client.test("Uber Eats Music Hall venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Uber Eats Music Hall event source ---
+# Links the venue to the UberEatsMusicHallWebsiteImporter.
+# The sourceType "UBER_EATS_MUSIC_HALL" matches EventSource.UBER_EATS_MUSIC_HALL.
+# NOTE: same AEG/Carbonhouse tenant as Uber Arena, so one parser pair serves both. This venue has
+# no resident team, so unlike the arena nothing is dropped by the shared sport filter.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{uber_eats_music_hall_venue_id}},
+    "name": "Uber Eats Music Hall",
+    "url": "https://www.uber-eats-music-hall.de/events/all",
+    "sourceType": "UBER_EATS_MUSIC_HALL",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Uber Eats Music Hall event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Uber Eats Music Hall import ---
+POST {{importer-host}}/api/admin/event-sources/uber-eats-music-hall/import
+Accept: application/json
+
+> {%
+    client.test("Uber Eats Music Hall import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}

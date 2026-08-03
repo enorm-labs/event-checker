@@ -7,8 +7,8 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 
 | Status                              | Meaning                                                                              | Count |
 |-------------------------------------|--------------------------------------------------------------------------------------|------:|
-| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    63 |
-| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |     7 |
+| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    64 |
+| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |     6 |
 | ⛔ [Blocked](#-blocked--deferred)   | Website analyzed, but no usable listings (no programme page, JS-only, or too sparse) |    36 |
 | ❓ [Unanalyzed](#-not-analyzed-yet) | No URL recorded yet — website still needs a first look                               |     0 |
 
@@ -76,14 +76,15 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Tempodrom                   | https://www.tempodrom.de/programm-und-tickets/              | Concert Hall | schema.org `Event` JSON-LD; whole programme        |
 | Tresor                      | https://tresorberlin.com/club/events/                       | Techno Club  | WordPress; floor-grouped lineup; detail pages      |
 | Uber Arena                  | https://www.uber-arena.de/events/all                        | Arena        | AEG CMS; list + detail; no sport imported          |
+| Uber Eats Music Hall        | https://www.uber-eats-music-hall.de/events/all              | Concert Hall | Shares the Uber Arena parsers; month names, no cats |
 | UFO im Velodrom             | https://www.velomax.de/events                               | Concert Hall | Shares the VELOMAX listing                         |
 | Urban Spree                 | https://www.urbanspree.com/program/                         | Club         | MODX; listing descending + paginated; walks pages  |
 | Velodrom                    | https://www.velomax.de/events                               | Arena        | Shares the VELOMAX listing; Microdata details      |
 | Wild at Heart               | https://www.wildatheartberlin.de/                           | Bar          | Retro frameset; concerts.php; year from weekday    |
 | Zenner                      | https://zenner.berlin/programm                              | Club         | Gatsby/Sanity page-data JSON; UTC dates; archive   |
 
-62 importer classes cover 63 sources (Kantine am Berghain shares the Berghain importer; Club der Visionäre, Sonnenraum and MS Hoppetosse are three thin
-importers over one shared listing and parser).
+62 importer classes cover 64 sources (Kantine am Berghain shares the Berghain importer; Club der Visionäre, Sonnenraum and MS Hoppetosse are three thin
+importers over one shared listing and parser; Uber Arena and the Uber Eats Music Hall are two thin importers over one AEG/Carbonhouse parser pair).
 
 ## 🔨 Ready to implement
 
@@ -91,7 +92,6 @@ Analyzed and scrapable — the candidates for the next `/scaffold-importer` runs
 
 | Priority | Name                 | URL                                      | Type         | Why / what it needs                                        |
 |:--------:|----------------------|------------------------------------------|--------------|------------------------------------------------------------|
-|  Medium  | Uber Eats Music Hall | https://www.uber-eats-music-hall.de/     | Concert Hall | Same AEG platform as Uber Arena — one scraper shape        |
 |  Medium  | Zitadelle            | https://citadel-music-festival.de/events | Open Air     | Festival site has the concerts; venue site only tours      |
 |   Low    | Cosmic Comedy Club   | https://comedyclubberlin.com/events/     | Comedy Club  | `Event` JSON-LD via The Events Calendar; check scope       |
 |   Low    | Heideglühen          | https://heidegluehen.berlin/aktuell/     | Techno Club  | One event at a time; prose date, set times per DJ          |
