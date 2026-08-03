@@ -48,7 +48,6 @@ Legend: **impact** — 🔴 user-visible missing/wrong data · 🟠 data-quality
   incomplete for several venues (see per-importer notes).
 - 🟢 **First page only — pagination is intentionally not followed** (ADR-007). Far-future events on page 2+ of paginated listings are not imported. Accepted:
   first page = the most relevant upcoming events; multi-page crawling was rejected.
-- 🟢 **`priceCurrency` is hard-coded to EUR** (all venues are Berlin). Fine until a non-EUR venue is added.
 
 ## Data-quality / entity resolution
 
@@ -61,10 +60,7 @@ Legend: **impact** — 🔴 user-visible missing/wrong data · 🟠 data-quality
       only *known* names are corrected — new ones need an entry in
       `NAME_CORRECTIONS`;
     - 🟢 de-shout lowercases genuine acronyms in the display name (`TV Noir` →
-      `Tv Noir`, `Bossa FM` → `Bossa Fm`) — display-only, slugs unaffected.
-- **Coverage gap (not a defect):** JS-rendered venues aren't importable yet (Playwright deferred, ADR-007). A cookie wall is not itself a blocker — SO36 is
-  imported by scraping its Ticket-Toaster shop (`/tickets`) behind the wall. See the **Blocked / deferred** section of
-  [EVENT_DATA_SOURCES.md](EVENT_DATA_SOURCES.md#-blocked--deferred) for which venues remain and what would unblock each.
+      `Tv Noir`, `Bossa FM` → `Bossa Fm`) — display-only, slugs unaffected → tracked in `TODO.md`.
 
 ---
 
@@ -81,15 +77,10 @@ Legend: **impact** — 🔴 user-visible missing/wrong data · 🟠 data-quality
 
 ### Privatclub (`scraper/privatclub/`) — WordPress, single page
 
-- 🟢 **Concerts extract the title as headliner** via `buildArtistsForEventType`:
-  a `CONCERT` title is the act unconditionally (support acts from the subtitle's
-  `Support:` line), while parties/festivals extract none. A concert titled just
-  `20Tokens` now yields a headliner; the ~70 artist-less concerts in a July 2026 seed are recovered (see the cross-cutting entry).
 - 🟢 Complex/conditional pricing is stored as free-form `priceNote` rather than structured presale/box-office.
 
 ### Madame Claude (`scraper/madameclaude/`) — WordPress, list + detail
 
-- 🟢 Small venue (~11 events); `DD/MM/YY` dates. No major known gaps beyond the cross-cutting ones.
 - 🟢 **DJ-set nights are detected from the "(DJ-Set)" title marker.** Such events are typed `PARTY` (the CSS category maps them to `CONCERT`) and their DJ lineup
   is sourced from the title, because the detail pages carry no reliable per-artist `<h3>` (see
   `isDjSetTitle` / `djSetArtistsFromTitle`). The title is split on `+` and guarded
@@ -103,9 +94,7 @@ Legend: **impact** — 🔴 user-visible missing/wrong data · 🟠 data-quality
 - 🟠 **Festival-day mislabeling** is only best-effort corrected. Astra tags each festival day individually and sometimes labels one "Concert"; normalization
   fixes it only when a correctly-labelled sibling exists on the same page.
 - 🟠 **Dateless featured teaser** depends on its detail page for the date; if that fetch fails the event is dropped (e.g. `11FREUNDE WM-QUARTIER` drops each
-  run).
-- 🟢 Duplicate events on the listing are skipped by `sourceId` (`ERRA + CURRENTS`,
-  `VOILÀ`) — expected, but means the site genuinely double-lists some events.
+  run) → tracked in `TODO.md`.
 - The detail page carries no artist roster, so artists come only from the overview.
 
 ### Lido (`scraper/lido/`) — same Kulturhäuser platform as Astra
@@ -131,18 +120,14 @@ Legend: **impact** — 🔴 user-visible missing/wrong data · 🟠 data-quality
   fields are always null — the poorest source in the set. The one time it publishes is a per-month "Veranstaltungsbeginn: 20 Uhr" line, stored as `startTime`
   for every event in that month; there is no doors time and no per-event override (the Tuesday jam's own "19-21 Uhr" stays in the subtitle).
 - 🟠 **The same recurring night appears under two title spellings.** The venue hand-types each line, so its Monday open stage is written both `ARCANOA-Open
-  Stage` and `ARCANOA- Open Stage`; only the second has a dash the parser can pad, so the two normalize differently and produce different slugs. Harmless (the
-  dates differ anyway) but visible in a title list.
+  Stage` and `ARCANOA- Open Stage`; only the second has a dash the parser can pad, so the two normalize differently and produce different slugs → tracked in
+  `TODO.md`.
 - 🟠 **Recurring formats are filtered out of the lineup by a venue-local denylist.** Roughly half the programme is a standing format whose "act" is the format
   (open stage, jam session, `SpielleuteSession`, medieval night), and there is no structural signal separating those from a billed act — so
   `RECURRING_FORMAT_PATTERN` drops them by name. Reactive, like the shared `NON_ARTIST_NAMES` denylist: a newly-introduced format is minted as an artist until
   added.
 - 🟢 **Style tails are not genres.** The free-text tail (`AfroLatinFolkJazzEthnoBluesSession`, `HellCountryBlues`) is kept as the `subtitle`, deliberately not
-  the genre field, so it never seeds bogus genre tags — same call as Duncker.
-- 🟢 **Year inferred from the German weekday** (the `DD.MM.` date omits it), which also resolves the passed events the venue leaves listed — like Roadrunner and
-  Duncker.
-- 🟢 **Private bookings are skipped.** A `geschlossene Gesellschaft` line marks the venue as taken for a private function; it is not a public event and is
-  dropped rather than imported as an untyped one.
+  the genre field, so no genre is ever stored for this venue — same call as Duncker.
 
 ### Badehaus (`scraper/badehaus/`) — WordPress / Events Manager, list + detail
 
@@ -153,8 +138,7 @@ Legend: **impact** — 🔴 user-visible missing/wrong data · 🟠 data-quality
 - 🔴 **`eventType` is inferred from the title, not scraped.** Badehaus publishes no machine-readable category anywhere, so the type is a heuristic (quiz /
   party / screening, else `CONCERT`). Non-matching events may be mislabelled.
 - 🟠 **Start time (`Beginn`) and promoter are only on *some* detail pages** — many events have doors time only and no promoter.
-- 🟢 One venue-side **dead link** (a `%`-encoded Arabic-slug event) `404`s each run and degrades to overview data — correctly handled, but worth knowing.
-- 🟢 Heaviest importer: ~90 sequential (throttled) detail fetches, ~40s per run.
+- 🟢 One venue-side **dead link** (a `%`-encoded Arabic-slug event) `404`s each run, so that event keeps overview data only.
 
 ### Bi Nuu (`scraper/binuu/`) — SvelteKit / PocketBase, list + detail
 
@@ -177,13 +161,8 @@ rather than the rendered DOM — so dates carry full four-digit years and fields
   `NON_ARTIST_NAMES` denylist (`GrooveJet Berlin`, `Ultra Night`, `Boheme Sauvage
   N°<n>`); like every curated denylist this is reactive, so a newly-seen series slips through until added → the general classifier fix is tracked in `TODO.md`
   (AI-assisted data quality), shared with the cross-cutting reactive-denylist limitation.
-- 🟢 **`eventStatus` is a single-letter code** mapped in `mapBinuuStatus`: `r` →
-  `RELOCATED` (carries `locationNew`), `p` → `POSTPONED` (carries the original date in
-  `startOld`). Any other/unseen code defaults to `SCHEDULED` and is logged, so a new code surfaces rather than being mismapped. A postponed event stores its new
-  date (`start`), not `startOld`.
 - 🟢 **No genre, and occasional missing `ticket_url`.** No genre is exposed anywhere; some events sell only via a link buried in the description, so `ticket_url`
-  is sometimes null. Timestamps carry a spurious `Z` suffix on local Berlin wall-clock times — read as local, no timezone shift (see `parseBinuuDate`/
-  `parseBinuuTime`).
+  is sometimes null.
 
 ### Gretchen (`scraper/gretchen/`) — retro hand-coded, single page
 
@@ -198,18 +177,15 @@ rather than the rendered DOM — so dates carry full four-digit years and fields
   `DJ-Set` suffix and a `+<tag>` stylisation are stripped, and floor/section headers, credit lines and prose notes are dropped. Residual: a conjunction-joined
   pair on a *single* lineup line (`Prezident & Jay Baez`) is kept as one act — Gretchen lists genuine co-bills on separate `<br>` lines, so a `&` *within* one
   line is as often a duo's name as two acts, and there is no reliable signal to tell them apart.
-- 🟢 **The `NN Years GRETCHEN:` anniversary-series banner is stripped from the display title** (`15 Years GRETCHEN: BOTTICELLI BABY` → `BOTTICELLI BABY`); the
-  act name is what remains. Other `NN Years <act>` titles (`Recycle: 15 Years FLEXOUT AUDIO`) are left intact — the strip is anchored on "Gretchen".
 
 ### Duncker Club (`scraper/duncker/`) — retro hand-coded, single page
 
-- 🟢 **Every night is typed `PARTY`.** Duncker is a resident-DJ dance club with no other event kind, so the type is a constant, not a scraped/inferred signal.
+- 🟢 **Every night is typed `PARTY`.** Duncker is a resident-DJ dance club with no other event kind, so the type is a constant, not a scraped/inferred signal —
+  a one-off concert would be mistyped.
 - 🟢 **No structured genre.** The free-text style line ("Rock, Indie, Alternative, Punk") is kept as the `subtitle`, deliberately **not** the genre field, so it
   never seeds bogus genre tags.
 - 🟢 **No show time.** The programme lists only an opening-hour range (`21h-05h`); the opening hour is stored as `doorsTime` and there is no separate start time.
-- 🟢 **Year inferred from the German weekday** (the `DD.MM.` date omits it), which also resolves the recently-passed events the venue leaves listed — like
-  Roadrunner. DJ names are prefixed `DJ`/`Djs` and split on separators; a `DJ <handle>` is **not**
-  de-prefixed (shared with Madame Claude's limitation).
+- 🟢 **A `DJ <handle>` is not de-prefixed**, so it can fragment from the same DJ listed elsewhere without the prefix (shared with Madame Claude's limitation).
 
 ### Urban Spree (`scraper/urbanspree/`) — MODX, descending paginated list + detail
 
@@ -257,9 +233,6 @@ flyer; 27 of the 82 carry the `Konser` category and 55 carry none at all.
   the cross-cutting entry above.
 - 🟢 **Country tags survive on some act names.** A trailing all-caps code group is stripped (`Marta Warelis (PL/USA)` → `Marta Warelis`), but a spelled-out or
   mixed form is not (`Apichat Pakwan (Thailand- Live)`) — the same limitation as Urban Spree, for the same reason.
-- 🟢 **Conditional requests never fire.** The server sends neither ETag nor Last-Modified and answers `Cache-Control: no-store, no-cache`, so every run is a full
-  fetch of the listing plus one detail page per event. This is cheap only because the listing shows *upcoming* events alone and is usually a handful of blocks;
-  a season-long listing on this platform would need reconsidering.
 
 ### ÆDEN (`scraper/aeden/`) — WordPress, entry page → month pages
 
@@ -277,15 +250,13 @@ Assessed against the July–October 2026 month pages (16 nights). Every night ha
 - 🟢 **`sourceId` is date + slugified title, not a URL.** The month page links no per-event page (the `/aeden/<slug>/` posts exist but are not linked from the
   programme), so there is no canonical per-event path to key on. A night that is renamed *and* moved would therefore be imported as a second event; a rename
   alone keeps the date, and a date change alone keeps the title, so a full identity change is the only collision case.
-- 🟢 **Only the club programme is imported.** The site has two further post types for its other spaces (`aeve`, `oel` — the bar/kitchen programme, e.g. "Taco
-  Wednesday", "Afterwork Sunset Garten"). Neither appears on the `/month/` pages, which render club nights only, so they are out of scope.
-- 🟢 **Conditional requests never fire.** Like AMT, the entry page's ETag changes only when a month is added, not when a night inside a month is edited, so
-  caching is deliberately disabled and every run re-fetches the entry plus one page per listed month (4 pages today).
+- 🟢 **Conditional requests are deliberately disabled — do not "optimize" them back on.** Like AMT, the entry page's ETag changes only when a month is added,
+  not when a night inside a month is edited, so honouring it would freeze the programme at whatever was last captured.
 
 ### Club der Visionäre / Sonnenraum / MS Hoppetosse (`scraper/clubdervisionaere/`) — WordPress, one listing for three rooms
 
-Verified against a live import (August 2026): 16 upcoming club nights and 3 Sonnenraum nights, all with a date, a title and a lineup; the boat imported 0 (see
-the seasonality note below). All three rooms share one page and one parser, filtered by the colour class on the title.
+Verified against a live import (August 2026): 16 upcoming club nights and 3 Sonnenraum nights, all with a date, a title and a lineup; the boat imported 0, being
+out of season. All three rooms share one page and one parser, filtered by the colour class on the title.
 
 - 🔴 **No times, prices, tickets, images, genre or description — for any event, in any of the three rooms.** The programme page carries a date, a title and a
   lineup and nothing else; there are no per-event pages to enrich from (the WordPress posts have permalinks but the programme never links them), and the
@@ -294,10 +265,8 @@ the seasonality note below). All three rooms share one page and one parser, filt
   plays, not when the night opens.
 - 🟠 **The room is a CSS class, so a theme restyle silently empties a source.** `.cdvRed` / `.sonnenraumYellow` / `.hoppetosseYellow` are the only signal
   separating three venues on one page — there is no per-room page, category or data attribute, and the WordPress REST API exposes no room either. If the theme
-  renames a class, that room's importer starts returning zero events rather than failing, which is indistinguishable from the off-season case below.
-- 🟠 **Zero events is a normal result, and the venue is seasonal.** The open-air club runs in summer and the boat in winter, so at any time of year one of the
-  two legitimately has no nights on the page (the August import above returned 0 for MS Hoppetosse; the January 2026 snapshot in the tests has 0 for Club der
-  Visionäre). A genuinely broken selector therefore looks exactly like a closed season — the winter fixture test is what distinguishes them.
+  renames a class, that room's importer starts returning zero events rather than failing — and since the club is seasonal (open-air in summer, boat in winter),
+  one room legitimately has no nights at any time of year, so the failure is indistinguishable from a closed season except by the winter fixture test.
 - 🟠 **The date of a shared day is inherited, not stated.** The theme prints the date only on the first block of a given day, so a second night on the same date
   (a boat party and the club afterparty, or the Monday Sonnenraum residency beside a club night) carries an empty date cell and takes the preceding block's
   date. This is inferred from the page's chronological ordering; a block whose date cell is empty *and* has nothing dated before it is skipped rather than
@@ -309,12 +278,8 @@ the seasonality note below). All three rooms share one page and one parser, filt
   whole. The trade-off cuts both ways: a duo written without brackets is split into two artists (`Foehn & Jerome`, `Alex & Laetitia Katapult` → `Alex` +
   `Laetitia Katapult`), and a live-project suffix stays attached (`Gwenan (Phase Space Live)` is stored beside plain `Gwenan` as a second artist row, because
   only a format-word parenthetical like `(Live)` is stripped — the same limitation as Urban Spree's country tags).
-- 🟢 **An act billed twice on one night is kept once.** A live-band member who also plays a DJ set later in the evening (Remain In Love) would otherwise produce
-  two `event_artist` rows for the same pair and hit its unique constraint; the first billing wins, keeping the earlier position and its role.
-- 🟢 **The WordPress REST API is unusable for this venue.** Upcoming events are `future`-status posts, which `/wp-json/wp/v2/posts` omits entirely (and 401s per
-  id), so the rendered page is the only source despite a JSON API being present — the reverse of the usual ADR-007 preference.
-- 🟢 **Conditional requests never fire.** The server sends neither ETag nor Last-Modified, so every run is a full fetch of the one listing. That is cheap: one
-  page per room, and the page is a single short programme.
+- 🟢 **An act billed twice on one night keeps only its first billing** — a live-band member who also plays a DJ set later (Remain In Love) would otherwise hit
+  the `event_artist` unique constraint, so the later role and position are lost.
 
 ### Columbia Theater (`scraper/columbiatheater/`) — WordPress, homepage listing + detail pages
 
@@ -331,9 +296,6 @@ has an image and an artist, 97 of 98 have doors *and* start times, 92 have a tic
   omit the year unless the event is more than a season away, so the `YYYYMMDD` prefix of `/event/YYYYMMDD-<slug>/` is the only unambiguous date — all 98 current
   events carry it, as does every entry of the venue's whole sitemap archive. An event published without that prefix resolves no date and is dropped with a
   warning rather than having its year guessed.
-- 🟢 **Only the first URL of a doubled ticket `href` is kept.** The CMS occasionally emits two shop links concatenated into one attribute
-  (`…&utm_medium=dphttps://www.eventim.de/…`, 2 of 15 pages sampled). Everything from the second `http(s)://` on is dropped, which would also truncate a
-  legitimate href carrying an un-encoded redirect URL — none has been seen.
 - 🟢 **Media presenters are stored as promoters; the actual local promoter is not.** The `präsentiert von …` credit names magazines and radio stations (`DIFFUS`,
   `MusikBlog`, `FluxFM`), which are stored per the `Promoter` model's "promoter *or presenter*" definition — the same choice as Astra/Lido. The real booking
   agency appears only as a bare "Örtlicher Veranstalter" **link** (`trinitymusic.de`, `semmel.de`), with no name to store, so it is skipped rather than guessed
@@ -341,8 +303,6 @@ has an image and an artist, 97 of 98 have doors *and* start times, 92 have a tic
 - 🟢 **A billing row's acts are split on `+` only, never on commas.** The venue writes a guest's band affiliations in parentheses
   (`Budgie (SIOUXSIE & THE BANSHEES, THE SLITS)`), so the shared comma-splitting of `splitSupportActs` is deliberately not used and a genuinely comma-separated
   support line would land as one artist. No such line exists today — every row uses `+`.
-- 🟢 **Conditional requests never fire.** The server sends neither ETag nor Last-Modified, so every run is a full fetch of the homepage plus one detail page per
-  listed event (98 today, serialised by the 200 ms per-host throttle).
 - 🟢 **`ELLE & L's Festival` mints a spurious `Elle` headliner.** The title is promoted to `FESTIVAL` at the persistence boundary, but the lineup was already
   derived from the scraper's own `CONCERT` inference, so the `&`-split leaves `Elle` behind (`L's Festival` is filtered out). Pre-existing and cross-cutting —
   Clash and Gretchen have the same shape — → tracked in `TODO.md`.
@@ -358,10 +318,7 @@ every event has a date, **both** doors and start times, an image and a promoter;
 - 🟢 **A card carries no month or year of its own.** It states only a weekday and a day of month ("Freitag", "07"); the month comes from the
   `.eventlist_monat` heading preceding it in document order. A heading the parser cannot read therefore voids the month rather than carrying the previous one
   forward — those events are skipped with a warning instead of being filed a month early, which is the safer failure but still a silent loss.
-- 🟢 **No per-event page, so identity is the Contao event id.** The "Kalender-Eintrag" links (`veranstaltung/<alias>.html`) serve an **iCal download**, not an
-  HTML page, and carry strictly less than the listing (no prices, promoter, tickets or sold-out state), so they are not followed. Both `sourceId` and
-  `sourceUrl` come from the `div.event_inhalt[id=event_<n>]` id — the same key the venue's own iCal uses as its `UID` — with the listing anchor
-  (`…/veranstaltungen.html#event_9743`) as the URL. An event re-created in the CMS under a new id would import as a second event.
+- 🟢 **Identity is the Contao event id**, there being no per-event page — so an event re-created in the CMS under a new id imports as a second event.
 - 🟢 **A tiered price is stored as its lowest tier.** `VVK: ab 74,99 €` yields `pricePresale = 74.99`, with the raw text kept as the `priceNote` so the
   "from" qualifier is not lost — a filter on price sees the cheapest ticket, which is the useful reading, but the number alone understates what most seats cost.
   The same applies to the venue's "zzgl. Gebühr" (plus booking fee) footnote, which is likewise only in the note.
@@ -370,18 +327,12 @@ every event has a date, **both** doors and start times, an image and a promoter;
 - 🟢 **`OFF DAYS 2026` is minted as a headliner.** It is an event name, not an act, but it matches no structural non-artist filter (no `fest`/`festival`
   marker) — the reactive-denylist limitation recorded in the cross-cutting section. `Elle & L's Festival` mints `Elle` for the separate, cross-cutting reason
   tracked in `TODO.md`.
-- 🟢 **Conditional requests never fire.** The server sends neither ETag nor Last-Modified (its Contao page cache answers with `contao-cache: fresh` and an
-  `age` header instead), so every run is a full fetch — of exactly one page, which is cheap.
 
 ### Golden Gate (`scraper/goldengate/`) — WordPress / Elementor, single page
 
 Verified against a live import (August 2026): the homepage announced three nights, of which **one** was still upcoming and stored. Everything the venue does
 publish is captured — date, start time, night name and full DJ roster — but that is nearly all it publishes.
 
-- 🔴 **Only the current Thursday–Saturday block is announced — at most three nights, often one.** The venue keeps no forward calendar: the homepage carries
-  exactly the current week's Thu/Fri/Sat and nothing beyond. Past nights stay up until the block rolls over and are dropped at persistence time
-  (`EventUpsertService`), so an import late in the week legitimately stores a single event, and a run after the weekend before the page is updated can store
-  none. Zero events is therefore **not** proof of a broken selector here — the fixture test is what distinguishes the two.
 - 🟠 **No prices, tickets, genre, description or images — for any night.** The venue sells at the door only (the page says so once, as a standalone page-level
   heading rather than per event, so it is not stored as a `priceNote`), links no ticket shop, and publishes no per-event page. The single image in each night's
   container is a decorative flame divider shared by all three, so no `imageUrl` is taken rather than storing the same GIF on every event.
@@ -404,7 +355,8 @@ has a date, start time, image, description and a price; 93 of 95 have a doors ti
 - 🟠 **No genre for any event.** The venue *does* tag its events, but the `events_tag` vocabulary is 560 terms mixing real genres (Soul, Cumbia, Folktronica)
   with formats and access notes (Konzert, Premiere, Live Podcast, Buchvorstellung, Gebärdensprache), and the REST payload carries only term **ids** — resolving
   them to names costs six more requests per import for a field that would then need its own stop-list. `class_list` inlines the slugs, but slugs are lossy (`rb`
-  for R&B, `gebaerdensprache`), so `genre` is deliberately left null. Resolving the taxonomy once and caching it is what would unblock this.
+  for R&B, `gebaerdensprache`), so `genre` is deliberately left null. Resolving the taxonomy once and caching it is what would unblock this → tracked in
+  `TODO.md`.
 - 🟠 **Only concerts get artists.** The event type comes from the venue's own category, and `buildArtistsForEventType` mints a headliner from the title only for
   a `CONCERT`. That is correct here — a theatre or reading title (`DIE KLIMA-MONOLOGE`, `LEBEN GROPIUSSTADT GEBRAUCHSANWEISUNG`) names a production, not a
   performer — but it means 65 of 95 events store no artist, and the actual cast, which the venue writes into the prose blurb and an unused `acf.event_cast`
@@ -412,10 +364,6 @@ has a date, start time, image, description and a price; 93 of 95 have a doors ti
 - 🟢 **One post expands into many dated events, keyed by date *and* time.** `acf.event_performances` is an array (a run reaches 30 entries), so `sourceId` is
   `<postId>-<date>-<HHmm>`. The time is part of the key because a run legitimately plays twice on one day; the cost is that correcting a start time re-keys that
   performance, creating a new row while the stale-event cleanup removes the old one.
-- 🟢 **Concession tiers never reach the price columns.** The venue prices by audience and labels its social tiers with the sales channel too — `Mit Berlin-Pass
-  (Abendkasse)` is €3 and `Für Geflüchtete (Abendkasse)` is €0. Matching `Abendkasse` anywhere in the label stored €3 as *the* door price during the first smoke
-  test (and the €0 tier would have marked the event free), so both label matches are start-anchored and an explicit concession list — including the
-  pay-it-forward `ZUGABE TICKET`, which is priced *above* general admission — is excluded first. Every tier survives verbatim in the `priceNote`.
 - 🟢 **The room is parsed away.** Performance notes read `Einlass ab 18:45 Uhr (Studio)`, naming the venue's two spaces (Saal / Studio). Only the doors time is
   read; the model has no event-level room field (`ScrapedArtist.stage` is per-artist), so which space a show plays in is lost.
 - 🟢 **Paging a mutable ordered list can miss an event.** The endpoint returns the whole archive ordered by *post* date, and the event date is an ACF field
@@ -425,8 +373,6 @@ has a date, start time, image, description and a price; 93 of 95 have a doors ti
 - 🟢 **A promoter is read only from one phrasing.** `acf.event_organiser` is free prose: `"Eine Veranstaltung von X"` names a promoter, but `"Eine Veranstaltung
   des Heimathafen Neukölln in Kooperation mit …"` credits the venue itself and `"Heimathafen Neukölln mit Sophia Keßen und Margret Schütz"` names *performers*.
   Only the first form is read, so most events store no promoter rather than minting partners and performers as one.
-- 🟢 **Conditional requests are unused.** The REST endpoint sends no ETag or Last-Modified, so every run re-walks the archive; upserts are idempotent by
-  `sourceId`.
 
 ### Huxleys Neue Welt (`scraper/huxleys/`) — WordPress / Events-Manager, list + detail
 
@@ -444,15 +390,13 @@ event has a date, a start time *and* a doors time; 106 have an image and an arti
   matching badge, but a relocation or a new date is announced solely in the listing's free-text `.anderungen` note, which the detail page omits entirely — so
   the merge deliberately keeps the *overview's* status whenever it is non-default. Notes that are not status changes ("Zusatzshow", "Nachholtermin", "Eintritt
   ab 18 Jahren!") correctly leave the status alone, but only because none of them contains a status keyword; a future note that does would be misread.
-- 🟢 **The detail page has no heading, so the listing owns the title.** The act's name appears there only in the document title with " - Huxleys Neue Welt"
-  appended. The detail scraper strips that suffix so it can stand alone when the listing is unavailable, but a successful merge keeps the listing's
-  `.eventname`.
 - 🟢 **Genre and promoter are read from CSS classes.** Both are WordPress taxonomies the theme emits as slugs on the `article` element (`event-tags-electronic`,
   `promoters-trinity-music`), which costs no extra request but means de-slugified display names: a legal form comes back title-cased word by word
-  (`Concert Concept Veranstaltungs Gmbh`) and a stylised genre loses its punctuation (`kpop` → `Kpop`, not `K-Pop`). The sibling `presenters-*` taxonomy (media
-  partners) is deliberately not read as a promoter — de-slugifying a domain-shaped term yields a mangled `Laut De`.
+  (`Concert Concept Veranstaltungs Gmbh`) and a stylised genre loses its punctuation (`kpop` → `Kpop`, not `K-Pop`) → tracked in `TODO.md`. The sibling
+  `presenters-*` taxonomy (media partners) is deliberately not read as a promoter — de-slugifying a domain-shaped term yields a mangled `Laut De`.
 - 🟢 **`Corrupted Blood Club Show` is typed `PARTY` and loses its headliner.** The shared title classifier treats `club` as a party keyword, so this one show (of
-    107) is mistyped and, being a party, has no artist derived from its title. The cross-cutting reactive-keyword limitation, not specific to this venue.
+    107) is mistyped and, being a party, has no artist derived from its title. The cross-cutting reactive-keyword limitation, not specific to this venue →
+  tracked in `TODO.md`.
 
 ### Kater (`scraper/kater/`) — WordPress, single page
 
@@ -468,18 +412,11 @@ ten structured club nights carry a full per-floor lineup.
   only in prose (e.g. the garden evenings' "with Nat Gohl") is missed.
 - 🟠 **`Nomadenkino` is typed `PARTY`.** The venue emits no category, so every night defaults to a party unless a title keyword says otherwise — and the shared
   screening keyword is word-anchored (`\bkino\b`), which a German compound like *Nomadenkino* does not match. The anchor is deliberate (it protects real act
-  names such as "Alkinoos Ioannidis"), so this monthly film night stays mistyped rather than loosening it.
+  names such as "Alkinoos Ioannidis"), so this monthly film night stays mistyped rather than loosening it → tracked in `TODO.md`.
 - 🟢 **Only the start of the opening time span is stored.** Summaries read `Sa. 01.08 22:00 — So. 02.08 10:00`; the model has no end-time field, so the closing
   half — usually the following morning, and for the long weekend parties two days later — is dropped.
 - 🟢 **The `by <presenter>` tail is stripped from a floor name.** `ACID BOGEN by GOOEY` and plain `ACID BOGEN` are the same floor on different nights, so the
   tail is removed to make `stage` group across the programme; which collective curated that floor is consequently not stored.
-- 🟢 **A parenthesised act is never split.** `Double Penetration (FLOWWW b2b Joe Cleen)` is one billing whose brackets hold its members, so a line containing
-  `(` is left whole while an unbracketed `X b2b Y` splits into two DJs — the reverse order to Club der Visionäre's split, which would break this name.
-- 🟢 **Free entry is read from the blurb, and only when unqualified.** A summary saying "Free entry summer evenings" marks the event free; the Tuesday
-  residency's "free entry till 20:00" deliberately does **not**, since entry is free for two hours rather than all night. The shared
-  [detectFree][de.norm.events.scraper.detectFree] is not used here because its bare `free` token would trip on any mention of free drinks.
-- 🟢 **Dates carry no year.** Every date is a `DD.MM` with a weekday, so the year comes from [inferYearForWeekday]; the programme currently spans August to
-  November without printing a year anywhere.
 
 ### Max-Schmeling-Halle / Velodrom / UFO im Velodrom (`scraper/velomax/`) — TYPO3, one listing for three halls
 
@@ -495,12 +432,8 @@ event has a date, a start time, an image and a promoter, and the detail pages ca
   (sometimes by permalink, sometimes only by start time), so the loss is ours, not the source's → tracked in `TODO.md`.
 - 🟢 **No prices for any event.** The halls sell exclusively through Eventim and print no price on either page; the ticket link is the only route to one.
 - 🟢 **No genre for any event.** The listing's only classification is the three-way `data-type` that decides concert / show / sport.
-- 🟢 **The listing's event type outranks the detail page.** Concert-vs-show is stated *only* as `data-type` on the listing entry; the Microdata says nothing
-  about it, so the merge keeps the listing's value rather than the detail page's title-based inference.
 - 🟢 **A hall's own configuration is trusted over its slug.** "UFO im Velodrom" is a smaller setup inside the Velodrom, and one event's permalink reads
   `…-ufo-im-velodrom-…` while the listing labels it `Velodrom`. The listing's label wins, so that show is imported as a Velodrom event.
-- 🟢 **Conditional requests cover the shared page only.** All three sources fetch the same `velomax.de/events` URL, so each carries its own ETag for the same
-  document; a change anywhere on the page re-runs all three. That is cheap and correct, just redundant.
 
 ### Renate (`scraper/renate/`) — WordPress, single page
 
@@ -518,17 +451,9 @@ DJs across the venue's GARDEN, GREEN, BLACK, RED and SECRET floors.
 - 🟠 **An act line is rejected unless it looks like a name.** The same paragraph run carries a workshop timetable, policy sentences and `+ more tba`
   placeholders alongside the DJs, none of them marked up differently — so a line is taken only when it is at most six words, carries no clock time, is not a
   `hosted by …` credit and is not a placeholder. A genuinely wordy billing is dropped rather than mangled.
-- 🟢 **An act billed on two floors is kept once.** `event_artist` is `UNIQUE (event_id, artist_id)`, so a label hosting both the garden and the green floor
-  (Remoto Records) would produce two rows for one pair and fail the *entire* import — the first billing wins and keeps its floor. The same constraint Club der
-  Visionäre documents.
-- 🟢 **The markup is not consistent between nights.** Most put each floor heading and act in its own paragraph; some pack a whole night, headings included, into
-  one paragraph split by `<br>`. The parser flattens both to one line stream, which is why a floor is switched on any *line* naming a floor rather than on a
-  paragraph boundary.
 - 🟢 **One night's lineup is mis-split by the venue's own formatting.** On 22 August the source runs a floor heading and its acts together
   (`Red hosted by Dub & Dal mgt Uta …`), so the management abbreviation `mgt` is stored as an act; on 1 August a name is line-broken mid-way
   (`Mr. Sian b2b Aidan` / `Harrison`), yielding two fragments. Nothing in the markup distinguishes these from real names.
-- 🟢 **Free entry is left to the shared detector.** Floor headings advertise time-limited offers ("free until 20:00", "FREE til 20:00!") which must not mark a
-  night free; only an unqualified `(Free Entry)` in the title does, via the shared `detectFree`.
 
 ### Tempodrom (`scraper/tempodrom/`) — schema.org JSON-LD, single page
 
@@ -545,13 +470,8 @@ source in the project — every event has a date and an image, 140 of 145 have a
 - 🟢 **`performer` is ignored.** It is a copy of the event `name` on all 145 events rather than an act, so artists are derived from the title like any other
   concert hall's, and a title that is an event name rather than a performer (`GeoGuessr World Championship`) mints one anyway — the cross-cutting
   reactive-denylist limitation.
-- 🟢 **A price range is kept in the note.** `offers` publishes `lowPrice` and `highPrice`, and 68 of the 86 priced events span a range; the low price alone would
-  understate what most seats cost, so the range is recorded as `65.00 – 70.75 EUR` alongside it.
 - 🟢 **A multi-day run is stored on its opening day.** A congress or esports final publishes a date-only `startDate` with an `endDate` days later; the model has
   no end date, so five such runs are stored as single events with no start time.
-- 🟢 **The machine-readable fields need their own parsing.** `startDate` / `doorTime` carry seconds (`2026-09-01T20:30:00`) and `lowPrice` carries no currency
-  sign, so the shared `parseIsoTime` and `parsePriceValue` — which expect the `HH:mm` and `… €` a page *renders* — both return null on them. A first pass
-  silently imported every event with no time and no price because of it.
 
 ### Tresor (`scraper/tresor/`) — WordPress, list + detail
 
@@ -572,12 +492,8 @@ every one of them filed on the floor it plays — `Tresor` (91), `Globus` (52) o
   `The Ghost [All Night Long]`) and bare (`Shackleton Live`), and bills the curating collective among the DJs (`hosted by HARD WAX`). The note is stripped so
   one DJ is one artist across nights, and the host credit is dropped because it names a host rather than a performer. Both vocabularies are curated, so a new
   spelling would come through as part of an act name until it is added.
-- 🟢 **A `b2b` pair is split into both DJs.** `pschukk b2b Robert We` becomes two artists on the same floor, matching Kater, Renate and Club der Visionäre. An
-  act billed on two floors of one night is kept once — `event_artist` is `UNIQUE (event_id, artist_id)` and a second row would fail the whole import.
-- 🟢 **The event page repeats the whole programme in its footer**, in the same markup the listing uses, so the detail parser is scoped to the event's own
-  `main.main-content`. A first pass without that scope filed the entire month's 152 billings under the one night whose own lineup was empty.
-- 🟢 **The standing policy text is cut from the description.** Every event page appends several screens of guest and ticket policy below an underscore rule,
-  identical on all 30 nights; only the blurb above the rule is stored, and 4 events have no blurb of their own at all.
+- 🟢 **Four events have no description of their own.** Every event page appends several screens of guest and ticket policy below an underscore rule, identical on
+  all 30 nights; only the blurb above the rule is stored, and 4 events carry nothing above it.
 
 ### Admiralspalast (`scraper/admiralspalast/`) — Contao, listing + per-production schedules
 
@@ -590,21 +506,10 @@ start time, a poster and a category; 14 are flagged sold out and 2 postponed. Th
 - 🟠 **Only concerts get an artist.** The shared `buildArtistsForEventType` mints a headliner from the title for a `CONCERT` and stays silent otherwise, which is
   right for `TV Noir - die emotionale Musik- Talk- und Spieleshow` but loses the performer of a comedy solo show (`Bülent Ceylan - Diktatürk`). The venue bills
   no lineup of its own, so the title is the only candidate — 66 of 201 events have an artist.
-- 🟢 **The A–Z listing is discovery only.** Every one of its 100 tiles renders the same `ab DD.MM.YY` run-start date, so the listing cannot date anything; the
-  schedule is read from each `/veranstaltung/<slug>.html` page instead. That makes an import one request per production plus one per category — 121 in total,
-  spaced by the shared per-host throttle.
-- 🟢 **The category costs 20 extra fetches.** `eventkategorie` filter pages are the only place the venue states a category, so each is walked and its productions
-  take its label. A production listed under several categories keeps the first in the venue's own alphabetical order — stable between imports, but arbitrary. 11
-  distinct categories are in use; `Kultur`, `Diskussion` and `Podcast` name a framing rather than a form and fall through to the theatre's `SHOW`
-  default.
-- 🟢 **`AUSVERKAUFT` replaces the ticket link rather than accompanying it.** A sold-out performance drops its Tickets button entirely, so the cell text is the
-  only signal — a first pass read the missing link as "not ticketed" and left all 14 unflagged.
-- 🟢 **The venue's two reschedule notes mean opposite things.** `verschoben auf <date>` sits on the abandoned date (postponed), `verlegt vom <date>` on its
-  replacement (going ahead). The shared `parseEventStatus` reads any "verlegt" as `RELOCATED`, which would mark the one certain date as moved, so that idiom is
-  checked first. Both notes are also kept as the event's subtitle.
-- 🟢 **Poster paths resolve against the site root, not the page.** Contao writes them relative (`assets/images/8/…`) under a page-wide
-  `<base href="https://www.admiralspalast.theater/">` — which it emits **unterminated**, so the tag cannot be relied on. Resolving against the production URL
-  instead yields `/veranstaltung/assets/…`, which 404s.
+- 🟢 **A production's category is arbitrary when it has several.** `eventkategorie` filter pages are the only place the venue states a category, so each is
+  walked and its productions take its label; a production listed under several keeps the first in the venue's own alphabetical order — stable between imports,
+  but arbitrary. 11 distinct categories are in use; `Kultur`, `Diskussion` and `Podcast` name a framing rather than a form and fall through to the theatre's
+  `SHOW` default.
 
 ### Humboldthain Club (`scraper/humboldthain/`) — Elfsight Event Calendar widget, JSON source
 
@@ -622,18 +527,11 @@ widget's own upcoming list — six one-off nights plus four Tuesdays of the resi
   one exception is the venue's own `KONZERT:` title prefix (one night in 77), which types the event `CONCERT` and bills the rest of the title as its headliner.
 - 🟠 **Nothing marks a night sold out, cancelled or moved.** The widget has no status field and the venue writes no badge, so every event stays `SCHEDULED`. A
   single archived night mentions "verlegt" in its prose, which is deliberately not read as a status.
-- 🟢 **The resident night is a recurrence rule, expanded here.** `OPEN DECKS & TISCHTENNIS` is stored as *one* calendar entry with a weekly repeat rule that the
-  widget expands in the browser; reading only `start.date` would import it once at the series' opening date (long past) and lose every upcoming Tuesday. Weekly
-  rules are expanded into one event per occurrence over a rolling 26-week horizon, bounded by the rule's own end date or occurrence count — which is why
-  `sourceId` is `<widgetId>-<date>` rather than the bare id. Elfsight's monthly `nthDayInMonth` rules are **not** expanded (this venue uses none) and contribute
-  their start date alone.
-- 🟢 **Conditional requests are deliberately unused.** The Elfsight API does send an ETag, but honouring it would freeze the recurrence horizon — the derived
-  occurrences are anchored on "today", so a 304 on an unchanged calendar would stop the window advancing (the same reason Havanna re-fetches every run). Every
-  import re-reads the payload and relies on idempotent `sourceId` upserts; a second import of the same calendar stored the same 10 rows.
-- 🟢 **The widget's own `eventType` field is not a category and is ignored.** The venue has filled it with weekday/time labels (`Samstag, 14:00`,
-  `Donnerstag, 18:00`) rather than event kinds, and they can disagree with the event's own `start.time` — `HUMBI BLEIBT` is labelled `SAMSTAG, 18:00` but
-  carries
-  `start.time` 17:00, and the structured field is what is stored.
+- 🟢 **Only *weekly* recurrence rules are expanded.** The resident night (`OPEN DECKS & TISCHTENNIS`) is one calendar entry with a repeat rule the widget expands
+  in the browser; weekly rules are expanded here into one event per occurrence over a rolling 26-week horizon, which is why `sourceId` is `<widgetId>-<date>`.
+  Elfsight's monthly `nthDayInMonth` rules are **not** expanded — this venue uses none, but Neue Zukunft does (see below).
+- 🟢 **Conditional requests are deliberately unused — do not "optimize" them back on.** The Elfsight API does send an ETag, but honouring it would freeze the
+  recurrence horizon: the derived occurrences are anchored on "today", so a 304 on an unchanged calendar would stop the window advancing.
 
 ### Neue Zukunft (`scraper/neuezukunft/`) — Elfsight Event Calendar widget, JSON source
 
@@ -662,11 +560,9 @@ and a headliner. The 20 titles and dates match the venue's rendered `/events/` l
 - 🟢 **Support acts come from the title, not the act repeater.** The ACF schema has six act slots (name, country, genre, type, links and description per act) and
   the venue has filled slot 1 on exactly one of 623 posts, so the lineup is read from the title's own `<act> + <act> (support)` idiom instead. Its other co-bill
   spelling, `w/` (`FEUCHT w/ BELLA, Agua con gas & SENERGI`), is **not** split — the shared splitter does not treat `w/` as a separator and a comma suppresses
-  conjunction splitting — so such a title yields one long "artist". None of the currently-upcoming events use it.
+  conjunction splitting — so such a title yields one long "artist" → tracked in `TODO.md`. None of the currently-upcoming events use it.
 - 🟢 **An event-name title is still minted as a headliner.** `Zascha HOT MESS Debut at Lark` becomes an artist of that name: the venue types nothing and bills no
   lineup, so the title is the only candidate. This is the cross-cutting reactive-denylist limitation recorded at the top of this file, not a LARK-specific rule.
-- 🟢 **The programme is short and can have gaps.** At capture the venue listed 20 shows but nothing at all between 1 August and 8 October, so a low event count
-  is not on its own evidence of a broken importer — the fixture test is what distinguishes the two.
 
 ### MAXXIM (`scraper/maxxim/`) — Wix Events warmup JSON, single page
 
@@ -683,9 +579,6 @@ description and a price. All 18 dates and start times match the venue's own rend
   artists are derived.
 - 🟢 **Every night is typed `PARTY`.** MAXXIM is a club open nightly with a DJ programme and exposes no per-event category, so the type is set by the importer
   rather than read from the source. Correct for the current programme; a one-off concert would be mistyped.
-- 🟢 **Cancellation, sold-out and tiered-price handling is fixture-only so far.** The live programme showed none of them at capture (`status: 0`, `soldOut:
-  false`, one price tier throughout), so the branches are covered by the hand-crafted `maxxim-overview-edge-cases.html` variant rather than by observed data.
-  The numeric `status` mapping follows Wix's documented enum (`3` = canceled); an unexpected value degrades to `SCHEDULED` rather than mislabelling a night.
 
 ### Metropol (`scraper/metropol/`) — WordPress / Events-Manager, list + detail
 
@@ -707,11 +600,6 @@ dates match the venue's `/events` listing exactly, in the same order, and the st
   events, and a sold-out show is indistinguishable from an available one.
 - 🟠 **No genre on any event.** The venue types events only as `Konzert` / `Party` (mapped to `CONCERT` / `PARTY`) and publishes no genre field, so the genre-tag
   filters never see a Metropol event.
-- 🟢 **The venue transposes its own doors/start labels on some shows.** Two of 41 read `Einlass: 20:00 // Beginn: 19:00`; the scrapers report both times verbatim
-  and the shared `orderDoorsBeforeStart` guard swaps them at the persistence boundary, exactly as it does for SO36.
-- 🟢 **An unset start time is written as `0:00` and dropped.** Shadow of Intent lists `Einlass: 18:00 // Beginn: 0:00`; storing that as midnight would be worse
-  than storing nothing, because `orderDoorsBeforeStart` would then read the 18:00 doors as "later than the start" and swap the two, inventing an 18:00 start.
-  The event keeps its doors time and no start time.
 - 🟢 **Some detail pages are empty shells.** 9 of 41 render an `.event-text` block with no prose, 3 an `.event-image` block with no `<img>`, and 7 carry no
   ticket link — all genuine gaps in the venue's own CMS, verified against the live pages, not selector failures.
 
@@ -732,9 +620,6 @@ a poster. The count, titles and dates match the venue's `/events` page exactly, 
   concerts, with the recurring "Spree vom Weizen — Poetry Slam & Stand Up Show" correctly recovered as `READING` by the shared title classifier.
 - 🟢 **The doors time is prose, not markup.** The detail `h2` carries the start time, but doors — where given at all — is a line inside the description
   (`"Doors: 19:30"`, `"Beginn 20:00 // Einlass 19:00"`), so both spellings are read from there. 2 of 17 events name no doors time at all.
-- 🟢 **Modus and Ritter Butzke share a codebase.** The Modus page still ships the Ritter Butzke logo asset and `alt` text, and the Ready list records Ritter
-  Butzke as "same shape as Modus Berlin". `ModusOverviewPageScraper` / `ModusDetailPageScraper` should be the template when that venue is implemented — quite
-  possibly with the same parsers behind a second `EventSource`.
 
 ### OHM (`scraper/ohm/`) — hand-themed WordPress, single page
 
@@ -742,16 +627,11 @@ Verified against a live import (1 August 2026): the page listed 2 nights, the sc
 which the shared pipeline drops (`Dropped 1 past event(s)`, `EventUpsertService.dropPastEvents`). The stored row matches the live listing exactly: `Animalia`,
 2026-08-01, 23:59, DJs C3D-E (live) / Kia / livwutang / LoLo.
 
-- 🔴 **The venue publishes only 1–3 nights, so this source will normally hold one or two rows.** The rest of the programme moves to `/archives` once past, which
-  is deliberately not crawled (it holds only past events). A low count is therefore *expected* here and is not evidence of a broken importer — the fixture tests
-  are what distinguish the two. This is the thinnest source in the inventory; the venue is nonetheless active (76 nights in the archive at capture).
 - 🟠 **The date has no year and no weekday.** It is resolved with `inferYearForWeekday`'s weekday-less path — the occurrence nearest today wins — which keeps a
   night that has just happened in the current year instead of rolling it twelve months forward. A date more than ~6 months out would resolve to the wrong year,
   but the venue's horizon is days, so that case cannot arise in practice.
 - 🟠 **No prices, images, ticket links, descriptions or per-event URLs at all.** The listing is the whole source; `sourceUrl` is the home page for every event
   and `sourceId` is built from the resolved date plus the slugified title. The WordPress REST API answers 401, so there is no JSON source to prefer.
-- 🟢 **The title is never an artist.** OHM titles are party/collective names (`Ouch x FemmeDecks`, `Animalia`); only the `<br>`-separated `.event-lineup` entries
-  are stored, as `DJ`s.
 - 🟢 **A lineup entry keeps its performance-format suffix** — `C3D-E (live)` is stored verbatim, so it will not resolve to the same artist row as a plain
   `C3D-E` elsewhere. This is the existing convention for DJ lineups across every club importer (AMT, ÆDEN, Renate, Duncker), not an OHM rule:
   `stripArtistSuffix`
@@ -763,19 +643,12 @@ Verified against a live import (1 August 2026): 16 events stored, 2026-08-01 →
 start times, a poster, a promoter and a headliner. The count, titles and dates match the live `/programm` page exactly, and the 9 sold-out flags line up exactly
 with the 9 `Ausverkauft` badges — those same 9 are the only events without a price or a ticket link, because the venue drops both when a show sells out.
 
-- 🟠 **The programme is seasonal, so the listing empties out in winter.** This is an open-air amphitheatre; `/programm` carries the summer season split into one
-  block per year, and outside it the page can be nearly empty. A low count is expected off-season and is not evidence of a broken importer.
 - 🟠 **No descriptions and no genres at all.** The detail page's prose block is house rules ("Bitte beachten Sie die ausgewiesenen Zeiten…"), identical on every
   page, so it is deliberately not stored as a description — an event-specific text does not exist anywhere on the site. The venue publishes no genre either.
 - 🟢 **A sold-out show has no price.** The `Preis` row and the ticket button are both dropped once a show sells out, so `price_presale` is empty for 9 of 16 —
   absent rather than wrong. The price that *is* published is a single figure (the cheapest ticket), stored as presale; the venue quotes no box-office price.
-- 🟢 **The detail page's `h3` is not a tour name.** A show can put an admin notice there ("Bitte die Altersbeschränkungen beachten:"), so the subtitle is taken
-  from the listing only, and the detail heading is never read. The consequence is that a tour name published *only* on the detail page would be missed — none
-  currently is.
-- 🟢 **An act name broken by a `<wbr>` hint is restored.** The markup is `AnnenMay<wbr>Kantereit`; Jsoup renders the hint away, so the act is stored as the
-  unbroken `AnnenMayKantereit` rather than split into two words. Verified in the live import, not just the fixture.
-- 🟢 **Promoter names are canonicalised by the shared normaliser.** `Landstreicher Konzerte` → `Landstreicher` and `Trinity Music` → `Trinity`, which is the
-  documented cross-cutting behaviour recorded at the top of this file, not a Wuhlheide rule.
+- 🟢 **The detail page's `h3` is never read as a subtitle.** A show can put an admin notice there ("Bitte die Altersbeschränkungen beachten:"), so the subtitle
+  comes from the listing only — a tour name published *only* on the detail page would be missed.
 
 ### Quasimodo (`scraper/quasimodo/`) — WordPress / Events-Manager, list + detail
 
@@ -788,10 +661,8 @@ split 16 `CONCERT` / 10 `PARTY`, matching the venue's own category tagging.
   on
   `ft.`" rule was considered and rejected: the same idiom is used for a *guest* on a headliner's own show, where splitting would discard the real headliner.
   This is the cross-cutting reactive-denylist limitation recorded at the top of this file, not a Quasimodo rule.
-- 🟢 **The programme is on the `.club` domain.** `quasimodo.de` is a splash page with no listing; the source URL must be `quasimodo.club/events`.
-- 🟢 **The date comes from the card's *mobile* block.** Each card renders two date blocks for the two breakpoints: the desktop one abbreviates to `01.` / `Aug.`
-  and leans on the month heading, while `.event-data.visible-xs .date` carries a complete `DD.MM.YYYY - HH:mm`. Reading the mobile block avoids both the
-  abbreviation and the heading. If the venue ever drops the mobile markup, the date is lost rather than mis-parsed — the event is skipped, not guessed at.
+- 🟢 **The date is read from the card's *mobile* block** (`.event-data.visible-xs .date`), the only one carrying a complete `DD.MM.YYYY - HH:mm`. If the venue
+  ever drops that markup the date is lost rather than mis-parsed — the event is skipped, not guessed at.
 - 🟢 **The category lives only on the detail page**, as an `event-categories-<slug>` class on its `<article>`. The venue marks DJ nights `party`, leaves most
   concerts untagged, and a night can carry both (`Disco Inferno` is `concerts party`) — so `party` wins and an untagged event falls back to title inference. An
   event whose detail page fails to fetch therefore keeps the listing's guess, which can leave a DJ night typed `CONCERT` with its event name as an artist.
@@ -819,10 +690,6 @@ start time, a poster, a ticket link, a genre and price information. Types split 
   `Jubiläumskonzert`
   and `Party`, both of which were added to the shared `NON_ARTIST_NAMES` denylist, and the real act sits inside quotes where the splitter does not reach. No
   artist is better than a wrong one; this is the cross-cutting reactive-denylist limitation recorded at the top of this file.
-- 🟢 **The date comes from the AddToCalendar UTC timestamp.** `atc_date_start` is emitted in UTC (`atc_timezone` says so), so a 20:00 Berlin night reads
-  `19:00:00` in winter and `18:00:00` in summer; it is converted to `Europe/Berlin`. The venue's own `Datum:` line is deliberately not read — one event writes
-  it in English (`October 5, 2026`).
-
 ### Ritter Butzke (`scraper/ritterbutzke/`) — Modus codebase, own template, list + detail
 
 Verified against a live import (3 August 2026): 29 events stored, 2026-08-07 → 2027-04-10, none in the past, 0 suspicious rows, every one with a start time, a
@@ -838,10 +705,8 @@ poster and a ticket link, and 26 of 29 with a DJ lineup.
 - 🟢 **The DJ lineup is read from a presentational selector.** The `Line Up:` block has no class; its rows are distinguished from the refund notice and video
   embed that follow only by an inline `padding-left` style. ADR-007 would normally rule that out, but it is the sole discriminator the template offers — a
   label-only scope collects the legal boilerplate instead. A restyle of that block would silently empty the lineup, which is what the fixture tests guard.
-- 🟢 **Three events store no artist, all correctly.** Community-Rave's lineup is literally `TBA` (dropped by the shared placeholder filter), and Bunte Träumerei
-  and Hippie New Year have no lineup block at all. The event *title* is a night/series name (`House of Rave w/ …`) and is never minted as an act.
-- 🟢 **Several events share a date routinely.** The club runs multiple floors, so two or three nights per date is normal (three on 2026-08-08); the slug's
-  trailing name keeps them apart. `/calendarfile/<id>` is `Disallow`ed by robots.txt and is never fetched.
+- 🟢 **Three events store no artist.** Community-Rave's lineup is literally `TBA` (dropped by the shared placeholder filter), and Bunte Träumerei and Hippie New
+  Year have no lineup block at all; the event *title* is a night/series name (`House of Rave w/ …`) and is never minted as an act.
 
 ### Uber Arena (`scraper/aeg/`) — AEG/Carbonhouse, list + detail
 
@@ -859,8 +724,6 @@ sessions of a same-day double bill (see below). Range 2026-08-21 → 2028-01-29,
   only ones carrying a `00:00 Uhr` placeholder start, so the filter removes that noise too.
 - 🟠 **No genre on any event.** The venue types events only as `Konzert` / `Show` / `Comedy` (mapped to `CONCERT` / `SHOW`) and publishes no genre field, so the
   genre-tag filters never see an Uber Arena event.
-- 🟢 **A `SHOW` stores no artist, by design.** All 21 are production names (`CAVALLUNA - Die Farben des Lebens`, `Feuerwerk der Turnkunst`), not acts, so the
-  shared `buildArtistsForEventType` correctly derives none; the 64 concerts all carry a headliner.
 - 🟢 **Three events have no price.** The `6K UNITED!` dates render a non-breaking space where the `ab NN,NN €` from-price normally sits; that becomes neither a
   zero nor an empty note. The price the venue does publish is the cheapest ticket, stored as presale with the "ab" wording kept in `priceNote`.
 - 🟢 **A detail fetch that degrades costs only the extras.** Two of the 88 detail pages returned no heading during the live run (both parse fine on retry, so it
@@ -883,14 +746,9 @@ and **65 were stored** (see below). Range 2026-09-15 → 2027-10-16, none in the
 - 🟠 **One event carries no category at all.** The `STICKS & STONES` job fair is filed under id `0`, which the scraper leaves untyped; it lands as `OTHER`. That
   is truthful — it is neither a concert nor a staged show — but it is the venue's classification, not ours.
 - 🟠 **No genre on any event.** As at the arena, the platform publishes no genre field, so the genre-tag filters never see one of these events.
-- 🟢 **Cancellations are read from the title.** A cancelled date keeps its row and is prefixed `ABGESAGT:`; that prefix becomes `CANCELLED` and is stripped from
-  the stored name (`ABGESAGT: Ryan Adams` → `Ryan Adams`). It is the only place either venue states a scheduling status, and the arena's current programme
-  happens to contain none.
-- 🟢 **The ticket link is taken as the first off-host link.** This venue's `#tickets` block renders a **self-link before** the AXS shop link with identical
-  classes, and follows the block with links to other events, so "the first `a.btn-tix`" would store the event's own URL. All 62 stored ticket links are AXS
-  ones; the 3 events without a link are ones whose detail fetch degraded or that announce no shop yet.
-- 🟢 **A `SHOW` stores no artist, by design.** The 17 are production names (`Der Nussknacker – Grand Classic Ballet mit Orchester`), not acts, so the shared
-  `buildArtistsForEventType` correctly derives none.
+- 🟢 **A cancellation is stated only in the title.** A cancelled date keeps its row and is prefixed `ABGESAGT:`; that prefix becomes `CANCELLED` and is stripped
+  from the stored name. It is the only scheduling status either venue publishes — nothing marks a show sold out, postponed or moved.
+- 🟢 **Three events have no ticket link**, their detail fetch having degraded or no shop being announced yet.
 - 🟢 **Four events have no price.** The two cancelled dates, the job fair and one concert simply omit the `ab NN,NN €` span; that becomes neither a zero nor an
   empty note. As at the arena the published price is the cheapest ticket, stored as presale with the "ab" wording kept in `priceNote`.
 
@@ -900,27 +758,16 @@ The fortress's own site is a museum site; its concert programme is the **Citadel
 `citadel-music-festival.de`. Verified against a live import (3 August 2026): the listing carried 8 cards and **all 8 were stored**, range 2026-08-15 →
 2027-08-13, none in the past, 0 suspicious rows. Every event has a start time, a poster, a type and an artist.
 
-- 🟠 **Eight events is the whole programme.** This is a summer season, not a year-round house: the site lists the current August plus whatever is already
-  announced for the next. A low count here is the venue's actual output, not a truncated import — there is no pagination to walk and nothing hidden behind a
-  filter.
 - 🟠 **No prices anywhere.** The site publishes only shop links (Eventim, Ticketmaster); no event states a price, so the price filters never see one. Two events
   state no shop either, and are stored without a ticket link.
 - 🟠 **No genre on any event.** The WordPress taxonomy carries a category (`event-categories-konzerte`) but no genre field, so the genre-tag filters never see a
   Zitadelle event.
 - 🟠 **Every event is typed `CONCERT`, including where the taxonomy is silent.** Only 5 of the 8 carry an `event-categories-*` class; the rest are typed as
   concerts anyway because the series programmes nothing else. Were the venue to add a non-music date without categorising it, it would be mistyped.
-- 🟢 **A relocated show is badged as cancelled.** `OFF DAYS` (19 August) carries an `Abgesagt` badge, but the `.aenderungen` line beneath it says "Wird in die
-  Columbiahalle verlegt. Tickets behalten ihre Gültigkeit!" — the show moved, it is not off. That line decides the status (`RELOCATED`, not `CANCELLED`) and is
-  kept at the head of the description, because the status alone does not say where the show went.
-- 🟢 **The card `aria-label` is a broken template.** Every card's label ends "– Ausverkauft" regardless of the actual state, so an importer reading it would mark
-  the whole programme sold out. The `data-status` attribute is what tracks reality and is what this reads; 3 of 8 are genuinely sold out.
-- 🟢 **The listing poster comes out of a CSS custom property.** Cards render no `<img>` — the image is `style="--bg: url('…')"`. That is a presentational source,
-  used against the usual preference of ADR-007 only because the listing offers no other; the detail page's `<img>` supersedes it whenever that fetch succeeds.
-- 🟢 **The promoter is stored from the presenters, not the promoter taxonomy.** The `promoters-<slug>` class on the `<article>` is a slug with no display name
-  anywhere on the page, so inventing its capitalisation was rejected; the rendered "präsentiert von" names are stored instead, as at the Columbia Theater.
-- 🟢 **The site spells one media partner two ways.** `tip Berlin` on one event and `Tip` on another resolve to two promoter entities. Folding them would need a
-  `NAME_CORRECTIONS` entry, and the bare "Tip" is too ambiguous to key on safely. `Flux FM` is folded — it shares a normalized key with the `FluxFM` and
-  `fluxfm` spellings the Columbia Theater, Frannz and Heimathafen sources use, so one entry merges all four onto the station's own casing.
+- 🟢 **The venue's real promoter is not stored.** The `promoters-<slug>` class on the `<article>` is a slug with no display name anywhere on the page, so
+  inventing its capitalisation was rejected; only the rendered "präsentiert von" media presenters are stored, as at the Columbia Theater.
+- 🟢 **The site spells one media partner two ways.** `tip Berlin` on one event and `Tip` on another resolve to two promoter entities. Folding them needs a
+  `NAME_CORRECTIONS` entry, and the bare "Tip" is too ambiguous to key on safely → tracked in `TODO.md`.
 
 ### Theater im Delphi (`scraper/delphi/`) — WordPress, programme + production pages
 
@@ -950,9 +797,8 @@ free-entry flag; 18 of 20 carry a ticket link.
   land as `OTHER` rather than being guessed at.
 - 🟢 **A promoter-style title becomes an artist.** `Berlin Confidential präsentiert: Georgy Gusev, Sven Helbig, …` is stored whole as one artist name, because
   the shared `buildArtistsForEventType` has no way to know the leading words are a series and not part of the act. One event of 20.
-- 🟢 **Each production page is fetched once, not once per date.** 24 rows resolve to 14 productions and one ballet owns 8 of them, so the importer implements
-  `EventImporter` directly rather than using the per-event detail fetch — the same reason as Bar jeder Vernunft. A production page that fails leaves its dates
-  with the programme row's teaser and thumbnail instead of the full blurb and photo.
+- 🟢 **A failed production page costs every date it owns.** 24 rows resolve to 14 productions (one ballet owns 8), and a production page that fails leaves all
+  its dates with the programme row's teaser and thumbnail instead of the full blurb and photo.
 
 ### Cosmic Comedy Club (`scraper/cosmiccomedy/`) — The Events Calendar REST API
 
@@ -972,14 +818,8 @@ organizers and full descriptions it omits. Verified against a live import (3 Aug
 - 🟢 **Only a `Comedy Special` names a performer.** That category is the club's own marker for a named act rather than the house showcase, and those six titles
   are all `"<Performer> – <Show>"`, so the part before the dash becomes the artist. The 51 recurring showcase and open-mic nights name no one and correctly get
   none. A special without the dash — the one uncategorised guest show — yields no artist rather than a guess.
-- 🟢 **The description is HTML that opens with a script.** The API returns the raw post body, whose first element is the Universe ticket widget, so it is parsed
-  and flattened rather than tag-stripped; the widget's JavaScript would otherwise land in the stored description.
-- 🟢 **Titles arrive HTML-escaped.** WordPress states `TURBOPAOLO &#8211; …` and `NEW YEAR&#8217;S EVE SPECIAL`; entities are decoded before storage.
 - 🟢 **The club is its own promoter on about half the programme.** 24 events name `Cosmic Comedy Berlin` as organizer, five name a real outside promoter, and 28
   name none. The venue-as-promoter rows are stored as the API states them.
-- 🟢 **Conditional requests are unused.** The plugin's default window runs from *today* to two years out, so the same URL legitimately returns a different
-  payload each day; upserts are idempotent by `sourceId`. The importer follows the API's own `next_rest_url` cursor rather than building page URLs, bounded by a
-  20-page cap that today's two-page programme never approaches.
 
 ### Heideglühen (`scraper/heidegluehen/`) — WordPress, month preview + week page
 
@@ -987,9 +827,6 @@ An open-air techno party in a former nursery off Beusselstraße. Verified agains
 stored**, 1 August having already passed and being dropped at the persistence boundary. Range 2026-08-08 → 2026-08-29, 0 suspicious rows; every party has a
 start time, an image and a type.
 
-- 🔴 **Four dates is the whole programme.** `/monatsvorschau/` carries the current month and is replaced wholesale at the end of it — there is no archive, no
-  pagination and no per-event page. The venue simply does not publish further ahead, so a low count is its actual output and not a truncated import. It also
-  means a party is only ever visible for a few weeks before it happens.
 - 🟠 **The venue publishes no street address.** Only coordinates (52°32'17.1"N 13°19'41.6"E) and transit directions; the imprint's Seestraße address is the
   operator's office, several kilometres away, and is deliberately *not* used. The seeded venue therefore carries the site's own coordinates and names
   Beusselstraße — the street the venue itself gives for access — without a house number it never states.
@@ -1000,16 +837,10 @@ start time, an image and a type.
   artists; the parser is covered against an archived page from 6 June that does carry one. A daily import picks each lineup up in the week before its party.
 - 🟠 **The running order's set times are dropped.** The week page publishes a full `12:00-16:00 Forsberg` schedule beneath the billing, and the model has no
   field for a per-artist set time. Only the names are stored, deduplicated against the billing above so no DJ is counted twice.
-- 🟢 **Lines are read by kind, not position.** An event paragraph mixes a German prose date with one or more highlighted names in **no fixed order** — a plain
-  week reads date-then-name, the anniversary weekend name-then-date-then-name. The line that parses as a date is the date, the first `<mark>` is the title and a
-  later one the subtitle ("34-Stunden-Weekender"), which is what keeps the anniversary from being titled with its own date.
-- 🟢 **The closing time is kept as the description.** These parties run into the next day (to 06:00, or 22:00 on a 34-hour weekender) and the model stores no end
-  time, so "bis Sonntag, 6 Uhr" is stored as the description rather than dropped.
-- 🟢 **The image is the month's artwork until the lineup lands.** The month page publishes one graphic covering all its dates, so every party shares it; the week
-  page carries that party's own flyer and supersedes it when the lineup is applied. Picking it out needs a specific selector — the page also carries the site
-  logo and a close button, and only the artwork is a centred photo inside the content column.
-- 🟢 **The month's shared name-drop is not attached to any party.** The page opens with an "Unter anderem mit: …" list of every DJ playing that month, which
-  belongs to no single date; it carries no date of its own and is therefore never parsed as an event.
+- 🟢 **The parties share one image until their lineup lands.** The month page publishes a single graphic covering all its dates, so every party carries the same
+  one; only the week page has a party's own flyer, and it supersedes the month artwork when the lineup is applied.
+- 🟢 **There is no end time.** These parties run into the next day (to 06:00, or 22:00 on a 34-hour weekender) and the model stores no end time, so "bis Sonntag,
+  6 Uhr" is kept as the description rather than as a field.
 
 ### Urania (`scraper/urania/`) — WordPress, calendar + event pages
 
@@ -1029,15 +860,8 @@ The Schöneberg science and culture house. Verified against a live import (3 Aug
 - 🟠 **Three events publish no admission at all.** 10 of 17 state `"Eintritt: 8 €, ermäßigt: 5 €, Mitglieder: 3 €"` — whose *first* figure is the full price and
   the rest concessions, so the full price is stored and the whole line kept as the note — and 4 state `"Eintritt frei"` with no figure, which sets the free
   flag. The remaining 3 say nothing and are stored without a price.
-- 🟢 **The site's own JSON API was evaluated and rejected.** `/wp-json/reservixapi/v1/events` returns the same 17 events as clean JSON, but carries no urania.de
-  event URL — only the external Reservix link, which would be a poor `sourceUrl` and no basis for a stable `sourceId` — and replaces the format label and the
-  concession prices with a bare `minPrice`. The rendered pages are the richer source here, against ADR-007's usual JSON-first preference.
-- 🟢 **The poster is lazy-loaded.** Event pages put the image URL in `data-src` and leave `src` empty, so reading `src` yields nothing at all.
-- 🟢 **Two tails are stripped off the billing line.** A space-padded dash introduces a note about the evening (`"Yoshua Yaffa - in englischer Sprache"`) and
-  `"et al."` stands in for panellists the venue did not name; neither becomes a person. Speakers are stored as headliners, the model's roles being only
-  `HEADLINER`, `SUPPORT` and `DJ`.
-- 🟢 **The calendar owns the date.** Each day is a `div.c-event-calendar_day[data-day]` whose attribute states day, weekday, month and year in one token
-  (`03-do-09-2026`), where the event page renders German prose. One day may hold more than one event; 16 day blocks carried 17 events at capture.
+- 🟢 **Speakers are stored as headliners.** The model's roles are only `HEADLINER`, `SUPPORT` and `DJ`, so a panel's participants and a lecturer are filed the
+  same way a band is. Unnamed panellists (`"et al."`) are dropped rather than stored as a person.
 
 ### Panke Culture (`scraper/panke/`) — WordPress/Divi, one page, no event pages
 
@@ -1045,9 +869,6 @@ The club, café and gallery on the Panke in Wedding. It published nothing scrapa
 in the Blocked list until the 3 August 2026 re-check found a real `/programme/` page. Verified against a live import that day: **9 of 9 stored**, range
 2026-08-05 → 2026-08-29, none in the past, 0 suspicious rows. Every event has a start time and a description; 8 of 9 have a poster.
 
-- 🟠 **Nine events is the whole upcoming programme.** The page renders an UPCOMING and a PAST list from one template, and only the upcoming one is imported — the
-  venue's own division is authoritative, and parsing the 20 past entries every run only to have the persistence boundary drop them is waste. The venue
-  programmes a few weeks ahead, so a low count is its actual output.
 - 🟠 **The venue states no event type, so five of nine are `OTHER`.** Its titles are series names (`EEE`, `NOFUTURE 6 YEARS ANNIVERSARY`, `In the
   Neighbourhood`), not formats. Two signals decide instead: an unmistakable title keyword first (`Markt` → `OTHER`, `(c)rave` → `PARTY`), then a **billed DJ
   lineup → `PARTY`**, since the venue links a Resident Advisor profile only for acts playing its floor. Anything with neither stays `OTHER` rather than being
@@ -1060,8 +881,7 @@ in the Blocked list until the 3 August 2026 re-check found a real `/programme/` 
   heading, the next packs them into a sentence beside a timetable. An anchor pointing at an `ra.co/dj/…` profile is the one unambiguous artist marker, so that
   is all that is read — 3 of 9 events carry them, and a fourth DJ billed in the same list without a link (`Dj Chiro`) is correctly not stored. Links are
   deduplicated by profile URL, since a night that repeats an act in its timetable would otherwise store them twice.
-- 🟢 **An event is identified by its WordPress post id.** The venue publishes no per-event page — the full text expands inline — so every event's `sourceUrl` is
-  the programme page, as at Zenner.
+- 🟢 **No per-event page.** The full text expands inline, so every event's `sourceUrl` is the programme page and identity is the WordPress post id, as at Zenner.
 - 🟢 **One event has no poster.** The template carries the image as an inline `background-image` on the `<article>` rather than an `<img>`, and one article
   renders a literal `url()`; that must not become an image URL and does not.
 
@@ -1070,5 +890,8 @@ in the Blocked list until the 3 August 2026 re-check found a real `/programme/` 
 ## How to extend this doc
 
 When adding or changing an importer, record any *accepted* limitation here (with an impact marker) — capture the current state and *why*, not the fix. If it's
-actionable, add the fix to `TODO.md` and point at it (`→ tracked in TODO.md`) rather than describing the fix here, so the two files don't drift. Prefer linking
-to the code KDoc that documents the same limitation.
+actionable, add the fix to the **Bugs** list in `TODO.md` and point at it (`→ tracked in TODO.md`) rather than describing the fix here, so the two files don't
+drift. Prefer linking to the code KDoc that documents the same limitation.
+
+**Only record an entry when a field ends up missing, wrong or fragile.** Behaviour that produces the correct data — a trap the parser already handles, a
+selector rationale, a caching or throughput note — belongs in the scraper's KDoc, not here; entries like that were removed once and should not come back.

@@ -67,16 +67,51 @@ Rough priority: **Now** → **Next** → grouped backlog → **Someday / Vision*
 - Known per-importer gaps & missing-data limitations are catalogued in
   [docs/IMPORTER_KNOWN_ISSUES.md](docs/IMPORTER_KNOWN_ISSUES.md) — pull from there when picking up work.
 
+**Bugs:**
+
+Defects with a known fix, pulled out of [docs/IMPORTER_KNOWN_ISSUES.md](docs/IMPORTER_KNOWN_ISSUES.md) — that file records *accepted* limitations, this list
+records what should be repaired.
+
 - [ ] **A late-night club event is dropped at midnight while it is still running.** `EventUpsertService.dropPastEvents` compares dates only, so a night the
   venue lists as `31/07 23:00` — which actually runs until ~06:00 the next morning — disappears from the app at 00:00, hours before it ends. It hits every
   late-opening club (OHM, Berghain, Tresor, Renate, …), and OHM feels it hardest because its whole horizon is one to three nights. Needs a cutoff that accounts
   for the start time (e.g. keep an event until `eventDate + 1 day 06:00` when it starts after ~22:00) rather than a per-importer workaround.
+- [ ] **A show cannot play twice in one day.** `ScrapedEvent.toEventEntity` builds the stored slug from date + venue slug + title, and `event.slug` is `UNIQUE`,
+  so two sessions of the same production on the same date collide on insert — a duplicate-key error that fails the *whole* import, not just that row. Velomax
+  hits this (Disney On Ice plays three sessions on one day, Berlin Tattoo two), and its importer works around it by collapsing same-day sessions to the
+  earliest; Uber Arena hits it too and simply loses the second session of a double bill (3 of 88 at capture — Feuerwerk der Turnkunst, CAVALLUNA twice), as does
+  the Uber Eats Music Hall on the same platform (the 23 December Nutcracker matinee and evening, 1 of 66); Theater im Delphi is the worst hit, losing 4 of 24 to
+  matinee/evening pairs; Tempodrom loses four a year to the same shape. Bar jeder Vernunft and Heimathafen sidestep it because their `sourceId`s carry a time.
+  Fix at the boundary — include the start time in the event slug when one is known — rather than per importer.
+- [ ] **Derive the lineup after the event type is final, not before.** `ScrapedEvent.toEventEntity` promotes a `CONCERT`/`OTHER` title to `FESTIVAL`
+  (`isFestivalTitle`), but every scraper has already built its artists from its *own* type inference, so a festival title still mints headliners — `ELLE & L's
+  Festival` → `Elle` (Columbia Theater), plus the same shape at Clash and Gretchen. Fix once at the boundary (drop the artists when the resolved type is
+  `FESTIVAL`/`PARTY`) rather than per importer.
 - [ ] **DJ lineup entries keep their performance-format suffix.** `C3D-E (live)` and `Avangelic (DJ-Set)` are stored verbatim from a lineup list, so they
   resolve to different artist rows than the plain name. `stripArtistSuffix` already handles exactly this tail but is only applied to headliners derived from a
   *title*
   ([`headlinersFromTitle`](events-importer/src/main/kotlin/de/norm/events/scraper/ArtistNameMapping.kt)), never to lineups — consistently across AMT, ÆDEN,
   Renate, Duncker and OHM. Applying it to lineups too is a one-line change per scraper but a cross-cutting data change: it needs a full re-seed and a decision
   on whether the "(live)" distinction is worth preserving elsewhere first (the model has no `LIVE` `ArtistRole`).
+- [ ] **Promoter display names lose genuine acronyms.** `PromoterNormalizer.deshout` is a bare title-caser, without the `ACRONYMS` / short-initialism guards
+  `ArtistNormalizer` already has, so `TV Noir` → `Tv Noir` and `Bossa FM` → `Bossa Fm`. Share one de-shout between the two normalizers. Same change should
+  fold Zitadelle's `tip Berlin` / `Tip` onto one spelling via `NAME_CORRECTIONS`. Display-only — slugs are case-insensitive and unaffected — but existing rows
+  keep their casing until re-created.
+- [ ] **Huxleys' genre and promoter are stored de-slugified.** Both are read from WordPress taxonomy slugs on the `article` element, so a stylised genre loses
+  its punctuation (`kpop` → `Kpop`, not `K-Pop`) and a legal form comes back title-cased word by word (`Concert Concept Veranstaltungs Gmbh`). Needs a
+  corrections map for the known slugs, in the same place as the promoter fix above.
+- [ ] **Arcanoa's recurring open stage becomes two artists and two slugs.** The venue hand-types its Monday night both `ARCANOA-Open Stage` and
+  `ARCANOA- Open Stage`; only the second has a dash the parser pads, so the two normalize differently. Collapse the whitespace around the dash before
+  normalizing.
+- [ ] **The screening keyword misses German compounds.** `SCREENING_TITLE_WORD_PATTERN` (`EventTypeMapping.kt`) anchors on `\bkino\b` to protect real act
+  names ("Alkinoos Ioannidis"), so
+  Kater's monthly `Nomadenkino` film night is typed `PARTY` instead of `SCREENING`. A suffix-anchored match (`\w+kino\b`) keeping the act-name guard would catch
+  the compounds; cross-cutting, so it needs a re-seed and a diff.
+- [ ] **Astra's dateless featured teaser is dropped whenever its detail fetch fails** — `11FREUNDE WM-QUARTIER` drops on every run. The teaser carries no date
+  of its own, so one failed fetch loses the event entirely; a retry, or reusing the last-known date for that `sourceId`, would keep it.
+- [ ] **Heimathafen stores no genre only because the taxonomy is unresolved.** The venue *does* tag its events, but the REST payload carries term **ids** and
+  the `class_list` slugs are lossy (`rb` for R&B). Resolving the 560-term `events_tag` vocabulary once per import and caching it — plus a stop-list, since the
+  vocabulary mixes real genres with formats and access notes (Konzert, Premiere, Gebärdensprache) — is what unblocks the genre field for all 95 events.
 
 **Data quality — normalize, validate, enrich:**
 
@@ -102,17 +137,6 @@ Strategy & sequencing: [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEG
 - [ ] **(Decision — ADR candidate)** Curated-vocabulary storage: code vs. data. Move the denylists / synonym maps / corrections (`NON_ARTIST_NAMES`,
   `NAME_CORRECTIONS`, genre synonyms, `ACRONYMS`) from hardcoded Kotlin to steward-editable DB tables so fixes land without a redeploy — vs. keeping them as
   tested code fixed via PR. Spike + ADR before Pillar 4's human-in-the-loop needs live editing; blocks nothing in Pillars 1–3. (Strategy §6.)
-- [ ] **Derive the lineup after the event type is final, not before.** `ScrapedEvent.toEventEntity` promotes a `CONCERT`/`OTHER` title to `FESTIVAL`
-  (`isFestivalTitle`), but every scraper has already built its artists from its *own* type inference, so a festival title still mints headliners — `ELLE & L's
-  Festival` → `Elle` (Columbia Theater), plus the same shape at Clash and Gretchen. Fix once at the boundary (drop the artists when the resolved type is
-  `FESTIVAL`/`PARTY`) rather than per importer.
-- [ ] **A show cannot play twice in one day.** `ScrapedEvent.toEventEntity` builds the stored slug from date + venue slug + title, and `event.slug` is `UNIQUE`,
-  so two sessions of the same production on the same date collide on insert — a duplicate-key error that fails the *whole* import, not just that row. Velomax
-  hits this (Disney On Ice plays three sessions on one day, Berlin Tattoo two), and its importer works around it by collapsing same-day sessions to the
-  earliest; Uber Arena hits it too and simply loses the second session of a double bill (3 of 88 at capture — Feuerwerk der Turnkunst, CAVALLUNA twice), as does
-  the Uber Eats Music Hall on the same platform (the 23 December Nutcracker matinee and evening, 1 of 66); Theater im Delphi is the worst hit, losing 4 of 24 to
-  matinee/evening pairs; Bar jeder Vernunft and Heimathafen sidestep it because their `sourceId`s carry a time. Fix at the boundary — include the start time in
-  the event slug when one is known — rather than per importer.
 - [ ] **Resolve a venue per event, so promoter sources become importable.** An event's venue comes from its `event_source` row
   (`EventUpsertService.upsertAndCleanup(events, venueId, …)`), one venue for the whole source — so a promoter that books across houses cannot be imported at
   all. Puschen, Trinity Music and Landstreicher Booking are deferred on exactly this (see EVENT_DATA_SOURCES.md § Blocked); their listings are clean and name
@@ -144,6 +168,8 @@ Strategy & sequencing: [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEG
       headliner is lost too. Word-anchor it (as `\brave\b` and `\bkino\b` already are), or drop the bare entry and keep `club night` / `clubnight`.
     - `ARTIST_SUFFIX_PATTERN` and `stripShoutedTourTail` only recognise the **ASCII hyphen** as the act/tour boundary, so an en- or em-dash tour tail ("Greg
       Mendez – BEAUTY LAND TOUR") survives into the artist name. Accept `[-–—]` in both.
+    - `w/` is not treated as a co-bill separator, and a comma suppresses conjunction splitting, so LARK's `FEUCHT w/ BELLA, Agua con gas & SENERGI` is stored as
+      one long "artist". Add `w/` to the splitter.
 - [ ] **Cover venues that will never have an automatic import** — no website at all, or a programme published only via Instagram / Facebook / Resident Advisor.
   Needs three things: a recorded list of those venues (in EVENT_DATA_SOURCES.md, with a link to wherever their programme *is* visible), a low-friction way to
   enter their events by hand (see the admin frontend items below), and a reminder mechanism so checking them doesn't get forgotten.
