@@ -71,6 +71,7 @@
 ###   Sonnenraum           — https://clubdervisionaere.com/programm/ (shares the CLUB_DER_VISIONAERE listing)
 ###   Supamolly            — https://www.supamolly.de/?p=programm (retro PHP single-page listing; row id = date stamp)
 ###   Tempodrom            — https://www.tempodrom.de/programm-und-tickets/ (schema.org Event JSON-LD)
+###   Theater im Delphi    — https://theater-im-delphi.de/programm/ (WordPress; one row per performance; leaked price dump)
 ###   Urban Spree          — https://www.urbanspree.com/program/ (MODX; descending paginated list + detail)
 ###   Wild at Heart        — https://www.wildatheartberlin.de/concerts.php (retro frameset single-page listing)
 ###   Zenner               — https://zenner.berlin/programm (Gatsby/Sanity; page-data.json artefact)
@@ -3829,6 +3830,69 @@ Accept: application/json
 
 > {%
     client.test("Tempodrom import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Theater im Delphi (Gustav-Adolf-Str. 2, Berlin-Weißensee)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Theater im Delphi venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Theater im Delphi",
+    "address": "Gustav-Adolf-Str. 2",
+    "city": "Berlin",
+    "postalCode": "13086",
+    "district": "pankow",
+    "latitude": 52.55390,
+    "longitude": 13.45770,
+    "websiteUrl": "https://theater-im-delphi.de",
+    "description": "A 1929 silent-cinema building in Weißensee, run as a theatre and concert hall for dance, music theatre, chamber music and talks."
+}
+
+> {%
+    client.global.set("delphi_venue_id", response.body.id);
+    client.test("Theater im Delphi venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Theater im Delphi event source ---
+# Links the venue to the DelphiWebsiteImporter.
+# The sourceType "THEATER_IM_DELPHI" matches EventSource.THEATER_IM_DELPHI.
+# NOTE: the programme page renders one row per performance, so a production that runs several
+# nights yields several events. Prices come from a var_dump() the page leaks into an HTML comment
+# — the only place they appear — and are best-effort: if the venue fixes that leak, events keep
+# everything except their price.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{delphi_venue_id}},
+    "name": "Theater im Delphi",
+    "url": "https://theater-im-delphi.de/programm/",
+    "sourceType": "THEATER_IM_DELPHI",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Theater im Delphi event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Theater im Delphi import ---
+POST {{importer-host}}/api/admin/event-sources/theater-im-delphi/import
+Accept: application/json
+
+> {%
+    client.test("Theater im Delphi import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}
