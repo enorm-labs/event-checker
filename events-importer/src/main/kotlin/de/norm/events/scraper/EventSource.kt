@@ -764,6 +764,32 @@ enum class EventSource {
     TEMPODROM,
 
     /**
+     * Theater im Delphi – the 1929 silent-cinema building in Weißensee, now a theatre and concert
+     * hall. WordPress; `/programm/` renders the **whole upcoming programme** in one page with no
+     * pagination and no archive, as a run of `h2.month` headings each followed by a
+     * `table.program_table` whose every `<tr>` is one performance. A production that runs several
+     * nights repeats its row per date, so the `sourceId` is `<prod id>/<date>-<clock>` — several
+     * productions play a matinee and an evening on the same day.
+     *
+     * The `?prod=<id>` page belongs to the **production**, not the date: it lists the whole run and
+     * describes the show once. Only the full blurb and the full-width photo are taken from it, and
+     * each distinct page is fetched once for all its dates, as at [BAR_JEDER_VERNUNFT].
+     *
+     * The venue's labels are staging **formats** (`Tanz`, `Theater`, `Musiktheater`,
+     * `Dialog & Lesung`) rather than musical genres, so they drive the event type — dance and
+     * theatre both to `SHOW`, the model having no type of their own. Only `Kammermusik` and
+     * `Elektronische Musik` name a genre and are stored as one.
+     *
+     * **Prices exist only in a leaked debug dump.** The programme page emits a `var_dump()` of each
+     * performance's database row into an HTML comment, 23 fields including `event_BetragAb`/`Bis`
+     * and an `event_EintrittFrei` flag — the rendered page states no price anywhere. That leak is
+     * joined on `(production id, start time)` and used strictly best-effort: the day the venue
+     * fixes it these events lose their prices and nothing else. `event_Zeit` is a Unix timestamp of
+     * the **Berlin wall clock**, verified against the rendered times across a DST boundary.
+     */
+    THEATER_IM_DELPHI,
+
+    /**
      * Tresor Berlin – the Köpenicker Straße techno club in the former Heizkraftwerk, on WordPress
      * with its REST API disabled site-wide (`401 rest_disabled`), so its two HTML pages are the
      * source. `/club/events/` lists each night as an `article.event-item` carrying a year-less

@@ -7,8 +7,8 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 
 | Status                              | Meaning                                                                              | Count |
 |-------------------------------------|--------------------------------------------------------------------------------------|------:|
-| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    65 |
-| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |     5 |
+| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    66 |
+| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |     4 |
 | ⛔ [Blocked](#-blocked--deferred)   | Website analyzed, but no usable listings (no programme page, JS-only, or too sparse) |    36 |
 | ❓ [Unanalyzed](#-not-analyzed-yet) | No URL recorded yet — website still needs a first look                               |     0 |
 
@@ -74,6 +74,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Sonnenraum                  | https://clubdervisionaere.com/programm                      | Club         | Shares the CdV listing; Monday live residency      |
 | Supamolly                   | https://www.supamolly.de/?p=programm                        | Club         | Retro PHP; row id is the date stamp; no prices     |
 | Tempodrom                   | https://www.tempodrom.de/programm-und-tickets/              | Concert Hall | schema.org `Event` JSON-LD; whole programme        |
+| Theater im Delphi           | https://theater-im-delphi.de/programm/                      | Concert Hall | One row per performance; prices only in a leak     |
 | Tresor                      | https://tresorberlin.com/club/events/                       | Techno Club  | WordPress; floor-grouped lineup; detail pages      |
 | Uber Arena                  | https://www.uber-arena.de/events/all                        | Arena        | AEG CMS; list + detail; no sport imported          |
 | Uber Eats Music Hall        | https://www.uber-eats-music-hall.de/events/all              | Concert Hall | Shares the Uber Arena parsers; month names, no cats |
@@ -84,7 +85,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Zenner                      | https://zenner.berlin/programm                              | Club         | Gatsby/Sanity page-data JSON; UTC dates; archive   |
 | Zitadelle                   | https://citadel-music-festival.de/events                    | Open Air     | Festival site; WordPress/EM; summer season only    |
 
-64 importer classes cover 65 sources: only Kantine am Berghain has no class of its own, sharing the Berghain importer outright. Three other groups share a
+65 importer classes cover 66 sources: only Kantine am Berghain has no class of its own, sharing the Berghain importer outright. Three other groups share a
 *listing and parser* while keeping one thin `@Component` per venue, so they do not reduce the count — Club der Visionäre, Sonnenraum and MS Hoppetosse; the
 three Velomax halls; and Uber Arena with the Uber Eats Music Hall.
 
@@ -98,7 +99,6 @@ Analyzed and scrapable — the candidates for the next `/scaffold-importer` runs
 |   Low    | Heideglühen          | https://heidegluehen.berlin/aktuell/     | Techno Club  | One event at a time; prose date, set times per DJ          |
 |   Low    | Humboldtsaal Urania  | https://www.urania.de/kalender/          | Concert Hall | One Urania programme; hall unnamed, mostly lectures        |
 |   Low    | Kleistsaal Urania    | https://www.urania.de/kalender/          | Concert Hall | Same programme; the site makes no hall distinction         |
-|   Low    | Theater Im Delphi    | https://theater-im-delphi.de/programm/   | Concert Hall | WordPress; page also dumps a PHP `var_dump` of records     |
 
 *Several of the rooms above are theater, comedy, or arena-scale rather than live-music clubs — settle scope before building. Bar jeder Vernunft set the
 precedent that such a room is in scope: its programme is imported, with the venue's own genre deciding whether a night is a concert or a staged show.*

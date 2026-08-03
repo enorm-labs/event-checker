@@ -922,6 +922,38 @@ The fortress's own site is a museum site; its concert programme is the **Citadel
   `NAME_CORRECTIONS` entry, and the bare "Tip" is too ambiguous to key on safely. `Flux FM` is folded — it shares a normalized key with the `FluxFM` and
   `fluxfm` spellings the Columbia Theater, Frannz and Heimathafen sources use, so one entry merges all four onto the station's own casing.
 
+### Theater im Delphi (`scraper/delphi/`) — WordPress, programme + production pages
+
+The 1929 silent-cinema building in Weißensee. `/programm/` renders the whole upcoming programme in one page — no pagination, no archive — as month headings each
+followed by a table whose every row is **one performance**. Verified against a live import (3 August 2026): 24 performance rows scraped, **20 stored** (see
+below), range 2026-08-09 → 2026-12-11, none in the past, 0 suspicious rows. Every event has a start time, a poster, a full description and a price or a
+free-entry flag; 18 of 20 carry a ticket link.
+
+- 🔴 **A production playing twice in one day loses its second session.** Four productions run a matinee and an evening on the same date — `Schwanensee` on 27
+  September and 25 October, `Prometheus confused` on 13 October, `ROMANCERO DEL BAILE FLAMENCO` on 21 November. The scraper keeps them apart (the `sourceId`
+  carries the clock), but they collide on the stored `event.slug`, which is built from date + venue + title, so `EventUpsertService` skips the second with a
+  warning and the count is 20 not 24. This is the cross-cutting limitation tracked in `TODO.md` ("A show cannot play twice in one day") — at 4 of 24 this is the
+  worst-hit venue so far, and the boundary fix would recover all four.
+- 🔴 **Prices exist only in a leaked debug dump.** The programme page emits a `var_dump()` of each performance's database row into an HTML comment — 23 fields
+  including `event_BetragAb`/`Bis`, `production_BetragAb`/`Bis` and an `event_EintrittFrei` flag. The rendered page states **no price anywhere**, so that leak is
+  the only source. It is joined on `(production id, start time)` and treated as strictly best-effort: nothing load-bearing depends on it, and the day the venue
+  notices, these events lose their prices and keep everything else. A scraper test asserts exactly that by stripping the comments from the fixture.
+- 🟠 **The per-event amounts are rounded; the production amounts are not.** The dump states `event_BetragAb` "29" where `production_BetragAb` says "29.95" for
+  the same performance, so the production-level pair wins wherever it is filled in. Should the venue ever price one date of a run differently, that override
+  would be lost.
+- 🟠 **Dance and theatre are stored as `SHOW`.** The venue's labels are staging formats (`Tanz`, `Theater`, `Musiktheater`, `Musical & Show`) and the model has
+  no type for either, so both become `SHOW` — the same call the AEG venues make for their ballet. `Dialog & Lesung` becomes `READING`.
+- 🟠 **Only two events carry a genre.** The labels are formats, not musical styles; filing `Tanz` as a genre would put staging formats into a vocabulary of
+  musical styles. Only `Kammermusik` and `Elektronische Musik` name a genre and are stored as one, so the genre-tag filters see 2 of 20 events.
+- 🟠 **No doors time on any event.** The venue publishes a `Beginn` and nothing else.
+- 🟢 **Two events are untyped.** `LISA O'NEILL` and `Jake Xerxes Fussell` carry an empty label cell — both are concerts, but the venue says so nowhere, so they
+  land as `OTHER` rather than being guessed at.
+- 🟢 **A promoter-style title becomes an artist.** `Berlin Confidential präsentiert: Georgy Gusev, Sven Helbig, …` is stored whole as one artist name, because
+  the shared `buildArtistsForEventType` has no way to know the leading words are a series and not part of the act. One event of 20.
+- 🟢 **Each production page is fetched once, not once per date.** 24 rows resolve to 14 productions and one ballet owns 8 of them, so the importer implements
+  `EventImporter` directly rather than using the per-event detail fetch — the same reason as Bar jeder Vernunft. A production page that fails leaves its dates
+  with the programme row's teaser and thumbnail instead of the full blurb and photo.
+
 ---
 
 ## How to extend this doc
