@@ -30,7 +30,13 @@ class PromoterNormalizerTest {
             { canonicalPromoterName("Landstreicher Konzerte") shouldBe "Landstreicher" },
             { canonicalPromoterName("Landstreicher Konzerte GmbH") shouldBe "Landstreicher" },
             { canonicalPromoterName("Boese") shouldBe "Boese" },
-            { canonicalPromoterName("Boese Live") shouldBe "Boese" }
+            { canonicalPromoterName("Boese Live") shouldBe "Boese" },
+            // The radio station is spelled three ways across sources, and the spaced form
+            // de-shouts to "Flux Fm"; all four share one key and fold onto its own casing.
+            { canonicalPromoterName("FluxFM") shouldBe "FluxFM" },
+            { canonicalPromoterName("fluxfm") shouldBe "FluxFM" },
+            { canonicalPromoterName("Flux FM") shouldBe "FluxFM" },
+            { canonicalPromoterName("FLUXFM") shouldBe "FluxFM" }
         )
     }
 

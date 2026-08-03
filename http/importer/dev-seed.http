@@ -74,6 +74,7 @@
 ###   Urban Spree          — https://www.urbanspree.com/program/ (MODX; descending paginated list + detail)
 ###   Wild at Heart        — https://www.wildatheartberlin.de/concerts.php (retro frameset single-page listing)
 ###   Zenner               — https://zenner.berlin/programm (Gatsby/Sanity; page-data.json artefact)
+###   Zitadelle            — https://citadel-music-festival.de/events (WordPress/Events Manager; summer open-air series)
 ### ============================================================
 
 ### ————————————————————————————————————————————————————————————
@@ -4018,6 +4019,69 @@ Accept: application/json
 
 > {%
     client.test("Zenner import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+
+### ————————————————————————————————————————————————————————————
+### Zitadelle (Am Juliusturm 64, Berlin-Spandau)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Zitadelle venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Zitadelle",
+    "address": "Am Juliusturm 64",
+    "city": "Berlin",
+    "postalCode": "13599",
+    "district": "spandau",
+    "latitude": 52.54100,
+    "longitude": 13.21770,
+    "websiteUrl": "https://www.zitadelle-berlin.de",
+    "description": "Renaissance fortress in Spandau whose courtyard hosts the Citadel Music Festival, an open-air concert series running through the summer."
+}
+
+> {%
+    client.global.set("zitadelle_venue_id", response.body.id);
+    client.test("Zitadelle venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Zitadelle event source ---
+# Links the venue to the ZitadelleWebsiteImporter.
+# The sourceType "ZITADELLE" matches EventSource.ZITADELLE.
+# NOTE: the URL is the festival site, not the venue's own — zitadelle-berlin.de is a museum site
+# and publishes no concert programme. The season is small (under a dozen dates), so a low event
+# count is the venue's actual programme, not a truncated import.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{zitadelle_venue_id}},
+    "name": "Zitadelle",
+    "url": "https://citadel-music-festival.de/events",
+    "sourceType": "ZITADELLE",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Zitadelle event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Zitadelle import ---
+POST {{importer-host}}/api/admin/event-sources/zitadelle/import
+Accept: application/json
+
+> {%
+    client.test("Zitadelle import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}
