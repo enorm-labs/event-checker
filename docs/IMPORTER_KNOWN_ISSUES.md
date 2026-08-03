@@ -1039,6 +1039,32 @@ The Schöneberg science and culture house. Verified against a live import (3 Aug
 - 🟢 **The calendar owns the date.** Each day is a `div.c-event-calendar_day[data-day]` whose attribute states day, weekday, month and year in one token
   (`03-do-09-2026`), where the event page renders German prose. One day may hold more than one event; 16 day blocks carried 17 events at capture.
 
+### Panke Culture (`scraper/panke/`) — WordPress/Divi, one page, no event pages
+
+The club, café and gallery on the Panke in Wedding. It published nothing scrapable until 2026 — its programme lived on Instagram and in a newsletter — and sat
+in the Blocked list until the 3 August 2026 re-check found a real `/programme/` page. Verified against a live import that day: **9 of 9 stored**, range
+2026-08-05 → 2026-08-29, none in the past, 0 suspicious rows. Every event has a start time and a description; 8 of 9 have a poster.
+
+- 🟠 **Nine events is the whole upcoming programme.** The page renders an UPCOMING and a PAST list from one template, and only the upcoming one is imported —
+  the venue's own division is authoritative, and parsing the 20 past entries every run only to have the persistence boundary drop them is waste. The venue
+  programmes a few weeks ahead, so a low count is its actual output.
+- 🟠 **The venue states no event type, so five of nine are `OTHER`.** Its titles are series names (`EEE`, `NOFUTURE 6 YEARS ANNIVERSARY`, `In the
+  Neighbourhood`), not formats. Two signals decide instead: an unmistakable title keyword first (`Markt` → `OTHER`, `(c)rave` → `PARTY`), then a **billed DJ
+  lineup → `PARTY`**, since the venue links a Resident Advisor profile only for acts playing its floor. Anything with neither stays `OTHER` rather than being
+  guessed a concert — which would also mint the series name as a headliner.
+- 🟠 **`LA MONA SONIC EXPLORATION FEST` is a festival stored as `OTHER`.** The shared festival-title signal requires the whole word `festival`; German *Fest*
+  means a celebration, so widening it to catch this one would mistype ordinary parties at every other venue. Left as-is deliberately.
+- 🟠 **No prices, no ticket links.** Both appear in the free prose, in no fixed form — `Cost: 12 euro` on one event, `ENTRY 15€/18€/20€/25€` on another — and
+  are not parsed. The venue publishes no ticket link at all; where a night sells tickets it does so through the promoter's own channels.
+- 🟢 **The lineup is read only from Resident Advisor links.** The bodies have no shared convention: one event lists its DJs one per paragraph under a `LINE UP:`
+  heading, the next packs them into a sentence beside a timetable. An anchor pointing at an `ra.co/dj/…` profile is the one unambiguous artist marker, so that
+  is all that is read — 3 of 9 events carry them, and a fourth DJ billed in the same list without a link (`Dj Chiro`) is correctly not stored. Links are
+  deduplicated by profile URL, since a night that repeats an act in its timetable would otherwise store them twice.
+- 🟢 **An event is identified by its WordPress post id.** The venue publishes no per-event page — the full text expands inline — so every event's `sourceUrl` is
+  the programme page, as at Zenner.
+- 🟢 **One event has no poster.** The template carries the image as an inline `background-image` on the `<article>` rather than an `<img>`, and one article
+  renders a literal `url()`; that must not become an image URL and does not.
+
 ---
 
 ## How to extend this doc

@@ -645,6 +645,32 @@ enum class EventSource {
      */
     OHM,
 
+    /**
+     * Panke Culture – the club, café and gallery on the Panke in Wedding. Its `/programme/` page is
+     * one WordPress (Divi) page carrying the whole programme server-side, split into two lists from
+     * the same template: **UPCOMING EVENTS** and **PAST EVENTS**. Only the first is read — the
+     * venue's own division is authoritative, and parsing twenty past entries per run just to have
+     * the persistence boundary drop them is waste.
+     *
+     * Each event is an `<article>` identified by its WordPress post id, which is the `sourceId`:
+     * the venue publishes no per-event page at all, expanding the full text inline instead, so
+     * every event's `sourceUrl` is the programme page. The date is an ISO `data-date` attribute;
+     * the clock is prose ("… starting at 19:00.", sometimes "23:00:00"); the poster is an inline
+     * `background-image` on the article, the template rendering no `<img>`.
+     *
+     * The venue states **no event type**, so two signals decide it: an unmistakable title keyword
+     * first (a market, a rave), then a billed DJ lineup, which marks a club night. Anything with
+     * neither stays `OTHER` rather than being guessed a concert — these titles are series names,
+     * not acts, and a concert default would mint them as headliners.
+     *
+     * **The lineup is read only from Resident Advisor links.** The bodies are free prose with no
+     * shared convention — one event lists its DJs one per paragraph under `LINE UP:`, the next
+     * packs them into a sentence beside a timetable — so the only unambiguous artist marker is an
+     * anchor pointing at an `ra.co/dj/…` profile. Prices appear in that same prose ("Cost: 12
+     * euro", "ENTRY 15€/18€/20€/25€") and are deliberately not parsed.
+     */
+    PANKE,
+
     /** Privatclub Berlin – WordPress-based single-page event listing. */
     PRIVATCLUB,
 
