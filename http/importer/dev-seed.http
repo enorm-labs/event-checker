@@ -45,6 +45,7 @@
 ###   LARK                 — https://larkberlin.com/wp-json/wp/v2/event
 ###   Lido                 — https://www.lido-berlin.de/
 ###   Loge                 — https://www.loge-berlin.org/event-list
+###   MAAYA                — https://maaya.de/
 ###   Madame Claude        — https://madameclaude.de/
 ###   Matrix               — https://www.matrix-berlin.de/party-in-berlin/
 ###   Max-Schmeling-Halle  — https://www.velomax.de/events
@@ -2145,6 +2146,65 @@ Accept: application/json
 
 > {%
     client.test("Loge import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### MAAYA (Revaler Str. 99, Berlin-Friedrichshain — RAW-Gelände)
+### ————————————————————————————————————————————————————————————
+
+### --- Create MAAYA venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "MAAYA",
+    "address": "Revaler Str. 99",
+    "city": "Berlin",
+    "postalCode": "10245",
+    "district": "friedrichshain-kreuzberg",
+    "latitude": 52.50775,
+    "longitude": 13.45247,
+    "websiteUrl": "https://maaya.de",
+    "description": "An Afro-diasporic cultural venue on the RAW-Gelände built around a heated open-air pool, combining a gallery, garden, backyard market and a programme of club nights, concerts and workshops."
+}
+
+> {%
+    client.global.set("maaya_venue_id", response.body.id);
+    client.test("MAAYA venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create MAAYA event source ---
+# Links the venue to the MaayaWebsiteImporter.
+# The sourceType "MAAYA" matches EventSource.MAAYA.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{maaya_venue_id}},
+    "name": "MAAYA",
+    "url": "https://maaya.de/",
+    "sourceType": "MAAYA",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("MAAYA event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial MAAYA import ---
+POST {{importer-host}}/api/admin/event-sources/maaya/import
+Accept: application/json
+
+> {%
+    client.test("MAAYA import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}
