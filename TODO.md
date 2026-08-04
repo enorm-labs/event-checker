@@ -91,6 +91,12 @@ scraper's own KDoc instead, so only what should actually be *repaired* is listed
   ([`headlinersFromTitle`](events-importer/src/main/kotlin/de/norm/events/scraper/ArtistNameMapping.kt)), never to lineups — consistently across AMT, ÆDEN,
   Renate, Duncker and OHM. Applying it to lineups too is a one-line change per scraper but a cross-cutting data change: it needs a full re-seed and a decision
   on whether the "(live)" distinction is worth preserving elsewhere first (the model has no `LIVE` `ArtistRole`).
+- [ ] **A concert-series name appended to a title with an en dash stays on the act.** silent green bills three autumn shows as `Current 93 – Sonic Morgue`,
+  `Current 93 – Sonic Morgue – Zusatzshow` and `Anja Huwe / Xmal Deutschland – Sonic Morgue`: `Sonic Morgue` is the series and `Zusatzshow` marks the extra
+  date, but `splitHeadlinerTitle` cuts only on `/`, `+` and conjunctions, and `stripArtistSuffix` recognises a ` - ` tail only when it names a tour, a year or a
+  release — so both tails are stored as part of the performer and will never resolve to the plain `Current 93` / `Xmal Deutschland` imported from another
+  house. Neither an en-dash split nor a blanket tail strip is safe on its own (an act may legitimately carry either), so this needs the series names
+  themselves — the same curated-vocabulary question as `NON_ARTIST_NAMES` below.
 - [ ] **Promoter display names lose genuine acronyms.** `PromoterNormalizer.deshout` is a bare title-caser, without the `ACRONYMS` / short-initialism guards
   `ArtistNormalizer` already has, so `TV Noir` → `Tv Noir` and `Bossa FM` → `Bossa Fm`. Share one de-shout between the two normalizers. Same change should fold
   Zitadelle's `tip Berlin` / `Tip` onto one spelling via `NAME_CORRECTIONS`. Display-only — slugs are case-insensitive and unaffected — but existing rows keep
@@ -120,8 +126,10 @@ scraper's own KDoc instead, so only what should actually be *repaired* is listed
   stores one for 30 of 95. Cosmic Comedy already proves the split works (it derives the act from exactly that idiom for its `Comedy Special` nights), so the
   rule can be shared rather than reinvented per venue.
 - [ ] **There is no event-level room, so a multi-room venue loses which space a show plays in.** `ScrapedArtist.stage` is the only home for it, so the room
-  survives only where there are acts to hang it on: VOID Club drops `VOID CLUB` / `VOID HALL` on its two `TBA` nights, and Heimathafen parses `(Saal)` /
-  `(Studio)` out of its doors-time note and discards it. Needs an event-level field plus a decision on how it relates to the per-artist stage.
+  survives only where there are acts to hang it on: VOID Club drops `VOID CLUB` / `VOID HALL` on its two `TBA` nights, Heimathafen parses `(Saal)` /
+  `(Studio)` out of its doors-time note and discards it, and silent green keeps `Kuppelhalle` / `Betonhalle` / `Atelier 2+3` only on its 33 concerts — the 54
+  exhibitions, talks and screenings it publishes a hall for have no lineup to carry one. Needs an event-level field plus a decision on how it relates to the
+  per-artist stage.
 - [ ] **There is no event end time.** Kater publishes a full `Sa. 01.08 22:00 — So. 02.08 10:00` span and Heideglühen a "bis Sonntag, 6 Uhr" tail; both are kept
   as prose because the model stores only a start. The same missing field is why the late-night drop above needs a start-time heuristic instead of simply asking
   whether the event has ended.
