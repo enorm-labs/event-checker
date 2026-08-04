@@ -155,7 +155,9 @@ subprojects sharing a root `settings.gradle.kts`, plus a standalone frontend pro
     - **`PerHostThrottlingFilter`** — WebClient `ExchangeFilterFunction` enforcing a configurable politeness delay (`app.scraper.polite-delay-millis`, default:
       200ms) between consecutive requests to the same host. Transparent to scrapers — all `HtmlFetcher` requests are throttled automatically. Requests to
       different hosts proceed concurrently. See ADR-007 "Per-Host Politeness Throttling".
-    - **`EventSource` enum** — compile-time safe registry of known import sources (e.g. `CASSIOPEIA`).
+    - **`EventSource` enum** — compile-time safe registry of known import sources (e.g. `CASSIOPEIA`). Each value's KDoc is a **one-line description of the
+      venue** and nothing more: how its programme is published and every parsing decision are documented on that venue's importer and scrapers, so the two
+      cannot drift.
     - **`EventImporter` interface** — each venue-specific importer implements this, dispatched by `eventSource` property.
     - **`event_source` table** — tracks per-venue import configuration, conditional-request headers, and import status/metrics. Event sources are created via
       `POST /api/admin/event-sources` (not Flyway — Flyway is reserved for DDL-only migrations). Operational config (enable/disable, interval, retries) is
@@ -188,7 +190,9 @@ subprojects sharing a root `settings.gradle.kts`, plus a standalone frontend pro
     - **Venue-specific subdirectories** — each venue importer lives in its own sub-package under `scraper/` (e.g. `scraper/cassiopeia/`). Each contains a
       `*WebsiteImporter.kt` implementing `EventImporter`, plus pure (no-I/O) parsers: HTML importers use
       `*OverviewPageScraper.kt` / `*DetailPageScraper.kt`, while JSON/API importers use a single `*ApiScraper.kt` (see below). Use existing implementations as
-      templates when adding new venue importers.
+      templates when adding new venue importers. **The sub-package's KDoc is the single home for everything about that source** — the platform, which pages or
+      APIs are read and why, the traps the parser handles, and the limitations it accepts (a field the venue never publishes, a signal it cannot express).
+      Defects that could actually be repaired go on the **Bugs** list in `TODO.md` instead.
     - **`AbstractTwoPageWebsiteImporter`** — base class for venues that use the overview → detail pattern, the most common shape in the `scraper/` package. The
       subclasses are deliberately not enumerated here (the list drifts with every new venue —
       `grep -rl 'AbstractTwoPageWebsiteImporter(' events-importer/src/main/kotlin/de/norm/events/scraper/` is authoritative). Owns the shared overview-fetch →

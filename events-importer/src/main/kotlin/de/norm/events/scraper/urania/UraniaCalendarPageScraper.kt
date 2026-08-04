@@ -35,7 +35,8 @@ import java.time.LocalDate
  *
  * **No source states which hall an event is in.** Neither the calendar, the event pages, the
  * Reservix shop nor that API name the Humboldtsaal or the Kleistsaal, so events are imported
- * against the house rather than split between its halls — see [EventSource.URANIA].
+ * against the house rather than split between its halls, which is exactly what all four of those
+ * sources describe.
  *
  * This class performs **no I/O** — it operates solely on a pre-fetched Jsoup [Document].
  *

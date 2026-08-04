@@ -1,7 +1,6 @@
 package de.norm.events.scraper.velomax
 
 import de.norm.events.event.EventType
-import de.norm.events.scraper.EventSource
 import de.norm.events.scraper.ScrapedEvent
 import de.norm.events.scraper.UNRESOLVED_EVENT_DATE
 import de.norm.events.scraper.buildArtistsForEventType
@@ -38,8 +37,8 @@ import java.time.LocalDate
  * Two filters apply. Entries are kept only for the [VelomaxHall] being imported, since all three
  * halls share the page. And the venue's own `data-type` must be a **cultural** one: the arena's
  * biggest strand is handball, volleyball and basketball, and with no `SPORT` event type in the
- * model those fixtures are skipped rather than filed as `OTHER` (see
- * [EventSource.MAX_SCHMELING_HALLE]).
+ * model those fixtures are skipped rather than filed as `OTHER`, which would bury the concerts they
+ * sit among. A hall's imported count is therefore well below what its programme page shows.
  *
  * This class performs **no I/O** — it operates solely on a pre-fetched Jsoup [Document], making it
  * easy to test with a static fixture.

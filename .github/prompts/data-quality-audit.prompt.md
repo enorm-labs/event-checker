@@ -6,14 +6,14 @@ fixes but do not apply them unless the user explicitly asks.
 
 ## Scope & intent
 
-The data is scraped from Berlin venue websites by the importers in `events-importer` (see
-`AGENTS.md` for the domain model and `docs/IMPORTER_KNOWN_ISSUES.md` for *accepted* limitations). The goal is to surface **actionable** quality problems —
-parsing bugs, normalization gaps, and oddities worth a human's attention — and to distinguish them from limitations already documented and accepted.
+The data is scraped from Berlin venue websites by the importers in `events-importer` (see `AGENTS.md` for the domain model). The goal is to surface
+**actionable** quality problems — parsing bugs, normalization gaps, and oddities worth a human's attention — and to distinguish them from limitations already
+documented and accepted.
 
-Before reporting anything, **read `docs/IMPORTER_KNOWN_ISSUES.md`**. Any finding that matches a documented, accepted limitation (e.g. artist-less concerts at
-Badehaus/Privatclub, `eventType`
-defaulting to `OTHER`, first-page-only pagination) must be labelled as **known/accepted** and separated from genuinely new findings. Don't re-litigate accepted
-trade-offs.
+Before reporting anything, check whether the finding is already known. Two places record that: the **Bugs** list in `TODO.md` (defects already queued for
+repair) and the KDoc of the importer and scrapers under `scraper/<venue>/` (limitations the venue's parser accepts deliberately). A finding matching either —
+artist-less concerts at Badehaus/Privatclub, `eventType` defaulting to `OTHER`, first-page-only pagination — must be labelled **known/accepted** and separated
+from genuinely new ones. Don't re-litigate accepted trade-offs.
 
 ## Connecting to the database
 
@@ -52,8 +52,8 @@ useful — a problem concentrated at one venue usually points at that importer.
 
 ### 1. Missing / required data
 
-- Events with no artists (`event` with no `event_artist` row), broken down by venue and `event_type`. Compare against the ~40% artist-less-concert baseline in
-  KNOWN_ISSUES before flagging as new.
+- Events with no artists (`event` with no `event_artist` row), broken down by venue and `event_type`. Several venues accept this deliberately — check the
+  importer's KDoc before flagging as new.
 - `NULL`/empty `title`, `slug`, `source_id`, `event_date`, `venue_id`.
 - Events with no genre at all: both `event.genre IS NULL` and no `event_genre_tag` rows.
 - Missing `event_type` signal: rows defaulting to `OTHER` (per venue — which sources never set a type?).
@@ -77,7 +77,8 @@ useful — a problem concentrated at one venue usually points at that importer.
 - Non-artist strings sitting in `artist.name`: event-format words (`Quiz`, `Karaoke`, `Open Mic`,
   `Festival`, `Special`, `Tour`, `Support`, `Live`, `Warm Up`, `Aftershow`, `w/`, `presents`, `vs`), standalone symbols, pure numbers, or very long strings (a
   whole title parsed as one artist).
-- Residual ALL-CAPS artist names (de-shouting is casing-only and reactive — see KNOWN_ISSUES).
+- Residual ALL-CAPS artist names — `canonicalArtistName`'s de-shouting is casing-only and its `ACRONYMS` set is curated, so a genuine all-caps name that is
+  not in it gets title-cased and a new stylised one slips through until added.
 - Artist/promoter names with leftover HTML entities (`&amp;`, `&#039;`), stray encoding (`Ã¤`, `â€™`), leading/trailing punctuation or whitespace, doubled
   spaces.
 - Promoter names that are actually venue names, generic labels (`Presents`, `Konzert`), or descriptors that should have been stripped/merged.
@@ -87,8 +88,7 @@ useful — a problem concentrated at one venue usually points at that importer.
 
 - `event_type` / `status` / `event_artist.role` values outside the valid enum sets above.
 - `genre_tag.name` values that aren't really genres (event-format labels, series names, freeform fragments) that leaked past `GenreNormalizer`'s stop-list —
-  cross-check against the `NON_GENRE_TOKENS`
-  intent in KNOWN_ISSUES.
+  cross-check against the `NON_GENRE_TOKENS` stop-list's intent.
 - Genre tags that are near-duplicates of each other (`Drum & Bass` vs `Drum and Bass` vs `DnB`).
 - Mismatch between raw `event.genre` text and the linked `event_genre_tag` rows (raw genre present but no tags extracted, or tags present that don't relate to
   the raw text).
@@ -101,11 +101,11 @@ useful — a problem concentrated at one venue usually points at that importer.
 
 ### 5. Dates, times & prices
 
-- `event_date` in the far past (stale listings) or implausibly far future (bad year inference — see Roadrunner note in KNOWN_ISSUES). Bucket by how far from
+- `event_date` in the far past (stale listings) or implausibly far future — the usual cause is year inference on a year-less date. Bucket by how far from
   today (`2026-07-07`).
 - `start_time` earlier than `doors_time` (doors should be ≤ start).
 - Negative or absurd prices; `price_presale`/`price_box_office` with `free = true`; `price_currency`
-  other than `EUR`; `sold_out = true` where KNOWN_ISSUES says the venue can't detect it (SO36).
+  other than `EUR`; `sold_out = true` for a venue whose importer KDoc says it cannot detect sold-out at all (SO36).
 - Many events from one `event_source` sharing the exact same date/time (parsing collapsed to a default).
 
 ### 6. Referential & consistency integrity
@@ -124,14 +124,13 @@ Write the report to `docs/data-quality/audit-<YYYY-MM-DD>.md` (create the direct
 
 1. **Summary** — total rows per table, and a one-line-per-category verdict (clean / N issues).
 2. **Findings**, grouped by category and ordered by severity:
-    - 🔴 **wrong or missing user-visible data** · 🟠 **data-quality / noise** · 🟢 **cosmetic / edge case**
-      (mirror the impact legend in `IMPORTER_KNOWN_ISSUES.md`).
+    - 🔴 **wrong or missing user-visible data** · 🟠 **data-quality / noise** · 🟢 **cosmetic / edge case**.
     - Each finding: what it is, the SQL that found it, the **count**, 3–5 **sample rows**, the likely **root cause** (which importer / normalizer), and whether
-      it's **NEW** or **KNOWN/accepted**
-      (cite the KNOWN_ISSUES entry).
+      it's **NEW** or **KNOWN/accepted** (citing the `TODO.md` bug or the KDoc that records it).
 3. **Recommended actions** — for NEW findings, point at the specific normalizer or scraper to fix (`canonicalArtistName`, `canonicalPromoterName`,
    `GenreNormalizer`, `isNonArtistName`,
-   `stripArtistSuffix`, per-venue parser), or suggest a new `TODO.md` entry / KNOWN_ISSUES note if it's an accepted limitation to document rather than fix.
+   `stripArtistSuffix`, per-venue parser). If it is an accepted limitation to document rather than fix, suggest the KDoc it belongs in; if it is repairable,
+   suggest a **Bugs** entry in `TODO.md`.
 
 Keep the report skimmable and every claim backed by a query result. Do not apply fixes, edit importer code, or modify the database as part of the audit —
 reporting is the deliverable. If the user wants a fix afterward, that's a separate, explicitly-requested step.

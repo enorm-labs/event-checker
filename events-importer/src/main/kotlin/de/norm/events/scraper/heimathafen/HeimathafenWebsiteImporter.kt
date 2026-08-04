@@ -32,6 +32,12 @@ import org.springframework.stereotype.Component
  * ignored and every import returns [ImportResult.Success]; re-imports stay cheap and safe because
  * persistence upserts idempotently by `sourceId`.
  *
+ * **No genre is stored**, though the venue does tag its events: the `events_tag` vocabulary runs to
+ * 560 terms mixing real genres (Soul, Cumbia) with formats and access notes (Konzert, Premiere,
+ * Gebärdensprache), the payload carries only term *ids* (six more requests to resolve), and the
+ * slugs `class_list` inlines are lossy (`rb` for R&B). Resolving and caching that taxonomy once per
+ * import is what would unblock the field — tracked in `TODO.md`.
+ *
  * @see HeimathafenApiScraper for the JSON parsing logic.
  * @see <a href="https://heimathafen-neukoelln.de/programm/">Heimathafen Neukölln programme</a>
  */

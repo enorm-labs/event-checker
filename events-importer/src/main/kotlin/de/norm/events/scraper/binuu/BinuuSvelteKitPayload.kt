@@ -225,7 +225,7 @@ internal fun mapBinuuStatus(code: String?): String {
 /**
  * Best-effort inference of an event's [EventType][de.norm.events.event.EventType]
  * from its title/subtitle, since Bi Nuu exposes **no category field anywhere** in
- * the SvelteKit payload (see the known-issues doc). Bi Nuu is a live-music venue, so
+ * the SvelteKit payload — nor anywhere else on the site. Bi Nuu is a live-music venue, so
  * the default is `CONCERT`; only pub quizzes and club/party nights are flipped.
  *
  * Signals, in priority order:

@@ -1,8 +1,8 @@
 # Importer — Data Quality Strategy
 
-How we fix the data-quality gaps we have and prevent new ones from accumulating. This is the **strategy / plan**; the catalogue of concrete accepted limitations
-lives in [IMPORTER_KNOWN_ISSUES.md](IMPORTER_KNOWN_ISSUES.md) and the actionable backlog in [../TODO.md](../TODO.md). Where this doc names work to do, the
-authoritative task lives in `TODO.md` and this doc points at it — the two must not drift.
+How we fix the data-quality gaps we have and prevent new ones from accumulating. This is the **strategy / plan**; the actionable backlog lives in
+[../TODO.md](../TODO.md) and each importer's accepted limitations in its own scraper KDoc. Where this doc names work to do, the authoritative task lives in
+`TODO.md` and this doc points at it — the two must not drift.
 
 Related: [ADR-007 Web Scraping Strategy](adr/ADR-007_WEB_SCRAPING_STRATEGY.md) ·
 [EVENT_DATA_SOURCES.md](EVENT_DATA_SOURCES.md) · [DATA_MODEL.md](DATA_MODEL.md) ·
@@ -22,8 +22,8 @@ Data quality is enforced by **deterministic, curated-list normalizers applied at
 | Title-as-headliner  | `buildArtistsForEventType` / `buildArtistList`                                          | `scraper/ArtistNameMapping.kt`   |
 | Genre tags          | `GenreNormalizer` — synonym map + `NON_GENRE_TOKENS` stop-list + `looksLikeGenre` gate  | `genretag/GenreNormalizer.kt`    |
 
-This is sound, cheap, and fast — and it should stay the first pass. But the known-issues catalogue exposes three *structural* weaknesses that adding more
-curated entries will never resolve:
+This is sound, cheap, and fast — and it should stay the first pass. But it has three *structural* weaknesses that adding more curated entries will never
+resolve:
 
 1. **It is reactive.** Every mechanism ("handled case-by-case as they surface",
    "new ones need an entry", "slip through until denylisted") only catches values we have *already seen*. Newly-seen bad data always lands in the DB first and
@@ -43,7 +43,7 @@ Before fixing anything we need a shared vocabulary for *what kind* of wrong a va
 
 ### 2.1 By quality dimension (DAMA-DMBOK)
 
-The industry-standard dimensions, mapped to our data. This vocabulary is the backbone of both the Pillar 1 metrics and the known-issues catalogue.
+The industry-standard dimensions, mapped to our data. This vocabulary is the backbone of the Pillar 1 metrics.
 
 | Dimension                 | Meaning                                       | In our data                                                                        |
 |---------------------------|-----------------------------------------------|------------------------------------------------------------------------------------|
@@ -70,7 +70,7 @@ The industry-standard dimensions, mapped to our data. This vocabulary is the bac
 
 Not every issue is worth chasing. Rank by three factors:
 
-- **Impact** — reuse the known-issues legend: 🔴 user-visible wrong/missing · 🟠 data-quality noise · 🟢 cosmetic/edge case.
+- **Impact** — 🔴 user-visible wrong/missing · 🟠 data-quality noise · 🟢 cosmetic/edge case.
 - **Prevalence** — how many rows are affected. *This is exactly what Pillar 1 measures* — which is why we measure before we fix.
 - **Fixability** — deterministic rule (cheap) · curated entry (human) · needs a classifier (AI) · source-limited (accept & document). **Fixability sequences the
   pillars.**

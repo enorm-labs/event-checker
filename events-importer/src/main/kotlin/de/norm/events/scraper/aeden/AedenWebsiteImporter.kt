@@ -22,6 +22,9 @@ import org.springframework.stereotype.Component
  * path). Nights that have already passed but are still listed on the current month's page are dropped
  * centrally at persistence time (`EventUpsertService`).
  *
+ * Only the club programme is imported: the venue's other spaces live in the `aeve` / `oel` post
+ * types, which never appear on the month pages.
+ *
  * @see AedenOverviewPageScraper for the per-month parsing.
  * @see <a href="https://aedenberlin.com/events/">ÆDEN events page</a>
  */

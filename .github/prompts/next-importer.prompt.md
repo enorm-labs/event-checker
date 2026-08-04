@@ -73,8 +73,8 @@ After 3 rounds without a PASS, stop iterating and go to step 7. Repeated identic
 - [ ] `/verify` clean (ktlint, detekt, build, Kover, frontend checks)
 - [ ] Smoke test PASS: events > 0, dates and titles match the live listing, `source_id` correctly prefixed
 - [ ] `diff-snapshot` shows no other source losing events
-- [ ] Soft findings written to `docs/IMPORTER_KNOWN_ISSUES.md` (or `TODO.md` for systemic fixes) — only gaps that are *ours* and not a quick fix; a field the
-  venue doesn't publish is not an entry (see `/importer-smoke` step 6)
+- [ ] Soft findings written down — a repairable defect on the **Bugs** list in `TODO.md`, an accepted limitation in the importer/scraper KDoc; a field the
+  venue doesn't publish is not a bug (see `/importer-smoke` step 6)
 
 Any unchecked box → step 7, no PR.
 

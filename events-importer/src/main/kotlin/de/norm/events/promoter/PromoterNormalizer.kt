@@ -194,7 +194,7 @@ private val NAME_CORRECTIONS: Map<String, String> =
         "radioeins" to "radioeins",
         // "tipBerlin" (one venue) and "tip Berlin" (another) are the city magazine. The bare "Tip"
         // a third venue prints is deliberately **not** folded in — too ambiguous a word to key on
-        // safely, as recorded in IMPORTER_KNOWN_ISSUES.
+        // safely, so it stays a second promoter row.
         "tipberlin" to "tip Berlin",
         // The tour agency appears both abbreviated and under its full trading name. De-shouting
         // lowercases the acronym to "Kkt", so the entry also restores its own capitals.

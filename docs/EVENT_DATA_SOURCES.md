@@ -2,8 +2,8 @@
 
 Overview of all venues, clubs, and promoters whose websites are potential sources for importing event data. Sources are grouped by **import status** so the
 remaining work is visible at a glance. The **Comment** column records what matters for building or maintaining an importer — the platform, where the data lives,
-and the parsing quirks. For an implemented importer, its KDoc and scraper tests are the authoritative field mapping; known defects live in
-[IMPORTER_KNOWN_ISSUES.md](IMPORTER_KNOWN_ISSUES.md).
+and the parsing quirks. For an implemented importer, its KDoc and scraper tests are the authoritative field mapping; defects worth repairing live in
+[../TODO.md](../TODO.md).
 
 | Status                              | Meaning                                                                              | Count |
 |-------------------------------------|--------------------------------------------------------------------------------------|------:|

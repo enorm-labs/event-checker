@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component
  *
  * There are no detail pages to follow: `index.php?programm=<stamp>` serves the
  * full-size flyer JPEG rather than HTML, and the advertised `rss.php` feed is
- * unusable (its dates omit the day of month) — see [EventSource.SUPAMOLLY].
+ * unusable (its item titles render the date as `"Mi 9.2026..09."`, dropping the day of month).
  *
  * @see SupamollyOverviewPageScraper for the HTML parsing logic.
  * @see <a href="https://www.supamolly.de/?p=programm">Supamolly Berlin</a>

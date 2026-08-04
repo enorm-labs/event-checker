@@ -21,6 +21,12 @@ import org.springframework.stereotype.Component
  * No `/event-details/<slug>` page is fetched — unlike Loge, whose price only
  * appears there.
  *
+ * The widget ships the upcoming window only (~18 nights) and reports `hasMore: true`; loading the
+ * rest needs the authenticated widget API, whose `_api/wix-one-events-server/…` paths 404 for an
+ * anonymous client. The 1,700-entry `event-pages-sitemap.xml` is overwhelmingly the archive, so it
+ * is deliberately not crawled as a workaround — a small imported count here is the venue's window,
+ * not a truncated import.
+ *
  * @see MaxximOverviewPageScraper for the parsing logic.
  * @see <a href="https://www.maxxim-berlin.de/partys">MAXXIM programme</a>
  */

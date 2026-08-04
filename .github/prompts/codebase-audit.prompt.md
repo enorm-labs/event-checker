@@ -21,7 +21,8 @@ Before reporting, read the ground truth for this project:
   against *these* conventions, not generic advice.
 - **`docs/adr/`** — the ADRs record *why* things are the way they are (reactive stack, entity/domain separation, Modulith, scraping strategy, etc.). Do not flag
   a deliberate, documented decision as a defect; if you think an ADR itself is worth revisiting, say so explicitly and separately.
-- **`docs/IMPORTER_KNOWN_ISSUES.md`** (if present) — accepted limitations; don't re-litigate them.
+- **the importers' and scrapers' KDoc** in `events-importer/src/main/kotlin/de/norm/events/scraper/<venue>/` — each venue's accepted limitations and the
+  reasoning behind its selectors; don't re-litigate them. Repairable defects are on the **Bugs** list in `TODO.md`.
 - **`.github/prompts/code-review.prompt.md`** — the per-diff checklist. Reuse its Backend/Frontend convention lists as the rubric for "best practices
   followed?", but apply them repo-wide instead of to a diff.
 

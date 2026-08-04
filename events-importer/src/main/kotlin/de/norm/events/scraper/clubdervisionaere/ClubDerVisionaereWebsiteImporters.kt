@@ -18,6 +18,10 @@ import java.time.Clock
  * belonging to this importer's [room]. There are no detail pages — the listing is the
  * whole programme.
  *
+ * The WordPress REST API is not an option despite ADR-007's JSON-first preference: upcoming
+ * nights are `future`-status posts, which `/wp-json/wp/v2/posts` omits from its listing and
+ * 401s when asked for by id. The rendered page is the only source.
+ *
  * Each room is a **separate bean and [EventSource]** rather than one importer serving
  * three source rows, because the rows cannot be told apart by URL: both hosts serve the
  * identical page, and the room lives only in a CSS class on the title. Keeping them

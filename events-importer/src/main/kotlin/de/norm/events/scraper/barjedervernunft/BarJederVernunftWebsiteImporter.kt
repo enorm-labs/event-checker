@@ -31,6 +31,9 @@ import org.springframework.stereotype.Component
  * A show page that cannot be fetched or parsed is not fatal: those dates keep the calendar
  * data alone, losing only the genre, price and full blurb.
  *
+ * The venue also publishes an iCal feed, which would be the cleaner source — but `robots.txt`
+ * disallows `/de/ical/`, so it is not fetched.
+ *
  * @see BarJederVernunftOverviewPageScraper for the calendar parsing logic.
  * @see BarJederVernunftShowPageScraper for the show-page parsing logic.
  * @see <a href="https://www.bar-jeder-vernunft.de/de/programm/kalender.html">Bar jeder Vernunft calendar</a>
