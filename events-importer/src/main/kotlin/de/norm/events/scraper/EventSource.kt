@@ -982,6 +982,22 @@ enum class EventSource {
     VELODROM,
 
     /**
+     * VOID Club Berlin – hand-coded Bootstrap techno club in Lichtenberg, running two rooms (VOID
+     * Club and VOID Hall). The homepage carries the whole programme inline as
+     * `article.void-event-card` blocks, each holding a **year-less** date the venue states twice
+     * (an `aria-label="Friday, August 7"` on `.void-event-date` and the rendered
+     * `.void-event-day`/`.void-event-number`/`.void-event-month` spans), the room(s) in use
+     * (`.void-event-venue`), one or more `.void-event-genre` tags, a `.void-event-title`, a
+     * `.void-event-lineup` paragraph per note and per DJ billing, and a Resident Advisor
+     * `a.void-event-button` — beside which some nights carry a second button linking the venue's
+     * own guestlist raffle. The hero slider above the cards re-links the five soonest events by
+     * their RA URL and is the only place a per-event teaser image appears. No times and no prices
+     * are published anywhere, and there are no per-event pages, so `sourceId` is built from the
+     * date plus the slugified title.
+     */
+    VOID_CLUB,
+
+    /**
      * Wild at Heart Berlin – retro hand-coded frameset rockabilly/punk venue in Kreuzberg. The whole concert
      * programme lives on a single `/concerts.php` page (linked from the `topics.htm` nav frame) as a flat
      * `<table>` of `<tr>` rows, each carrying a year-less `Weekday DD.MM.` date (`.datum`), a headliner

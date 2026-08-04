@@ -894,6 +894,28 @@ in the Blocked list until the 3 August 2026 re-check found a real `/programme/` 
 - 🟢 **One event has no poster.** The template carries the image as an inline `background-image` on the `<article>` rather than an `<img>`, and one article
   renders a literal `url()`; that must not become an image URL and does not.
 
+### VOID Club (`scraper/voidclub/`) — hand-coded Bootstrap, single page
+
+The two-room techno club in a Lichtenberg backyard. Verified against a live import (August 2026): **13 of 13 stored**, range 2026-08-07 → 2026-10-31, none in
+the past, 0 suspicious rows, every night with a Resident Advisor ticket link and 11 of 13 with a full DJ billing — 98 billings over 87 distinct acts. The site
+sends both an ETag and a Last-Modified, so a re-import 304s and does no work.
+
+- 🔴 **No times, no prices, no descriptions — for any night.** The cards carry a date, a room, genre tags, a title and a lineup, and nothing else; the venue
+  publishes its door times only on Resident Advisor. Nothing is inferred, so all 13 events store a bare date.
+- 🟠 **Only the five soonest nights have an image.** The cards carry no poster at all — the sole per-event image on the page is the teaser in the hero slider
+  above them, which shows the next five events and is matched back to its card by the Resident Advisor URL both link to. The other eight store none.
+- 🟠 **The room a night uses is recorded only on its acts.** `.void-event-venue` names the floor(s) in play (`VOID CLUB`, `VOID HALL`, `VOID CLUB & HALL`), and
+  the only modelled home for it is `event_artist.stage` — set for a single-room night, left null for a two-room one, which does not say who plays where. The two
+  nights with no announced lineup (below) therefore drop the room entirely, and no event-level field carries it.
+- 🟠 **Two nights store no artists because the venue has announced none.** Both say so explicitly (`LINEUP: TBA`, `LINE-UP: To be announced`), as do the trailing
+  `and more` / `— more to be announced` continuations on four other nights, all of which are dropped rather than minted as acts.
+- 🟢 **A `/`-joined billing stays one act.** `T78 / Activator` is stored whole: the venue separates acts with commas and `b2b`, and the shared splitter never
+  cuts on `/` (a slash sits inside single act names elsewhere in the project). Likewise `&` is not a boundary here — `Skulder & Mully` is billed as one comma
+  segment on 8 August and as the left half of a b2b slot on 17 October, so splitting it would invent an act that plays neither night.
+- 🟢 **Country tags stay attached to the act name.** `Ipkiss (NL)` is stored as `Ipkiss (Nl)` (de-shouted by `canonicalArtistName` like any name). Nothing in the
+  project strips a `(XX)` origin tag, so such an act would not merge with a bare spelling of itself imported from another venue — 7 artist rows are affected in
+  total, 5 of them from this venue.
+
 ---
 
 ## How to extend this doc
