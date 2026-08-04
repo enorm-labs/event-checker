@@ -249,6 +249,25 @@ enum class EventSource {
      */
     COSMIC_COMEDY,
 
+    /**
+     * Crack Bellmer – the RAW-Gelände microclub and dance bar, on Webflow. Its three `/program/…`
+     * tabs (`previous-month`, `this-month`, `next-month`) serve **identical** markup: one Finsweet
+     * CMS list holding the venue's whole published programme, filtered client-side by the month
+     * buttons. A single fetch therefore gets everything, and the listing carries about a month of
+     * already-passed nights alongside the upcoming ones.
+     *
+     * Each `.event-item` carries a `data-date` (`August 7, 2026` — the only place the year is
+     * written), an `h:mm a` start time, the title, a comma-separated genre line, a comma-separated
+     * lineup line and a poster; a night with no poster gets Webflow's placeholder SVG. The
+     * `/events/<slug>` detail page adds a prose blurb and nothing else, so `sourceId` is the Webflow
+     * slug and the detail fetch contributes only the description.
+     *
+     * The venue publishes no doors time, no prices and no ticket links (tickets are sold at the
+     * door), and states no event category — its own genre line is the only cue, so a night with no
+     * unambiguous format keyword is a `PARTY`.
+     */
+    CRACK_BELLMER,
+
     /** Duncker Club Berlin – retro hand-coded single-page `start.html` programme table (goth/wave/indie DJ nights), German `DD.MM.` dates without a year. */
     DUNCKER,
 

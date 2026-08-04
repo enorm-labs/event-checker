@@ -27,6 +27,7 @@
 ###   Columbia Theater     — https://columbia-theater.de/ (WordPress; homepage listing + /event/YYYYMMDD-<slug> detail pages)
 ###   Columbiahalle        — https://www.columbiahalle.berlin/veranstaltungen.html (Contao; single-page listing, month headings)
 ###   Cosmic Comedy Club   — https://comedyclubberlin.com/wp-json/tribe/events/v1/events (The Events Calendar REST API)
+###   Crack Bellmer        — https://www.crackbellmer.de/program/this-month (Webflow; one list, month tabs filter client-side)
 ###   Duncker Club         — https://www.dunckerclub.de/start.html
 ###   Festsaal Kreuzberg   — https://festsaal-kreuzberg.de/de/programm/ (Wagtail CMS JSON API)
 ###   Frannz Club          — https://frannz.eu/
@@ -1126,6 +1127,69 @@ Accept: application/json
 
 > {%
     client.test("Cosmic Comedy Club import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Crack Bellmer (Revaler Str. 99, Berlin-Friedrichshain — on the RAW-Gelände)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Crack Bellmer venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Crack Bellmer",
+    "address": "Revaler Str. 99",
+    "city": "Berlin",
+    "postalCode": "10245",
+    "district": "friedrichshain",
+    "latitude": 52.50770,
+    "longitude": 13.45070,
+    "websiteUrl": "https://www.crackbellmer.de",
+    "description": "A microclub and dance bar on the RAW-Gelände, programming house and techno nights alongside drag shows, swing dance parties and live jazz."
+}
+
+> {%
+    client.global.set("crack_bellmer_venue_id", response.body.id);
+    client.test("Crack Bellmer venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Crack Bellmer event source ---
+# Links the venue to the CrackBellmerWebsiteImporter.
+# The sourceType "CRACK_BELLMER" matches EventSource.CRACK_BELLMER.
+# NOTE: all three month tabs (/program/previous-month, /this-month, /next-month) serve the same
+# markup — one Finsweet CMS list holding the whole programme, filtered client-side — so this one
+# URL gets every event.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{crack_bellmer_venue_id}},
+    "name": "Crack Bellmer",
+    "url": "https://www.crackbellmer.de/program/this-month",
+    "sourceType": "CRACK_BELLMER",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Crack Bellmer event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Crack Bellmer import ---
+# Slug is derived from the source name: "Crack Bellmer" → crack-bellmer.
+POST {{importer-host}}/api/admin/event-sources/crack-bellmer/import
+Accept: application/json
+
+> {%
+    client.test("Crack Bellmer import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}
