@@ -77,6 +77,7 @@
 ###   Theater im Delphi    — https://theater-im-delphi.de/programm/ (WordPress; one row per performance; leaked price dump)
 ###   Urania               — https://www.urania.de/kalender/ (one house, halls unattributed; list + detail)
 ###   Urban Spree          — https://www.urbanspree.com/program/ (MODX; descending paginated list + detail)
+###   VOID Club            — https://www.void-club.de/ (hand-coded Bootstrap; year-less cards, two rooms)
 ###   Wild at Heart        — https://www.wildatheartberlin.de/concerts.php (retro frameset single-page listing)
 ###   Zenner               — https://zenner.berlin/programm (Gatsby/Sanity; page-data.json artefact)
 ###   Zitadelle            — https://citadel-music-festival.de/events (WordPress/Events Manager; summer open-air series)
@@ -4219,6 +4220,68 @@ Accept: application/json
 
 > {%
     client.test("Urban Spree import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### VOID Club (Wiesenweg 5, Berlin-Lichtenberg)
+### ————————————————————————————————————————————————————————————
+
+### --- Create VOID Club venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "VOID Club",
+    "address": "Wiesenweg 5",
+    "city": "Berlin",
+    "postalCode": "10365",
+    "district": "lichtenberg",
+    "latitude": 52.50650,
+    "longitude": 13.47950,
+    "websiteUrl": "https://www.void-club.de",
+    "description": "A two-room techno club in a Lichtenberg backyard, programming drum & bass, hardtechno, trance and bass nights across the VOID Club and VOID Hall floors."
+}
+
+> {%
+    client.global.set("void_club_venue_id", response.body.id);
+    client.test("VOID Club venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create VOID Club event source ---
+# Links the venue to the VoidClubWebsiteImporter.
+# The sourceType "VOID_CLUB" matches EventSource.VOID_CLUB.
+# NOTE: the URL is the homepage — the whole programme is inline there, and the `#events`
+# anchor above the cards only links out to Facebook and Resident Advisor.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{void_club_venue_id}},
+    "name": "VOID Club",
+    "url": "https://www.void-club.de/",
+    "sourceType": "VOID_CLUB",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("VOID Club event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial VOID Club import ---
+# Slug is derived from the source name: "VOID Club" → void-club.
+POST {{importer-host}}/api/admin/event-sources/void-club/import
+Accept: application/json
+
+> {%
+    client.test("VOID Club import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}

@@ -7,8 +7,8 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 
 | Status                              | Meaning                                                                              | Count |
 |-------------------------------------|--------------------------------------------------------------------------------------|------:|
-| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    70 |
-| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |     9 |
+| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    71 |
+| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |     8 |
 | ⛔ [Blocked](#-blocked--deferred)   | Website analyzed, but no usable listings (no programme page, JS-only, or too sparse) |    49 |
 | ❓ [Unanalyzed](#-not-analyzed-yet) | No URL recorded yet — website still needs a first look                               |    48 |
 
@@ -85,11 +85,12 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Urania                      | https://www.urania.de/kalender/                             | Concert Hall | One house; no source attributes an event to a hall    |
 | Urban Spree                 | https://www.urbanspree.com/program/                         | Club         | MODX; listing descending + paginated; walks pages     |
 | Velodrom                    | https://www.velomax.de/events                               | Arena        | Shares the VELOMAX listing; Microdata details         |
+| VOID Club                   | https://www.void-club.de/                                   | Techno Club  | Hand-coded Bootstrap; year from weekday; 2 rooms      |
 | Wild at Heart               | https://www.wildatheartberlin.de/                           | Bar          | Retro frameset; concerts.php; year from weekday       |
 | Zenner                      | https://zenner.berlin/programm                              | Club         | Gatsby/Sanity page-data JSON; UTC dates; archive      |
 | Zitadelle                   | https://citadel-music-festival.de/events                    | Open Air     | Festival site; WordPress/EM; summer season only       |
 
-69 importer classes cover 70 sources: only Kantine am Berghain has no class of its own, sharing the Berghain importer outright. Three other groups share a
+70 importer classes cover 71 sources: only Kantine am Berghain has no class of its own, sharing the Berghain importer outright. Three other groups share a
 *listing and parser* while keeping one thin `@Component` per venue, so they do not reduce the count — Club der Visionäre, Sonnenraum and MS Hoppetosse; the
 three Velomax halls; and Uber Arena with the Uber Eats Music Hall.
 
@@ -97,13 +98,12 @@ three Velomax halls; and Uber Arena with the Uber Eats Music Hall.
 
 Analyzed and scrapable — the candidates for the next `/scaffold-importer` runs. **Priority** reflects data richness and effort, not venue importance.
 
-These nine were analyzed on **4 August 2026**, working down the [Unanalyzed](#-not-analyzed-yet) table in RA-event-count order: 22 sites were opened, and these
-are the ones that server-render a dated programme. Each row was confirmed by fetching the raw HTML — no headless browser, per
-[ADR-007](adr/ADR-007_WEB_SCRAPING_STRATEGY.md) — and reading the events out of it.
+These eight — and VOID Club, since [imported](#-imported) — were analyzed on **4 August 2026**, working down the [Unanalyzed](#-not-analyzed-yet) table in
+RA-event-count order: 22 sites were opened, and these are the ones that server-render a dated programme. Each row was confirmed by fetching the raw HTML — no
+headless browser, per [ADR-007](adr/ADR-007_WEB_SCRAPING_STRATEGY.md) — and reading the events out of it.
 
 | Priority | Name           | URL                                            | Type         | Why / what it needs                                                                                                                                |
 |:--------:|----------------|------------------------------------------------|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
-|   High   | Void Club      | https://www.void-club.de/                      | Club         | Richest of the batch; `#events` on the homepage — day/month, floor (Club vs. Hall), genre tags, full lineup, ticket link                           |
 |   High   | Crack Bellmer  | https://www.crackbellmer.de/program/this-month | Bar          | Webflow; 67 events on one page — `this-month` and `next-month` serve identical HTML, so the month nav is client-side and one fetch gets everything |
 |   High   | Maaya          | https://maaya.de/                              | Club         | WordPress; "NEXT DATES" on the homepage; dd.MM.yyyy + time range, free/ticketed flag, Xceed ticket link                                            |
 |   High   | silent green   | https://www.silent-green.net/                  | Concert Hall | TYPO3 + `ld+json`; month headings, full dd.MM.yyyy, date ranges for multi-day runs                                                                 |
@@ -164,7 +164,8 @@ because the failure modes repeat and none of them is "the venue is too small":
 - **Squarespace accounts for three of the thirteen.** Bar Neun, Unkompress and Weekend all serve a large page whose event content is client-side only — Bar
   Neun's 1.1 MB of HTML yields no event text at all. Prachtwerk above is the same story.
 - **Two sites hand the programme back to RA.** Bulbul Berlin's "Program" button links to `ra.co/clubs/175191`, and its own page carries opening hours plus
-  "Special dates (Check: RA)". Void Club, by contrast, links to RA *for tickets* while still listing the events itself — which is why it reached Ready.
+  "Special dates (Check: RA)". VOID Club, by contrast, links to RA *for tickets* while still listing the events itself — which is why it is now
+  [imported](#-imported).
 - **A blog of past parties is not a programme.** Hafenbar Berlin server-renders 61 dated items, all of them write-ups of events that already happened (June,
   May, April 2026); `/events/` and `/veranstaltungen/` both 404.
 - **Neue Nationalgalerie repeats the Hamburger Bahnhof result exactly** — the shared SMB TYPO3 calendar renders cleanly and is richly dated, but every entry is
