@@ -95,19 +95,18 @@ records what should be repaired.
   Renate, Duncker and OHM. Applying it to lineups too is a one-line change per scraper but a cross-cutting data change: it needs a full re-seed and a decision
   on whether the "(live)" distinction is worth preserving elsewhere first (the model has no `LIVE` `ArtistRole`).
 - [ ] **Promoter display names lose genuine acronyms.** `PromoterNormalizer.deshout` is a bare title-caser, without the `ACRONYMS` / short-initialism guards
-  `ArtistNormalizer` already has, so `TV Noir` → `Tv Noir` and `Bossa FM` → `Bossa Fm`. Share one de-shout between the two normalizers. Same change should
-  fold Zitadelle's `tip Berlin` / `Tip` onto one spelling via `NAME_CORRECTIONS`. Display-only — slugs are case-insensitive and unaffected — but existing rows
-  keep their casing until re-created.
+  `ArtistNormalizer` already has, so `TV Noir` → `Tv Noir` and `Bossa FM` → `Bossa Fm`. Share one de-shout between the two normalizers. Same change should fold
+  Zitadelle's `tip Berlin` / `Tip` onto one spelling via `NAME_CORRECTIONS`. Display-only — slugs are case-insensitive and unaffected — but existing rows keep
+  their casing until re-created.
 - [ ] **Huxleys' genre and promoter are stored de-slugified.** Both are read from WordPress taxonomy slugs on the `article` element, so a stylised genre loses
   its punctuation (`kpop` → `Kpop`, not `K-Pop`) and a legal form comes back title-cased word by word (`Concert Concept Veranstaltungs Gmbh`). Needs a
   corrections map for the known slugs, in the same place as the promoter fix above.
 - [ ] **Arcanoa's recurring open stage becomes two artists and two slugs.** The venue hand-types its Monday night both `ARCANOA-Open Stage` and
   `ARCANOA- Open Stage`; only the second has a dash the parser pads, so the two normalize differently. Collapse the whitespace around the dash before
   normalizing.
-- [ ] **The screening keyword misses German compounds.** `SCREENING_TITLE_WORD_PATTERN` (`EventTypeMapping.kt`) anchors on `\bkino\b` to protect real act
-  names ("Alkinoos Ioannidis"), so
-  Kater's monthly `Nomadenkino` film night is typed `PARTY` instead of `SCREENING`. A suffix-anchored match (`\w+kino\b`) keeping the act-name guard would catch
-  the compounds; cross-cutting, so it needs a re-seed and a diff.
+- [ ] **The screening keyword misses German compounds.** `SCREENING_TITLE_WORD_PATTERN` (`EventTypeMapping.kt`) anchors on `\bkino\b` to protect real act names
+  ("Alkinoos Ioannidis"), so Kater's monthly `Nomadenkino` film night is typed `PARTY` instead of `SCREENING`. A suffix-anchored match (`\w+kino\b`) keeping the
+  act-name guard would catch the compounds; cross-cutting, so it needs a re-seed and a diff.
 - [ ] **Astra's dateless featured teaser is dropped whenever its detail fetch fails** — `11FREUNDE WM-QUARTIER` drops on every run. The teaser carries no date
   of its own, so one failed fetch loses the event entirely; a retry, or reusing the last-known date for that `sourceId`, would keep it.
 - [ ] **Heimathafen stores no genre only because the taxonomy is unresolved.** The venue *does* tag its events, but the REST payload carries term **ids** and
@@ -177,14 +176,14 @@ Strategy & sequencing: [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEG
 
 **Admin tooling & maintenance:**
 
-- [ ] **Admin frontend** — one place to operate the importers and curate the data. Start with Importer API endpoints + an admin IntelliJ HTTP Client
-  collection; the UI can follow. (`EventSourceController` already exposes per-source status + retry — build on it.)
+- [ ] **Admin frontend** — one place to operate the importers and curate the data. Start with Importer API endpoints + an admin IntelliJ HTTP Client collection;
+  the UI can follow. (`EventSourceController` already exposes per-source status + retry — build on it.)
     - [ ] Pick an admin dashboard template/kit rather than building the shell from scratch
     - [ ] **Imports status & control** — see per-source import states, especially **failed** imports, and trigger an import on demand
     - [ ] **Import configuration** — manage sources and their schedules
-    - [ ] **Data-quality overview** — per-metric and per-source view plus a trend chart, fed by the Pillar 1 endpoint + `data_quality_snapshot` snapshots.
-      Two questions to answer first: which fields actually matter for the site (probably titles and everything used for filtering), and which sources have the
-      worst quality / most missing important fields.
+    - [ ] **Data-quality overview** — per-metric and per-source view plus a trend chart, fed by the Pillar 1 endpoint + `data_quality_snapshot` snapshots. Two
+      questions to answer first: which fields actually matter for the site (probably titles and everything used for filtering), and which sources have the worst
+      quality / most missing important fields.
     - [ ] **Data review & fixing** — sort/filter events by missing fields; edit artist/promoter names, event types, genres, …
     - [ ] **AI-assisted checking & fixing** — cross-check stored data against the event's source page and propose fixes (Spring AI); human-in-the-loop review.
       Open question: local LLM vs. an API/subscription. Same capability as Pillar 4 above — decide it once, in ADR-012.
@@ -205,6 +204,20 @@ Strategy & sequencing: [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEG
     - [ ] Cover events at special/one-off locations (e.g. Durchlüften Festival @ Humboldtforum, Tempelhofer Feld, Olympiastadion)
     - [ ] Radio-station event listings (RadioEins, FluxFM, StarFM, …)
     - [ ] Consider importing from Resident Advisor — confirm legality first (probably not allowed)
+
+**Open questions — coverage scope:**
+
+- [ ] **Question: add classical concerts / orchestras?** e.g. Berliner Symphoniker, RBB Sendesaal, Konzerthaus, Philharmonie. Fits the existing `CONCERT` type,
+  but the data shape differs (orchestra/ensemble + conductor + soloists rather than a headliner + support), so the artist model and genre vocabulary need a look
+  first.
+- [ ] **Question: add comedy clubs?** Berlin has a sizeable English- and German-language stand-up scene (Comedy Café Berlin, Quatsch Comedy Club, …). Mostly a
+  new venue category plus an event type; the least model impact of the questions here.
+- [ ] **Question: add theatres?** Closest to what exists — Theater im Delphi, Heimathafen and Bar jeder Vernunft are already imported, so this is mostly a
+  question of covering the remaining houses (Volksbühne, Schaubühne, Berliner Ensemble, …) rather than a new category.
+- [ ] **Question: add exhibitions?** Museums and galleries have a different time shape — a run of weeks/months rather than a start time on one evening — so it
+  needs a decision on how a date range is modelled and displayed before any importer.
+- [ ] **Question: add sport events?** A completely new category — different venues, different audience, and arguably too much of a scope extension for an
+  events/music-focused app. Answer this one independently of theatres and exhibitions.
 
 ## Operations & Hardening
 
