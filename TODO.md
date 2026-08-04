@@ -65,13 +65,10 @@ Rough priority: **Now** → **Next** → grouped backlog → **Someday / Vision*
 
 ## Importer / Data
 
-- Known per-importer gaps & missing-data limitations are catalogued in
-  [docs/IMPORTER_KNOWN_ISSUES.md](docs/IMPORTER_KNOWN_ISSUES.md) — pull from there when picking up work.
-
 **Bugs:**
 
-Defects with a known fix, pulled out of [docs/IMPORTER_KNOWN_ISSUES.md](docs/IMPORTER_KNOWN_ISSUES.md) — that file records *accepted* limitations, this list
-records what should be repaired.
+Importer defects with a known fix. Accepted limitations — a field the venue simply doesn't publish, or a trade-off a parser makes deliberately — live in that
+scraper's own KDoc instead, so only what should actually be *repaired* is listed here.
 
 - [ ] **A late-night club event is dropped at midnight while it is still running.** `EventUpsertService.dropPastEvents` compares dates only, so a night the
   venue lists as `31/07 23:00` — which actually runs until ~06:00 the next morning — disappears from the app at 00:00, hours before it ends. It hits every
@@ -108,10 +105,26 @@ records what should be repaired.
   ("Alkinoos Ioannidis"), so Kater's monthly `Nomadenkino` film night is typed `PARTY` instead of `SCREENING`. A suffix-anchored match (`\w+kino\b`) keeping the
   act-name guard would catch the compounds; cross-cutting, so it needs a re-seed and a diff.
 - [ ] **Astra's dateless featured teaser is dropped whenever its detail fetch fails** — `11FREUNDE WM-QUARTIER` drops on every run. The teaser carries no date
-  of its own, so one failed fetch loses the event entirely; a retry, or reusing the last-known date for that `sourceId`, would keep it.
+  of its own, so one failed fetch loses the event entirely; a retry, or reusing the last-known date for that `sourceId`, would keep it. Lido runs on the same
+  Kulturhäuser platform and has the same teaser, so fix it once for both.
 - [ ] **Heimathafen stores no genre only because the taxonomy is unresolved.** The venue *does* tag its events, but the REST payload carries term **ids** and
   the `class_list` slugs are lossy (`rb` for R&B). Resolving the 560-term `events_tag` vocabulary once per import and caching it — plus a stop-list, since the
   vocabulary mixes real genres with formats and access notes (Konzert, Premiere, Gebärdensprache) — is what unblocks the genre field for all 95 events.
+- [ ] **A country/origin tag stays attached to the act name.** `Ipkiss (NL)`, `ANEMONE (NL)`, `NIGHT NAIL (Dark Wave US/DE)` and `Apichat Pakwan (Thailand-
+  Live)` are stored verbatim, so they never resolve to the bare spelling of the same act imported from another venue (7 artist rows affected today, 5 of them
+  VOID Club's). `arkaoda` already strips a trailing all-caps code group locally — lift that into the shared `stripArtistSuffix`, extend it to spelled-out
+  countries, and keep the existing carve-out for a parenthesised *alias* (`Sickboyrari (Black Kray)`). Cross-cutting, so it needs a `--full` re-seed and a diff.
+- [ ] **Only concerts get an artist, so a solo bill outside `CONCERT` loses its performer.** `buildArtistsForEventType` mints a headliner from the title for a
+  `CONCERT` and stays silent otherwise. That is right for a production title (`DIE KLIMA-MONOLOGE`) but wrong for the `"<performer> – <show>"` idiom every
+  variety and comedy house uses — Admiralspalast stores an artist for 66 of 201 events and loses `Bülent Ceylan` from *Bülent Ceylan – Diktatürk*; Heimathafen
+  stores one for 30 of 95. Cosmic Comedy already proves the split works (it derives the act from exactly that idiom for its `Comedy Special` nights), so the
+  rule can be shared rather than reinvented per venue.
+- [ ] **There is no event-level room, so a multi-room venue loses which space a show plays in.** `ScrapedArtist.stage` is the only home for it, so the room
+  survives only where there are acts to hang it on: VOID Club drops `VOID CLUB` / `VOID HALL` on its two `TBA` nights, and Heimathafen parses `(Saal)` /
+  `(Studio)` out of its doors-time note and discards it. Needs an event-level field plus a decision on how it relates to the per-artist stage.
+- [ ] **There is no event end time.** Kater publishes a full `Sa. 01.08 22:00 — So. 02.08 10:00` span and Heideglühen a "bis Sonntag, 6 Uhr" tail; both are kept
+  as prose because the model stores only a start. The same missing field is why the late-night drop above needs a start-time heuristic instead of simply asking
+  whether the event has ended.
 
 **Data quality — normalize, validate, enrich:**
 
@@ -156,14 +169,15 @@ Strategy & sequencing: [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEG
 - [ ] Scrape events in multiple languages (English + German) where the source offers it (e.g. Berghain) — first audit which event sources are actually
   multi-language
 - [ ] Update importers to scrape/parse **all** available events via the site's navigation/pagination (not just the first page)
-- [ ] Review events typed `OTHER` — should we add new values to the event-type enum?
+- [ ] Review events typed `OTHER` — should we add new values to the event-type enum? Four formats have no type of their own today and are filed under a
+  neighbour: comedy (Cosmic Comedy's whole 57-event programme reads as `SHOW`), dance and theatre (Theater im Delphi's `Tanz`/`Theater`, the AEG venues'
+  ballet), lectures and panels (Urania's, filed `READING`), and sport (not imported at all — see the coverage question below).
 - [ ] Expand Elfsight **monthly** recurrence rules (`repeatPeriod: nthDayInMonth`, `repeatFrequency: monthly`). Humboldthain expands the weekly rules its
-  resident night uses; Neue Zukunft's recurring entries are monthly and are still imported once, at their start date only (4 of 44 entries — see
-  `IMPORTER_KNOWN_ISSUES.md`). Fixing it also needs `NeueZukunftApiScraper`'s `sourceId` to carry the occurrence date (Humboldthain already does), which
-  re-mints every existing Neue Zukunft event — so do it as one change, not two.
+  resident night uses; Neue Zukunft's recurring entries are monthly and are still imported once, at their start date only (4 of 44 entries). Fixing it also
+  needs `NeueZukunftApiScraper`'s `sourceId` to carry the occurrence date (Humboldthain already does), which re-mints every existing Neue Zukunft event — so do
+  it as one change, not two.
 - [ ] **Two shared title-parsing rules are too literal, and each currently needs a per-importer workaround.** Both surfaced at LARK, which works around them
-  locally (see `IMPORTER_KNOWN_ISSUES.md`); fixing them centrally changes classification for every venue, so it needs a `--full` re-seed and a diff, not a
-  drive-by edit.
+  locally; fixing them centrally changes classification for every venue, so it needs a `--full` re-seed and a diff, not a drive-by edit.
     - `PARTY_TITLE_KEYWORDS` matches a bare `club` as a substring, so a tour named "… CLUB TOUR" is typed `PARTY` — and a party title mints no artists, so the
       headliner is lost too. Word-anchor it (as `\brave\b` and `\bkino\b` already are), or drop the bare entry and keep `club night` / `clubnight`.
     - `ARTIST_SUFFIX_PATTERN` and `stripShoutedTourTail` only recognise the **ASCII hyphen** as the act/tour boundary, so an en- or em-dash tour tail ("Greg
@@ -217,7 +231,8 @@ Strategy & sequencing: [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEG
 - [ ] **Question: add exhibitions?** Museums and galleries have a different time shape — a run of weeks/months rather than a start time on one evening — so it
   needs a decision on how a date range is modelled and displayed before any importer.
 - [ ] **Question: add sport events?** A completely new category — different venues, different audience, and arguably too much of a scope extension for an
-  events/music-focused app. Answer this one independently of theatres and exhibitions.
+  events/music-focused app. Answer this one independently of theatres and exhibitions. Note the arenas already force the question: the model has no `SPORT`
+  type, so the Velomax halls drop 32 of 85 listed entries and Uber Arena 40 of 128 rather than burying their concerts under `OTHER`.
 
 ## Operations & Hardening
 

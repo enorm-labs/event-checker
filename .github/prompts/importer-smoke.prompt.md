@@ -90,18 +90,17 @@ that parses *something* plausible from the wrong container passes every automate
 - Titles/dates don't match the live page.
 - Another source lost events.
 
-**Soft findings — ship, but write them down** in `docs/IMPORTER_KNOWN_ISSUES.md` with the right impact marker (🔴/🟠/🟢), or `TODO.md` if the fix is a systemic
-change rather than a per-importer one. A finding earns an entry only when it passes both filters:
+**Soft findings — ship, but write them down.** Where depends on what kind of finding it is:
 
-1. **The gap is ours, not the venue's.** We lose or mangle data the source *did* publish, or our model has nowhere to put it — a mis-split lineup, a field
-   dropped because it has no column, an entity that won't merge with its counterpart from another venue.
-2. **It isn't a quick fix.** A one-line fix should just be made. A real but larger fix goes on the **Bugs** list in `TODO.md` with a `→ tracked in TODO.md`
-   pointer from the entry. What stays in `IMPORTER_KNOWN_ISSUES.md` is what we've decided to live with.
+1. **A gap that is ours and worth repairing** → the **Bugs** list in `TODO.md`. We lose or mangle data the source *did* publish, or our model has nowhere to
+   put it: a mis-split lineup, a field dropped because it has no column, an entity that won't merge with its counterpart from another venue. If it is a
+   one-line fix, just make it instead.
+2. **A limitation we accept** → the importer's or scraper's KDoc, next to the code that causes it. This is also where a field the site simply doesn't publish
+   goes (no prices, no doors time, no images, a `TBA` lineup), and `event_type = OTHER` where the site gives no usable signal. The importer stored everything
+   that was there, so there is nothing to action.
 
-So do **not** open an entry for a field the site simply doesn't publish (no prices, no doors time, no images, a `TBA` lineup), or for `event_type = OTHER` where
-the site gives no usable signal. The importer stored everything that was there, so there is nothing to action — note it in the scraper's KDoc instead, and let
-the coverage numbers in the entry's opening paragraph carry it. Likewise check the existing entries before flagging artist-less concerts: the ~40% baseline is
-already documented and accepted.
+Read the venue's existing KDoc before flagging anything — most of what a first look turns up is already recorded there as a deliberate decision, artist-less
+concerts included.
 
 ### 7. Report
 
@@ -116,4 +115,4 @@ numbers and sample rows — never a bare "looks good". If you documented soft fi
 - [ ] `check <slug>` reviewed: dates, times, prices, types, artists, `source_id` prefix
 - [ ] Sample rows compared against the live listing page
 - [ ] `diff-snapshot` shows no other source losing events
-- [ ] Soft findings recorded in `IMPORTER_KNOWN_ISSUES.md` / `TODO.md`
+- [ ] Soft findings recorded — repairable defects in `TODO.md` (Bugs), accepted limitations in the importer/scraper KDoc

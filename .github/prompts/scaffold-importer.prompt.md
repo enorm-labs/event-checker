@@ -65,11 +65,12 @@ Before writing anything, learn how the site is built and whether you're allowed 
 
 ## 2. Add the `EventSource` enum value
 
-In `scraper/EventSource.kt`, add a value with a KDoc comment describing the venue and its tech, matching the existing entries. The name becomes the
-`source_type` key and the `sourceId` prefix (lowercased):
+In `scraper/EventSource.kt`, add a value with a **one-line KDoc describing the venue itself** — what kind of place it is, where, what it programmes. Nothing
+about the site's platform, pages or parsing: that belongs in the importer and scraper KDoc (step 3), and duplicating it here only lets the two drift. The name
+becomes the `source_type` key and the `sourceId` prefix (lowercased):
 
 ```kotlin
-/** SO36 Berlin – hand-coded HTML program listing at /programm. */
+/** SO36 Berlin – the Oranienstraße club central to Berlin's punk and new-wave history. */
 SO36,
 ```
 
@@ -96,10 +97,10 @@ New importers live in their own sub-package: `scraper/<venue>/`. Create:
 
 Set `override val eventSource = EventSource.<VENUE>`.
 
-**The scraper's KDoc is where the source's shape gets documented** — including what it *doesn't* carry. Fields the venue simply never publishes (no door times,
-no prices, no poster, no per-event page) belong here and in the `EventSource` entry, not in `docs/IMPORTER_KNOWN_ISSUES.md`: the importer stored everything
-that was there, so there is nothing to action. That doc is reserved for gaps that are *ours* — data we lose or mangle, or that our model has nowhere to put —
-and that aren't a quick fix. Also record the traps the parser handles and why a selector was chosen, so the reasoning sits next to the code it constrains.
+**The importer's and scrapers' KDoc is where the source gets documented** — the platform, which pages or APIs are read and why, the traps the parser handles,
+why a selector was chosen, and what the source *doesn't* carry (no door times, no prices, no poster, no per-event page). Accepted limitations live here too:
+the importer stored everything that was there, so there is nothing to action elsewhere. Only a defect we could actually repair goes in the **Bugs** list in
+`TODO.md`. Write it once, next to the code it constrains — not in `EventSource.kt` and not in `dev-seed.http`.
 
 ## 4. Reuse the shared scraper utilities
 
@@ -161,9 +162,10 @@ Sources are seeded at runtime via the REST API, not Flyway (ADR-007 §"Source re
 1. **`http/importer/dev-seed.http`** — add a venue-creation `POST /api/admin/venues` (with `district` — the frontend has a district filter) capturing the venue
    id, then a `POST /api/admin/event-sources` linking
    `venueId` + `"sourceType": "<VENUE>"` + the listing `url`, then a `POST /api/admin/event-sources/<slug>/import`
-   to trigger the first import. Copy the numbered block format of an existing venue and update the header comment/source list at the top. Note the import slug
-   is derived from the source **name**
-   (e.g. "Astra Kulturhaus" → `astra-kulturhaus`).
+   to trigger the first import. Copy the numbered block format of an existing venue and add the venue to the `Sources (alphabetical)` list at the top as a bare
+   `Name — URL` line. The only comments in a source block are the two that name the wiring (`# Links the venue to the <Venue>WebsiteImporter.` and
+   `# The sourceType "<VENUE>" matches EventSource.<VENUE>.`) — everything about the site itself belongs in the importer's KDoc, not here. Note the import slug
+   is derived from the source **name** (e.g. "Astra Kulturhaus" → `astra-kulturhaus`).
 2. Optionally add ad-hoc CRUD examples to `http/importer/event-sources.http` and `http/importer/venues.http`.
 
 No Flyway migration is needed — the `event_source` schema already exists (`V001__create_initial_schema.sql`); migrations are DDL-only (ADR-005).
@@ -188,11 +190,11 @@ imported events look sane. Be polite — the per-host throttle (200ms) applies a
 
 - [ ] `robots.txt` checked; **checked for a JSON/API source first** — using `ApiClient` if one exists, HTML scraping only as a fallback; not a JS SPA without an
   API
-- [ ] `EventSource` enum value added with KDoc
+- [ ] `EventSource` enum value added with a one-line venue description (no site/parsing detail)
 - [ ] `<venue>/` package: overview scraper (+ detail scraper if list+detail) + `@Component` importer
 - [ ] Shared extension helpers reused; selectors are semantic/structured, not positional
 - [ ] `sourceId` is stable and prefixed via `sourceIdPrefix`; events validated before return
 - [ ] Fixtures saved under `src/test/resources/scraper/<venue>/` (`.html` for HTML, `.json` for API)
 - [ ] Scraper + importer tests covering happy path, edge cases, NotModified, empty page
-- [ ] `dev-seed.http` updated (venue + source + trigger); header comment refreshed
+- [ ] `dev-seed.http` updated (venue + source + trigger); source list at the top refreshed
 - [ ] `ktlintCheck`, `detekt`, `ModularityTests`, and new tests all green; `/verify` clean

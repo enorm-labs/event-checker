@@ -9,7 +9,7 @@ import de.norm.events.scraper.EventSource
  * `hoppetosse.berlin/program/`) interleaves the nights of all three rooms in one
  * chronological run. The **only** marker of which room a night belongs to is the
  * colour class the theme puts on its title paragraph — there is no per-room page,
- * category or data attribute (see [EventSource.CLUB_DER_VISIONAERE]).
+ * category or data attribute, and the WordPress REST API exposes no room either.
  *
  * Each room is therefore a separate import source with its own venue and its own
  * `sourceId` prefix, all served by [ClubDerVisionaereProgrammePageScraper] filtering

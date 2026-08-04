@@ -43,7 +43,10 @@ import java.time.LocalDate
  * A cancelled date keeps its row and is prefixed `ABGESAGT:` in the title — the only place either
  * venue states a status — so that prefix becomes the status and is stripped from the stored name.
  *
- * **Sport rows are dropped** rather than stored as `OTHER`; see [EventSource.UBER_ARENA].
+ * **Sport rows are dropped** rather than stored as `OTHER`: the arena is home to ALBA Berlin and the
+ * Eisbären, and filed as `OTHER` those fixtures would bury the concerts, shows and comedy nights
+ * they sit among — the same call the Velomax halls make. They are also the only rows carrying a
+ * `00:00 Uhr` placeholder start, so the filter removes that noise too.
  *
  * This class performs **no I/O** — it operates solely on a pre-fetched Jsoup [Document].
  *

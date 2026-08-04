@@ -10,78 +10,78 @@
 ### run finishes. Poll `GET /api/admin/event-sources` to watch each source's status.
 ###
 ### Sources (alphabetical):
-###   Admiralspalast      — https://www.admiralspalast.theater/veranstaltungsuebersicht.html (Contao; per-performance rows)
-###   ÆDEN                 — https://aedenberlin.com/events/ (WordPress techno club; entry → /month/?month=YYYY-MM pages)
-###   Alte Kantine         — https://alte-kantine.eu/ (WordPress Content Views grid, list + detail)
-###   AMT                  — https://www.club-amt.berlin/events (Webflow techno club; entry → /month/<name> pages)
-###   Arcanoa              — https://www.ssi-media.com/arcanoa/veranst.htm (1990s hand-coded single-page programme)
-###   arkaoda              — https://berlin.arkaoda.com/?/default/program (hand-coded PHP; list + detail)
+###   Admiralspalast      — https://www.admiralspalast.theater/veranstaltungsuebersicht.html
+###   ÆDEN                 — https://aedenberlin.com/events/
+###   Alte Kantine         — https://alte-kantine.eu/
+###   AMT                  — https://www.club-amt.berlin/events
+###   Arcanoa              — https://www.ssi-media.com/arcanoa/veranst.htm
+###   arkaoda              — https://berlin.arkaoda.com/?/default/program
 ###   Astra Kulturhaus     — https://www.astra-berlin.de/
 ###   Badehaus             — https://badehaus-berlin.com/events/
-###   Bar jeder Vernunft   — https://www.bar-jeder-vernunft.de/de/programm/kalender.html (Neos CMS; per-date JSON-LD + show pages)
-###   Berghain             — https://www.berghain.berlin/de/program/ (server-rendered; list + detail)
+###   Bar jeder Vernunft   — https://www.bar-jeder-vernunft.de/de/programm/kalender.html
+###   Berghain             — https://www.berghain.berlin/de/program/
 ###   Bi Nuu               — https://binuu.de/de/events
 ###   Cassiopeia           — https://cassiopeia-berlin.de/club
 ###   Clash                — https://clash-berlin.de/
-###   Club der Visionäre   — https://clubdervisionaere.com/programm/ (WordPress; one listing, three rooms by colour class)
-###   Columbia Theater     — https://columbia-theater.de/ (WordPress; homepage listing + /event/YYYYMMDD-<slug> detail pages)
-###   Columbiahalle        — https://www.columbiahalle.berlin/veranstaltungen.html (Contao; single-page listing, month headings)
-###   Cosmic Comedy Club   — https://comedyclubberlin.com/wp-json/tribe/events/v1/events (The Events Calendar REST API)
-###   Crack Bellmer        — https://www.crackbellmer.de/program/this-month (Webflow; one list, month tabs filter client-side)
+###   Club der Visionäre   — https://clubdervisionaere.com/programm/
+###   Columbia Theater     — https://columbia-theater.de/
+###   Columbiahalle        — https://www.columbiahalle.berlin/veranstaltungen.html
+###   Cosmic Comedy Club   — https://comedyclubberlin.com/wp-json/tribe/events/v1/events
+###   Crack Bellmer        — https://www.crackbellmer.de/program/this-month
 ###   Duncker Club         — https://www.dunckerclub.de/start.html
-###   Festsaal Kreuzberg   — https://festsaal-kreuzberg.de/de/programm/ (Wagtail CMS JSON API)
+###   Festsaal Kreuzberg   — https://festsaal-kreuzberg.de/de/programm/
 ###   Frannz Club          — https://frannz.eu/
-###   Golden Gate          — https://goldengate-berlin.de/ (WordPress/Elementor; current Thu–Sat block only)
+###   Golden Gate          — https://goldengate-berlin.de/
 ###   Gretchen             — https://www.gretchen-club.de/
-###   Havanna              — https://www.havanna-berlin.de/events (undated weekly nights, expanded to dated occurrences)
-###   Heideglühen          — https://heidegluehen.berlin/monatsvorschau/ (one month at a time; lineup on /aktuell/)
-###   Heimathafen Neukölln — https://heimathafen-neukoelln.de/wp-json/wp/v2/events (WP REST + ACF; performances array)
-###   Hole 44              — https://hole-berlin.de/events/ (WordPress/Events-Manager, list + detail)
-###   Humboldthain Club    — https://core.service.elfsight.com/p/boot/?w=<widgetId> (Elfsight widget API; weekly night expanded)
-###   Huxleys Neue Welt    — https://huxleysneuewelt.de/events (WordPress/Events-Manager; list + detail, ISO slug date)
-###   Junction Bar         — https://www.junction-bar.de/ (live music + DJ programs)
-###   Kantine am Berghain  — https://www.berghain.berlin/de/program/kantine-am-berghain/ (shares BERGHAIN importer)
-###   Kater                — https://www.katerclub.de/ (WordPress; homepage programme, ___ floor rules)
-###   LARK                 — https://larkberlin.com/wp-json/wp/v2/event (WP REST + ACF; post date is the event date)
+###   Havanna              — https://www.havanna-berlin.de/events
+###   Heideglühen          — https://heidegluehen.berlin/monatsvorschau/
+###   Heimathafen Neukölln — https://heimathafen-neukoelln.de/wp-json/wp/v2/events
+###   Hole 44              — https://hole-berlin.de/events/
+###   Humboldthain Club    — https://core.service.elfsight.com/p/boot/?w=<widgetId>
+###   Huxleys Neue Welt    — https://huxleysneuewelt.de/events
+###   Junction Bar         — https://www.junction-bar.de/
+###   Kantine am Berghain  — https://www.berghain.berlin/de/program/kantine-am-berghain/
+###   Kater                — https://www.katerclub.de/
+###   LARK                 — https://larkberlin.com/wp-json/wp/v2/event
 ###   Lido                 — https://www.lido-berlin.de/
-###   Loge                 — https://www.loge-berlin.org/event-list (Wix Events warmup JSON + JSON-LD price)
-###   Madame Claude        — https://madameclaude.de/ (WordPress `event` REST API, ACF-backed)
-###   Matrix               — https://www.matrix-berlin.de/party-in-berlin/ (WordPress; entry → per-month pages)
-###   Max-Schmeling-Halle  — https://www.velomax.de/events (shared VELOMAX listing; hall by CSS class)
-###   MAXXIM               — https://www.maxxim-berlin.de/partys (Wix Events warmup JSON; nightly DJ programme)
-###   Metropol             — https://metropol-berlin.de/events (WordPress/Events-Manager, list + detail, ISO slug date)
-###   Tresor               — https://tresorberlin.com/club/events/ (WordPress; list + detail, floor lineups)
-###   Uber Arena           — https://www.uber-arena.de/events/all (AEG CMS; sport excluded)
-###   Uber Eats Music Hall — https://www.uber-eats-music-hall.de/events/all (shares the UBER_ARENA platform)
-###   UFO im Velodrom      — https://www.velomax.de/events (shares the VELOMAX listing)
-###   Velodrom             — https://www.velomax.de/events (shares the VELOMAX listing)
-###   Mikropol             — https://mikropol-berlin.de/events/ (WordPress/Events-Manager, list + detail)
-###   Modus Berlin         — https://modus-berlin.de/events (hand-built; rendered date wins over the slug)
-###   Monarch              — https://kottimonarch.de/programm.php (retro PHP single-page listing)
-###   MS Hoppetosse        — https://hoppetosse.berlin/program/ (shares the CLUB_DER_VISIONAERE listing; winter location)
-###   Neue Zukunft         — https://neue-zukunft.org/ (Elfsight Event Calendar widget JSON API)
-###   OHM                  — https://ohmberlin.com/ (hand-themed WordPress; year-less dates, 1-3 nights)
-###   Panke Culture       — https://www.pankeculture.com/programme/ (WordPress/Divi; upcoming list only)
-###   Parkbühne Wuhlheide  — https://www.wuhlheide.de/programm (October CMS; ISO date in the event URL)
+###   Loge                 — https://www.loge-berlin.org/event-list
+###   Madame Claude        — https://madameclaude.de/
+###   Matrix               — https://www.matrix-berlin.de/party-in-berlin/
+###   Max-Schmeling-Halle  — https://www.velomax.de/events
+###   MAXXIM               — https://www.maxxim-berlin.de/partys
+###   Metropol             — https://metropol-berlin.de/events
+###   Tresor               — https://tresorberlin.com/club/events/
+###   Uber Arena           — https://www.uber-arena.de/events/all
+###   Uber Eats Music Hall — https://www.uber-eats-music-hall.de/events/all
+###   UFO im Velodrom      — https://www.velomax.de/events
+###   Velodrom             — https://www.velomax.de/events
+###   Mikropol             — https://mikropol-berlin.de/events/
+###   Modus Berlin         — https://modus-berlin.de/events
+###   Monarch              — https://kottimonarch.de/programm.php
+###   MS Hoppetosse        — https://hoppetosse.berlin/program/
+###   Neue Zukunft         — https://neue-zukunft.org/
+###   OHM                  — https://ohmberlin.com/
+###   Panke Culture       — https://www.pankeculture.com/programme/
+###   Parkbühne Wuhlheide  — https://www.wuhlheide.de/programm
 ###   Privatclub           — https://privatclub-berlin.de/
-###   Quasimodo            — https://quasimodo.club/events (Events-Manager; .club domain, not .de)
-###   Renate               — https://www.renate.cc/ (WordPress; homepage programme, per-floor lineups)
-###   Ritter Butzke        — https://club.ritterbutzke.com/events (same codebase as Modus; stale slug dates)
+###   Quasimodo            — https://quasimodo.club/events
+###   Renate               — https://www.renate.cc/
+###   Ritter Butzke        — https://club.ritterbutzke.com/events
 ###   Roadrunner's Paradise — http://www.roadrunners-paradise.de/programm.html
-###   Säälchen             — https://www.holzmarkt.com/kalender (Drupal; shared calendar, filtered by location)
+###   Säälchen             — https://www.holzmarkt.com/kalender
 ###   Schokoladen          — https://www.schokoladen-mitte.de/
 ###   SO36                 — https://www.so36.com/tickets
-###   Soda Club            — https://www.soda-berlin.de/events (disco2app CMS; list + detail with MusicEvent JSON-LD)
-###   Sonnenraum           — https://clubdervisionaere.com/programm/ (shares the CLUB_DER_VISIONAERE listing)
-###   Supamolly            — https://www.supamolly.de/?p=programm (retro PHP single-page listing; row id = date stamp)
-###   Tempodrom            — https://www.tempodrom.de/programm-und-tickets/ (schema.org Event JSON-LD)
-###   Theater im Delphi    — https://theater-im-delphi.de/programm/ (WordPress; one row per performance; leaked price dump)
-###   Urania               — https://www.urania.de/kalender/ (one house, halls unattributed; list + detail)
-###   Urban Spree          — https://www.urbanspree.com/program/ (MODX; descending paginated list + detail)
-###   VOID Club            — https://www.void-club.de/ (hand-coded Bootstrap; year-less cards, two rooms)
-###   Wild at Heart        — https://www.wildatheartberlin.de/concerts.php (retro frameset single-page listing)
-###   Zenner               — https://zenner.berlin/programm (Gatsby/Sanity; page-data.json artefact)
-###   Zitadelle            — https://citadel-music-festival.de/events (WordPress/Events Manager; summer open-air series)
+###   Soda Club            — https://www.soda-berlin.de/events
+###   Sonnenraum           — https://clubdervisionaere.com/programm/
+###   Supamolly            — https://www.supamolly.de/?p=programm
+###   Tempodrom            — https://www.tempodrom.de/programm-und-tickets/
+###   Theater im Delphi    — https://theater-im-delphi.de/programm/
+###   Urania               — https://www.urania.de/kalender/
+###   Urban Spree          — https://www.urbanspree.com/program/
+###   VOID Club            — https://www.void-club.de/
+###   Wild at Heart        — https://www.wildatheartberlin.de/concerts.php
+###   Zenner               — https://zenner.berlin/programm
+###   Zitadelle            — https://citadel-music-festival.de/events
 ### ============================================================
 
 ### ————————————————————————————————————————————————————————————
@@ -114,10 +114,6 @@ Content-Type: application/json
 ### --- Create Admiralspalast event source ---
 # Links the venue to the AdmiralspalastWebsiteImporter.
 # The sourceType "ADMIRALSPALAST" matches EventSource.ADMIRALSPALAST.
-# NOTE: the A-Z listing is a discovery list only — every tile shows the same "ab DD.MM.YY" run start.
-# The schedule lives on each /veranstaltung/<slug>.html page, whose #eventlist carries one row per
-# performance, so one production yields several events. The eventkategorie filter pages are walked
-# for the category, which the venue states nowhere else.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -177,8 +173,6 @@ Content-Type: application/json
 ### --- Create ÆDEN event source ---
 # Links the venue to the AedenWebsiteImporter.
 # The sourceType "AEDEN" matches EventSource.AEDEN.
-# The URL is the `/events/` month index; the importer follows every `a.month-button`
-# to its server-rendered `/month/?month=YYYY-MM` page.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -238,7 +232,6 @@ Content-Type: application/json
 ### --- Create Alte Kantine event source ---
 # Links the venue to the AlteKantineWebsiteImporter.
 # The sourceType "ALTE_KANTINE" matches EventSource.ALTE_KANTINE.
-# The URL is the homepage `/` (the Content Views programme grid); each event links to a `?p=<id>` detail post.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -298,8 +291,6 @@ Content-Type: application/json
 ### --- Create AMT event source ---
 # Links the venue to the AmtWebsiteImporter.
 # The sourceType "AMT" matches EventSource.AMT.
-# The URL is the `/events` entry page; the importer follows its `/month/<name>` links to the
-# per-month event listings (the entry page itself renders no events server-side).
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -359,8 +350,6 @@ Content-Type: application/json
 ### --- Create Arcanoa event source ---
 # Links the venue to the ArcanoaWebsiteImporter.
 # The sourceType "ARCANOA" matches EventSource.ARCANOA.
-# NOTE: the URL is `veranst.htm` (the programme page), not the `index.htm` landing page,
-# which carries only the venue's standing weekly schedule and no dated events.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -381,7 +370,6 @@ Content-Type: application/json
 %}
 
 ### --- Trigger initial Arcanoa import ---
-# Slug is derived from the source name: "Arcanoa" → arcanoa.
 POST {{importer-host}}/api/admin/event-sources/arcanoa/import
 Accept: application/json
 
@@ -421,8 +409,6 @@ Content-Type: application/json
 ### --- Create arkaoda event source ---
 # Links the venue to the ArkaodaWebsiteImporter.
 # The sourceType "ARKAODA" matches EventSource.ARKAODA.
-# NOTE: the URL is the router path `?/default/program`; the site root renders the same
-# theme but no event blocks. Only *upcoming* events are listed, so the page is short.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -482,7 +468,6 @@ Content-Type: application/json
 ### --- Create Astra Kulturhaus event source ---
 # Links the venue to the AstraWebsiteImporter.
 # The sourceType "ASTRA" matches EventSource.ASTRA.
-# NOTE: the URL is the homepage `/` (the program); `/events` is the past archive.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -542,7 +527,6 @@ Content-Type: application/json
 ### --- Create Badehaus event source ---
 # Links the venue to the BadehausWebsiteImporter.
 # The sourceType "BADEHAUS" matches EventSource.BADEHAUS.
-# NOTE: the URL is `/events/` (the listing), not the homepage.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -602,9 +586,6 @@ Content-Type: application/json
 ### --- Create Bar jeder Vernunft event source ---
 # Links the venue to the BarJederVernunftWebsiteImporter.
 # The sourceType "BAR_JEDER_VERNUNFT" matches EventSource.BAR_JEDER_VERNUNFT.
-# NOTE: the URL is the `/kalender.html` calendar (one card per performance date), not
-# `/programmuebersicht.html` (one card per production, with no dates). The importer follows
-# each distinct show page from there for genre, prices and the full blurb.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -625,7 +606,6 @@ Content-Type: application/json
 %}
 
 ### --- Trigger initial Bar jeder Vernunft import ---
-# Slug is derived from the source name: "Bar jeder Vernunft" → bar-jeder-vernunft.
 POST {{importer-host}}/api/admin/event-sources/bar-jeder-vernunft/import
 Accept: application/json
 
@@ -664,10 +644,7 @@ Content-Type: application/json
 
 ### --- Create Berghain event source ---
 # Links the venue to the BerghainWebsiteImporter.
-# The sourceType "BERGHAIN" matches EventSource.BERGHAIN. One importer serves both this
-# main program page and the Kantine am Berghain page (below) — same page template.
-# The URL is the `/de/program/` listing (Berghain building floors); each event links to a
-# `/de/event/<id>/` detail page.
+# The sourceType "BERGHAIN" matches EventSource.BERGHAIN.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -727,9 +704,6 @@ Content-Type: application/json
 ### --- Create Bi Nuu event source ---
 # Links the venue to the BinuuWebsiteImporter.
 # The sourceType "BINUU" matches EventSource.BINUU.
-# NOTE: the URL is `/de/events` (the full program listing), NOT the homepage `/` —
-# `/` 301-redirects to `/de` (only the next few events) and the scraper's WebClient
-# does not follow redirects.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -750,7 +724,6 @@ Content-Type: application/json
 %}
 
 ### --- Trigger initial Bi Nuu import ---
-# Slug is derived from the source name: "Bi Nuu" → bi-nuu.
 POST {{importer-host}}/api/admin/event-sources/bi-nuu/import
 Accept: application/json
 
@@ -849,9 +822,6 @@ Content-Type: application/json
 ### --- Create Clash event source ---
 # Links the venue to the ClashWebsiteImporter.
 # The sourceType "CLASH" matches EventSource.CLASH.
-# NOTE: the URL is the homepage `/` — all upcoming events are server-rendered inline in the
-# `#events` section; the site has no per-event detail pages (the WP `event` post type is not
-# exposed via the REST API, and the numeric `/events/<id>/` permalinks 404).
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -911,11 +881,6 @@ Content-Type: application/json
 ### --- Create Club der Visionäre event source ---
 # Links the venue to the ClubDerVisionaereWebsiteImporter.
 # The sourceType "CLUB_DER_VISIONAERE" matches EventSource.CLUB_DER_VISIONAERE.
-# NOTE: one page, three venues. This same `/programm/` listing also carries the Sonnenraum
-# and MS Hoppetosse rows (further down this file), which register their own sourceType and
-# keep only their room's nights — the room is carried purely by a colour class on the title
-# (`.cdvRed` / `.sonnenraumYellow` / `.hoppetosseYellow`), so the URL cannot tell them apart.
-# The programme is seasonal: this open-air source is empty in winter, the boat in summer.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -975,9 +940,6 @@ Content-Type: application/json
 ### --- Create Columbia Theater event source ---
 # Links the venue to the ColumbiaTheaterWebsiteImporter.
 # The sourceType "COLUMBIA_THEATER" matches EventSource.COLUMBIA_THEATER.
-# NOTE: the URL is the homepage `/` — it *is* the full upcoming programme (one `a.item` card per
-# night), with the times, blurb, tickets and presenters on the `/event/YYYYMMDD-<slug>/` detail
-# pages the importer follows. The WordPress REST API is disabled site-wide (`401 rest_disabled`).
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -1037,9 +999,6 @@ Content-Type: application/json
 ### --- Create Columbiahalle event source ---
 # Links the venue to the ColumbiahalleWebsiteImporter.
 # The sourceType "COLUMBIAHALLE" matches EventSource.COLUMBIAHALLE.
-# NOTE: single page — the Contao listing carries times, prices, promoter, tickets, poster and the
-# full blurb inline. The cards' "Kalender-Eintrag" links (`veranstaltung/<alias>.html`) serve an
-# iCal download rather than an HTML detail page, so nothing is fetched beyond this URL.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -1099,9 +1058,6 @@ Content-Type: application/json
 ### --- Create Cosmic Comedy Club event source ---
 # Links the venue to the CosmicComedyWebsiteImporter.
 # The sourceType "COSMIC_COMEDY" matches EventSource.COSMIC_COMEDY.
-# NOTE: the URL is The Events Calendar's REST endpoint, not the human /events/ page — the plugin's
-# API returns the whole upcoming programme where the page's Event JSON-LD covers only its current
-# view. The importer follows the API's own `next_rest_url` cursor and appends its own `per_page`.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -1161,9 +1117,6 @@ Content-Type: application/json
 ### --- Create Crack Bellmer event source ---
 # Links the venue to the CrackBellmerWebsiteImporter.
 # The sourceType "CRACK_BELLMER" matches EventSource.CRACK_BELLMER.
-# NOTE: all three month tabs (/program/previous-month, /this-month, /next-month) serve the same
-# markup — one Finsweet CMS list holding the whole programme, filtered client-side — so this one
-# URL gets every event.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -1184,7 +1137,6 @@ Content-Type: application/json
 %}
 
 ### --- Trigger initial Crack Bellmer import ---
-# Slug is derived from the source name: "Crack Bellmer" → crack-bellmer.
 POST {{importer-host}}/api/admin/event-sources/crack-bellmer/import
 Accept: application/json
 
@@ -1224,7 +1176,6 @@ Content-Type: application/json
 ### --- Create Duncker Club event source ---
 # Links the venue to the DunckerWebsiteImporter.
 # The sourceType "DUNCKER" matches EventSource.DUNCKER.
-# NOTE: the URL is `start.html` (the single-page programme table), not the homepage `index.html`.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -1245,7 +1196,6 @@ Content-Type: application/json
 %}
 
 ### --- Trigger initial Duncker Club import ---
-# Slug is derived from the source name: "Duncker Club" → duncker-club.
 POST {{importer-host}}/api/admin/event-sources/duncker-club/import
 Accept: application/json
 
@@ -1285,9 +1235,6 @@ Content-Type: application/json
 ### --- Create Festsaal Kreuzberg event source ---
 # Links the venue to the FestsaalWebsiteImporter.
 # The sourceType "FESTSAAL" matches EventSource.FESTSAAL.
-# NOTE: the public site (festsaal-kreuzberg.de) is a Nuxt.js SPA that renders no event
-# data server-side. The URL is therefore the entry point of its Wagtail headless-CMS
-# JSON REST API; the importer appends the EventPage query (type/fields/order) itself.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -1308,7 +1255,6 @@ Content-Type: application/json
 %}
 
 ### --- Trigger initial Festsaal Kreuzberg import ---
-# Slug is derived from the source name: "Festsaal Kreuzberg" → festsaal-kreuzberg.
 POST {{importer-host}}/api/admin/event-sources/festsaal-kreuzberg/import
 Accept: application/json
 
@@ -1348,8 +1294,6 @@ Content-Type: application/json
 ### --- Create Frannz Club event source ---
 # Links the venue to the FrannzWebsiteImporter.
 # The sourceType "FRANNZ" matches EventSource.FRANNZ.
-# NOTE: the URL is the homepage `/` — all events are server-rendered there; the site
-# has no per-event detail pages.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -1370,7 +1314,6 @@ Content-Type: application/json
 %}
 
 ### --- Trigger initial Frannz Club import ---
-# Slug is derived from the source name: "Frannz Club" → frannz-club.
 POST {{importer-host}}/api/admin/event-sources/frannz-club/import
 Accept: application/json
 
@@ -1410,10 +1353,6 @@ Content-Type: application/json
 ### --- Create Golden Gate event source ---
 # Links the venue to the GoldenGateWebsiteImporter.
 # The sourceType "GOLDEN_GATE" matches EventSource.GOLDEN_GATE.
-# NOTE: the URL is the homepage `/` — it announces only the current Thursday-Saturday block (three
-# nights at a time) as Elementor headings, with no per-event pages, prices, tickets or images.
-# Past nights stay on the page until it rolls over and are dropped at persistence time, so this
-# source legitimately imports as few as one event.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -1532,10 +1471,6 @@ Content-Type: application/json
 ### --- Create Havanna event source ---
 # Links the venue to the HavannaWebsiteImporter.
 # The sourceType "HAVANNA" matches EventSource.HAVANNA.
-# Havanna publishes no dates at all: the importer reads the three undated weekly night pages
-# (/wednesday, /friday, /saturday) linked from /events and derives one dated occurrence per week
-# over a rolling 8-week horizon. Each run regenerates that window, so events shift forward daily
-# and stale ones are cleaned up automatically — hence the daily interval like every other source.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -1570,9 +1505,6 @@ Accept: application/json
 ### ————————————————————————————————————————————————————————————
 
 ### --- Create Heideglühen venue ---
-# The venue publishes coordinates and transit directions but no street address, so the
-# latitude/longitude are its own (52°32'17.1"N 13°19'41.6"E) and the address is the street it
-# names for access, without a house number it never states.
 POST {{importer-host}}/api/admin/venues
 Content-Type: application/json
 
@@ -1598,10 +1530,6 @@ Content-Type: application/json
 ### --- Create Heideglühen event source ---
 # Links the venue to the HeidegluehenWebsiteImporter.
 # The sourceType "HEIDEGLUEHEN" matches EventSource.HEIDEGLUEHEN.
-# NOTE: the URL is the month preview, which is the venue's whole published programme — four or
-# five dates, replaced wholesale each month. A low event count is the venue's actual output. The
-# importer additionally fetches /aktuell/ for the imminent party's DJ lineup, which the venue
-# posts only a few days ahead.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -1622,7 +1550,6 @@ Content-Type: application/json
 %}
 
 ### --- Trigger initial Heideglühen import ---
-# Slug is derived from the source name, with the umlaut dropped: "Heideglühen" → heidegluhen.
 POST {{importer-host}}/api/admin/event-sources/heidegluhen/import
 Accept: application/json
 
@@ -1662,10 +1589,6 @@ Content-Type: application/json
 ### --- Create Heimathafen Neukölln event source ---
 # Links the venue to the HeimathafenWebsiteImporter.
 # The sourceType "HEIMATHAFEN" matches EventSource.HEIMATHAFEN.
-# NOTE: the URL is the WP REST base for the ACF-backed `events` post type — a JSON source, no HTML
-# scraping (ADR-007 priority 1). One post holds an `acf.event_performances` array, so each dated
-# performance becomes its own event. The endpoint serves the whole archive and cannot filter on the
-# ACF date, so the importer walks its ~5 pages and drops past performances while parsing.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -1725,8 +1648,6 @@ Content-Type: application/json
 ### --- Create Hole 44 event source ---
 # Links the venue to the Hole44WebsiteImporter.
 # The sourceType "HOLE44" matches EventSource.HOLE44.
-# The URL is the `/events/` listing (overview); the scraper fetches each
-# `/event/<date-slug>/` detail page internally for promoter, doors, and image.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -1786,11 +1707,6 @@ Content-Type: application/json
 ### --- Create Humboldthain Club event source ---
 # Links the venue to the HumboldthainWebsiteImporter.
 # The sourceType "HUMBOLDTHAIN" matches EventSource.HUMBOLDTHAIN.
-# NOTE: the URL is the Elfsight "Event Calendar" widget boot API, not the venue's own page —
-# the widget renders client-side, so humboldthain.com serves no events in its HTML. The widget id
-# comes from the `elfsight-app-<widgetId>` div on that page. As for Neue Zukunft, the boot response
-# carries the whole calendar in one request. The venue's weekly resident night is a single entry
-# with a repeat rule, which the importer expands into one event per occurrence.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -1850,10 +1766,6 @@ Content-Type: application/json
 ### --- Create Huxleys Neue Welt event source ---
 # Links the venue to the HuxleysWebsiteImporter.
 # The sourceType "HUXLEYS" matches EventSource.HUXLEYS.
-# NOTE: list + detail. The Events-Manager `event` post type is not exposed over the WP REST API
-# (only the stock types are registered) and the theme embeds no JSON-LD, so both pages are scraped.
-# The date comes from the ISO prefix of the `/event/YYYY-MM-DD-<slug>` permalink, since the listing
-# card prints only a day and a month abbreviation.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -1885,7 +1797,6 @@ Accept: application/json
 
 ### ————————————————————————————————————————————————————————————
 ### Junction Bar (Gneisenaustr. 18, Berlin-Kreuzberg)
-### One source imports both programs (live music + DJ) from the homepage entry.
 ### ————————————————————————————————————————————————————————————
 
 ### --- Create Junction Bar venue ---
@@ -1914,8 +1825,6 @@ Content-Type: application/json
 ### --- Create Junction Bar event source ---
 # Links the venue to the JunctionBarWebsiteImporter.
 # The sourceType "JUNCTION_BAR" matches EventSource.JUNCTION_BAR.
-# NOTE: the URL is the homepage — the importer follows its nav to both the live-music listing
-# (→ per-month program pages) and the DJ program page, merging events into this one source.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -1973,9 +1882,8 @@ Content-Type: application/json
 %}
 
 ### --- Create Kantine am Berghain event source ---
-# Reuses the BerghainWebsiteImporter (sourceType "BERGHAIN" → EventSource.BERGHAIN): the
-# concert-hall page shares the main program page's template, and floor-based typing marks
-# these events CONCERT. The URL is the `/de/program/kantine-am-berghain/` listing.
+# Links the venue to the BerghainWebsiteImporter, shared with the Berghain source above.
+# The sourceType "BERGHAIN" matches EventSource.BERGHAIN.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -2035,9 +1943,6 @@ Content-Type: application/json
 ### --- Create Kater event source ---
 # Links the venue to the KaterWebsiteImporter.
 # The sourceType "KATER" matches EventSource.KATER.
-# NOTE: the URL is the homepage `/` — it carries the whole programme inline. The `event` REST route
-# is public but useless (ACF is not exposed, so `acf` comes back empty) and the `/event/<slug>`
-# pages render only a heading, so neither is fetched.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -2097,11 +2002,6 @@ Content-Type: application/json
 ### --- Create LARK event source ---
 # Links the venue to the LarkWebsiteImporter.
 # The sourceType "LARK" matches EventSource.LARK.
-# NOTE: the URL is the WP REST base for the ACF `event` post type, not the /events/ page.
-# LARK stores the *event* date in WordPress's own post date, so the endpoint's default
-# newest-first ordering is chronological and the importer stops paging as soon as a page
-# reaches the past — one request for the current programme. Posters are resolved in a second
-# batched /wp/v2/media?include=... call.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -2161,7 +2061,6 @@ Content-Type: application/json
 ### --- Create Lido event source ---
 # Links the venue to the LidoWebsiteImporter.
 # The sourceType "LIDO" matches EventSource.LIDO.
-# NOTE: the URL is the homepage `/` (the program); `/events` is the past archive.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -2221,8 +2120,6 @@ Content-Type: application/json
 ### --- Create Loge event source ---
 # Links the venue to the LogeWebsiteImporter.
 # The sourceType "LOGE" matches EventSource.LOGE.
-# The `/event-list` page embeds every event as Wix warmup JSON (discovery + core fields);
-# each `/event-details/<slug>` page adds the ticket price via schema.org JSON-LD.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -2282,9 +2179,6 @@ Content-Type: application/json
 ### --- Create Madame Claude event source ---
 # Links the venue to the MadameClaudeWebsiteImporter.
 # The sourceType "MADAME_CLAUDE" matches EventSource.MADAME_CLAUDE.
-# NOTE: the URL is the WordPress REST endpoint for the venue's `event` custom post type
-# (ACF-backed), not the human `/events/` page. The importer appends the upcoming-only query
-# (per_page/orderby/order/after/_embed) itself; the featured image is embedded via `_embed`.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -2344,10 +2238,6 @@ Content-Type: application/json
 ### --- Create Matrix event source ---
 # Links the venue to the MatrixWebsiteImporter.
 # The sourceType "MATRIX" matches EventSource.MATRIX.
-# The URL is the `/party-in-berlin/` programme page, which serves the *current* month; the importer
-# follows the page's own next-month link (`?get_month=<m>&get_year=<yyyy>`) forward until the venue
-# offers none, so the whole announced programme (~3 months) is covered without touching the ~90
-# per-event `/parties/<date>-matrix-<weekday>/` detail pages.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -2407,9 +2297,6 @@ Content-Type: application/json
 ### --- Create Max-Schmeling-Halle event source ---
 # Links the venue to the MaxSchmelingHalleWebsiteImporter.
 # The sourceType "MAX_SCHMELING_HALLE" matches EventSource.MAX_SCHMELING_HALLE.
-# NOTE: all three Velomax halls share ONE listing URL; each source filters it by the hall's CSS
-# class. Sport fixtures are excluded (the model has no SPORT type), so the imported count is well
-# below the number of entries the page shows.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -2469,8 +2356,6 @@ Content-Type: application/json
 ### --- Create MAXXIM event source ---
 # Links the venue to the MaxximWebsiteImporter.
 # The sourceType "MAXXIM" matches EventSource.MAXXIM.
-# NOTE: the programme lives in the Wix Events warmup JSON embedded in /partys, not in the rendered
-# cards. The widget serves the upcoming window only (~18 nights), so the imported count is small.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -2530,8 +2415,6 @@ Content-Type: application/json
 ### --- Create Metropol event source ---
 # Links the venue to the MetropolWebsiteImporter.
 # The sourceType "METROPOL" matches EventSource.METROPOL.
-# NOTE: the whole programme sits unpaginated on /events, so one overview fetch discovers every
-# show; each then costs one /event/<iso-date-slug> detail fetch. The site publishes no prices.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -2591,9 +2474,6 @@ Content-Type: application/json
 ### --- Create Tresor event source ---
 # Links the venue to the TresorWebsiteImporter.
 # The sourceType "TRESOR" matches EventSource.TRESOR.
-# NOTE: list + detail. The WP REST API is disabled site-wide (401 rest_disabled) and the theme
-# embeds no structured data. The listing already groups each night's DJs by floor; the
-# /event/YYYYMMDD-<slug>/ pages add the opening set time and the blurb.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -2653,8 +2533,6 @@ Content-Type: application/json
 ### --- Create Uber Arena event source ---
 # Links the venue to the UberArenaWebsiteImporter.
 # The sourceType "UBER_ARENA" matches EventSource.UBER_ARENA.
-# NOTE: sport fixtures are excluded (the model has no SPORT type), as at the Velomax halls — the
-# arena is home to ALBA Berlin and the Eisbären, so the imported count is well below the page's.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -2714,8 +2592,6 @@ Content-Type: application/json
 ### --- Create Uber Eats Music Hall event source ---
 # Links the venue to the UberEatsMusicHallWebsiteImporter.
 # The sourceType "UBER_EATS_MUSIC_HALL" matches EventSource.UBER_EATS_MUSIC_HALL.
-# NOTE: same AEG/Carbonhouse tenant as Uber Arena, so one parser pair serves both. This venue has
-# no resident team, so unlike the arena nothing is dropped by the shared sport filter.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -2775,9 +2651,6 @@ Content-Type: application/json
 ### --- Create UFO im Velodrom event source ---
 # Links the venue to the UfoImVelodromWebsiteImporter.
 # The sourceType "UFO_IM_VELODROM" matches EventSource.UFO_IM_VELODROM.
-# NOTE: all three Velomax halls share ONE listing URL; each source filters it by the hall's CSS
-# class. Sport fixtures are excluded (the model has no SPORT type), so the imported count is well
-# below the number of entries the page shows.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -2837,9 +2710,6 @@ Content-Type: application/json
 ### --- Create Velodrom event source ---
 # Links the venue to the VelodromWebsiteImporter.
 # The sourceType "VELODROM" matches EventSource.VELODROM.
-# NOTE: all three Velomax halls share ONE listing URL; each source filters it by the hall's CSS
-# class. Sport fixtures are excluded (the model has no SPORT type), so the imported count is well
-# below the number of entries the page shows.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -2899,8 +2769,6 @@ Content-Type: application/json
 ### --- Create Mikropol event source ---
 # Links the venue to the MikropolWebsiteImporter.
 # The sourceType "MIKROPOL" matches EventSource.MIKROPOL.
-# The URL is the `/events/` listing (overview); the scraper fetches each
-# `/event/<date-slug>/` detail page internally for description, image, and ticket URL.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -2960,8 +2828,6 @@ Content-Type: application/json
 ### --- Create Modus Berlin event source ---
 # Links the venue to the ModusWebsiteImporter.
 # The sourceType "MODUS" matches EventSource.MODUS.
-# NOTE: the slug encodes a DDMMYY date but keeps the ORIGINAL one when a show moves, so the
-# importer reads the rendered date and uses the slug only as the stable sourceId.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -3021,8 +2887,6 @@ Content-Type: application/json
 ### --- Create Monarch event source ---
 # Links the venue to the MonarchWebsiteImporter.
 # The sourceType "MONARCH" matches EventSource.MONARCH.
-# NOTE: the URL is `programm.php` (the single-page listing), not the homepage;
-# the whole programme is server-rendered there, with no per-event detail pages.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -3082,9 +2946,6 @@ Content-Type: application/json
 ### --- Create MS Hoppetosse event source ---
 # Links the venue to the MsHoppetosseWebsiteImporter.
 # The sourceType "MS_HOPPETOSSE" matches EventSource.MS_HOPPETOSSE.
-# The URL is the boat's own host, which serves the byte-identical Club der Visionäre
-# listing; the importer keeps only the `.hoppetosseYellow` nights. The boat is the winter
-# location, so a summer import legitimately returns nothing.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -3144,10 +3005,6 @@ Content-Type: application/json
 ### --- Create Neue Zukunft event source ---
 # Links the venue to the NeueZukunftWebsiteImporter.
 # The sourceType "NEUE_ZUKUNFT" matches EventSource.NEUE_ZUKUNFT.
-# NOTE: the public site (neue-zukunft.org) is a static landing page; the concert programme
-# lives only in an embedded Elfsight "Event Calendar" widget (rendered client-side) and an
-# image-based monthly PDF poster. The URL is therefore the widget's public JSON boot endpoint,
-# carrying the widget id; the importer fetches it verbatim.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -3168,7 +3025,6 @@ Content-Type: application/json
 %}
 
 ### --- Trigger initial Neue Zukunft import ---
-# Slug is derived from the source name: "Neue Zukunft" → neue-zukunft.
 POST {{importer-host}}/api/admin/event-sources/neue-zukunft/import
 Accept: application/json
 
@@ -3178,7 +3034,6 @@ Accept: application/json
     });
 %}
 
-### ————————————————————————————————————————————————————————————
 ### ————————————————————————————————————————————————————————————
 ### OHM (Köpenicker Str. 70, Berlin-Mitte — im Tresor-Kraftwerk)
 ### ————————————————————————————————————————————————————————————
@@ -3209,8 +3064,6 @@ Content-Type: application/json
 ### --- Create OHM event source ---
 # Links the venue to the OhmWebsiteImporter.
 # The sourceType "OHM" matches EventSource.OHM.
-# NOTE: the venue publishes only 1-3 upcoming nights and renders dates without a year, so a low
-# event count is expected here. The linked /archives page holds only past events and is not crawled.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -3270,8 +3123,6 @@ Content-Type: application/json
 ### --- Create Parkbühne Wuhlheide event source ---
 # Links the venue to the WuhlheideWebsiteImporter.
 # The sourceType "WUHLHEIDE" matches EventSource.WUHLHEIDE.
-# NOTE: the programme is seasonal (open air), so the listing is short and can be nearly empty in
-# winter. Each event URL ends with an ISO date, which is the date source and the sourceId key.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -3331,9 +3182,6 @@ Content-Type: application/json
 ### --- Create Panke Culture event source ---
 # Links the venue to the PankeWebsiteImporter.
 # The sourceType "PANKE" matches EventSource.PANKE.
-# NOTE: the page renders an UPCOMING and a PAST list from one template; only the upcoming one is
-# imported. There are no per-event pages — the venue expands each event inline — so every event's
-# sourceUrl is this page and its WordPress post id is the sourceId.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -3452,8 +3300,6 @@ Content-Type: application/json
 ### --- Create Quasimodo event source ---
 # Links the venue to the QuasimodoWebsiteImporter.
 # The sourceType "QUASIMODO" matches EventSource.QUASIMODO.
-# NOTE: the programme lives on the .club domain — quasimodo.de is only a splash page. The listing
-# card's *mobile* date block is the date source; the detail page carries the category and prices.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -3513,9 +3359,6 @@ Content-Type: application/json
 ### --- Create Renate event source ---
 # Links the venue to the RenateWebsiteImporter.
 # The sourceType "RENATE" matches EventSource.RENATE.
-# NOTE: the URL is the homepage `/` — it carries the whole programme inline, including the
-# per-floor lineups. The WP REST API registers no `event` post type and there are no per-event
-# pages, so nothing else is fetched.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -3575,9 +3418,6 @@ Content-Type: application/json
 ### --- Create Ritter Butzke event source ---
 # Links the venue to the RitterButzkeWebsiteImporter.
 # The sourceType "RITTER_BUTZKE" matches EventSource.RITTER_BUTZKE.
-# NOTE: same codebase as Modus but a different template, so the two share no selectors. As at
-# Modus, the /event/DDMMYY-<Name> slug keeps the ORIGINAL date when a show moves, so the importer
-# reads the rendered date and uses the slug only as the stable sourceId.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -3637,7 +3477,6 @@ Content-Type: application/json
 ### --- Create Roadrunner's Paradise event source ---
 # Links the venue to the RoadrunnerWebsiteImporter.
 # The sourceType "ROADRUNNER" matches EventSource.ROADRUNNER.
-# NOTE: the URL is `programm.html` (the single-page listing), not the homepage.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -3658,7 +3497,6 @@ Content-Type: application/json
 %}
 
 ### --- Trigger initial Roadrunner's Paradise import ---
-# Slug is derived from the source name: "Roadrunner's Paradise" → roadrunner-s-paradise.
 POST {{importer-host}}/api/admin/event-sources/roadrunner-s-paradise/import
 Accept: application/json
 
@@ -3698,8 +3536,6 @@ Content-Type: application/json
 ### --- Create Säälchen event source ---
 # Links the venue to the SaalchenWebsiteImporter.
 # The sourceType "SAALCHEN" matches EventSource.SAALCHEN.
-# NOTE: /kalender is ONE calendar for the whole Holzmarkt site (Marktplatz and Holzmarkt 25 too);
-# the importer filters rows on the ".location" span, so the imported count is well below the page's.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -3818,8 +3654,6 @@ Content-Type: application/json
 ### --- Create SO36 event source ---
 # Links the venue to the So36WebsiteImporter.
 # The sourceType "SO36" matches EventSource.SO36.
-# NOTE: the URL is `/tickets` (the program listing), NOT the homepage `/` —
-# the homepage 302-redirects there and the scraper's WebClient does not follow redirects.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -3879,9 +3713,6 @@ Content-Type: application/json
 ### --- Create Soda Club event source ---
 # Links the venue to the SodaWebsiteImporter.
 # The sourceType "SODA" matches EventSource.SODA.
-# NOTE: the URL is `/events` (the programme listing), NOT the homepage. The listing's
-# detail links are language-prefixed (`/de/events/<slug>`), which the importer resolves
-# against this entry URL.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -3941,9 +3772,6 @@ Content-Type: application/json
 ### --- Create Sonnenraum event source ---
 # Links the venue to the SonnenraumWebsiteImporter.
 # The sourceType "SONNENRAUM" matches EventSource.SONNENRAUM.
-# The URL is the shared Club der Visionäre `/programm/` listing — the venue's own
-# `/sonnenraum/` page is a description that points back at it — and the importer keeps only
-# the `.sonnenraumYellow` nights.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -4003,9 +3831,6 @@ Content-Type: application/json
 ### --- Create Supamolly event source ---
 # Links the venue to the SupamollyWebsiteImporter.
 # The sourceType "SUPAMOLLY" matches EventSource.SUPAMOLLY.
-# NOTE: the URL is `?p=programm` (the programme page; byte-identical to the homepage but
-# stable if the site's default page ever changes). The advertised `rss.php` feed is NOT
-# usable — its item titles render dates as "Mi 9.2026..09.", dropping the day of month.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -4026,7 +3851,6 @@ Content-Type: application/json
 %}
 
 ### --- Trigger initial Supamolly import ---
-# Slug is derived from the source name: "Supamolly" → supamolly.
 POST {{importer-host}}/api/admin/event-sources/supamolly/import
 Accept: application/json
 
@@ -4066,9 +3890,6 @@ Content-Type: application/json
 ### --- Create Tempodrom event source ---
 # Links the venue to the TempodromWebsiteImporter.
 # The sourceType "TEMPODROM" matches EventSource.TEMPODROM.
-# NOTE: the page embeds the WHOLE programme as one schema.org `Event` JSON-LD array (145 events),
-# so the markup is never selected against and no detail page is fetched. The server sends
-# Last-Modified, so an unchanged programme costs a single 304.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -4128,10 +3949,6 @@ Content-Type: application/json
 ### --- Create Theater im Delphi event source ---
 # Links the venue to the DelphiWebsiteImporter.
 # The sourceType "THEATER_IM_DELPHI" matches EventSource.THEATER_IM_DELPHI.
-# NOTE: the programme page renders one row per performance, so a production that runs several
-# nights yields several events. Prices come from a var_dump() the page leaks into an HTML comment
-# — the only place they appear — and are best-effort: if the venue fixes that leak, events keep
-# everything except their price.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -4191,10 +4008,6 @@ Content-Type: application/json
 ### --- Create Urania event source ---
 # Links the venue to the UraniaWebsiteImporter.
 # The sourceType "URANIA" matches EventSource.URANIA.
-# NOTE: the house has two halls, the Humboldtsaal and the Kleistsaal, and NO source states which
-# one an event is in — not the calendar, the event pages, the Reservix shop, nor the site's own
-# /wp-json/reservixapi/v1/events endpoint. Events are therefore seeded against the house as a
-# single venue rather than split between its halls.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -4254,10 +4067,6 @@ Content-Type: application/json
 ### --- Create Urban Spree event source ---
 # Links the venue to the UrbanSpreeWebsiteImporter.
 # The sourceType "URBAN_SPREE" matches EventSource.URBAN_SPREE.
-# NOTE: the listing is sorted *descending* by date across the venue's whole archive
-# (200+ pages of nine cards), so the importer walks `?page=N` forward from this entry
-# URL until a page reaches the past — importing page 1 alone would yield only the
-# farthest-future shows.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -4278,7 +4087,6 @@ Content-Type: application/json
 %}
 
 ### --- Trigger initial Urban Spree import ---
-# Slug is derived from the source name: "Urban Spree" → urban-spree.
 POST {{importer-host}}/api/admin/event-sources/urban-spree/import
 Accept: application/json
 
@@ -4318,8 +4126,6 @@ Content-Type: application/json
 ### --- Create VOID Club event source ---
 # Links the venue to the VoidClubWebsiteImporter.
 # The sourceType "VOID_CLUB" matches EventSource.VOID_CLUB.
-# NOTE: the URL is the homepage — the whole programme is inline there, and the `#events`
-# anchor above the cards only links out to Facebook and Resident Advisor.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -4340,7 +4146,6 @@ Content-Type: application/json
 %}
 
 ### --- Trigger initial VOID Club import ---
-# Slug is derived from the source name: "VOID Club" → void-club.
 POST {{importer-host}}/api/admin/event-sources/void-club/import
 Accept: application/json
 
@@ -4380,8 +4185,6 @@ Content-Type: application/json
 ### --- Create Wild at Heart event source ---
 # Links the venue to the WildAtHeartWebsiteImporter.
 # The sourceType "WILD_AT_HEART" matches EventSource.WILD_AT_HEART.
-# NOTE: the URL is `concerts.php` (the single-page programme linked from the nav frame),
-# not the `wah.htm` frameset entry, whose welcome frame carries no event data.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -4402,7 +4205,6 @@ Content-Type: application/json
 %}
 
 ### --- Trigger initial Wild at Heart import ---
-# Slug is derived from the source name: "Wild at Heart" → wild-at-heart.
 POST {{importer-host}}/api/admin/event-sources/wild-at-heart/import
 Accept: application/json
 
@@ -4442,10 +4244,6 @@ Content-Type: application/json
 ### --- Create Zenner event source ---
 # Links the venue to the ZennerWebsiteImporter.
 # The sourceType "ZENNER" matches EventSource.ZENNER.
-# NOTE: the URL is the human-facing `/programm` page, not the JSON artefact. The importer
-# derives `https://zenner.berlin/page-data/programm/page-data.json` from it (a fixed Gatsby
-# convention) and stores the page URL itself as every event's sourceUrl — Zenner publishes
-# no per-event detail pages.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 
@@ -4466,7 +4264,6 @@ Content-Type: application/json
 %}
 
 ### --- Trigger initial Zenner import ---
-# Slug is derived from the source name: "Zenner" → zenner.
 POST {{importer-host}}/api/admin/event-sources/zenner/import
 Accept: application/json
 
@@ -4507,9 +4304,6 @@ Content-Type: application/json
 ### --- Create Zitadelle event source ---
 # Links the venue to the ZitadelleWebsiteImporter.
 # The sourceType "ZITADELLE" matches EventSource.ZITADELLE.
-# NOTE: the URL is the festival site, not the venue's own — zitadelle-berlin.de is a museum site
-# and publishes no concert programme. The season is small (under a dozen dates), so a low event
-# count is the venue's actual programme, not a truncated import.
 POST {{importer-host}}/api/admin/event-sources
 Content-Type: application/json
 

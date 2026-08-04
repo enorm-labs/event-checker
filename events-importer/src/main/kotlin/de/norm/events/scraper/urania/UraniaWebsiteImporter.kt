@@ -18,7 +18,8 @@ import org.springframework.stereotype.Component
  * The house has two halls, the **Humboldtsaal** and the **Kleistsaal**, and no source states which
  * one an event is in: not the calendar, not the event pages, not the Reservix shop, not the site's
  * own Reservix API. Events are therefore imported against the house, which is what every one of
- * those sources actually describes — see [EventSource.URANIA].
+ * those sources actually describes; splitting the programme would mean either guessing or storing
+ * every event twice.
  *
  * @see UraniaCalendarPageScraper for the calendar parsing.
  * @see UraniaEventPageScraper for the event-page parsing.
