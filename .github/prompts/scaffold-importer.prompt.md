@@ -96,6 +96,11 @@ New importers live in their own sub-package: `scraper/<venue>/`. Create:
 
 Set `override val eventSource = EventSource.<VENUE>`.
 
+**The scraper's KDoc is where the source's shape gets documented** — including what it *doesn't* carry. Fields the venue simply never publishes (no door times,
+no prices, no poster, no per-event page) belong here and in the `EventSource` entry, not in `docs/IMPORTER_KNOWN_ISSUES.md`: the importer stored everything
+that was there, so there is nothing to action. That doc is reserved for gaps that are *ours* — data we lose or mangle, or that our model has nowhere to put —
+and that aren't a quick fix. Also record the traps the parser handles and why a selector was chosen, so the reasoning sits next to the code it constrains.
+
 ## 4. Reuse the shared scraper utilities
 
 Do not hand-roll extraction/parsing that already exists in the `scraper/` package (ADR-007 §Shared Scraping Utilities). Use these:

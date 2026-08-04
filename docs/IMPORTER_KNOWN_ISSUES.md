@@ -900,20 +900,14 @@ The two-room techno club in a Lichtenberg backyard. Verified against a live impo
 the past, 0 suspicious rows, every night with a Resident Advisor ticket link and 11 of 13 with a full DJ billing — 98 billings over 87 distinct acts. The site
 sends both an ETag and a Last-Modified, so a re-import 304s and does no work.
 
-- 🔴 **No times, no prices, no descriptions — for any night.** The cards carry a date, a room, genre tags, a title and a lineup, and nothing else; the venue
-  publishes its door times only on Resident Advisor. Nothing is inferred, so all 13 events store a bare date.
-- 🟠 **Only the five soonest nights have an image.** The cards carry no poster at all — the sole per-event image on the page is the teaser in the hero slider
-  above them, which shows the next five events and is matched back to its card by the Resident Advisor URL both link to. The other eight store none.
-- 🟠 **The room a night uses is recorded only on its acts.** `.void-event-venue` names the floor(s) in play (`VOID CLUB`, `VOID HALL`, `VOID CLUB & HALL`), and
-  the only modelled home for it is `event_artist.stage` — set for a single-room night, left null for a two-room one, which does not say who plays where. The two
-  nights with no announced lineup (below) therefore drop the room entirely, and no event-level field carries it.
-- 🟠 **Two nights store no artists because the venue has announced none.** Both say so explicitly (`LINEUP: TBA`, `LINE-UP: To be announced`), as do the trailing
-  `and more` / `— more to be announced` continuations on four other nights, all of which are dropped rather than minted as acts.
-- 🟢 **A `/`-joined billing stays one act.** `T78 / Activator` is stored whole: the venue separates acts with commas and `b2b`, and the shared splitter never
-  cuts on `/` (a slash sits inside single act names elsewhere in the project). Likewise `&` is not a boundary here — `Skulder & Mully` is billed as one comma
-  segment on 8 August and as the left half of a b2b slot on 17 October, so splitting it would invent an act that plays neither night.
+- 🟠 **The room is dropped for a night with no announced lineup.** `.void-event-venue` names the floor(s) in play (`VOID CLUB`, `VOID HALL`,
+  `VOID CLUB & HALL`), but the only modelled home for it is `event_artist.stage`, so it survives only where there are acts to hang it on. The two nights whose
+  lineup is still `TBA` therefore store no room at all. Carrying it regardless would need an event-level stage field, which no other venue has yet asked for.
+- 🟠 **A `/`-joined billing is stored as one act.** `T78 / Activator` is almost certainly two DJs, but no splitter in the project cuts on `/` — deliberately,
+  since a slash sits inside single act names elsewhere (Madame Claude's `Morimoto / Wong duo`). Nothing in the markup tells the two cases apart, so this stores
+  one artist row that names two people.
 - 🟢 **Country tags stay attached to the act name.** `Ipkiss (NL)` is stored as `Ipkiss (Nl)` (de-shouted by `canonicalArtistName` like any name). Nothing in the
-  project strips a `(XX)` origin tag, so such an act would not merge with a bare spelling of itself imported from another venue — 7 artist rows are affected in
+  project strips a `(XX)` origin tag, so such an act does not merge with a bare spelling of itself imported from another venue — 7 artist rows are affected in
   total, 5 of them from this venue.
 
 ---
@@ -924,5 +918,15 @@ When adding or changing an importer, record any *accepted* limitation here (with
 actionable, add the fix to the **Bugs** list in `TODO.md` and point at it (`→ tracked in TODO.md`) rather than describing the fix here, so the two files don't
 drift. Prefer linking to the code KDoc that documents the same limitation.
 
-**Only record an entry when a field ends up missing, wrong or fragile.** Behaviour that produces the correct data — a trap the parser already handles, a
-selector rationale, a caching or throughput note — belongs in the scraper's KDoc, not here; entries like that were removed once and should not come back.
+**Only record an entry when the gap is ours and is not a quick fix.** Two filters, both of which have let noise in before:
+
+1. **Ours, not the venue's.** A field the source simply does not publish — no door times, no prices, no poster, a lineup the venue has marked `TBA` — is not a
+   known issue. The importer stored everything that was there, and nothing here would ever be actioned. That belongs in the scraper's KDoc as context, and the
+   coverage numbers in the entry's opening paragraph already show what a source is thin on. Only record it when *we* lose or mangle data the source did
+   publish, or when our model has nowhere to put it.
+2. **Not trivially fixable.** If a one-line change fixes it, make the change instead of writing it down; if it is a real fix but a bigger one, put it on the
+   **Bugs** list in `TODO.md` and point at it (`→ tracked in TODO.md`) rather than describing the fix here, so the two files don't drift. What stays here is
+   what we have decided to live with, and why.
+
+Behaviour that produces the correct data — a trap the parser already handles, a selector rationale, a caching or throughput note — belongs in the scraper's
+KDoc, not here; entries like that were removed once and should not come back.

@@ -91,11 +91,17 @@ that parses *something* plausible from the wrong container passes every automate
 - Another source lost events.
 
 **Soft findings — ship, but write them down** in `docs/IMPORTER_KNOWN_ISSUES.md` with the right impact marker (🔴/🟠/🟢), or `TODO.md` if the fix is a systemic
-change rather than a per-importer one:
+change rather than a per-importer one. A finding earns an entry only when it passes both filters:
 
-- Fields the site genuinely doesn't publish (no prices, no doors time, no images).
-- `event_type = OTHER` where the site gives no usable signal.
-- Artist-less concerts beyond the documented ~40% baseline — check the existing entries before flagging, several are already accepted.
+1. **The gap is ours, not the venue's.** We lose or mangle data the source *did* publish, or our model has nowhere to put it — a mis-split lineup, a field
+   dropped because it has no column, an entity that won't merge with its counterpart from another venue.
+2. **It isn't a quick fix.** A one-line fix should just be made. A real but larger fix goes on the **Bugs** list in `TODO.md` with a `→ tracked in TODO.md`
+   pointer from the entry. What stays in `IMPORTER_KNOWN_ISSUES.md` is what we've decided to live with.
+
+So do **not** open an entry for a field the site simply doesn't publish (no prices, no doors time, no images, a `TBA` lineup), or for `event_type = OTHER` where
+the site gives no usable signal. The importer stored everything that was there, so there is nothing to action — note it in the scraper's KDoc instead, and let
+the coverage numbers in the entry's opening paragraph carry it. Likewise check the existing entries before flagging artist-less concerts: the ~40% baseline is
+already documented and accepted.
 
 ### 7. Report
 
