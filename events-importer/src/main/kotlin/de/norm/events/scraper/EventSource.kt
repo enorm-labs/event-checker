@@ -82,6 +82,9 @@ enum class EventSource {
     /** Frannz Club Berlin – a club and concert venue in the Kulturbrauerei, across pop, indie, hip-hop and electronic music. */
     FRANNZ,
 
+    /** gART.n Berlin – an open-air garden club on the Rummelsburger Bucht, running daytime techno and house parties at the weekend. */
+    GARTN,
+
     /** Golden Gate Berlin – a small techno club in the S-Bahn arches at Jannowitzbrücke, open Thursday to Saturday with door-only entry. */
     GOLDEN_GATE,
 

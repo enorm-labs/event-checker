@@ -107,6 +107,11 @@ scraper's own KDoc instead, so only what should actually be *repaired* is listed
 - [ ] **Arcanoa's recurring open stage becomes two artists and two slugs.** The venue hand-types its Monday night both `ARCANOA-Open Stage` and
   `ARCANOA- Open Stage`; only the second has a dash the parser pads, so the two normalize differently. Collapse the whitespace around the dash before
   normalizing.
+- [ ] **gART.n drops the guests named in a `<sup>` cast line.** `GartnOverviewPageScraper.billingLines` discards a lineup line built only from a `<sup>`, because
+  such a line annotates the line above it rather than billing an act — but the venue uses it to name that slot's cast
+  (`Live Podcast "Heisse Platten"` / `mit Judith van Waterkant und Ruede Hagelstein`), so Ruede Hagelstein is stored nowhere. Reading a `mit …` / `w/ …`
+  annotation as a cast line and splitting it via `splitSegmentOnConjunctions` would recover it; the split needs the conjunction guardrails, since an act name
+  may legitimately contain `und`.
 - [ ] **The screening keyword misses German compounds.** `SCREENING_TITLE_WORD_PATTERN` (`EventTypeMapping.kt`) anchors on `\bkino\b` to protect real act names
   ("Alkinoos Ioannidis"), so Kater's monthly `Nomadenkino` film night is typed `PARTY` instead of `SCREENING`. A suffix-anchored match (`\w+kino\b`) keeping the
   act-name guard would catch the compounds; cross-cutting, so it needs a re-seed and a diff.
