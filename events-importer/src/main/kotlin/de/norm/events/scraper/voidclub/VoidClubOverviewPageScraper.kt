@@ -33,8 +33,9 @@ private val BERLIN: ZoneId = ZoneId.of("Europe/Berlin")
  * Every night is an `article.void-event-card` carrying a `.void-event-date` calendar block, the
  * room(s) in use (`.void-event-venue`), one or more `.void-event-genre` tags, a
  * `.void-event-title`, a `.void-event-lineup` paragraph per note and per DJ billing, and a
- * Resident Advisor `a.void-event-button`. The venue publishes no times, no prices and no per-event
- * page, so an event's identity is its date plus its slugified title.
+ * Resident Advisor `a.void-event-button`. The venue publishes no times, no prices, no descriptions
+ * and no per-event page, so an event's identity is its date plus its slugified title, and every
+ * night stores a bare date.
  *
  * Three things about this page shape the parser:
  *
