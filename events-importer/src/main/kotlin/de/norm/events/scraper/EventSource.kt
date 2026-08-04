@@ -126,6 +126,9 @@ enum class EventSource {
     /** Loge Berlin – an intimate, collectively run bar and events space in Friedrichshain. */
     LOGE,
 
+    /** MAAYA Berlin – an Afro-diasporic cultural venue on the RAW-Gelände built around a heated open-air pool, with a gallery, garden and market. */
+    MAAYA,
+
     /** Madame Claude Berlin – a cosy upside-down-themed bar and live venue near Schlesisches Tor, with free-entry concerts and DJ nights. */
     MADAME_CLAUDE,
 

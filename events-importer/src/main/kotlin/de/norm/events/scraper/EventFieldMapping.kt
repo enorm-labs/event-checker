@@ -148,12 +148,14 @@ private val TITLE_NOISE_PATTERN =
  * 28.04.26-" → "Iggi Kelly". Returns the input unchanged when there is no such tail, or
  * when stripping would leave nothing.
  *
- * Runs of whitespace are collapsed to a single space first. A venue's own markup decides
- * how much space lands between two words — a line break inside the heading, a stray double
- * space in the CMS — and that is presentation, not part of the name ("Adventurous Juan
- * (DJ-Set)", "Lucas Lauriente – Stand Up 2026"). Collapsing before the tail patterns run also
- * keeps those patterns keyed on a single space, and normalizes the title a headliner is
- * derived from.
+ * Zero-width characters are removed and runs of whitespace collapsed to a single space first.
+ * A venue's own markup decides how much space lands between two words — a line break inside the
+ * heading, a stray double space in the CMS — and that is presentation, not part of the name
+ * ("Adventurous Juan (DJ-Set)", "Lucas Lauriente – Stand Up 2026"). Collapsing before the tail
+ * patterns run also keeps those patterns keyed on a single space, and normalizes the title a
+ * headliner is derived from. A [ZERO_WIDTH] character is invisible by definition, so it is never
+ * part of a name either — it reaches a title when an editor pastes one in (MAAYA's "HOMECOMING DJ
+ * WORKSHOP") — and it is dropped rather than collapsed, since `\s` does not match it.
  *
  * Example:
  * ```kotlin
@@ -165,13 +167,20 @@ private val TITLE_NOISE_PATTERN =
  * ```
  */
 fun cleanEventTitle(title: String): String {
-    val collapsed = title.trim().replace(WHITESPACE_RUN, " ")
+    val collapsed = title.replace(ZERO_WIDTH, "").trim().replace(WHITESPACE_RUN, " ")
     val stripped = collapsed.replace(TITLE_NOISE_PATTERN, "").trim()
     return stripped.ifBlank { collapsed }
 }
 
 /** A run of whitespace (including a line break) inside a title, collapsed to one space. */
 private val WHITESPACE_RUN = Regex("""\s+""")
+
+/**
+ * Invisible formatting characters that carry no meaning in an event title: the zero-width
+ * space, non-joiner, joiner and the byte-order mark. None is whitespace to `\s`, so each would
+ * otherwise survive both the trim and the collapse and end up in the stored title.
+ */
+private val ZERO_WIDTH = Regex("""[\u200B-\u200D\uFEFF]""")
 
 /**
  * Free-entry phrases unambiguous enough to detect from any text field (title or

@@ -45,6 +45,18 @@ class EventFieldMappingTest {
         cleanEventTitle("Iggi Kelly  Nachholtermin vom 28.04.26-") shouldBe "Iggi Kelly"
     }
 
+    // A zero-width character is invisible, so it is never part of a name — an editor pasted it in
+    // (MAAYA's "HOMECOMING DJ WORKSHOP"). `\s` does not match it, so it survives both the trim and
+    // the collapse unless it is removed outright.
+    @Test
+    fun `cleanEventTitle drops zero-width characters`() {
+        cleanEventTitle("HOMECOMING DJ WORKSHOP\u200B") shouldBe "HOMECOMING DJ WORKSHOP"
+        cleanEventTitle("\uFEFFSome Act") shouldBe "Some Act"
+        cleanEventTitle("Some\u200COther\u200DAct") shouldBe "SomeOtherAct"
+        // Removing it before the collapse leaves a single space, not two.
+        cleanEventTitle("Some \u200B Act") shouldBe "Some Act"
+    }
+
     // --- detectFree ---
 
     @Test
