@@ -186,6 +186,9 @@ enum class EventSource {
     /** Schokoladen Mitte Berlin – a collectively run cultural venue with roots in the post-Wende squat scene: intimate concerts, readings and club nights. */
     SCHOKOLADEN,
 
+    /** silent green Berlin – a Wedding cultural quarter in a 1911 crematorium: experimental concerts, exhibitions, film and talks across its halls. */
+    SILENT_GREEN,
+
     /** SO36 Berlin – the Oranienstraße club central to Berlin's punk and new-wave history, today mixing punk, rock, queer parties and club nights. */
     SO36,
 
