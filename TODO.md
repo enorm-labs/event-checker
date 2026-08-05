@@ -152,6 +152,12 @@ scraper's own KDoc instead, so only what should actually be *repaired* is listed
 - [ ] **There is no event end time.** Kater publishes a full `Sa. 01.08 22:00 — So. 02.08 10:00` span and Heideglühen a "bis Sonntag, 6 Uhr" tail; both are kept
   as prose because the model stores only a start. The same missing field is why the late-night drop above needs a start-time heuristic instead of simply asking
   whether the event has ended.
+- [ ] **Eschschloraque's doors/start split is published in prose and dropped.** The venue's date field carries one time, which the importer stores as the start —
+  but where a night actually has two, only the description says so: the Buletten Bingo openair writes `Einlass: 19:00` / `Beginn: 19:30` (and again as
+  `Doors:` / `Starts:` in its English half), and the MissVergnügen anniversary `DJs ab 21 Uhr, Showtime ab 22 Uhr`. So the stored 19:00 is really the doors time
+  and the 19:30 start is lost, on 2 of 6 events at capture. Reading the labelled pair out of the description and letting `orderDoorsBeforeStart` place them is
+  the fix; it needs a decision first on whether prose may override the venue's own structured date field, and the unlabelled `ab … Uhr` / `Showtime` phrasing
+  needs its own pattern.
 
 **Data quality — normalize, validate, enrich:**
 
