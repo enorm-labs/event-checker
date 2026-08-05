@@ -211,11 +211,19 @@ class EventImportService(
      * serialize two callers: imports queue on [importSemaphore] before reaching this point, so
      * the same source can be requested twice and stay visibly un-started for the whole wait.
      *
+     * The claim is gated on the version [source] was read at, so it fails not only when another
+     * run currently holds the source but also when the row changed at all since the read. That
+     * covers the case the status check alone misses: imports queue on [importSemaphore], so a
+     * scheduler tick can read a source while it is still IDLE and only reach its claim after a
+     * manual trigger has already imported it — by which point the status is SUCCESS again and a
+     * status-only guard would wave the duplicate run through, re-scraping the venue.
+     *
      * The returned entity mirrors the claim in memory rather than re-reading the row. The
      * conditional UPDATE touches exactly the four columns reproduced here, so the copy matches
-     * what was written, and this keeps the claim to a single round trip. If the caller's
-     * `version` was stale to begin with, the later `markSuccess`/`markFailed` save resolves it
-     * through [saveWithVersionConflictRetry], exactly as it did before the claim existed.
+     * what was written, and this keeps the claim to a single round trip. Because the claim only
+     * succeeds when the row was still at [EventSourceEntity.version], `version + 1` is the value
+     * actually persisted rather than a guess, so the closing `markSuccess`/`markFailed` save
+     * matches on the first attempt.
      *
      * A source left in RUNNING by a crashed run blocks its own next import until
      * [ScheduledImportService.resetStuckSources] releases it (default: 30 minutes). That is
@@ -224,9 +232,10 @@ class EventImportService(
      */
     private suspend fun claimForImport(source: EventSourceEntity): EventSourceEntity? {
         val sourceId = requireNotNull(source.id) { "Cannot claim an unpersisted event source" }
+        val expectedVersion = requireNotNull(source.version) { "Cannot claim an event source without a version" }
         val claimedAt = Instant.now(clock)
-        if (eventSourceRepository.claimForImport(sourceId, claimedAt) == 0) {
-            logger.info { "Skipping import of '${source.slug}': another import run already holds it" }
+        if (eventSourceRepository.claimForImport(sourceId, expectedVersion, claimedAt) == 0) {
+            logger.info { "Skipping import of '${source.slug}': another run holds it or it has been imported since" }
             return null
         }
         return source.copy(
@@ -234,7 +243,7 @@ class EventImportService(
             lastError = null,
             // Records when the import started, for the scheduler's staleness detection.
             lastImportAt = claimedAt,
-            version = source.version?.inc()
+            version = expectedVersion + 1
         )
     }
 

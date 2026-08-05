@@ -40,8 +40,20 @@ The import run's opening RUNNING transition returns the claimed entity so that s
 **Optimistic locking does not, and cannot, prevent two runs importing the same source.** Two writers each calling `save()` to mark a source RUNNING produce a
 version conflict that the retry-on-conflict strategy below resolves by re-fetching and retrying — so the second write succeeds and the duplicate run proceeds.
 Mutual exclusion needs a *conditional* write, which the database decides: `EventSourceRepository.claimForImport` issues
-`UPDATE … SET status = 'RUNNING' … WHERE id = :id AND status <> 'RUNNING'` and returns the affected row count, so exactly one caller claims a source and the
-loser (seeing `0`) skips its run. Optimistic locking remains for its actual purpose — protecting an in-flight import's metadata from concurrent admin edits.
+`UPDATE … SET status = 'RUNNING' … WHERE id = :id AND version = :expectedVersion AND status <> 'RUNNING'` and returns the affected row count, so exactly one
+caller claims a source and the loser (seeing `0`) skips its run. Optimistic locking remains for its actual purpose — protecting an in-flight import's metadata
+from concurrent admin edits.
+
+The `version = :expectedVersion` half of that guard is what makes the claim a **compare-and-swap against the exact row the caller read**, and it is not
+redundant with the status check. A status-only guard excludes runs that *overlap*; it does not exclude one that starts the instant another finishes. Imports
+queue on a bounded semaphore (`app.import.max-concurrency`), so a source can sit between "read" and "claimed" for a long time — long enough to still look IDLE
+with `last_import_at IS NULL` to a scheduler tick, be imported by a manual trigger, and then be re-claimed by that tick because the status has already returned
+to SUCCESS. The result is a second full scrape of the same venue, which is exactly what ADR-007's politeness constraints are meant to avoid. Any completed run
+bumps the version, so gating on it makes the stale caller lose.
+
+Gating on the version also makes the claim's `version + 1` **exact**, so the entity returned to the caller carries the version actually persisted rather than an
+in-memory guess, and the closing `markSuccess`/`markFailed` save matches on its first attempt. Before the gate, a stale caller's guess was wrong by however many
+writes it had missed, and every such run logged an `OptimisticLockingFailureException` warning on the way to being repaired by the retry below.
 
 A version conflict can still occur if an external writer (e.g. `ScheduledImportService.resetStuckSources()`)
 modifies the `event_source` row between the claim and the subsequent status update. To handle this, all status update methods use a **retry-on-conflict**

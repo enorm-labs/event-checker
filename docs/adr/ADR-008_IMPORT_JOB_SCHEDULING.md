@@ -97,10 +97,12 @@ Concurrent execution is safe because:
 - Each source's **upsert runs in its own transaction** via `TransactionalOperator.executeAndAwait`.
 - **Status updates** (markSuccess/markFailed) use `saveWithVersionConflictRetry` off optimistic locking conflicts.
 - **One run per source** is guaranteed by an atomic claim: a run opens by issuing
-  `UPDATE … SET status = 'RUNNING' … WHERE id = :id AND status <> 'RUNNING'` (`EventSourceRepository.claimForImport`) and imports only when it updated the row.
-  This matters because `status = 'RUNNING'` is not yet set while a request waits for a concurrency permit, so a source can be requested by a manual trigger and
-  *still* look due to a scheduler tick; without the claim both runs scrape and upsert the same events and collide on the `event_slug_key` unique index. A source
-  another run holds is skipped, not failed. See ADR-009 for why optimistic locking cannot serve this purpose.
+  `UPDATE … SET status = 'RUNNING' … WHERE id = :id AND version = :expectedVersion AND status <> 'RUNNING'` (`EventSourceRepository.claimForImport`) and imports
+  only when it updated the row. This matters because `status = 'RUNNING'` is not yet set while a request waits for a concurrency permit, so a source can be
+  requested by a manual trigger and *still* look due to a scheduler tick; without the claim both runs scrape and upsert the same events and collide on the
+  `event_slug_key` unique index. The `version` half of the guard extends that from overlapping runs to *consecutive* ones: a tick that waited out the whole of
+  another run's import would otherwise find the status back at SUCCESS and re-scrape the venue. A source another run holds, or that has been imported since this
+  run read it, is skipped, not failed. See ADR-009 for why optimistic locking cannot serve this purpose on its own.
 
 The manual "import all" endpoint (`POST /api/admin/event-sources/import`) uses the same
 `importConcurrently()` method, benefiting from the same bounded concurrency.

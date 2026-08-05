@@ -85,7 +85,10 @@ class EventImportServiceTest {
         url: String = "https://example.com/events",
         enabled: Boolean = true,
         etag: String? = null,
-        lastModified: String? = null
+        lastModified: String? = null,
+        // A persisted source always carries a version (the column is NOT NULL DEFAULT 0), and
+        // the import claim is gated on it, so the default mirrors a freshly inserted row.
+        version: Long? = 0L
     ) = EventSourceEntity(
         id = id,
         venueId = venueId,
@@ -95,7 +98,8 @@ class EventImportServiceTest {
         sourceType = sourceType,
         enabled = enabled,
         etag = etag,
-        lastModified = lastModified
+        lastModified = lastModified,
+        version = version
     )
 
     /** Creates a minimal [ScrapedEvent] for testing. */
@@ -149,7 +153,7 @@ class EventImportServiceTest {
 
         // The import claim succeeds by default, so every test below runs the full pipeline.
         // The relaxed mock would otherwise answer 0 and skip the import as already-claimed.
-        coEvery { eventSourceRepository.claimForImport(any(), any()) } returns 1
+        coEvery { eventSourceRepository.claimForImport(any(), any(), any()) } returns 1
 
         // Default stubs: empty collections, save returns input with ID
         coEvery { eventRepository.findBySourceIdIn(any()) } returns emptyFlow()
@@ -306,15 +310,16 @@ class EventImportServiceTest {
                 service.importFromSource(src)
 
                 // The RUNNING transition is a conditional UPDATE, not a read-modify-write save,
-                // so that two callers cannot both claim the same source.
-                coVerify { eventSourceRepository.claimForImport(1L, any()) }
+                // so that two callers cannot both claim the same source. It is gated on the
+                // version that was read, making the claim a compare-and-swap on that exact row.
+                coVerify { eventSourceRepository.claimForImport(1L, 0L, any()) }
             }
 
         @Test
         fun `skips the import when the source is already claimed by another run`() =
             runTest {
                 val src = source()
-                coEvery { eventSourceRepository.claimForImport(any(), any()) } returns 0
+                coEvery { eventSourceRepository.claimForImport(any(), any(), any()) } returns 0
 
                 val result = service.importFromSource(src)
 
@@ -325,6 +330,43 @@ class EventImportServiceTest {
                 coVerify(exactly = 0) { cassiopeiaImporter.importEvents(any(), any(), any()) }
                 coVerify(exactly = 0) { eventSourceRepository.save(any()) }
                 coVerify(exactly = 0) { eventRepository.saveAll(any<Iterable<EventEntity>>()) }
+            }
+
+        @Test
+        fun `skips the import when the source was imported after this run read it`() =
+            runTest {
+                // A scheduler tick reads a source while it is still IDLE, then waits on the
+                // import semaphore. A manual trigger imports the source in the meantime, so by
+                // the time this run claims, the row is back at SUCCESS — a status-only guard
+                // would let it re-scrape the venue. The version it read has moved on, so the
+                // conditional UPDATE matches no row.
+                val staleSource = source(version = 0L)
+                coEvery { eventSourceRepository.claimForImport(1L, 0L, any()) } returns 0
+
+                val result = service.importFromSource(staleSource)
+
+                result.imported shouldBe false
+                result.eventCount shouldBe 0
+                result.error shouldBe null
+                coVerify(exactly = 0) { cassiopeiaImporter.importEvents(any(), any(), any()) }
+                coVerify(exactly = 0) { eventSourceRepository.save(any()) }
+            }
+
+        @Test
+        fun `closes the import at the version the claim wrote`() =
+            runTest {
+                // The claim increments the version, and it only succeeds when the row still
+                // matched the version that was read — so the closing save can carry that exact
+                // value instead of guessing, and no longer trips optimistic locking.
+                val src = source(version = 7L)
+                coEvery { cassiopeiaImporter.importEvents(any(), any(), any()) } returns
+                    ImportResult.Success(events = emptyList(), etag = null, lastModified = null)
+
+                service.importFromSource(src)
+
+                coVerify { eventSourceRepository.claimForImport(1L, 7L, any()) }
+                coVerify { eventSourceRepository.save(match { it.version == 8L && it.status == ImportStatus.SUCCESS.name }) }
+                coVerify(exactly = 0) { eventSourceRepository.findById(any<Long>()) }
             }
 
         @Test
