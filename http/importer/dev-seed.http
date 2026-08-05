@@ -1671,7 +1671,7 @@ Content-Type: application/json
 %}
 
 ### --- Trigger initial Heimathafen Neukölln import ---
-POST {{importer-host}}/api/admin/event-sources/heimathafen-neukoelln/import
+POST {{importer-host}}/api/admin/event-sources/heimathafen-neukolln/import
 Accept: application/json
 
 > {%
