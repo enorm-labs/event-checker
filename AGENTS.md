@@ -230,7 +230,15 @@ subprojects sharing a root `settings.gradle.kts`, plus a standalone frontend pro
       entry against `project.path` (`:events-core`), *not* `project.name` (`events-core`) — a name list matches nothing, so every project is skipped and the
       report reads `Dependencies Scanned: 0` while the build passes the CVSS gate trivially. That was live in this repo until 2026-08-05 and nothing failed;
       **a green OWASP run is not evidence the scan looked at anything.** When changing this config, read `Dependencies Scanned` in the HTML report, not the
-      exit code.
+      exit code. The healthy baseline is ~208 dependencies scanned.
+    - **`skipConfigurations` excludes the build-tool classpaths** (`detekt`, `detektPlugins`, the four `ktlint*` configurations, and the Kotlin
+      compiler-plugin/script ones). They carry their own, often much older, copies of Kotlin and logging libraries that no BOM override can reach and that
+      never ship. This narrows the scan deliberately — a real CVE in detekt or ktlint will not be reported here; Dependabot still watches them via the
+      submitted dependency graph. **Do not add anything to that list that ships.** Names must match exactly (the plugin does a `contains` on the configuration
+      name, with no globbing), so a renamed or newly added tool configuration silently starts being scanned again rather than erroring.
+    - **Suppression entries are scoped by `packageUrl` regex, and getting the scope wrong fails open.** Two entries originally anchored on
+      `org.jetbrains.(kotlin|kotlinx)/` and missed IntelliJ's repackaged `org.jetbrains.intellij.deps.kotlinx` artifacts, which alone failed the enforced scan.
+      Check a new pattern against the real package URLs in the HTML report before trusting it.
 
 ## Build & Dev Commands
 
@@ -292,14 +300,28 @@ Java version is managed via SDKMAN (`.sdkmanrc` pins `java=25.0.2-tem`; run `sdk
 - **Kotlin DSL** for all Gradle build scripts (`build.gradle.kts`).
 - **Kotlin 2.4.10** with **Spring Boot 4.1.0**; plugin versions pinned in `settings.gradle.kts` `pluginManagement`.
 - **ktlint 1.8.0** enforced project-wide via root `subprojects` block; do not override per-module.
-- **detekt 2.0** (`dev.detekt` plugin, migrated from `io.gitlab.arturbosch.detekt`) applied project-wide. Builds upon default config with overrides in root
-  `detekt.yml` (currently only `MaxLineLength: 160`). Run `./gradlew detekt` to analyze all modules.
+- **detekt 2.0.0-alpha.6** (`dev.detekt` plugin, migrated from `io.gitlab.arturbosch.detekt`) applied project-wide. The 2.0 line is still pre-release; the
+  alpha is tracked deliberately because it is what supports current Kotlin (see the compatibility-table link in `settings.gradle.kts`). Builds upon default
+  config with overrides in root `detekt.yml` (currently only `MaxLineLength: 160`). Run `./gradlew detekt` to analyze all modules.
 - **Max line length**: 160 characters (enforced by both `.editorconfig` and `detekt.yml`).
 - Centralized library versions in **`gradle.properties`** (`java.version`, `jsoup.version`, `kotest.version`,
   `kotlin-logging.version`, `mockk.version`, `mockwebserver.version`, `slugify.version`, `spring-modulith.version`,
   `springdoc.version`), read in the module build scripts via `property("…")`; plugin versions in `settings.gradle.kts`
   `pluginManagement`. They live in `gradle.properties` rather than root `extra[...]` because Gradle 10 removes the implicit lookup of parent-project properties
   that the `extra[...]` form depended on.
+    - **`gradle.properties` also holds a second, different kind of entry** — the "Spring Boot BOM overrides (CVE remediation)" block
+      (`netty.version`, `postgresql.version`, `log4j2.version`, `jackson-2-bom.version`, `jackson-bom.version`) plus `scram.version`. These are **not** ordinary
+      project versions and must not be bumped on sight. Each overrides a version the Spring Boot BOM would otherwise manage, and exists only because the BOM's
+      version carries a known CVE. `io.spring.dependency-management` resolves BOM properties from Gradle project properties, so naming the BOM's own property
+      here is enough to reach every module that applies the Boot plugin.
+    - **They are temporary by design: delete each one once a Spring Boot release ships an equal or newer version.** An override kept past its purpose pins the
+      project *behind* the BOM, so later Boot upgrades stop raising that dependency and the staleness is invisible. `/update-dependencies` checks this on every
+      run.
+    - Two dependencies are not BOM-managed at all and are pinned by `constraints` blocks instead: **`scram.version`** (a transitive of `r2dbc-postgresql`, which
+      pins the vulnerable version in every release) in both Boot modules, and **`log4j2.version`** reused in `events-core`. That last one matters —
+      `events-core` applies `io.spring.dependency-management` but **not** the Boot plugin, so no BOM override reaches it. Importing the Boot BOM there is not a
+      fix: without the Boot plugin nothing aligns the BOM's `kotlin.version`, and `compileKotlin` fails with a null plugin classpath. **When adding a BOM
+      override, check `events-core` separately — verifying only the two Boot modules will report success while this one keeps the vulnerable version.**
 - Use `val` for injected dependencies; constructor injection only (no field injection).
 - Application config files use **`.yaml`** extension (not `.yml`).
 - Kotlin compiler flags: `-Xjsr305=strict` (all modules) and `-Xannotation-default-target=param-property` (BFF + importer) are set in `compilerOptions`.
