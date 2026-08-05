@@ -24,7 +24,7 @@ recording why.
 
 ### What actually has to run
 
-Four deployables, derived from the modules in this repo:
+Four deployables today, derived from the modules in this repo, plus one more that the backlog makes near-certain:
 
 | Component         | Shape                                                             | Runtime demand                                                     |
 |-------------------|-------------------------------------------------------------------|--------------------------------------------------------------------|
@@ -32,6 +32,21 @@ Four deployables, derived from the modules in this repo:
 | `events-importer` | Spring Boot 4 / WebFlux / R2DBC + admin API (port 8081)           | **Always-on, effectively single-instance** — see below             |
 | `events-frontend` | Vue 3 + Vite **SPA** — `npm run build` emits a static `dist/`     | No server runtime of its own; static files + a router fallback     |
 | PostgreSQL 18     | The only stateful component; owns all event/venue/artist data     | ~2 vCPU / 4 GB, tens of GB, needs backups + point-in-time recovery |
+| *admin frontend*  | **Planned** (TODO 🟠) — a second static SPA over the admin API    | Static files, one user, **must not be publicly reachable**         |
+
+**On the planned admin frontend.** TODO lists an admin UI to operate the importers and curate data (imports status, import configuration, data-quality
+overview, manual event entry). It is not built yet, but it is close enough to change two things here, so it is priced and designed for rather than discovered
+later:
+
+- **It is a fifth deployable, and its cost is not uniform across the options.** On Hetzner or any container platform it is another nginx serving a few MB —
+  noise. On a **per-GB-RAM PaaS it is another billed container** (~€25–30/month on Scalingo, $25 on Render), which is a second reason those options want their
+  SPAs on a static host rather than in a container. On Cloud Run it is close to free, because admin traffic is one person and an admin service can genuinely
+  scale to zero.
+- **It forces the admin-API exposure question that would otherwise be deferred.** The importer's admin API must not be public (below), and the current answer is
+  `kubectl port-forward`. A browser-based admin UI either runs locally against that port-forward — free, fine for one developer, and the launch answer — or it
+  gets deployed, and then it needs an access-control mechanism *at the edge* before the planned authentication work lands. Platforms differ here: Cloud Run has
+  IAM/IAP for exactly this, Hetzner + Traefik needs Cloudflare Access (free for a handful of users), an IP allowlist, or a basic-auth middleware, and most PaaS
+  options offer nothing below the application layer. This is a small point in favour of the recommendation only insofar as Cloudflare is already in the design.
 
 Three properties of `events-importer` constrain the platform choice more than anything else:
 
@@ -599,7 +614,10 @@ Hetzner now does not close that door; the application is containers and Postgres
 - **Single-instance importer**: the Helm chart must set `replicas: 1` with `strategy: Recreate` for `events-importer` so a rolling deploy never runs two
   schedulers. Multi-replica operation stays blocked on the `SELECT … FOR UPDATE SKIP LOCKED` work noted in ADR-008.
 - **Admin API exposure**: `events-importer`'s admin endpoints must not be routed publicly by the ingress — cluster-internal service only, reachable via
-  `kubectl port-forward` or, later, behind the planned authentication.
+  `kubectl port-forward` or, later, behind the planned authentication. **The planned admin frontend inherits this**: at launch it runs locally against a
+  port-forwarded admin API and is not deployed at all; the moment it *is* deployed, it needs edge access control ahead of the application-level auth work —
+  Cloudflare Access on the free plan is the cheapest fit given Cloudflare is already in front, with an ingress IP allowlist or basic-auth middleware as
+  alternatives. Do not route either the admin UI or the admin API publicly on the assumption that "nobody knows the URL".
 - **IaC**: use the `hetznercloud/hcloud` OpenTofu/Terraform provider for servers, networks, firewalls, and volumes; keep state in Hetzner Object Storage (S3
   API) or Terraform Cloud. This unblocks the "Infrastructure as code" backlog item.
 - **CI/CD**: GitHub Actions cannot use OIDC against Hetzner, so deploys authenticate with a scoped kubeconfig or deploy key held as a repository secret, rotated
