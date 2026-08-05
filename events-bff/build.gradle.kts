@@ -40,6 +40,18 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql")
     runtimeOnly("org.postgresql:r2dbc-postgresql")
 
+    // SCRAM authentication for r2dbc-postgresql. Constrained rather than declared, because it
+    // is a pure transitive: r2dbc-postgresql pins 3.2 in both 1.1.1 and 1.1.2, so upgrading it
+    // does not move scram. Drop this block once r2dbc-postgresql ships 3.3+ itself.
+    constraints {
+        runtimeOnly("com.ongres.scram:scram-client:${property("scram.version")}") {
+            because("3.2 is affected by CVE-2026-53712 (high), fixed in 3.3")
+        }
+        runtimeOnly("com.ongres.scram:scram-common:${property("scram.version")}") {
+            because("3.2 is affected by CVE-2026-53712 (high), fixed in 3.3")
+        }
+    }
+
     // Web
     implementation("org.springframework.boot:spring-boot-starter-webclient")
     testImplementation("org.springframework.boot:spring-boot-starter-webclient-test")
