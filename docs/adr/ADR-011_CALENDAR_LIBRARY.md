@@ -109,6 +109,33 @@ needs diverge enough from both libraries to make ownership worthwhile.
 - **No CSS import needed**: FullCalendar v6 injects its own base styles at runtime.
 - **Verified**: `type-check`, `lint`, `build`, and `vitest run` pass.
 
+### Updated for FullCalendar 7 (2026-08-05)
+
+The decision — FullCalendar behind a single wrapper — is unchanged. The v7 upgrade changed how nearly all of it is wired, so the notes above describe v6 only
+and the following supersedes them:
+
+- **Dependencies**: `@fullcalendar/core`, `-daygrid`, `-timegrid` and `-list` are **gone**. v7 ships the plugins as subpaths of the framework package
+  (`@fullcalendar/vue3/daygrid`, `/timegrid`, `/list`, `/themes/classic`), and the standalone plugin packages have no v7 release — 6.1.21 is their last version.
+  The only direct dependency is `@fullcalendar/vue3`, plus its required `temporal-polyfill` peer. Types (`CalendarOptions`, `EventInput`, …) now come from
+  `@fullcalendar/vue3` rather than `@fullcalendar/core`.
+- **CSS is now opt-in**: the "no CSS import needed" note above is **no longer true**. v7 bundles no styles, so the wrapper imports `skeleton.css` (structure),
+  `themes/classic/theme.css` (rules) and `themes/classic/palette.css` (colour defaults) explicitly.
+- **The theming bridge was rewritten, not renamed.** v7 renamed every custom property and namespaced it per theme: `--fc-border-color` →
+  `--fc-classic-border`, `--fc-event-bg-color` → `--fc-classic-event`, and so on; no v6 name survives anywhere in the package. The bridge is therefore keyed to
+  the `classic` theme, and **switching themes means renaming the whole block**.
+    - The shipped palette flips to dark on `[data-color-scheme=dark]`, which this app never sets — it toggles a `.dark` class. Every colour the palette varies
+      between light and dark is therefore overridden against our tokens (which already flip), rather than relying on the palette's own dark block, which would
+      never fire and would leave light values showing in dark mode.
+- **View buttons need explicit labels.** v7 removed the `buttonText` option and the built-in English labels behind it. A view button whose text cannot be
+  resolved is **not rendered at all**, silently — the calendar still looks fine, just with no view switcher. The wrapper names them via the `buttons` option.
+- **The view switcher is a tablist.** v7 renders it as `role="tablist"` with `role="tab"` children named `"<View> view"` ("Month view", "Week view",
+  "List view"), where v6 used plain buttons named "month"/"week"/"list". This is better semantics, but it breaks any selector written against the old shape —
+  `e2e/calendar.spec.ts` targets the tab role accordingly.
+- **Cost**: the calendar route chunk grew from ~233 kB to ~264 kB of JS, and its CSS from ~1 kB to ~18 kB (previously injected at runtime rather than emitted as
+  a stylesheet). The route is still lazy-loaded, so first paint elsewhere is unaffected.
+- **Verified**: `type-check`, `lint`, `build`, `vitest run` and the Playwright e2e suite (61 tests, chromium) pass; the calendar was also screenshotted in both
+  light and dark mode to confirm the rewritten bridge, since no automated test covers appearance.
+
 ## References
 
 - [FullCalendar — Vue 3 docs](https://fullcalendar.io/docs/vue)

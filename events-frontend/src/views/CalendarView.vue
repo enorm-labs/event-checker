@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { EventInput } from '@fullcalendar/core'
+import type { EventInput } from '@fullcalendar/vue3'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import EventCalendar from '@/components/EventCalendar.vue'
