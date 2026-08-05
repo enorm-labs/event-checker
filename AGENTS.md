@@ -340,7 +340,7 @@ Java version is managed via SDKMAN (`.sdkmanrc` pins `java=25.0.2-tem`; run `sdk
 
 ## CI/CD & Automation
 
-- **GitHub Actions** runs four workflows (`.github/workflows/`):
+- **GitHub Actions** runs these workflows (`.github/workflows/`):
     - `build-backend.yml` — Lint (`ktlintCheck`), static analysis (`detekt`), build, test, and OWASP dependency CVE scan. Posts detekt markdown reports and
       Kover coverage to the job summary; on PRs, also posts Kover coverage as a sticky comment (via `mi-kas/kover-report`). Detekt SARIF reports are uploaded
       per module to GitHub Code Scanning. Triggers on `main` push/PR, skips
@@ -349,12 +349,20 @@ Java version is managed via SDKMAN (`.sdkmanrc` pins `java=25.0.2-tem`; run `sdk
     - `dependency-review.yml` — Runs on PRs to diff dependency changes between base and head. Flags newly introduced vulnerabilities (high+ severity) and
       license issues using the GitHub Advisory Database. Complements OWASP Dependency-Check with fast, PR-scoped feedback.
     - `dependency-submission.yml` — Submits Gradle dependency graph to GitHub on `main` push (for Dependabot alerts/security).
+    - `dependency-check-scheduled.yml` — The authoritative nightly OWASP Dependency-Check on `main`. Owns the shared NVD cache that the informational PR scan
+      in `build-backend.yml` restores.
+    - `label-pr.yml` — Derives labels from the Conventional Commits PR title (`feat(scraper): …` → `feat` + `importer`, `fix(api)!: …` → `fix` +
+      `breaking-change`) via `actions/github-script`. Creates any missing label on demand and re-syncs when the title is edited. Uses `pull_request_target` so
+      fork PRs get a writable token; safe because it never checks out or runs PR code.
 - **Dependabot** (`.github/dependabot.yml`) checks for Gradle dependency updates weekly. Updates are grouped by ecosystem (e.g. `kotlin`, `spring-boot`,
   `spring-modulith`, `testcontainers`, `jackson`, `springdoc`, `kotest`, `postgresql`, `flyway`, `reactor`, `detekt`, `owasp`,
   `gradle-plugins`)
   so that related dependencies are bundled into a single PR per group.
 - **Conventional Commits** — Commit messages follow the [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/) spec. Reusable prompts are
   available at `.github/prompts/` for commit messages, squash commit messages, and code reviews.
+- **Release notes** (`.github/release.yml`) — GitHub's automatically generated release notes group merged PRs into categories (🎪 New Event Sources, ✨ Features,
+  🐛 Bug Fixes, …) by the labels `label-pr.yml` applies. Categories are matched **in order**, first match wins, so specific ones (`importer`, `dependencies`)
+  precede general ones (`feat`, `build`). Label a PR `ignore-for-release` to keep it out of the notes entirely.
 - **Opening a PR** — the `/open-pr` skill (`.github/prompts/open-pr.prompt.md`) runs the full ship flow: cut a branch, commit with a Conventional Commits
   message, push, and open the PR via `gh`. Invoking it is the explicit go-ahead for the commit/push that the "no unsolicited commits/pushes" rule above
   otherwise withholds.
@@ -373,6 +381,9 @@ Java version is managed via SDKMAN (`.sdkmanrc` pins `java=25.0.2-tem`; run `sdk
 | CI: frontend build & test             | `.github/workflows/build-frontend.yml`                                                                    |
 | CI: dependency review (PR)            | `.github/workflows/dependency-review.yml`                                                                 |
 | CI: dependency graph submission       | `.github/workflows/dependency-submission.yml`                                                             |
+| CI: nightly OWASP scan                | `.github/workflows/dependency-check-scheduled.yml`                                                        |
+| CI: PR labelling                      | `.github/workflows/label-pr.yml`                                                                          |
+| Release notes categories              | `.github/release.yml`                                                                                     |
 | Dependabot config                     | `.github/dependabot.yml`                                                                                  |
 | Commit message prompt                 | `.github/prompts/commit-message.prompt.md`                                                                |
 | Squash commit message prompt          | `.github/prompts/squash-commit-message.prompt.md`                                                         |
