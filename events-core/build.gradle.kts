@@ -36,6 +36,24 @@ dependencies {
     implementation("io.github.oshai:kotlin-logging-jvm:${property("kotlin-logging.version")}")
 
     testImplementation(kotlin("test"))
+
+    // This module applies `io.spring.dependency-management` but NOT the Spring Boot plugin (it is
+    // a library, not an app), so the Spring Boot BOM — and with it every CVE override in
+    // gradle.properties — does not reach it. That gap is easy to miss: the overrides took effect
+    // in events-bff and events-importer while this module quietly kept resolving log4j-api 2.25.4.
+    //
+    // Importing the Boot BOM here is NOT the fix. Without the Boot plugin nothing aligns the BOM's
+    // `kotlin.version` with the Kotlin plugin's, so the BOM forces its own Kotlin onto the
+    // compiler-plugin classpath and `compileKotlin` dies with a null plugin classpath. Pin the
+    // affected transitive directly instead, reusing the same property so the two cannot drift.
+    //
+    // Consumers of the published artifact resolve log4j through their own BOM; this constraint is
+    // about this module's own classpath, which is what the CVE scan sees.
+    constraints {
+        implementation("org.apache.logging.log4j:log4j-api:${property("log4j2.version")}") {
+            because("2.25.4 (via spring-modulith-starter-core) is affected by CVE-2026-49844, fixed in 2.25.5")
+        }
+    }
 }
 
 kotlin {
