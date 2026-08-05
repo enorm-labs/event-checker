@@ -5,8 +5,8 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldNotContain
 import kotlinx.coroutines.test.runTest
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
+import mockwebserver3.MockResponse
+import mockwebserver3.MockWebServer
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -40,7 +40,7 @@ class ApiClientTest {
 
     @AfterEach
     fun stopServer() {
-        server.shutdown()
+        server.close()
     }
 
     /** Base URL of the mock server without a trailing slash, e.g. `http://localhost:12345`. */
@@ -50,7 +50,13 @@ class ApiClientTest {
     fun `fetchJson returns the response body verbatim for a JSON payload`() =
         runTest {
             val body = """{"items":[{"title":"ok"}]}"""
-            server.enqueue(MockResponse().setResponseCode(200).setBody(body))
+            server.enqueue(
+                MockResponse
+                    .Builder()
+                    .code(200)
+                    .body(body)
+                    .build()
+            )
 
             apiClient.fetchJson(baseUrl() + "/api") shouldBe body
         }
@@ -58,21 +64,27 @@ class ApiClientTest {
     @Test
     fun `fetchJson sends the query string verbatim without re-encoding`() =
         runTest {
-            server.enqueue(MockResponse().setResponseCode(200).setBody("{}"))
+            server.enqueue(
+                MockResponse
+                    .Builder()
+                    .code(200)
+                    .body("{}")
+                    .build()
+            )
 
             // The Elfsight boot URL carries the widget id as a query parameter; it must arrive intact.
             val path = "/p/boot/?w=e767cbbe-0026-4173-a511-5aaa105ed563"
             apiClient.fetchJson(baseUrl() + path)
 
             val recorded = server.takeRequest()
-            recorded.path shouldBe path
-            recorded.path shouldNotContain "%25"
+            recorded.target shouldBe path
+            recorded.target shouldNotContain "%25"
         }
 
     @Test
     fun `fetchJson throws HttpFetchException on a 404`() =
         runTest {
-            server.enqueue(MockResponse().setResponseCode(404))
+            server.enqueue(MockResponse.Builder().code(404).build())
 
             val url = baseUrl() + "/missing"
             val exception =

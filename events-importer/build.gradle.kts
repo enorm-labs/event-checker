@@ -96,8 +96,12 @@ dependencies {
 
     // MockWebServer – scriptable local HTTP server for exercising the real WebClient
     // request pipeline (URL encoding, headers, status handling) end to end.
+    // The `mockwebserver3` artifact is okhttp 5's current API. Deliberately not the legacy
+    // `com.squareup.okhttp3:mockwebserver`, which still exists at 5.x only as a deprecation
+    // bridge whose MockWebServer extends JUnit 4's ExternalResource — it would drag
+    // junit:junit onto the test classpath of a JUnit 5-only project.
     // See: https://github.com/square/okhttp/tree/master/mockwebserver
-    testImplementation("com.squareup.okhttp3:mockwebserver:${property("mockwebserver.version")}")
+    testImplementation("com.squareup.okhttp3:mockwebserver3:${property("mockwebserver.version")}")
 
     // Testcontainers
     testImplementation("org.springframework.boot:spring-boot-testcontainers")

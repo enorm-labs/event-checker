@@ -7,8 +7,8 @@ import io.kotest.matchers.string.shouldNotContain
 import io.kotest.matchers.types.shouldBeInstanceOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
+import mockwebserver3.MockResponse
+import mockwebserver3.MockWebServer
 import okio.Buffer
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -45,7 +45,7 @@ class HtmlFetcherTest {
 
     @AfterEach
     fun stopServer() {
-        server.shutdown()
+        server.close()
     }
 
     /** Base URL of the mock server without a trailing slash, e.g. `http://localhost:12345`. */
@@ -62,26 +62,38 @@ class HtmlFetcherTest {
         @Test
         fun `fetchDocument sends an already-encoded path verbatim without double-encoding`() =
             runTest {
-                server.enqueue(MockResponse().setResponseCode(200).setBody("<html><body>ok</body></html>"))
+                server.enqueue(
+                    MockResponse
+                        .Builder()
+                        .code(200)
+                        .body("<html><body>ok</body></html>")
+                        .build()
+                )
 
                 fetcher.fetchDocument(baseUrl() + encodedPath)
 
                 val recorded = server.takeRequest()
-                recorded.path shouldBe encodedPath
+                recorded.target shouldBe encodedPath
                 // Guards against the regression specifically: no '%' was re-escaped to '%25'.
-                recorded.path shouldNotContain "%25"
+                recorded.target shouldNotContain "%25"
             }
 
         @Test
         fun `fetch sends an already-encoded path verbatim without double-encoding`() =
             runTest {
-                server.enqueue(MockResponse().setResponseCode(200).setBody("<html><body>ok</body></html>"))
+                server.enqueue(
+                    MockResponse
+                        .Builder()
+                        .code(200)
+                        .body("<html><body>ok</body></html>")
+                        .build()
+                )
 
                 fetcher.fetch(baseUrl() + encodedPath)
 
                 val recorded = server.takeRequest()
-                recorded.path shouldBe encodedPath
-                recorded.path shouldNotContain "%25"
+                recorded.target shouldBe encodedPath
+                recorded.target shouldNotContain "%25"
             }
     }
 
@@ -91,7 +103,13 @@ class HtmlFetcherTest {
         fun `fetchHtml returns the response body verbatim`() =
             runTest {
                 val body = "<html><body>ok</body></html>"
-                server.enqueue(MockResponse().setResponseCode(200).setBody(body))
+                server.enqueue(
+                    MockResponse
+                        .Builder()
+                        .code(200)
+                        .body(body)
+                        .build()
+                )
 
                 fetcher.fetchHtml(baseUrl() + "/page") shouldBe body
             }
@@ -114,10 +132,12 @@ class HtmlFetcherTest {
                 // The retro Arcanoa host sends "Content-Type: text/html" with no charset parameter,
                 // so the encoding is knowable only from the document's own meta tag.
                 server.enqueue(
-                    MockResponse()
-                        .setResponseCode(200)
+                    MockResponse
+                        .Builder()
+                        .code(200)
                         .setHeader("Content-Type", "text/html")
-                        .setBody(latin1Page("iso-8859-1"))
+                        .body(latin1Page("iso-8859-1"))
+                        .build()
                 )
 
                 val result = fetcher.fetch(baseUrl() + "/veranst.htm")
@@ -131,10 +151,12 @@ class HtmlFetcherTest {
             runTest {
                 // A stale meta tag must not override what the server actually declares.
                 server.enqueue(
-                    MockResponse()
-                        .setResponseCode(200)
+                    MockResponse
+                        .Builder()
+                        .code(200)
                         .setHeader("Content-Type", "text/html; charset=ISO-8859-1")
-                        .setBody(latin1Page("utf-8"))
+                        .body(latin1Page("utf-8"))
+                        .build()
                 )
 
                 val result = fetcher.fetch(baseUrl() + "/veranst.htm")
@@ -147,10 +169,12 @@ class HtmlFetcherTest {
         fun `fetchDocument decodes a Latin-1 page declared only by its meta tag`() =
             runTest {
                 server.enqueue(
-                    MockResponse()
-                        .setResponseCode(200)
+                    MockResponse
+                        .Builder()
+                        .code(200)
                         .setHeader("Content-Type", "text/html")
-                        .setBody(latin1Page("iso-8859-1"))
+                        .body(latin1Page("iso-8859-1"))
+                        .build()
                 )
 
                 val document = fetcher.fetchDocument(baseUrl() + "/veranst.htm")
@@ -164,7 +188,7 @@ class HtmlFetcherTest {
         @Test
         fun `fetchHtml throws HttpFetchException on a 404`() =
             runTest {
-                server.enqueue(MockResponse().setResponseCode(404))
+                server.enqueue(MockResponse.Builder().code(404).build())
 
                 val url = baseUrl() + "/missing"
                 val exception =
