@@ -150,6 +150,9 @@ enum class EventSource {
     /** Metropol Berlin – the historic concert hall at Nollendorfplatz, programming touring concerts alongside occasional club parties. */
     METROPOL,
 
+    /** migas Berlin – a Wedding listening bar where booked selectors play records to a seated audience, alongside full-album playback nights. */
+    MIGAS,
+
     /** Mikropol Berlin – a small underground club in Schöneberg spanning rock, metal, electronic and alternative styles. */
     MIKROPOL,
 

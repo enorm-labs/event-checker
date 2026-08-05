@@ -53,6 +53,7 @@
 ###   Max-Schmeling-Halle  — https://www.velomax.de/events
 ###   MAXXIM               — https://www.maxxim-berlin.de/partys
 ###   Metropol             — https://metropol-berlin.de/events
+###   migas                — https://migas.berlin/program/
 ###   Tresor               — https://tresorberlin.com/club/events/
 ###   Uber Arena           — https://www.uber-arena.de/events/all
 ###   Uber Eats Music Hall — https://www.uber-eats-music-hall.de/events/all
@@ -2621,6 +2622,65 @@ Accept: application/json
 
 > {%
     client.test("Metropol import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### migas (Lindower Str. 19, Berlin-Wedding — a listening bar)
+### ————————————————————————————————————————————————————————————
+
+### --- Create migas venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "migas",
+    "address": "Lindower Str. 19",
+    "city": "Berlin",
+    "postalCode": "13347",
+    "district": "mitte",
+    "latitude": 52.54186,
+    "longitude": 13.36684,
+    "websiteUrl": "https://migas.berlin",
+    "description": "A listening bar in Wedding where booked selectors play records to a seated audience, alongside nights spent listening to a single album from start to finish."
+}
+
+> {%
+    client.global.set("migas_venue_id", response.body.id);
+    client.test("migas venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create migas event source ---
+# Links the venue to the MigasWebsiteImporter.
+# The sourceType "MIGAS" matches EventSource.MIGAS.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{migas_venue_id}},
+    "name": "migas",
+    "url": "https://migas.berlin/program/",
+    "sourceType": "MIGAS",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("migas event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial migas import ---
+POST {{importer-host}}/api/admin/event-sources/migas/import
+Accept: application/json
+
+> {%
+    client.test("migas import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}
