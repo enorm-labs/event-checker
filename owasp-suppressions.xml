@@ -5,13 +5,23 @@
     See: https://jeremylong.github.io/DependencyCheck/general/suppression.html
 
     Rules for this file:
-    - Suppress only *false positives* — a CVE that does not apply to the artifact it was
-      matched against, or a version range we are not in. A real vulnerability is fixed by
-      upgrading, not by silencing it here.
     - Always scope an entry with <packageUrl> so the CVE stays visible if it later matches a
       different dependency. A bare <cve> suppresses it everywhere, forever.
-    - Say in <notes> *why* it is a false positive and what would make it real again, so the
-      entry can be re-evaluated rather than inherited on trust.
+    - Say in <notes> *why* the entry exists and what would make the finding real again, so it
+      can be re-evaluated rather than inherited on trust.
+
+    There are exactly two reasons to add an entry, and they are not interchangeable:
+
+    1. FALSE POSITIVE — the CVE does not apply to the artifact it was matched against, or the
+       version range is one we are not in. These are permanent and need no expiry.
+
+    2. ACCEPTED RISK — the finding is real, but there is *no fixed version to upgrade to*.
+       This is a deliberate decision to ship a known vulnerability, so it carries extra duties:
+         - it MUST set until="YYYY-MM-DD", so the suppression expires and the finding comes
+           back for re-evaluation instead of silently becoming permanent;
+         - the notes MUST record the severity disagreement or exposure reasoning that justified
+           accepting it, and name the release that will make it removable.
+       A real vulnerability that *does* have a fix is upgraded, never silenced here.
 
     Example:
     <suppress>
@@ -76,6 +86,40 @@
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.apache\.logging\.log4j/log4j-to-slf4j@.*$</packageUrl>
         <cve>CVE-2026-49844</cve>
+    </suppress>
+
+    <!-- ===== ACCEPTED RISK (see rule 2 above) — expires, unlike the entries above ===== -->
+
+    <suppress until="2026-11-05">
+        <notes><![CDATA[
+            ACCEPTED RISK, NOT a false positive. CVE-2026-53914 genuinely affects JetBrains
+            Kotlin < 2.4.20 and this project is on 2.4.10.
+
+            It is suppressed only because there is nothing to upgrade to: 2.4.20 exists solely
+            as 2.4.20-Beta2, and this project ships stable releases only. Upgrading is the
+            preferred fix and should replace this entry the moment 2.4.20 is released.
+
+            The severity is disputed between the two scoring bodies:
+              - NVD/NIST:            9.8 CRITICAL  AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H
+              - JetBrains (the CNA): 6.7 MEDIUM    AV:L/AC:H/PR:H/UI:N/S:C/C:H/I:L/A:L
+            Dependency-Check uses the NVD score, so the finding trips failBuildOnCVSS = 7.0 and
+            fails the enforced nightly scan. We accept the CNA's assessment as the better guide
+            to real exposure here: JetBrains, as the vendor, scores it local-access, high attack
+            complexity and high privileges required — an attacker already needs privileged local
+            access to the build host, which is a materially different threat from the remote,
+            unauthenticated vector NVD's 9.8 implies.
+
+            Scoped to the org.jetbrains.kotlin / org.jetbrains.kotlinx artifacts because
+            Dependency-Check attributes this CVE across ~22 of them (stdlib, reflect, compiler,
+            scripting, build-tools, coroutines) from the single JetBrains Kotlin CPE.
+
+            REMOVAL: delete this entry when Kotlin 2.4.20 (or later) ships stable and is adopted
+            — see the kotlin("jvm") version in settings.gradle.kts. The `until` date is a
+            backstop, not a target: on 2026-11-05 the suppression lapses and the finding returns
+            for re-evaluation whether or not anyone remembered to revisit it.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.jetbrains\.(kotlin|kotlinx)/.*@.*$</packageUrl>
+        <cve>CVE-2026-53914</cve>
     </suppress>
 
 </suppressions>
