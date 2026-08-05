@@ -263,9 +263,10 @@ happens to be due. `bootRun` does not hot-reload — restart (`down` then `up`) 
 artefacts (log, PID, snapshots) land in `build/dev-env/`, which is gitignored.
 
 The **configuration cache** is enabled (`org.gradle.configuration-cache=true` in `gradle.properties`), so repeat builds skip the configuration phase. Every task
-above benefits except `dependencyCheckAggregate` — the OWASP plugin (12.2.2) keeps a `Project` reference in its task state, which cannot be serialized. That
-task still runs correctly without the flag, but the cache entry is discarded on every invocation and the build prints a problems report, so pass
-`--no-configuration-cache` to skip the futile attempt. Both CI workflows that run it already do. Recheck when the plugin is upgraded.
+above benefits except `dependencyCheckAggregate` — the OWASP plugin's `Aggregate` task reaches for `project.rootProject` / `project.subprojects` at execution
+time, which the configuration cache forbids. That task still runs correctly without the flag, but the cache entry is discarded on every invocation and the build
+prints a problems report, so pass `--no-configuration-cache` to skip the futile attempt. Both CI workflows that run it already do. Still the case on **13.0.0**;
+the upstream fix ([dependency-check-gradle#478](https://github.com/dependency-check/dependency-check-gradle/pull/478)) is still open, so recheck when it lands.
 
 Frontend (`events-frontend/`):
 

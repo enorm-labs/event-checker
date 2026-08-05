@@ -132,6 +132,9 @@ tasks.register<Exec>("httpTest") {
 // OWASP Dependency-Check – scans all project dependencies for known CVEs using the
 // National Vulnerability Database (NVD). Run `./gradlew dependencyCheckAggregate` to
 // produce a single report covering all subprojects.
+// Reports land in `build/reports/dependency-check/` (the plugin's default since 13.0.0;
+// it was `build/reports/` before). Both CI workflows upload from that path behind a
+// `hashFiles` guard that skips silently, so keep them in step with any change here.
 // See https://jeremylong.github.io/DependencyCheck/dependency-check-gradle/
 dependencyCheck {
     // Aggregate results from all subprojects into a single report
