@@ -31,3 +31,25 @@ app:
   scheduling:
     # Reset sources stuck in RUNNING longer than this to FAILED (Duration format, e.g. 30m, 1h)
     staleness-timeout: 30m
+
+---
+# Local development only — activate with `--spring.profiles.active=local` (IntelliJ: run
+# configuration → "Active profiles: local"). Mirrors the console output to a file so an
+# import run can be grepped after the fact, which the IDE console alone does not allow.
+#
+# Deliberately profile-gated rather than global: on a container platform the log belongs on
+# stdout, and a file appender there would write into the container's in-memory filesystem.
+#
+# The path is relative to the working directory (the module directory under `bootRun`), so
+# it lands in `events-importer/build/dev-env/`. `build` is gitignored at any depth, and
+# Logback creates the parent directories. `scripts/dev-env.sh up` does not use this profile —
+# it redirects the process's stdout to `build/dev-env/importer.log` at the repository root
+# instead, so the two never write to the same file.
+spring:
+  config:
+    activate:
+      on-profile: local
+
+logging:
+  file:
+    name: build/dev-env/importer.log
