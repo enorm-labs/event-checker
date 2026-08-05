@@ -132,6 +132,22 @@ The profile gate is deliberate: on a container platform the log belongs on stdou
 the container's in-memory filesystem. Note that `scripts/dev-env.sh` does not need the profile — it redirects each service's stdout to
 `build/dev-env/<service>.log` at the repository root itself.
 
+### Running the stack with `dev-env.sh`
+
+[`scripts/dev-env.sh`](./scripts/dev-env.sh) starts and stops the local stack without remembering docker/gradle/npm incantations. Run it with no arguments for
+the full command list.
+
+```bash
+scripts/dev-env.sh up all       # importer + bff + frontend, each waited on until it answers
+scripts/dev-env.sh status       # database / importer / bff / frontend
+scripts/dev-env.sh down all     # add --db to stop Postgres too
+```
+
+`up` and `down` take one or more of `importer` (the default) · `bff` · `frontend` · `all`. Each service logs to `build/dev-env/<service>.log`. The frontend
+proxies `/api` to the BFF, so starting it alone renders the app but every request 502s.
+
+The script also covers the importer-specific workflow — `seed-all`, `seed-one`, `import <slug>`, `snapshot`, `diff-snapshot`, `check <slug>` and `psql <sql>`.
+
 ### IntelliJ HTTP Client
 
 The [`http/`](./http) directory contains IntelliJ HTTP Client request files, split by service:

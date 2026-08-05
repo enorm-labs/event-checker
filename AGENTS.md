@@ -260,13 +260,13 @@ subprojects sharing a root `settings.gradle.kts`, plus a standalone frontend pro
 ./gradlew httpTest                  # Run .http files via IntelliJ HTTP Client CLI (requires ijhttp + running importer)
 ```
 
-Local importer environment (used by `/importer-smoke` and `/next-importer`; run with no arguments for the full command list):
+Local dev environment (used by `/importer-smoke` and `/next-importer`; run with no arguments for the full command list):
 
 ```bash
-scripts/dev-env.sh status                 # Is the database / importer up?
+scripts/dev-env.sh status                 # Is the database / importer / bff / frontend up?
 scripts/dev-env.sh db-reset               # docker compose down --volumes + fresh Postgres
-scripts/dev-env.sh up                     # bootRun in the background (scheduling off), wait for /actuator/health
-scripts/dev-env.sh down [--db]            # Stop the importer (and optionally the database)
+scripts/dev-env.sh up [service…]          # Start in the background, wait until it answers
+scripts/dev-env.sh down [service…] [--db] # Stop service(s) (and optionally the database)
 scripts/dev-env.sh seed-all               # Run http/importer/dev-seed.http via ijhttp — scrapes every venue
 scripts/dev-env.sh seed-one v.json s.json # Register a single venue + event source, print its slug
 scripts/dev-env.sh import <slug>          # Trigger one source's import and poll until it settles
@@ -275,9 +275,17 @@ scripts/dev-env.sh diff-snapshot a b      # Which sources gained or lost events 
 scripts/dev-env.sh check <slug>           # Data-quality report for one source
 ```
 
+`service` is one or more of `importer` (default) · `bff` · `frontend` · `all`, so bare `up` / `down [--db]` behave exactly as before. `up all` brings up the
+whole stack; the frontend proxies `/api` to the BFF (`events-frontend/vite.config.ts`), so on its own it renders but every request 502s. The frontend is pinned
+with `--strictPort` — a busy port fails loudly instead of Vite quietly moving to the next one.
+
 `up` starts the importer with `app.scheduling.enabled=false` so a smoke test scrapes only the source under test rather than every source whose 24h interval
-happens to be due. `bootRun` does not hot-reload — restart (`down` then `up`) after changing Kotlin code, or the smoke test runs the previous build. Runtime
-artefacts (log, PID, snapshots) land in `build/dev-env/`, which is gitignored.
+happens to be due. Pass `--scheduling` to leave it on (that is the configuration in which the scheduler races manual triggers — see ADR-009 on the import
+claim). Neither `bootRun` nor this script hot-reloads Kotlin — restart (`down` then `up`) after changing code, or the smoke test runs the previous build. Vite
+*does* hot-reload, so the frontend needs no restart. Runtime artefacts land in `build/dev-env/` (gitignored): `<service>.log`, `<service>.pid`, snapshots.
+
+When launching these from an agent shell, redirect the command's own output (`> file 2>&1 < /dev/null`) — the detached `bootRun`/`vite` process inherits the
+tool's stdout pipe and keeps the call hanging long after the script itself has exited.
 
 The **configuration cache** is enabled (`org.gradle.configuration-cache=true` in `gradle.properties`), so repeat builds skip the configuration phase. Every task
 above benefits except `dependencyCheckAggregate` — the OWASP plugin's `Aggregate` task reaches for `project.rootProject` / `project.subprojects` at execution
