@@ -7,8 +7,8 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 
 | Status                              | Meaning                                                                              | Count |
 |-------------------------------------|--------------------------------------------------------------------------------------|------:|
-| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    78 |
-| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |     1 |
+| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    79 |
+| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |     0 |
 | ⛔ [Blocked](#-blocked--deferred)   | Website analyzed, but no usable listings (no programme page, JS-only, or too sparse) |    49 |
 | ❓ [Unanalyzed](#-not-analyzed-yet) | No URL recorded yet — website still needs a first look                               |    48 |
 
@@ -53,6 +53,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Junction Bar                | https://www.junction-bar.de/                                | Bar          | Static monthly pages; show times vary by weekday      |
 | Kantine am Berghain         | https://www.berghain.berlin/de/program/kantine-am-berghain/ | Concert Hall | Shares BERGHAIN importer                              |
 | Kater                       | https://www.katerclub.de/                                   | Techno Club  | Homepage programme; ___ floor rules mark lineups      |
+| Klunkerkranich              | https://klunkerkranich.org/events/                          | Bar          | WordPress; ISO date in slug; ~10-day horizon          |
 | LARK                        | https://larkberlin.com/events/                              | Club         | WP REST + ACF; post date is the event date            |
 | Lido                        | https://www.lido-berlin.de/                                 | Concert Hall | Clean slugs; doors + start; "Ausverkauft" badge       |
 | Loge                        | https://www.loge-berlin.org/                                | Club         | Wix; tickets on-site; support via "+" in title        |
@@ -97,7 +98,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Zenner                      | https://zenner.berlin/programm                              | Club         | Gatsby/Sanity page-data JSON; UTC dates; archive      |
 | Zitadelle                   | https://citadel-music-festival.de/events                    | Open Air     | Festival site; WordPress/EM; summer season only       |
 
-77 importer classes cover 78 sources: only Kantine am Berghain has no class of its own, sharing the Berghain importer outright. Three other groups share a
+78 importer classes cover 79 sources: only Kantine am Berghain has no class of its own, sharing the Berghain importer outright. Three other groups share a
 *listing and parser* while keeping one thin `@Component` per venue, so they do not reduce the count — Club der Visionäre, Sonnenraum and MS Hoppetosse; the
 three Velomax halls; and Uber Arena with the Uber Eats Music Hall.
 
@@ -105,13 +106,11 @@ three Velomax halls; and Uber Arena with the Uber Eats Music Hall.
 
 Analyzed and scrapable — the candidates for the next `/scaffold-importer` runs. **Priority** reflects data richness and effort, not venue importance.
 
-This one — and VOID Club, Crack Bellmer, Maaya, silent green, gART.n, Club OST, migas and Eschschloraque, since [imported](#-imported) — was analyzed on **4 August 2026**, working
-down the [Unanalyzed](#-not-analyzed-yet) table in RA-event-count order: 22 sites were opened, and these are the ones that server-render a dated programme. Each
-row was confirmed by fetching the raw HTML — no headless browser, per [ADR-007](adr/ADR-007_WEB_SCRAPING_STRATEGY.md) — and reading the events out of it.
-
-| Priority | Name           | URL                                            | Type         | Why / what it needs                                                                                                                                |
-|:--------:|----------------|------------------------------------------------|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
-|   Low    | Klunkerkranich | https://klunkerkranich.org/                    | Bar          | WordPress + `ld+json`, full dates — but only ~6 days ahead. A short rolling horizon like OHM's, so thin but truthful                               |
+**Empty as of 5 August 2026.** The 4 August analysis put nine venues here, working down the [Unanalyzed](#-not-analyzed-yet) table in RA-event-count order: 22
+sites were opened, and these were the ones that server-render a dated programme, each confirmed by fetching the raw HTML — no headless browser, per
+[ADR-007](adr/ADR-007_WEB_SCRAPING_STRATEGY.md) — and reading the events out of it. All nine are now [imported](#-imported): VOID Club, Crack Bellmer, MAAYA,
+silent green, gART.n, Club OST, migas, Eschschloraque and Klunkerkranich. Refilling this table means analysing the next batch of
+[Unanalyzed](#-not-analyzed-yet) sites, not picking from what is already here.
 
 *A theater, comedy or arena-scale room is in scope, not just live-music clubs. Bar jeder Vernunft set that precedent — its programme is imported, with the
 venue's own genre deciding whether a night is a concert or a staged show. That precedent does **not** extend to classical concerts and orchestras: those are

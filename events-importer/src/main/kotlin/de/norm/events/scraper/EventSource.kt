@@ -126,6 +126,9 @@ enum class EventSource {
     /** Kater Berlin – the techno club and garden on the Spree at Holzmarkt, formerly Kater Blau, with several floors and weekend-spanning parties. */
     KATER,
 
+    /** Klunkerkranich Berlin – the rooftop culture garden above the Neukölln Arcaden: a bar, stage and club running a nightly programme. */
+    KLUNKERKRANICH,
+
     /** LARK Berlin – a live-music club in the railway arches on Holzmarktstraße, programming indie, folk, pop and singer-songwriter shows. */
     LARK,
 
