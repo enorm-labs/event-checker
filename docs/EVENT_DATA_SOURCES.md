@@ -7,8 +7,8 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 
 | Status                              | Meaning                                                                              | Count |
 |-------------------------------------|--------------------------------------------------------------------------------------|------:|
-| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    75 |
-| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |     4 |
+| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    76 |
+| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |     3 |
 | ⛔ [Blocked](#-blocked--deferred)   | Website analyzed, but no usable listings (no programme page, JS-only, or too sparse) |    49 |
 | ❓ [Unanalyzed](#-not-analyzed-yet) | No URL recorded yet — website still needs a first look                               |    48 |
 
@@ -32,6 +32,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Cassiopeia                  | https://cassiopeia-berlin.de/                               | Club         | Webflow; genre tags, sold-out / cancelled badges      |
 | Clash Club                  | https://clash-berlin.de/                                    | Club         | WordPress; sparse — no times, prices or text          |
 | Club der Visionäre          | https://clubdervisionaere.com/programm                      | Techno Club  | WordPress; one listing, 3 rooms by CSS class          |
+| Club OST                    | https://clubost.de/                                         | Techno Club  | Django; homepage is the programme; RA tickets         |
 | Columbia Theater            | https://columbia-theater.de/                                | Concert Hall | WordPress; date in slug; status via `data-*` flag     |
 | Columbiahalle               | https://www.columbiahalle.berlin/veranstaltungen.html       | Concert Hall | Contao; one page, month headings carry the year       |
 | Cosmic Comedy Club          | https://comedyclubberlin.com/wp-json/tribe/events/v1/events | Comedy Club  | The Events Calendar REST API; cursor-paged; no prices |
@@ -94,7 +95,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Zenner                      | https://zenner.berlin/programm                              | Club         | Gatsby/Sanity page-data JSON; UTC dates; archive      |
 | Zitadelle                   | https://citadel-music-festival.de/events                    | Open Air     | Festival site; WordPress/EM; summer season only       |
 
-74 importer classes cover 75 sources: only Kantine am Berghain has no class of its own, sharing the Berghain importer outright. Three other groups share a
+75 importer classes cover 76 sources: only Kantine am Berghain has no class of its own, sharing the Berghain importer outright. Three other groups share a
 *listing and parser* while keeping one thin `@Component` per venue, so they do not reduce the count — Club der Visionäre, Sonnenraum and MS Hoppetosse; the
 three Velomax halls; and Uber Arena with the Uber Eats Music Hall.
 
@@ -102,13 +103,12 @@ three Velomax halls; and Uber Arena with the Uber Eats Music Hall.
 
 Analyzed and scrapable — the candidates for the next `/scaffold-importer` runs. **Priority** reflects data richness and effort, not venue importance.
 
-These four — and VOID Club, Crack Bellmer, Maaya, silent green and gART.n, since [imported](#-imported) — were analyzed on **4 August 2026**, working down the
-[Unanalyzed](#-not-analyzed-yet) table in RA-event-count order: 22 sites were opened, and these are the ones that server-render a dated programme. Each row was
-confirmed by fetching the raw HTML — no headless browser, per [ADR-007](adr/ADR-007_WEB_SCRAPING_STRATEGY.md) — and reading the events out of it.
+These three — and VOID Club, Crack Bellmer, Maaya, silent green, gART.n and Club OST, since [imported](#-imported) — were analyzed on **4 August 2026**, working
+down the [Unanalyzed](#-not-analyzed-yet) table in RA-event-count order: 22 sites were opened, and these are the ones that server-render a dated programme. Each
+row was confirmed by fetching the raw HTML — no headless browser, per [ADR-007](adr/ADR-007_WEB_SCRAPING_STRATEGY.md) — and reading the events out of it.
 
 | Priority | Name           | URL                                            | Type         | Why / what it needs                                                                                                                                |
 |:--------:|----------------|------------------------------------------------|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
-|  Medium  | Club OST       | https://clubost.de/                            | Techno Club  | Homepage programme, dates carry the year + start time; detail text is a "More Infos coming soon" stub, tickets link to RA                          |
 |  Medium  | migas          | https://migas.berlin/program/                  | Bar          | Upcoming/past tabs; weekday, dd.MM, time, title, type and description; year-less                                                                   |
 |  Medium  | Eschschloraque | https://www.eschschloraque.de/                 | Bar          | Drupal 7; full German dates + `ab HH Uhr` start, bilingual description                                                                             |
 |   Low    | Klunkerkranich | https://klunkerkranich.org/                    | Bar          | WordPress + `ld+json`, full dates — but only ~6 days ahead. A short rolling horizon like OHM's, so thin but truthful                               |
