@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# dev-env.sh — local importer environment control for importer smoke tests.
+# dev-env.sh — local dev environment control for the importer, BFF and frontend.
 #
 # Deterministic mechanics behind the /importer-smoke and /next-importer skills:
 # start/stop the dev stack, seed sources, trigger imports, and query the resulting
@@ -10,9 +10,9 @@
 # Usage: scripts/dev-env.sh <command> [args]
 #
 #   db-reset                     Drop the Postgres volume and start a fresh database
-#   up [--scheduling]            Start the importer in the background, wait for health
-#   down [--db]                  Stop the importer (and with --db the database too)
-#   status                       Show database + importer state
+#   up [service…] [--scheduling] Start service(s) in the background, wait until they answer
+#   down [service…] [--db]       Stop service(s) (and with --db the database too)
+#   status                       Show database + service state
 #   seed-all                     Run http/importer/dev-seed.http via ijhttp (all sources)
 #   seed-one <venue.json> <source.json>
 #                                POST one venue + one event source, print the source slug
@@ -23,23 +23,32 @@
 #   check <slug>                 Data-quality report for a single source
 #   psql <sql>                   Run raw SQL against the events schema
 #
+# `service` is one or more of importer · bff · frontend · all. Omitting it means the
+# importer, so the historical `up` / `down [--db]` calls keep working unchanged.
+# --scheduling applies to the importer only. Each service logs to
+# build/dev-env/<service>.log with its launcher PID in build/dev-env/<service>.pid.
+#
+# The frontend proxies /api to the BFF (see events-frontend/vite.config.ts), so a useful
+# full stack is `up all` — the frontend alone renders but every request 502s.
+#
 # Environment overrides:
 #   POSTGRES_HOST_PORT (56298) · IMPORTER_HOST (http://localhost:8081)
+#   BFF_HOST (http://localhost:8080) · FRONTEND_HOST (http://localhost:5173)
 #   PGUSER_LOCAL (admin) · PGPASSWORD_LOCAL (admin) · PGDATABASE_LOCAL (event_checker)
 
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 RUN_DIR="$REPO_ROOT/build/dev-env"
-LOG_FILE="$RUN_DIR/importer.log"
-PID_FILE="$RUN_DIR/importer.pid"
 
 DB_PORT="${POSTGRES_HOST_PORT:-56298}"
 DB_USER="${PGUSER_LOCAL:-admin}"
 DB_PASS="${PGPASSWORD_LOCAL:-admin}"
 DB_NAME="${PGDATABASE_LOCAL:-event_checker}"
+# `HOST` stays the importer's for the many commands below that talk to its admin API.
 HOST="${IMPORTER_HOST:-http://localhost:8081}"
-IMPORTER_PORT="${HOST##*:}"
+BFF_HOST="${BFF_HOST:-http://localhost:8080}"
+FRONTEND_HOST="${FRONTEND_HOST:-http://localhost:5173}"
 
 log() { printf '\033[1;34m==>\033[0m %s\n' "$*"; }
 warn() { printf '\033[1;33m!!\033[0m %s\n' "$*" >&2; }
@@ -58,8 +67,137 @@ run_psql() {
 
 query() { run_psql -qAt -c "SET search_path TO events; $1"; }
 
-importer_healthy() {
-    curl -sf --max-time 3 "$HOST/actuator/health" 2>/dev/null | grep -q '"status":"UP"'
+# ---------------------------------------------------------------- services
+
+svc_host() {
+    case "$1" in
+        importer) printf '%s' "$HOST" ;;
+        bff) printf '%s' "$BFF_HOST" ;;
+        frontend) printf '%s' "$FRONTEND_HOST" ;;
+        *) die "Unknown service '$1' — expected importer, bff or frontend" ;;
+    esac
+}
+
+svc_port() {
+    local host
+    host="$(svc_host "$1")"
+    printf '%s' "${host##*:}"
+}
+
+svc_healthy() {
+    local host
+    host="$(svc_host "$1")"
+    if [[ "$1" == "frontend" ]]; then
+        # Vite exposes no health endpoint, so serving the app root is the readiness signal.
+        curl -sf --max-time 3 -o /dev/null "$host/"
+    else
+        curl -sf --max-time 3 "$host/actuator/health" 2>/dev/null | grep -q '"status":"UP"'
+    fi
+}
+
+importer_healthy() { svc_healthy importer; }
+
+# Log markers meaning "this will never come up", so `up` fails fast with the reason
+# instead of burning the full 180s timeout.
+svc_failure_pattern() {
+    case "$1" in
+        frontend) printf '%s' 'EADDRINUSE|error when starting dev server|Cannot find module|Failed to resolve' ;;
+        *) printf '%s' 'BUILD FAILED|APPLICATION FAILED TO START' ;;
+    esac
+}
+
+start_service() {
+    local svc="$1" scheduling="${2:-false}"
+    local log_file="$RUN_DIR/$svc.log" pid_file="$RUN_DIR/$svc.pid"
+    local host
+    host="$(svc_host "$svc")"
+
+    if svc_healthy "$svc"; then
+        log "${svc} already healthy at $host"
+        return 0
+    fi
+
+    mkdir -p "$RUN_DIR"
+    if [[ "$svc" == "frontend" ]]; then
+        need npm
+        [[ -d "$REPO_ROOT/events-frontend/node_modules" ]] ||
+            die "events-frontend/node_modules is missing — run 'npm ci' in events-frontend first"
+        # --strictPort so a busy port is a hard failure; Vite would otherwise silently take
+        # the next free one and leave FRONTEND_HOST pointing at nothing.
+        log "Starting frontend → $log_file"
+        (cd "$REPO_ROOT/events-frontend" && nohup npm run dev -- \
+            --port "$(svc_port frontend)" --strictPort >"$log_file" 2>&1 &
+        echo $! >"$pid_file")
+    else
+        # bootRun's working directory is the module, so Spring's Docker Compose support has to be
+        # pointed at the root compose.yaml explicitly; `start_only` leaves Postgres running when
+        # the app stops, so restarts between smoke-test rounds keep the data.
+        local props=(
+            "--spring.docker.compose.file=$REPO_ROOT/compose.yaml"
+            "--spring.docker.compose.lifecycle-management=start_only"
+        )
+        # Scheduled imports are off by default: a smoke test should scrape only the source
+        # under test, not every source whose 24h interval happens to be due (ADR-007 ethics).
+        if [[ "$svc" == "importer" ]] && ! $scheduling; then
+            props+=("--app.scheduling.enabled=false")
+            log "Starting importer (scheduling=false) → $log_file"
+        else
+            log "Starting $svc → $log_file"
+        fi
+        (cd "$REPO_ROOT" && nohup ./gradlew ":events-$svc:bootRun" "--args=${props[*]}" \
+            >"$log_file" 2>&1 &
+        echo $! >"$pid_file")
+    fi
+
+    local pattern
+    pattern="$(svc_failure_pattern "$svc")"
+    for _ in $(seq 1 180); do
+        if svc_healthy "$svc"; then
+            log "$svc healthy at $host"
+            return 0
+        fi
+        if grep -qE "$pattern" "$log_file" 2>/dev/null; then
+            tail -40 "$log_file" >&2
+            die "$svc failed to start — see $log_file"
+        fi
+        sleep 1
+    done
+    tail -40 "$log_file" >&2
+    die "$svc did not become healthy within 180s — see $log_file"
+}
+
+stop_service() {
+    local svc="$1"
+    local pid_file="$RUN_DIR/$svc.pid"
+    if [[ -f "$pid_file" ]]; then
+        kill "$(cat "$pid_file")" 2>/dev/null || true
+        rm -f "$pid_file"
+    fi
+    # Both `bootRun` and `npm run dev` fork the real process, so the launcher PID alone
+    # is not enough — whatever holds the port has to go too.
+    local pids
+    pids="$(lsof -ti "tcp:$(svc_port "$svc")" 2>/dev/null || true)"
+    # Unquoted on purpose: lsof prints one PID per line and each must become its own
+    # argument to kill. Quoting would pass the whole list as a single bogus PID.
+    # shellcheck disable=SC2086
+    [[ -n "$pids" ]] && kill $pids 2>/dev/null || true
+    log "$svc stopped"
+}
+
+# Parses a service list shared by `up` and `down`. Word-splitting is safe here because
+# service names never contain spaces, and a plain string avoids expanding an empty array
+# under `set -u` (still bash 3.2 on stock macOS).
+parse_services() {
+    local services="" arg
+    for arg in "$@"; do
+        case "$arg" in
+            all) services="importer bff frontend" ;;
+            importer | bff | frontend) services="$services $arg" ;;
+        esac
+    done
+    # No service named keeps the historical behaviour: bare `up`/`down` mean the importer.
+    [[ -n "${services// /}" ]] || services="importer"
+    printf '%s' "$services"
 }
 
 db_ready() {
@@ -86,58 +224,33 @@ cmd_db_reset() {
 }
 
 cmd_up() {
-    local scheduling=false
-    [[ "${1:-}" == "--scheduling" ]] && scheduling=true
-
-    if importer_healthy; then
-        log "Importer already healthy at $HOST"
-        return 0
-    fi
-
-    mkdir -p "$RUN_DIR"
-    # bootRun's working directory is the module, so Spring's Docker Compose support has to be
-    # pointed at the root compose.yaml explicitly; `start_only` leaves Postgres running when the
-    # importer stops, so restarts between smoke-test rounds keep the data.
-    local props=(
-        "--spring.docker.compose.file=$REPO_ROOT/compose.yaml"
-        "--spring.docker.compose.lifecycle-management=start_only"
-    )
-    # Scheduled imports are off by default: a smoke test should scrape only the source
-    # under test, not every source whose 24h interval happens to be due (ADR-007 ethics).
-    $scheduling || props+=("--app.scheduling.enabled=false")
-
-    log "Starting importer (scheduling=$scheduling) → $LOG_FILE"
-    (cd "$REPO_ROOT" && nohup ./gradlew :events-importer:bootRun "--args=${props[*]}" \
-        >"$LOG_FILE" 2>&1 &
-    echo $! >"$PID_FILE")
-
-    for _ in $(seq 1 180); do
-        if importer_healthy; then
-            log "Importer healthy at $HOST"
-            return 0
-        fi
-        if grep -qE 'BUILD FAILED|APPLICATION FAILED TO START' "$LOG_FILE" 2>/dev/null; then
-            tail -40 "$LOG_FILE" >&2
-            die "Importer failed to start — see $LOG_FILE"
-        fi
-        sleep 1
+    local scheduling=false arg svc
+    for arg in "$@"; do
+        case "$arg" in
+            --scheduling) scheduling=true ;;
+            all | importer | bff | frontend) ;;
+            *) die "Unknown argument '$arg' — expected importer|bff|frontend|all or --scheduling" ;;
+        esac
     done
-    tail -40 "$LOG_FILE" >&2
-    die "Importer did not become healthy within 180s — see $LOG_FILE"
+    for svc in $(parse_services "$@"); do
+        start_service "$svc" "$scheduling"
+    done
 }
 
 cmd_down() {
-    if [[ -f "$PID_FILE" ]]; then
-        kill "$(cat "$PID_FILE")" 2>/dev/null || true
-        rm -f "$PID_FILE"
-    fi
-    # bootRun forks the app JVM, so the Gradle client PID alone is not enough.
-    local pids
-    pids="$(lsof -ti "tcp:${IMPORTER_PORT}" 2>/dev/null || true)"
-    [[ -n "$pids" ]] && kill $pids 2>/dev/null || true
-    log "Importer stopped"
+    local db=false arg svc
+    for arg in "$@"; do
+        case "$arg" in
+            --db) db=true ;;
+            all | importer | bff | frontend) ;;
+            *) die "Unknown argument '$arg' — expected importer|bff|frontend|all or --db" ;;
+        esac
+    done
+    for svc in $(parse_services "$@"); do
+        stop_service "$svc"
+    done
 
-    if [[ "${1:-}" == "--db" ]]; then
+    if $db; then
         (cd "$REPO_ROOT" && docker compose down)
         log "Database stopped"
     fi
@@ -151,11 +264,14 @@ cmd_status() {
     else
         printf 'database : down\n'
     fi
-    if importer_healthy; then
-        printf 'importer : up (%s)\n' "$HOST"
-    else
-        printf 'importer : down\n'
-    fi
+    local svc
+    for svc in importer bff frontend; do
+        if svc_healthy "$svc"; then
+            printf '%-9s: up (%s)\n' "$svc" "$(svc_host "$svc")"
+        else
+            printf '%-9s: down\n' "$svc"
+        fi
+    done
 }
 
 cmd_seed_all() {
@@ -337,7 +453,9 @@ case "${1:-}" in
     check) shift && cmd_check "$@" ;;
     psql) shift && cmd_psql "$@" ;;
     *)
-        sed -n '3,28p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
+        # Print the header comment block as the usage text: from line 3 to the first
+        # non-comment line, so the range does not rot as the header grows.
+        awk 'NR < 3 { next } /^#/ { sub(/^# ?/, ""); print; next } { exit }' "${BASH_SOURCE[0]}"
         exit 1
         ;;
 esac
