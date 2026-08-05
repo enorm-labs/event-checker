@@ -284,7 +284,7 @@ Java version is managed via SDKMAN (`.sdkmanrc` pins `java=25.0.2-tem`; run `sdk
 
 - **Package structure**: `de.norm.events.<module-name>` — organize by feature/domain, not layer.
 - **Kotlin DSL** for all Gradle build scripts (`build.gradle.kts`).
-- **Kotlin 2.4.0** with **Spring Boot 4.1.0**; plugin versions pinned in `settings.gradle.kts` `pluginManagement`.
+- **Kotlin 2.4.10** with **Spring Boot 4.1.0**; plugin versions pinned in `settings.gradle.kts` `pluginManagement`.
 - **ktlint 1.8.0** enforced project-wide via root `subprojects` block; do not override per-module.
 - **detekt 2.0** (`dev.detekt` plugin, migrated from `io.gitlab.arturbosch.detekt`) applied project-wide. Builds upon default config with overrides in root
   `detekt.yml` (currently only `MaxLineLength: 160`). Run `./gradlew detekt` to analyze all modules.
