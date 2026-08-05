@@ -50,6 +50,9 @@ HOST="${IMPORTER_HOST:-http://localhost:8081}"
 BFF_HOST="${BFF_HOST:-http://localhost:8080}"
 FRONTEND_HOST="${FRONTEND_HOST:-http://localhost:5173}"
 
+# How long `down` waits for a service to release its port before escalating to SIGKILL.
+STOP_TIMEOUT_SECONDS=20
+
 log() { printf '\033[1;34m==>\033[0m %s\n' "$*"; }
 warn() { printf '\033[1;33m!!\033[0m %s\n' "$*" >&2; }
 die() {
@@ -58,6 +61,10 @@ die() {
 }
 
 need() { command -v "$1" >/dev/null 2>&1 || die "'$1' is required but not installed"; }
+
+pid_alive() { [[ -n "$1" ]] && kill -0 "$1" 2>/dev/null; }
+
+port_in_use() { lsof -ti "tcp:$1" >/dev/null 2>&1; }
 
 run_psql() {
     need psql
@@ -118,6 +125,12 @@ start_service() {
     fi
 
     mkdir -p "$RUN_DIR"
+    # Unlink rather than truncate. A previous launcher that is still exiting holds an open
+    # descriptor on the old log at its own write offset, so `>` would leave it appending
+    # into the file this run is about to read — and its "BUILD FAILED" would be attributed
+    # to this run. Removing the path leaves that writer on the now-unreachable inode and
+    # gives this run a private file.
+    rm -f "$log_file"
     if [[ "$svc" == "frontend" ]]; then
         need npm
         [[ -d "$REPO_ROOT/events-frontend/node_modules" ]] ||
@@ -157,6 +170,16 @@ start_service() {
             return 0
         fi
         if grep -qE "$pattern" "$log_file" 2>/dev/null; then
+            # A failure line is only fatal if the service is not actually serving. `bootRun`
+            # reports BUILD FAILED when its JVM is signalled, which happens to a process that
+            # started perfectly well if something tears it down moments later — so the build
+            # fails while a healthy, launcher-orphaned app keeps answering. Re-check before
+            # giving up, otherwise `up` reports failure for a service that is plainly running.
+            if svc_healthy "$svc"; then
+                warn "$svc is serving at $host but its launcher reported a failure — see $log_file"
+                warn "It is running detached; 'down $svc' still stops it, but prefer a clean restart."
+                return 0
+            fi
             tail -40 "$log_file" >&2
             die "$svc failed to start — see $log_file"
         fi
@@ -168,19 +191,41 @@ start_service() {
 
 stop_service() {
     local svc="$1"
-    local pid_file="$RUN_DIR/$svc.pid"
+    local pid_file="$RUN_DIR/$svc.pid" port launcher=""
+    port="$(svc_port "$svc")"
     if [[ -f "$pid_file" ]]; then
-        kill "$(cat "$pid_file")" 2>/dev/null || true
+        launcher="$(cat "$pid_file")"
+        kill "$launcher" 2>/dev/null || true
         rm -f "$pid_file"
     fi
     # Both `bootRun` and `npm run dev` fork the real process, so the launcher PID alone
     # is not enough — whatever holds the port has to go too.
     local pids
-    pids="$(lsof -ti "tcp:$(svc_port "$svc")" 2>/dev/null || true)"
+    pids="$(lsof -ti "tcp:$port" 2>/dev/null || true)"
     # Unquoted on purpose: lsof prints one PID per line and each must become its own
     # argument to kill. Quoting would pass the whole list as a single bogus PID.
     # shellcheck disable=SC2086
     [[ -n "$pids" ]] && kill $pids 2>/dev/null || true
+
+    # Wait for the launcher to exit *and* the port to be released. `kill` only *requests*
+    # termination: the JVM still runs its shutdown hooks, and the Gradle launcher then takes
+    # a moment to report the task's exit. Returning early lets a following `up` race that
+    # teardown, and the launcher is still holding an open descriptor on the shared log — so
+    # its parting "BUILD FAILED … exit value 143" lands in the *new* run's log and makes a
+    # perfectly healthy start look like a failure.
+    local waited=0
+    while port_in_use "$port" || pid_alive "$launcher"; do
+        if [[ "$waited" -ge "$STOP_TIMEOUT_SECONDS" ]]; then
+            warn "$svc did not exit within ${STOP_TIMEOUT_SECONDS}s — sending SIGKILL"
+            pids="$(lsof -ti "tcp:$port" 2>/dev/null || true)"
+            # shellcheck disable=SC2086
+            [[ -n "$pids" ]] && kill -9 $pids 2>/dev/null || true
+            [[ -n "$launcher" ]] && kill -9 "$launcher" 2>/dev/null || true
+            break
+        fi
+        sleep 1
+        waited=$((waited + 1))
+    done
     log "$svc stopped"
 }
 
