@@ -94,20 +94,35 @@ interface EventSourceRepository : CoroutineCrudRepository<EventSourceEntity, Lon
      * concurrent read-modify-write holding a stale entity cannot silently overwrite the claim.
      * The caller must account for that increment on the entity it goes on to save.
      *
+     * The claim is also gated on [expectedVersion], which makes it a compare-and-swap against
+     * the exact row the caller read rather than merely "whatever is not RUNNING right now".
+     * Without that gate the guard only excludes runs that *overlap*, not one that starts the
+     * moment another finishes — and imports queue on a bounded semaphore, so a source can wait
+     * a long time between being read and being claimed. A scheduler tick that reads a source
+     * while it is still IDLE, and reaches its claim after a manual trigger has already imported
+     * it, would find the status back at SUCCESS and re-scrape the whole source. Comparing the
+     * version closes that window: any completed run bumps it, so the stale caller sees `0`.
+     *
+     * Gating on the version additionally makes the caller's `version + 1` exact, so the entity
+     * returned by [EventImportService.claimForImport] carries the version actually written and
+     * the closing `markSuccess`/`markFailed` save no longer trips optimistic locking.
+     *
      * @param id the source to claim.
+     * @param expectedVersion the `version` the caller read; the claim fails if the row moved on.
      * @param startedAt the claim timestamp, recorded as `last_import_at` for staleness detection.
-     * @return `1` when the claim succeeded, `0` when another run already holds it.
+     * @return `1` when the claim succeeded, `0` when another run holds it or the row has changed.
      */
     @Modifying
     @Query(
         """
         UPDATE events.event_source
         SET status = '${ImportStatus.S_RUNNING}', last_error = NULL, last_import_at = :startedAt, version = version + 1
-        WHERE id = :id AND status <> '${ImportStatus.S_RUNNING}'
+        WHERE id = :id AND version = :expectedVersion AND status <> '${ImportStatus.S_RUNNING}'
         """
     )
     suspend fun claimForImport(
         id: Long,
+        expectedVersion: Long,
         startedAt: Instant
     ): Int
 
