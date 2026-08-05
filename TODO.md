@@ -271,7 +271,6 @@ Strategy & sequencing: [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEG
 - [ ] Exercise the Helm chart / container images locally before deploying (k3d or kind; LocalStack for cloud services?) — on the ADR-012 recommendation this
   local k3d work *is* the production deployment path, not a rehearsal for a different target
 - [ ] Maintenance mode — a downtime page for deploys and outages (frontend + BFF behaviour)
-- [ ] Releasing: define and use a standard release-notes / changelog template
 - [ ] Logging: always attach context (event id, artist id, …)
 - [ ] Checkov scan (if it makes sense)
 - [ ] Infra/tooling update checker beyond Dependabot (Renovate?)
