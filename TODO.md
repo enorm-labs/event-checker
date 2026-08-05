@@ -11,21 +11,35 @@ Rough priority: **Now** → **Next** → grouped backlog → **Someday / Vision*
 
 ## 🔴 Now (path to go-live)
 
-- [ ] Choose a cloud platform / runtime environment — options, criteria, pricing and a recommendation (Hetzner Cloud + k3s) are written up in
-  [ADR-012](docs/adr/ADR-012_CLOUD_PLATFORM.md); **decide and move the ADR from Proposed to Accepted**
-- [ ] Register the domain **event-junkie.de**
-- [ ] Infrastructure as code (Terraform / OpenTofu) — provision the cloud environment reproducibly instead of by hand
-- [ ] Create release + deploy workflows (CI/CD)
-- [ ] A non-public test/staging stage, separate from production
+- [ ] Choose a cloud platform / runtime environment — the evaluation is **complete**: 18 platforms across IaaS, CaaS and PaaS (incl. European PaaS, AWS Elastic
+  Beanstalk and App Engine) are costed and scored in [ADR-012](docs/adr/ADR-012_CLOUD_PLATFORM.md), which recommends **Hetzner Cloud + k3s** (~€30/month for
+  prod *and* staging) with a ranked fallback list — Sliplane/Coolify, then Clever Cloud or Scalingo, then Cloud Run, then Beanstalk. Nothing below can be built
+  until this is settled: **decide and move the ADR from Proposed to Accepted**
+- [ ] Register the domain **event-junkie.de** (ADR-012 puts Cloudflare in front for DNS/TLS/CDN/rate limiting on the free plan)
+- [ ] Infrastructure as code (Terraform / OpenTofu) — provision the cloud environment reproducibly instead of by hand. Per ADR-012: the `hetznercloud/hcloud`
+  provider for servers, networks, firewalls and volumes, with state in Hetzner Object Storage (S3 API) or Terraform Cloud
+- [ ] Write the Helm chart — `events-bff` (N replicas), `events-importer` (**`replicas: 1`, `strategy: Recreate`** so a rolling deploy never runs two schedulers,
+  per ADR-008) and the frontend, behind one ingress that routes `/` → frontend and `/api` → BFF and **does not route the importer's admin API publicly**
+- [ ] Create release + deploy workflows (CI/CD) — note ADR-012's known step down: GitHub Actions cannot use OIDC against Hetzner, so deploys authenticate with a
+  scoped kubeconfig or deploy key held as a repository secret, rotated deliberately
+- [ ] A non-public test/staging stage, separate from production — ADR-012 treats its cost as a first-class criterion and budgets ~€7/month for it on Hetzner
 - [ ] Deploy to the chosen cloud platform
+- [ ] **PostgreSQL backups + a rehearsed restore** — the load-bearing mitigation of ADR-012's "we own the database" trade: `wal-g` or `pgBackRest` streaming WAL
+  and base backups to a Hetzner Storage Box, plus server snapshots. **A restore drill is part of the go-live checklist and repeats on a schedule** — an untested
+  backup is not a backup. Highest-risk item created by the ADR; it disappears only if a fallback with managed Postgres is chosen instead
+- [ ] Monitoring + alerting, self-hosted or SaaS — ADR-012 makes observability ours on Hetzner (no CloudWatch/Cloud Ops equivalent): either
+  `kube-prometheus-stack` + Grafana (same surface as the data dashboard below) or an external free tier. **Alerting must exist before launch, not after the
+  first outage**
 - [ ] Fix Dependabot security issues → https://github.com/enorm-labs/event-checker/security/dependabot
-- [ ] Go-live checklist: legal, security, SEO, monitoring, alerting, dashboards, backups, recovery
+- [ ] Go-live checklist: legal, security, SEO, monitoring, alerting, dashboards, backups, recovery (incl. the restore drill above)
 
 ## 🟠 Next
 
 - [ ] Add Authentication & Authorization (best practice for Spring? Keycloak, at least locally for testing? Support Passkey?)
 - [ ] Caching (BFF)
-- [ ] Protect the public BFF API (rate limiting, DDoS; API gateway?)
+- [ ] Protect the public BFF API (rate limiting, DDoS; API gateway?) — ADR-012 gets part of the way there with Cloudflare's free plan in front (proxied DNS,
+  edge caching, rate limiting), leaving application-level limits to decide. Residency nuance: Cloudflare terminates TLS at its edge, so strictly German-only
+  processing means dropping proxy mode or buying the EU data-localisation add-on
 - [ ] Create a test data set — reusable as test fixtures **and** to populate the local DB
 
 ---
@@ -158,8 +172,9 @@ Strategy & sequencing: [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEG
   `isNonArtistName` festival filter. **Still TODO: a one-off backfill re-scrape** — existing rows keep no artist until re-imported.
 - [ ] **(Pillar 4 — Systematize)** AI-assisted data quality in the importer (one capability, several uses): detect/extract artist names from titles, validate
   event types, enrich missing fields (genres, event types), and fix bad values (artist names, promoter names, …) — cross-checking the event source page and the
-  wider web where useful. Runs *after* the deterministic normalizers, human-in-the-loop via the admin review UI. **Needs ADR-012 (AI-Assisted Data Quality)** —
-  new external dependency, cost/latency, non-deterministic output.
+  wider web where useful. Runs *after* the deterministic normalizers, human-in-the-loop via the admin review UI. **Needs ADR-013 (AI-Assisted Data Quality)** —
+  new external dependency, cost/latency, non-deterministic output. (Renumbered from ADR-012, which is now the cloud-platform decision; 013 is the next free
+  number.)
 - [ ] **(Decision — ADR candidate)** Curated-vocabulary storage: code vs. data. Move the denylists / synonym maps / corrections (`NON_ARTIST_NAMES`,
   `NAME_CORRECTIONS`, genre synonyms, `ACRONYMS`) from hardcoded Kotlin to steward-editable DB tables so fixes land without a redeploy — vs. keeping them as
   tested code fixed via PR. Spike + ADR before Pillar 4's human-in-the-loop needs live editing; blocks nothing in Pillars 1–3. (Strategy §6.)
@@ -213,7 +228,7 @@ Strategy & sequencing: [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEG
       quality / most missing important fields.
     - [ ] **Data review & fixing** — sort/filter events by missing fields; edit artist/promoter names, event types, genres, …
     - [ ] **AI-assisted checking & fixing** — cross-check stored data against the event's source page and propose fixes (Spring AI); human-in-the-loop review.
-      Open question: local LLM vs. an API/subscription. Same capability as Pillar 4 above — decide it once, in ADR-012.
+      Open question: local LLM vs. an API/subscription. Same capability as Pillar 4 above — decide it once, in ADR-013.
     - [ ] **Manual event entry** — a fast form for venues with no importer, plus reminders/nudges so those venues actually get checked (see the
       "venues that will never have an automatic import" item above)
 - [ ] Improve importer Swagger UI (match the BFF)
@@ -250,8 +265,11 @@ Strategy & sequencing: [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEG
 ## Operations & Hardening
 
 - [ ] Containerise `events-frontend` (multi-stage Node build → nginx serving `dist/`): history-mode `try_files` fallback, immutable caching for `/assets/*` +
-  `no-cache` for `index.html`, and a relative `/api` base URL so one image serves every stage (see [ADR-012](docs/adr/ADR-012_CLOUD_PLATFORM.md))
-- [ ] Exercise the Helm chart / container images locally before deploying (k3d or kind; LocalStack for cloud services?)
+  `no-cache` for `index.html`, and a relative `/api` base URL so one image serves every stage (see [ADR-012](docs/adr/ADR-012_CLOUD_PLATFORM.md)). Same-origin
+  is what keeps CORS out of the picture and makes session cookies first-party for the planned auth. **Only if a PaaS fallback is taken** does this invert — a
+  per-GB-RAM platform bills €25–30/month for an nginx container, so there the SPA goes to a static host/CDN and the BFF gets an explicit CORS allowlist
+- [ ] Exercise the Helm chart / container images locally before deploying (k3d or kind; LocalStack for cloud services?) — on the ADR-012 recommendation this
+  local k3d work *is* the production deployment path, not a rehearsal for a different target
 - [ ] Maintenance mode — a downtime page for deploys and outages (frontend + BFF behaviour)
 - [ ] Releasing: define and use a standard release-notes / changelog template
 - [ ] Logging: always attach context (event id, artist id, …)
