@@ -133,9 +133,28 @@ For every unique CVE, in this order:
 4. **Work out how it would be fixed**, because that determines who can act:
     - **Project-managed** (a `*.version` property in `gradle.properties`, or a plugin version in `settings.gradle.kts`) — an ordinary bump.
     - **BOM-managed** (Spring Boot / Spring Modulith) — cannot be bumped as a normal dependency. Overriding means setting the BOM's own property name in
-      `gradle.properties`; `io.spring.dependency-management` resolves BOM properties from Gradle project properties, and it reaches every module. Such an
-      override pins us *behind* the BOM, so it must be flagged for removal once Boot ships an equal or newer version.
+      `gradle.properties`; `io.spring.dependency-management` resolves BOM properties from Gradle project properties, and it reaches every module.
+    - **Transitive only, with no BOM entry** — neither of the above applies; it needs a `constraints` block in each module that pulls it in. Check first whether
+      upgrading the *direct* dependency carries the fix, and only pin the transitive if it does not.
     - **No stable fix available** — say so plainly; the only options are an accepted-risk suppression or relaxing the gate, both of which are the user's call.
+
+## Step 5 — Check whether existing overrides have become obsolete
+
+Every BOM override and transitive `constraints` pin holds us at a version the BOM did not choose. Once upstream catches up, the override stops protecting
+anything and starts doing harm: it silently pins us **behind** the BOM, so a later Spring Boot upgrade that would have raised the dependency has no effect and
+the staleness is invisible. Treat these as temporary by default and re-check them on every run.
+
+The overrides live in the "Spring Boot BOM overrides (CVE remediation)" block in `gradle.properties`, plus any `constraints` blocks in the module build scripts.
+For each one, compare the pinned version against what the BOM would now supply on its own:
+
+```bash
+# What we currently resolve, with the override in place
+./gradlew -q :events-importer:dependencies --configuration runtimeClasspath | grep -E "<artifact>" | sed 's/^[| +\\-]*//' | sort -u
+# What the BOM alone would supply: comment the property out (or `-P<name>=` it away), then re-run and compare
+```
+
+Report an override as **obsolete and safe to delete** when the BOM's own version is greater than or equal to the pinned one, and as **still required** otherwise
+— naming the CVE that justifies keeping it. Removing it is an ordinary change; recommend it, but leave the edit to the user unless asked.
 
 ## Output
 
@@ -154,6 +173,8 @@ Follow with:
 - **Suggested suppressions** — false positives with the evidence for that verdict. Draft the reasoning; do not write the file.
 - **No stable fix** — flag explicitly as an accepted-risk decision for the user.
 - **Already known** — matching an existing suppression, open PR, or `TODO.md` entry.
+- **Obsolete overrides** — BOM overrides and transitive pins the BOM has caught up with, which should now be deleted. Also flag any suppression whose
+  `packageUrl` no longer matches anything, since it is dead weight hiding nothing.
 
 State plainly what you verified versus what you inferred. If you could not run a scan and are reading a report from CI, say when it was produced and against
 which commit — a stale report describing an old dependency set is a common way to reach a confidently wrong conclusion.

@@ -72,6 +72,15 @@ limited to:
 **Rule of thumb**: If a dependency is declared _without_ an explicit version string (no `${property("...")}` or hardcoded version), its version comes from a BOM
 and must NOT be overridden.
 
+#### ⚠️ Exception: existing CVE-remediation overrides
+
+`gradle.properties` has a block headed **"Spring Boot BOM overrides (CVE remediation)"** holding properties such as `netty.version` and `postgresql.version`.
+These deliberately *do* override BOM-managed versions, because the BOM's own version carried a known CVE. There may also be `constraints` blocks in module build
+scripts pinning a transitive for the same reason (e.g. `com.ongres.scram`).
+
+Do not treat these as ordinary version properties, and do not bump them just because a newer release exists — but **do check on every run whether they have
+become obsolete**, per the pruning step below. They are temporary by design.
+
 ## Step 3: Filter for Stable Versions Only
 
 The `dependencyUpdates` report may include milestone, alpha, beta, and RC releases. **Only update to stable releases.**
@@ -97,6 +106,23 @@ Edit the version strings in the appropriate files:
 - **Library versions** → `gradle.properties` (`*.version` properties)
 - **Plugin versions** → `settings.gradle.kts` (`pluginManagement { plugins { ... } }`)
 - **ktlint version** → root `build.gradle.kts` (`configure<KtlintExtension> { version = "..." }`)
+
+### Prune obsolete CVE-remediation overrides
+
+Whenever this run bumps **Spring Boot** or **Spring Modulith**, the new BOM may already supply a version equal to or newer than one we are pinning. Any override
+that has been overtaken must be **deleted**, not left in place: it no longer protects against anything, and it silently holds us *behind* the BOM, so future
+Spring Boot upgrades stop raising that dependency and the staleness is invisible. An override kept past its purpose is a slow-acting downgrade.
+
+For each entry in the "Spring Boot BOM overrides (CVE remediation)" block in `gradle.properties`, and each `constraints` block in the module build scripts,
+compare the pinned version against what the BOM now supplies on its own — comment the property out and re-resolve:
+
+```bash
+./gradlew -q :events-importer:dependencies --configuration runtimeClasspath | grep -E "<artifact>" | sed 's/^[| +\\-]*//' | sort -u
+```
+
+Delete the override when the BOM's version is greater than or equal to the pin. Keep it otherwise, and say which CVE still justifies it. Note that these are
+*upper*-bound removals, not bumps: raising a pinned override to a newer version than the CVE fix requires is out of scope here — that belongs to
+[`/security-report`](security-report.prompt.md) and its triage.
 
 ## Step 6: Verify the Build
 
@@ -183,3 +209,4 @@ Also note:
 - Any dependencies that were **skipped** because only pre-release versions were available.
 - Any **major version bumps** that were applied, with a brief note on breaking changes (if any).
 - Any dependencies already at their **latest stable version** (no update needed).
+- Any **CVE-remediation overrides removed** because the BOM caught up, and any **kept**, naming the CVE that still justifies each one.
