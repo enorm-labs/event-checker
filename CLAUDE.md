@@ -18,6 +18,7 @@ Slash commands available under `.claude/skills/`:
   `/loop`, to work through the backlog
 - `/open-pr` — branch, commit (Conventional Commits), push, and open a PR in one flow
 - `/scaffold-importer` — scaffold a new venue event importer (scraper) end to end
+- `/security-report` — read-only report on the latest OWASP Dependency-Check findings and GitHub Dependabot alerts, reconciled and triaged
 - `/squash-commit-message` — write a squash commit message for the current branch
 - `/update-dependencies` — bump backend and frontend dependencies safely
 - `/verify` — run the full pre-PR sequence: backend `ktlintCheck detekt build koverLog` + frontend `type-check`, `lint`, `test:unit`, `test:e2e` (chromium)
