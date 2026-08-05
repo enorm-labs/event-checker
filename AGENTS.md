@@ -401,6 +401,7 @@ Java version is managed via SDKMAN (`.sdkmanrc` pins `java=25.0.2-tem`; run `sdk
 | Squash commit message prompt          | `.github/prompts/squash-commit-message.prompt.md`                                                         |
 | Open PR prompt                        | `.github/prompts/open-pr.prompt.md`                                                                       |
 | Code review prompt                    | `.github/prompts/code-review.prompt.md`                                                                   |
+| Security report prompt                | `.github/prompts/security-report.prompt.md`                                                               |
 | Shared domain module marker           | `events-core/src/.../EventsCoreModule.kt`                                                                 |
 | Domain data classes                   | `events-core/src/.../artist/`, `event/`, `genretag/`, `promoter/`, `venue/`                               |
 | Price normalization utility           | `events-core/src/.../event/MoneyExtensions.kt`                                                            |
