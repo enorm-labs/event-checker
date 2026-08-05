@@ -93,7 +93,9 @@ test('refetches when switching the calendar view', async ({ page }) => {
 
   const initialCount = froms.length
 
-  await page.getByRole('button', { name: 'list' }).click()
+  // FullCalendar 7 renders the view switcher as a tablist, not a button group, so these are
+  // role="tab" with an accessible name of "<View> view" — not role="button" named "list".
+  await page.getByRole('tab', { name: 'List view' }).click()
 
   await expect.poll(() => froms.length).toBeGreaterThan(initialCount)
 })
