@@ -4,6 +4,15 @@
     Add entries here to suppress false positives reported by the NVD scanner.
     See: https://jeremylong.github.io/DependencyCheck/general/suppression.html
 
+    Rules for this file:
+    - Suppress only *false positives* — a CVE that does not apply to the artifact it was
+      matched against, or a version range we are not in. A real vulnerability is fixed by
+      upgrading, not by silencing it here.
+    - Always scope an entry with <packageUrl> so the CVE stays visible if it later matches a
+      different dependency. A bare <cve> suppresses it everywhere, forever.
+    - Say in <notes> *why* it is a false positive and what would make it real again, so the
+      entry can be re-evaluated rather than inherited on trust.
+
     Example:
     <suppress>
         <notes><![CDATA[False positive: this CVE applies to a different product]]></notes>
@@ -11,5 +20,62 @@
     </suppress>
 -->
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
-</suppressions>
 
+    <suppress>
+        <notes><![CDATA[
+            False positive — wrong product. CVE-2022-31691 (CVSS 9.8) is an RCE in the YAML
+            editing support of *Spring Tools 4 for Eclipse* (<= 4.16.0) and the related VSCode
+            extensions (Spring Boot Tools, Concourse CI Pipeline Editor, Bosh Editor,
+            Cloudfoundry Manifest YML Support). It has nothing to do with the
+            `spring-boot-devtools` library; Dependency-Check matches it on the shared
+            `vmware:spring_boot` CPE. Independently, devtools is declared `developmentOnly`,
+            so it is never packaged into a deployable artifact.
+            Re-evaluate if a CVE is ever published against the devtools library itself.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring-boot-devtools@.*$</packageUrl>
+        <cve>CVE-2022-31691</cve>
+    </suppress>
+
+    <suppress>
+        <notes><![CDATA[
+            False positive — version out of range. CVE-2020-29582 is the Kotlin
+            `createTempDir`/`createTempFile` information disclosure, which affects
+            kotlin-stdlib <= 1.4.20 and was fixed in 1.4.21. This project resolves Kotlin
+            2.4.10. Dependency-Check matches the JetBrains Kotlin CPE against the
+            kotlin-stdlib-jdk7 / kotlin-stdlib-jdk8 compatibility shims and the coroutines
+            artifact, whose own version strings it cannot map to a Kotlin release.
+            Re-evaluate only if this project ever downgrades below Kotlin 1.4.21.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.jetbrains\.(kotlin/kotlin-stdlib|kotlinx/kotlinx-coroutines).*@.*$</packageUrl>
+        <cve>CVE-2020-29582</cve>
+    </suppress>
+
+    <suppress>
+        <notes><![CDATA[
+            False positive — wrong artifact. CVE-2026-34481 affects
+            `org.apache.logging.log4j:log4j-layout-template-json` (>= 2.14.0, < 2.25.4).
+            That artifact is not on any classpath here; the only log4j artifacts present are
+            log4j-api and log4j-to-slf4j (Spring Boot's SLF4J bridge), and both are already at
+            2.25.4. Dependency-Check matches on the shared `apache:log4j` CPE.
+            Re-evaluate if log4j-layout-template-json is ever introduced.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.logging\.log4j/log4j-(api|to-slf4j)@.*$</packageUrl>
+        <cve>CVE-2026-34481</cve>
+    </suppress>
+
+    <suppress>
+        <notes><![CDATA[
+            False positive — wrong artifact within the same CVE. CVE-2026-49844 is a
+            MapMessage JSON-serialization defect in `log4j-api` itself (2.13.1–2.25.4 and
+            2.26.0, fixed in 2.25.5 / 2.26.1). Dependency-Check additionally attributes it to
+            `log4j-to-slf4j`, which merely bridges the Log4j API onto SLF4J and does not carry
+            the affected code.
+            NOTE: this suppression is deliberately scoped to log4j-to-slf4j ONLY. The finding
+            against log4j-api is real — we resolve 2.25.4 — and is left visible on purpose
+            until log4j is bumped to 2.25.5.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.logging\.log4j/log4j-to-slf4j@.*$</packageUrl>
+        <cve>CVE-2026-49844</cve>
+    </suppress>
+
+</suppressions>
