@@ -23,6 +23,12 @@ import java.time.LocalTime
  * button's `data-start-date`, so nothing here infers a year. The remaining tests guard the two
  * things the page shape makes easy to get wrong — reading the lazy-loaded `data-src` rather than the
  * placeholder `src`, and keeping an album-playback title out of the artist table.
+ *
+ * The snapshot is the live page with its `<script>` elements removed — 44% of the bytes, none of
+ * them inside `.events-list`, so the parsed markup is byte-identical. They are dropped because the
+ * page inlines WordPress core's `wp-emoji-loader`, whose DOM handling CodeQL flags as a
+ * high-severity XSS finding on every scan of the fixture. **Do not re-capture the page to "restore"
+ * them.**
  */
 class MigasOverviewPageScraperTest {
     private val scraper = MigasOverviewPageScraper()
