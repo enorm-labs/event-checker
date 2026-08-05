@@ -25,7 +25,7 @@ pluginManagement {
         // check this compatibility table: https://detekt.dev/docs/introduction/compatibility/
         id("dev.detekt") version "2.0.0-alpha.6"
         id("io.github.ben-manes.versions") version "0.59.0"
-        id("org.owasp.dependencycheck") version "12.2.2"
+        id("org.owasp.dependencycheck") version "13.0.0"
     }
 }
 

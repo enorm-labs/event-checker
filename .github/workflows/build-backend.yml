@@ -151,8 +151,9 @@ jobs:
 
       # Non-blocking: a failure here (e.g. NVD unreachable on a cold cache) is recorded
       # but does not fail the job, so PRs are never blocked by the dependency scan.
-      # --no-configuration-cache: the Dependency-Check plugin's Aggregate task holds a Project
-      # reference and cannot be serialized into the configuration cache (enabled in gradle.properties).
+      # --no-configuration-cache: the Dependency-Check plugin's Aggregate task reaches for
+      # `project` at execution time and so cannot be used with the configuration cache
+      # (enabled in gradle.properties). Still true as of 13.0.0 — upstream PR #478 is open.
       - name: Run OWASP Dependency-Check
         id: depcheck
         continue-on-error: true
@@ -176,17 +177,22 @@ jobs:
       # Only upload when the report exists. If the scan aborts (e.g. an NVD update
       # failure), no report is written and these steps would otherwise fail with a
       # confusing "Path does not exist" error that masks the real cause.
+      # NOTE: the `hashFiles` guard fails *silently* — if this path ever stops matching
+      # where the plugin writes, the upload is skipped and the job still goes green while
+      # findings quietly stop reaching Code Scanning. Dependency-Check 13.0.0 moved the
+      # default output directory to build/reports/dependency-check/, so re-check this path
+      # whenever the plugin is upgraded.
       - name: Upload SARIF to GitHub Code Scanning
-        if: (success() || failure()) && hashFiles('build/reports/dependency-check-report.sarif') != ''
+        if: (success() || failure()) && hashFiles('build/reports/dependency-check/dependency-check-report.sarif') != ''
         uses: github/codeql-action/upload-sarif@v4
         with:
-          sarif_file: build/reports/dependency-check-report.sarif
+          sarif_file: build/reports/dependency-check/dependency-check-report.sarif
           category: owasp-dependency-check
 
       - name: Upload HTML report as artifact
-        if: (success() || failure()) && hashFiles('build/reports/dependency-check-report.html') != ''
+        if: (success() || failure()) && hashFiles('build/reports/dependency-check/dependency-check-report.html') != ''
         uses: actions/upload-artifact@v4
         with:
           name: dependency-check-report
-          path: build/reports/dependency-check-report.html
+          path: build/reports/dependency-check/dependency-check-report.html
 
