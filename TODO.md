@@ -196,7 +196,10 @@ Strategy & sequencing: [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEG
 
 - [ ] Scrape events in multiple languages (English + German) where the source offers it (e.g. Berghain) — first audit which event sources are actually
   multi-language
-- [ ] Update importers to scrape/parse **all** available events via the site's navigation/pagination (not just the first page)
+- [ ] Update importers to scrape/parse **all** available events via the site's navigation/pagination (not just the first page). migas is the cheapest concrete
+  case and the one that needs new plumbing: its "Load More" button POSTs `action=load_events&paged=<n>` to `wp-admin/admin-ajax.php` and returns the same
+  markup fragment (a GET ignores `paged`), while the button's `data-pages` states the total page count up front — so the loop is bounded and terminating, but
+  `HtmlFetcher` is GET-only and would need a form-POST fetch first. 10 of 12 upcoming events at capture.
 - [ ] Review events typed `OTHER` — should we add new values to the event-type enum? Four formats have no type of their own today and are filed under a
   neighbour: comedy (Cosmic Comedy's whole 57-event programme reads as `SHOW`), dance and theatre (Theater im Delphi's `Tanz`/`Theater`, the AEG venues'
   ballet), lectures and panels (Urania's, filed `READING`), and sport (not imported at all — see the coverage question below).
