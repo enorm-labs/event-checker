@@ -79,6 +79,9 @@ enum class EventSource {
     /** Duncker Club Berlin – a long-running goth, wave and indie club in Prenzlauer Berg. */
     DUNCKER,
 
+    /** Eschschloraque Rümschrümp Berlin – a Künstlerclub in a Mitte backyard off Rosenthaler Straße, mixing DJ nights, live sets and variety evenings. */
+    ESCHSCHLORAQUE,
+
     /** Festsaal Kreuzberg Berlin – a concert hall and event space by the Flutgraben, with a wide-ranging concert and club programme. */
     FESTSAAL,
 

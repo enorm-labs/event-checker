@@ -1,0 +1,140 @@
+<!--
+  Hand-crafted variant of the Eschschloraque front-page view, holding the cases the live capture
+  could not show: a title that names its own format, a plural "Djs:" billing label, an act whose
+  name opens with the letters of an "aka" alias, a bare "DJ-Set" format label in a performer slot,
+  a time-limited free-entry offer, and the four ways a node can fail to yield an event.
+  Node markup mirrors the real page (RDFa `about` + `date-display-single`, Drupal field wrappers).
+-->
+<html lang="de" dir="ltr">
+<head>
+    <meta charset="utf-8"/>
+    <title>Eschschloraque | edge cases</title>
+</head>
+<body>
+<div class="region region-content">
+    <section id="block-system-main" class="block block-system clearfix">
+        <div class="view view-front-page view-id-front_page view-display-id-page">
+            <div class="view-content">
+
+                <!-- Valid: a format-naming title, a plural billing label, an "aka"-lookalike act
+                     name, a bare format label in a performer slot, and a time-limited free offer. -->
+                <div class="views-row views-row-1 views-row-odd views-row-first">
+                    <div about="/sommer-party-im-hof-01012027" typeof="sioc:Item foaf:Document"
+                         class="ds-1col node node-veranstaltung view-mode-full clearfix">
+                        <div class="field field-name-field-veranstaltung field-type-datetime field-label-hidden">
+                            <div class="field-items">
+                                <div class="field-item even"><span class="date-display-single" property="dc:date"
+                                                                   datatype="xsd:dateTime"
+                                                                   content="2027-01-01T22:30:00+01:00">Freitag, 01. Januar 2027  ab 22Uhr</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field field-name-title field-type-ds field-label-hidden">
+                            <div class="field-items">
+                                <div class="field-item even" property="dc:title"><h3 class="veranstaltung-title"><a
+                                        href="/sommer-party-im-hof-01012027">Sommer Party im Hof</a></h3></div>
+                            </div>
+                        </div>
+                        <div class="field field-name-field-intro-text field-type-text-long field-label-hidden">
+                            <div class="field-items">
+                                <div class="field-item even"><p><span class="redsubtitle">Djs: Akatombo <span
+                                        style="color:#FFFFFF">|</span> DJ-Set</span></p></div>
+                            </div>
+                        </div>
+                        <div class="field field-name-body field-type-text-with-summary field-label-hidden">
+                            <div class="field-items">
+                                <div class="field-item even" property="content:encoded">
+                                    <p>Eintritt frei bis 22 Uhr, danach 5&euro;.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dropped: the date field renders no machine-readable `content` attribute. -->
+                <div class="views-row views-row-2 views-row-even">
+                    <div about="/kein-datum-02012027" typeof="sioc:Item foaf:Document"
+                         class="ds-1col node node-veranstaltung view-mode-full clearfix">
+                        <div class="field field-name-field-veranstaltung field-type-datetime field-label-hidden">
+                            <div class="field-items">
+                                <div class="field-item even"><span class="date-display-single">demn&auml;chst</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field field-name-title field-type-ds field-label-hidden">
+                            <div class="field-items">
+                                <div class="field-item even" property="dc:title"><h3 class="veranstaltung-title">Kein
+                                    Datum</h3></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dropped: the `content` attribute is present but not an ISO offset datetime. -->
+                <div class="views-row views-row-3 views-row-odd">
+                    <div about="/unlesbares-datum-03012027" typeof="sioc:Item foaf:Document"
+                         class="ds-1col node node-veranstaltung view-mode-full clearfix">
+                        <div class="field field-name-field-veranstaltung field-type-datetime field-label-hidden">
+                            <div class="field-items">
+                                <div class="field-item even"><span class="date-display-single" property="dc:date"
+                                                                   datatype="xsd:dateTime" content="bald">bald</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field field-name-title field-type-ds field-label-hidden">
+                            <div class="field-items">
+                                <div class="field-item even" property="dc:title"><h3 class="veranstaltung-title">
+                                    Unlesbares Datum</h3></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dropped: the title element is present but empty. -->
+                <div class="views-row views-row-4 views-row-even">
+                    <div about="/ohne-titel-04012027" typeof="sioc:Item foaf:Document"
+                         class="ds-1col node node-veranstaltung view-mode-full clearfix">
+                        <div class="field field-name-field-veranstaltung field-type-datetime field-label-hidden">
+                            <div class="field-items">
+                                <div class="field-item even"><span class="date-display-single" property="dc:date"
+                                                                   datatype="xsd:dateTime"
+                                                                   content="2027-01-04T21:00:00+01:00">Montag, 04. Januar 2027  ab 21Uhr</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field field-name-title field-type-ds field-label-hidden">
+                            <div class="field-items">
+                                <div class="field-item even" property="dc:title"><h3
+                                        class="veranstaltung-title"></h3></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dropped: no `about` attribute, so the node has no stable identity. -->
+                <div class="views-row views-row-5 views-row-odd views-row-last">
+                    <div typeof="sioc:Item foaf:Document"
+                         class="ds-1col node node-veranstaltung view-mode-full clearfix">
+                        <div class="field field-name-field-veranstaltung field-type-datetime field-label-hidden">
+                            <div class="field-items">
+                                <div class="field-item even"><span class="date-display-single" property="dc:date"
+                                                                   datatype="xsd:dateTime"
+                                                                   content="2027-01-05T21:00:00+01:00">Dienstag, 05. Januar 2027  ab 21Uhr</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field field-name-title field-type-ds field-label-hidden">
+                            <div class="field-items">
+                                <div class="field-item even" property="dc:title"><h3 class="veranstaltung-title">Ohne
+                                    Pfad</h3></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+</div>
+</body>
+</html>
