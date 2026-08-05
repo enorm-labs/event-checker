@@ -61,6 +61,9 @@ enum class EventSource {
     /** Club der Visionäre Berlin – the open-air shack and terrace on the Flutgraben, a summer institution for house and minimal techno. */
     CLUB_DER_VISIONAERE,
 
+    /** Club OST Berlin – a techno club on the Rummelsburger Bucht in Alt-Stralau, programming raves and club nights. */
+    CLUB_OST,
+
     /** Columbia Theater Berlin – a mid-sized concert hall at Tempelhofer Feld, next door to the Columbiahalle. */
     COLUMBIA_THEATER,
 

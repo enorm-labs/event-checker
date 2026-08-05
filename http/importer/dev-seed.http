@@ -24,6 +24,7 @@
 ###   Cassiopeia           — https://cassiopeia-berlin.de/club
 ###   Clash                — https://clash-berlin.de/
 ###   Club der Visionäre   — https://clubdervisionaere.com/programm/
+###   Club OST             — https://clubost.de/
 ###   Columbia Theater     — https://columbia-theater.de/
 ###   Columbiahalle        — https://www.columbiahalle.berlin/veranstaltungen.html
 ###   Cosmic Comedy Club   — https://comedyclubberlin.com/wp-json/tribe/events/v1/events
@@ -909,6 +910,65 @@ Accept: application/json
 
 > {%
     client.test("Club der Visionäre import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Club OST (Alt-Stralau 1-2, Berlin-Friedrichshain — Rummelsburger Bucht)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Club OST venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Club OST",
+    "address": "Alt-Stralau 1-2",
+    "city": "Berlin",
+    "postalCode": "10245",
+    "district": "friedrichshain-kreuzberg",
+    "latitude": 52.50080,
+    "longitude": 13.46800,
+    "websiteUrl": "https://clubost.de",
+    "description": "A techno club at the western tip of the Stralau peninsula on the Rummelsburger Bucht, programming raves and club nights that run from late evening into the next morning."
+}
+
+> {%
+    client.global.set("club_ost_venue_id", response.body.id);
+    client.test("Club OST venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Club OST event source ---
+# Links the venue to the ClubOstWebsiteImporter.
+# The sourceType "CLUB_OST" matches EventSource.CLUB_OST.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{club_ost_venue_id}},
+    "name": "Club OST",
+    "url": "https://clubost.de/",
+    "sourceType": "CLUB_OST",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Club OST event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Club OST import ---
+POST {{importer-host}}/api/admin/event-sources/club-ost/import
+Accept: application/json
+
+> {%
+    client.test("Club OST import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}
