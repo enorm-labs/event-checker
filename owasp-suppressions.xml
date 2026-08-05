@@ -50,13 +50,18 @@
         <notes><![CDATA[
             False positive — version out of range. CVE-2020-29582 is the Kotlin
             `createTempDir`/`createTempFile` information disclosure, which affects
-            kotlin-stdlib <= 1.4.20 and was fixed in 1.4.21. This project resolves Kotlin
-            2.4.10. Dependency-Check matches the JetBrains Kotlin CPE against the
-            kotlin-stdlib-jdk7 / kotlin-stdlib-jdk8 compatibility shims and the coroutines
-            artifact, whose own version strings it cannot map to a Kotlin release.
+            kotlin-stdlib <= 1.4.20 and was fixed in 1.4.21. Every JetBrains Kotlin artifact on
+            any classpath here is well past that: the application resolves Kotlin 2.4.10, and the
+            oldest straggler on a tool classpath is kotlin-reflect 1.6.10 (detekt's).
+            Dependency-Check matches the JetBrains Kotlin CPE against artifacts whose own version
+            strings it cannot map to a Kotlin release — the stdlib-jdk7/jdk8 shims, kotlin-reflect,
+            and the coroutines builds.
+            The pattern spans the whole `org.jetbrains.*kotlin(x)` family on purpose, including
+            IntelliJ's repackaged `org.jetbrains.intellij.deps.kotlinx` coroutines: a narrower
+            prefix let those through, and the reasoning applies identically to all of them.
             Re-evaluate only if this project ever downgrades below Kotlin 1.4.21.
         ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.jetbrains\.(kotlin/kotlin-stdlib|kotlinx/kotlinx-coroutines).*@.*$</packageUrl>
+        <packageUrl regex="true">^pkg:maven/org\.jetbrains\.[a-z.]*kotlinx?/.*@.*$</packageUrl>
         <cve>CVE-2020-29582</cve>
     </suppress>
 
@@ -109,16 +114,20 @@
             access to the build host, which is a materially different threat from the remote,
             unauthenticated vector NVD's 9.8 implies.
 
-            Scoped to the org.jetbrains.kotlin / org.jetbrains.kotlinx artifacts because
-            Dependency-Check attributes this CVE across ~22 of them (stdlib, reflect, compiler,
-            scripting, build-tools, coroutines) from the single JetBrains Kotlin CPE.
+            Scoped to the whole `org.jetbrains.*kotlin(x)` family because Dependency-Check
+            attributes this CVE across ~22 of them (stdlib, reflect, compiler, scripting,
+            build-tools, coroutines) from the single JetBrains Kotlin CPE. The pattern
+            deliberately spans intermediate segments so it also covers IntelliJ's repackaged
+            `org.jetbrains.intellij.deps.kotlinx` coroutines: the first version of this entry
+            anchored on `org.jetbrains.(kotlin|kotlinx)/`, that one artifact slipped through, and
+            it alone failed the enforced scan.
 
             REMOVAL: delete this entry when Kotlin 2.4.20 (or later) ships stable and is adopted
             — see the kotlin("jvm") version in settings.gradle.kts. The `until` date is a
             backstop, not a target: on 2026-11-05 the suppression lapses and the finding returns
             for re-evaluation whether or not anyone remembered to revisit it.
         ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.jetbrains\.(kotlin|kotlinx)/.*@.*$</packageUrl>
+        <packageUrl regex="true">^pkg:maven/org\.jetbrains\.[a-z.]*kotlinx?/.*@.*$</packageUrl>
         <cve>CVE-2026-53914</cve>
     </suppress>
 

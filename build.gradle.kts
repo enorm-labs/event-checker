@@ -143,6 +143,33 @@ dependencyCheck {
     // `project.name` (`events-core`), so a name list silently matches nothing and the scan
     // reports "Dependencies Scanned: 0" while the build stays green. See
     // AbstractAnalyze.shouldBeScanned: `scanProjects.isEmpty() || scanProjects.contains(project.path)`.
+    // Build-tool classpaths, skipped because nothing on them is ever packaged or deployed: the
+    // static-analysis and lint tools, and the Kotlin compiler plugin/script classpaths. They
+    // pulled in their own (often much older) copies of Kotlin and logging libraries, which the
+    // BOM overrides cannot reach and which produced findings against artifacts that only ever run
+    // on a build agent — e.g. detekt's kotlin-reflect 1.6.10 and IntelliJ's repackaged coroutines.
+    //
+    // TRADE-OFF: this genuinely narrows the scan. A real CVE in detekt or ktlint will no longer
+    // be reported here. That is accepted because those tools run only in CI and never process
+    // untrusted input, and because Dependabot still watches them through the submitted dependency
+    // graph. Do not extend this list to anything that ships.
+    //
+    // Names must match exactly — the plugin does `skipConfigurations.contains(configuration.name)`,
+    // with no globbing — so a renamed or newly added tool configuration silently starts being
+    // scanned again rather than erroring.
+    skipConfigurations =
+        listOf(
+            "detekt",
+            "detektPlugins",
+            "ktlint",
+            "ktlintBaselineReporter",
+            "ktlintReporter",
+            "ktlintRuleset",
+            "kotlinCompilerPluginClasspathMain",
+            "kotlinCompilerPluginClasspathTest",
+            "kotlinScriptDef",
+            "testKotlinScriptDef"
+        )
     // Output formats: HTML for local review, SARIF for GitHub Code Scanning integration
     formats = listOf("HTML", "SARIF")
     // Fail the build if a CVE with CVSS score >= 7 (HIGH) is found
