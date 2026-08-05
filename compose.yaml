@@ -11,3 +11,19 @@ services:
       # Override via environment variable if the default port conflicts:
       #   POSTGRES_HOST_PORT=5555 ./gradlew :events-importer:bootRun
       - '${POSTGRES_HOST_PORT:-56298}:5432'
+    volumes:
+      # Named volume so seeded data survives the container being recreated. Without it the
+      # data sits on an anonymous volume that is discarded with the container, and every
+      # recreation comes back as an empty schema with no error to say anything was lost —
+      # re-seeding then means re-scraping all ~75 venues (see ADR-007 on politeness).
+      # Spring Boot's Docker Compose support stops the container on application shutdown by
+      # default (`spring.docker.compose.lifecycle-management`), so this is easy to trip over.
+      #
+      # `/var/lib/postgresql` is the volume the postgres:18 image itself declares; PGDATA
+      # lives at `/var/lib/postgresql/18/docker` beneath it. (Images up to 17 declared
+      # `/var/lib/postgresql/data` instead, so this path changes on a major upgrade.)
+      - 'postgres-data:/var/lib/postgresql'
+
+volumes:
+  # `scripts/dev-env.sh db-reset` drops this deliberately via `docker compose down --volumes`.
+  postgres-data:

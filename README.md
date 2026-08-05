@@ -102,7 +102,8 @@ If port 56298 is already in use, override it via the `POSTGRES_HOST_PORT` enviro
 POSTGRES_HOST_PORT=5555 ./gradlew :events-importer:bootRun
 ```
 
-To reset the local database (e.g. to start fresh), stop the app and remove the Docker volume:
+Database contents live on the named volume `postgres-data`, so they survive the container being stopped and recreated. To reset the local database (e.g. to
+start fresh), stop the app and remove that volume:
 
 ```bash
 docker compose down --volumes
