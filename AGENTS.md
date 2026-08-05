@@ -78,7 +78,11 @@ subprojects sharing a root `settings.gradle.kts`, plus a standalone frontend pro
 - **Logging**: Both apps use [kotlin-logging](https://github.com/oshai/kotlin-logging) (`io.github.oshai:kotlin-logging-jvm`) as an idiomatic SLF4J wrapper.
   Declare loggers as: `private val logger = KotlinLogging.logger {}`. Use lambda syntax for lazy evaluation: `logger.info { "msg $var" }`. The BFF registers a
   `RequestLoggingFilter` (`WebFilter`, `HIGHEST_PRECEDENCE`) that emits one INFO access-log line per request (`GET /venues?q=astra -> 200 (12ms)`); WebFlux does
-  not log requests at INFO by default.
+  not log requests at INFO by default. Both apps also define a `local` profile (`--spring.profiles.active=local`, or "Active profiles: local" in an IntelliJ run
+  configuration) whose only effect is to mirror the console to a file — `events-importer/build/dev-env/importer.log` and `events-bff/build/dev-env/bff.log`,
+  relative to each module directory — so a run can be grepped after the fact instead of scrolled in the IDE console. The filenames differ so running both at
+  once keeps two logs. It is profile-gated because a container platform wants the log on stdout. `scripts/dev-env.sh up` does not need the profile — it
+  redirects the importer's stdout to the repository-root `build/dev-env/importer.log` itself.
 - **Error handling**: The importer has a `GlobalExceptionHandler` (`@RestControllerAdvice`) that translates domain exceptions into RFC 9457 Problem Details
   (`ProblemDetail`). Domain exceptions follow the `*NotFoundException` naming pattern (e.g. `VenueNotFoundException`)
   and map to 404. `DataIntegrityViolationException` maps to 409 CONFLICT for duplicate records. `WebExchangeBindException` maps to 400 BAD REQUEST for Bean

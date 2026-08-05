@@ -111,6 +111,27 @@ docker compose down --volumes
 
 The next `bootRun` will recreate the database and re-run all Flyway migrations.
 
+### The `local` profile (logging to a file)
+
+Both services define a `local` Spring profile whose only effect is to mirror the console output to a file, so an import or request run can be grepped afterwards
+instead of scrolled in the IDE console:
+
+| Service           | Log file                                     |
+|-------------------|----------------------------------------------|
+| `events-importer` | `events-importer/build/dev-env/importer.log` |
+| `events-bff`      | `events-bff/build/dev-env/bff.log`           |
+
+```bash
+./gradlew :events-importer:bootRun --args='--spring.profiles.active=local'
+```
+
+In IntelliJ, set **Active profiles: `local`** in the run configuration. The paths are relative to each module directory (`bootRun`'s working directory) and land
+under `build/`, which is gitignored.
+
+The profile gate is deliberate: on a container platform the log belongs on stdout, where the platform collects it, and a file appender would instead write into
+the container's in-memory filesystem. Note that `scripts/dev-env.sh` does not need the profile — it redirects each service's stdout to
+`build/dev-env/<service>.log` at the repository root itself.
+
 ### IntelliJ HTTP Client
 
 The [`http/`](./http) directory contains IntelliJ HTTP Client request files, split by service:
