@@ -137,8 +137,12 @@ tasks.register<Exec>("httpTest") {
 // `hashFiles` guard that skips silently, so keep them in step with any change here.
 // See https://jeremylong.github.io/DependencyCheck/dependency-check-gradle/
 dependencyCheck {
-    // Aggregate results from all subprojects into a single report
-    scanProjects = subprojects.map { it.name }
+    // `scanProjects` is deliberately NOT set: left empty, the plugin scans every project,
+    // which is exactly what an aggregate report wants. Do not "restore" it as a list of
+    // subproject *names* — the plugin matches `project.path` (`:events-core`), not
+    // `project.name` (`events-core`), so a name list silently matches nothing and the scan
+    // reports "Dependencies Scanned: 0" while the build stays green. See
+    // AbstractAnalyze.shouldBeScanned: `scanProjects.isEmpty() || scanProjects.contains(project.path)`.
     // Output formats: HTML for local review, SARIF for GitHub Code Scanning integration
     formats = listOf("HTML", "SARIF")
     // Fail the build if a CVE with CVSS score >= 7 (HIGH) is found

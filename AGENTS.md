@@ -226,6 +226,11 @@ subprojects sharing a root `settings.gradle.kts`, plus a standalone frontend pro
 - **OWASP Dependency-Check** (`org.owasp.dependencycheck`) scans all project dependencies against the National Vulnerability Database (NVD) for known CVEs.
   Configured at the root level with `dependencyCheckAggregate` to produce a single report. Fails the build on CVSS ≥ 7 (HIGH). False positives can be suppressed
   via `owasp-suppressions.xml`. SARIF output is uploaded to GitHub Code Scanning; the HTML report is uploaded as a CI artifact.
+    - **`scanProjects` is intentionally unset.** Empty means "scan every project", which is what the aggregate report wants. The plugin matches a configured
+      entry against `project.path` (`:events-core`), *not* `project.name` (`events-core`) — a name list matches nothing, so every project is skipped and the
+      report reads `Dependencies Scanned: 0` while the build passes the CVSS gate trivially. That was live in this repo until 2026-08-05 and nothing failed;
+      **a green OWASP run is not evidence the scan looked at anything.** When changing this config, read `Dependencies Scanned` in the HTML report, not the
+      exit code.
 
 ## Build & Dev Commands
 
