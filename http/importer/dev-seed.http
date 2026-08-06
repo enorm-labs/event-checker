@@ -47,6 +47,7 @@
 ###   Kantine am Berghain  — https://www.berghain.berlin/de/program/kantine-am-berghain/
 ###   Kater                — https://www.katerclub.de/
 ###   Klunkerkranich       — https://klunkerkranich.org/events/
+###   Kulturhaus Insel Berlin — https://www.inselberlin.de/
 ###   Kulturhaus Peter Edel — https://www.peteredel.de/events/
 ###   LARK                 — https://larkberlin.com/wp-json/wp/v2/event
 ###   Lido                 — https://www.lido-berlin.de/
@@ -2272,6 +2273,65 @@ Accept: application/json
 
 > {%
     client.test("Klunkerkranich import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Kulturhaus Insel Berlin (Alt-Treptow 6, Berlin-Treptow — on the Insel der Jugend)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Kulturhaus Insel Berlin venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Kulturhaus Insel Berlin",
+    "address": "Alt-Treptow 6",
+    "city": "Berlin",
+    "postalCode": "12435",
+    "district": "treptow-koepenick",
+    "latitude": 52.48694,
+    "longitude": 13.46944,
+    "websiteUrl": "https://www.inselberlin.de",
+    "description": "The concert house on the Insel der Jugend, a Spree island in Treptower Park, with a hall, a summer garden and a free Sunday matinee series."
+}
+
+> {%
+    client.global.set("insel_venue_id", response.body.id);
+    client.test("Kulturhaus Insel Berlin venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Kulturhaus Insel Berlin event source ---
+# Links the venue to the InselWebsiteImporter.
+# The sourceType "INSEL" matches EventSource.INSEL.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{insel_venue_id}},
+    "name": "Kulturhaus Insel Berlin",
+    "url": "https://www.inselberlin.de/",
+    "sourceType": "INSEL",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Kulturhaus Insel Berlin event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Kulturhaus Insel Berlin import ---
+POST {{importer-host}}/api/admin/event-sources/kulturhaus-insel-berlin/import
+Accept: application/json
+
+> {%
+    client.test("Kulturhaus Insel Berlin import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}
