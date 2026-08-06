@@ -7,8 +7,9 @@ import java.time.LocalDate
 /**
  * Reactive read repository for [EventEntity] via R2DBC.
  *
- * Dynamic multi-filter search is handled separately by [EventSearchRepository]; the derived
- * methods here cover the fixed-shape queries (slug lookup, today, calendar range).
+ * Dynamic multi-filter search is handled separately by [EventSearchRepository] — which the
+ * calendar range query also goes through, since it takes the same filters; the derived methods
+ * here cover the fixed-shape queries (slug lookup, today).
  */
 interface EventRepository : CoroutineCrudRepository<EventEntity, Long> {
     /** Finds a single event by its unique slug, or null if not found. */
@@ -16,12 +17,6 @@ interface EventRepository : CoroutineCrudRepository<EventEntity, Long> {
 
     /** Events on a single calendar [date], ordered by start time — backs the "today" endpoint. */
     fun findByEventDateOrderByStartTime(date: LocalDate): Flow<EventEntity>
-
-    /** Events within an inclusive date range, ordered for calendar display. */
-    fun findByEventDateBetweenOrderByEventDateAscStartTimeAsc(
-        from: LocalDate,
-        to: LocalDate
-    ): Flow<EventEntity>
 }
 
 /**

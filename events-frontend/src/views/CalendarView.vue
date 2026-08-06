@@ -1,15 +1,22 @@
 <script lang="ts" setup>
 import type { EventInput } from '@fullcalendar/vue3'
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import EventCalendar from '@/components/EventCalendar.vue'
+import EventFilterBar from '@/components/EventFilterBar.vue'
 import SectionLabel from '@/components/SectionLabel.vue'
 import { describeError } from '@/api/client'
 import { fetchCalendarEvents } from '@/composables/useEvents'
+import { useEventFilters } from '@/composables/useEventFilters'
 
+const route = useRoute()
 const router = useRouter()
+const { filters } = useEventFilters()
+
 const events = ref<EventInput[]>([])
 const error = ref<string | null>(null)
+/** The visible window, as last reported by the calendar — null until its first render. */
+const range = ref<{ from: string; to: string } | null>(null)
 
 /** Clamps a range to the BFF's 92-day maximum (no built-in view exceeds it, but be safe). */
 function clampTo(from: string, to: string): string {
@@ -19,10 +26,11 @@ function clampTo(from: string, to: string): string {
   return to > maxIso ? maxIso : to
 }
 
-// Driven by EventCalendar's `datesSet`, which also fires on initial render.
-async function loadRange({ from, to }: { from: string; to: string }) {
+async function load() {
+  if (!range.value) return
+  const { from, to } = range.value
   try {
-    const data = await fetchCalendarEvents(from, clampTo(from, to))
+    const data = await fetchCalendarEvents(from, clampTo(from, to), filters.value)
     events.value = data.map((event) => ({
       title: event.title ?? '',
       start: event.startTime ? `${event.eventDate}T${event.startTime}` : event.eventDate,
@@ -34,6 +42,15 @@ async function loadRange({ from, to }: { from: string; to: string }) {
     error.value = describeError(e, 'the calendar')
   }
 }
+
+// Driven by EventCalendar's `datesSet`, which also fires on initial render.
+function loadRange(next: { from: string; to: string }) {
+  range.value = next
+  return load()
+}
+
+// Filters live in the URL, so a filter change means re-fetching the same visible window.
+watch(() => route.query, load, { deep: true })
 
 function openEvent(slug: string) {
   router.push(`/events/${slug}`)
@@ -47,6 +64,7 @@ function openEvent(slug: string) {
       <h1 class="text-3xl font-bold tracking-tight">Calendar</h1>
       <p class="text-muted-foreground">Browse upcoming music events across Berlin.</p>
     </header>
+    <EventFilterBar />
     <p v-if="error" class="text-sm text-destructive">{{ error }}</p>
     <EventCalendar :events="events" @dates-set="loadRange" @event-click="openEvent" />
   </main>

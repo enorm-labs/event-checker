@@ -147,7 +147,7 @@ export interface paths {
       path?: never
       cookie?: never
     }
-    /** Get events within an inclusive date range for the calendar view */
+    /** Get events within an inclusive date range for the calendar view, with the same optional filters as the search endpoint */
     get: operations['calendar']
     put?: never
     post?: never
@@ -1007,6 +1007,28 @@ export interface operations {
         from: string
         /** @description Range end date (inclusive), ISO-8601. Must not precede 'from' or exceed 92 days from it. */
         to: string
+        /** @description Event type filter, e.g. CONCERT (case-insensitive). */
+        eventType?: string
+        /** @description Venue slug filter — only events at the matching venue. */
+        venue?: string
+        /** @description District filter — only events at venues in the matching Berlin borough (e.g. friedrichshain-kreuzberg). */
+        district?: string
+        /** @description Artist slug filter — only events featuring the matching artist. */
+        artist?: string
+        /** @description Promoter slug filter — only events from the matching promoter. */
+        promoter?: string
+        /** @description Genre tag slug filter — only events tagged with the matching genre. */
+        genre?: string
+        /** @description Minimum presale price (inclusive). Excludes events with an unknown (null) price. */
+        minPrice?: number
+        /** @description Maximum presale price (inclusive). Excludes events with an unknown (null) price. */
+        maxPrice?: number
+        /** @description Case-insensitive substring search over the event title and subtitle. */
+        q?: string
+        /** @description When true, excludes events flagged as sold out. Defaults to false (include all). */
+        excludeSoldOut?: boolean
+        /** @description When true, returns only events flagged as free to attend. Defaults to false. */
+        free?: boolean
       }
       header?: never
       path?: never

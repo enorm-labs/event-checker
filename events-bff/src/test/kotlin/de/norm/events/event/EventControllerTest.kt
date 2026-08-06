@@ -339,6 +339,53 @@ class EventControllerTest : BaseControllerTest() {
         }
 
     @Test
+    fun `GET events calendar applies the same filters as the search endpoint`(): Unit =
+        runBlocking {
+            val astra = insertVenue("Astra", "astra", district = "friedrichshain-kreuzberg")
+            val lido = insertVenue("Lido", "lido", district = "neukoelln")
+            val techno = insertGenreTag("Techno", "techno")
+
+            val technoNight = insertEvent(astra, "Techno Night", "techno-night", LocalDate.now().plusDays(2), pricePresale = BigDecimal("15.00"))
+            linkGenre(technoNight, techno)
+            insertEvent(lido, "Jazz Night", "jazz-night", LocalDate.now().plusDays(3), pricePresale = BigDecimal("40.00"))
+
+            val from = LocalDate.now()
+            val to = LocalDate.now().plusDays(7)
+
+            // Each filter narrows the range down to the one event that satisfies it.
+            listOf(
+                "venue=astra",
+                "district=friedrichshain-kreuzberg",
+                "genre=techno",
+                "q=techno",
+                "maxPrice=20"
+            ).forEach { filter ->
+                webTestClient
+                    .get()
+                    .uri("/events/calendar?from=$from&to=$to&$filter")
+                    .exchange()
+                    .expectStatus()
+                    .isOk
+                    .expectBody()
+                    .jsonPath("$.length()")
+                    .isEqualTo(1)
+                    .jsonPath("$[0].slug")
+                    .isEqualTo("techno-night")
+            }
+
+            // No filter at all still returns the whole range.
+            webTestClient
+                .get()
+                .uri("/events/calendar?from=$from&to=$to")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody()
+                .jsonPath("$.length()")
+                .isEqualTo(2)
+        }
+
+    @Test
     fun `GET event by slug returns full detail with associations`(): Unit =
         runBlocking {
             val venueId = insertVenue("Astra", "astra", address = "Revaler Str. 99")

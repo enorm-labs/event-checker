@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import java.math.BigDecimal
 import java.time.LocalDate
 
 /**
@@ -27,7 +26,6 @@ class EventController(
 ) {
     @GetMapping
     @Operation(summary = "Search events with optional filters and pagination")
-    @Suppress("LongParameterList")
     suspend fun list(
         @Parameter(description = "Earliest event date (inclusive), ISO-8601 (e.g. 2026-06-19). Defaults to today when both from/to are omitted.")
         @RequestParam(required = false)
@@ -37,68 +35,19 @@ class EventController(
         @RequestParam(required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
         to: LocalDate?,
-        @Parameter(description = "Event type filter, e.g. CONCERT (case-insensitive).")
-        @RequestParam(required = false)
-        eventType: String?,
-        @Parameter(description = "Venue slug filter — only events at the matching venue.")
-        @RequestParam(required = false)
-        venue: String?,
-        @Parameter(description = "District filter — only events at venues in the matching Berlin borough (e.g. friedrichshain-kreuzberg).")
-        @RequestParam(required = false)
-        district: String?,
-        @Parameter(description = "Artist slug filter — only events featuring the matching artist.")
-        @RequestParam(required = false)
-        artist: String?,
-        @Parameter(description = "Promoter slug filter — only events from the matching promoter.")
-        @RequestParam(required = false)
-        promoter: String?,
-        @Parameter(description = "Genre tag slug filter — only events tagged with the matching genre.")
-        @RequestParam(required = false)
-        genre: String?,
-        @Parameter(description = "Minimum presale price (inclusive). Excludes events with an unknown (null) price.")
-        @RequestParam(required = false)
-        minPrice: BigDecimal?,
-        @Parameter(description = "Maximum presale price (inclusive). Excludes events with an unknown (null) price.")
-        @RequestParam(required = false)
-        maxPrice: BigDecimal?,
-        @Parameter(description = "Case-insensitive substring search over the event title and subtitle.")
-        @RequestParam(required = false)
-        q: String?,
-        @Parameter(description = "When true, excludes events flagged as sold out. Defaults to false (include all).")
-        @RequestParam(required = false)
-        excludeSoldOut: Boolean?,
-        @Parameter(description = "When true, returns only events flagged as free to attend. Defaults to false.")
-        @RequestParam(required = false)
-        free: Boolean?,
+        @ParameterObject
+        filters: EventFilterParams,
         @ParameterObject
         @PageableDefault(size = 20, sort = ["eventDate"])
         pageable: Pageable
-    ): PageResponse<EventSummaryResponse> =
-        eventService.search(
-            EventFilter(
-                from = from,
-                to = to,
-                eventType = eventType,
-                venueSlug = venue,
-                district = district,
-                artistSlug = artist,
-                promoterSlug = promoter,
-                genreSlug = genre,
-                minPrice = minPrice,
-                maxPrice = maxPrice,
-                query = q,
-                excludeSoldOut = excludeSoldOut ?: false,
-                onlyFree = free ?: false
-            ),
-            pageable
-        )
+    ): PageResponse<EventSummaryResponse> = eventService.search(filters.toFilter(from = from, to = to), pageable)
 
     @GetMapping("/today")
     @Operation(summary = "Get today's events")
     suspend fun today(): List<EventSummaryResponse> = eventService.today()
 
     @GetMapping("/calendar")
-    @Operation(summary = "Get events within an inclusive date range for the calendar view")
+    @Operation(summary = "Get events within an inclusive date range for the calendar view, with the same optional filters as the search endpoint")
     suspend fun calendar(
         @Parameter(description = "Range start date (inclusive), ISO-8601.", required = true)
         @RequestParam
@@ -107,8 +56,10 @@ class EventController(
         @Parameter(description = "Range end date (inclusive), ISO-8601. Must not precede 'from' or exceed 92 days from it.", required = true)
         @RequestParam
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-        to: LocalDate
-    ): List<EventSummaryResponse> = eventService.calendar(from, to)
+        to: LocalDate,
+        @ParameterObject
+        filters: EventFilterParams
+    ): List<EventSummaryResponse> = eventService.calendar(from, to, filters.toFilter())
 
     @GetMapping("/{slug}")
     @Operation(summary = "Get a single event by slug")
