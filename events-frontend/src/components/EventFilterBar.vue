@@ -15,6 +15,7 @@ import { useEventFilters } from '@/composables/useEventFilters'
 import { useGenres } from '@/composables/useGenres'
 import { useAllVenues } from '@/composables/useVenues'
 import { DISTRICTS } from '@/lib/districts'
+import { todayIso } from '@/lib/format'
 
 const EVENT_TYPES = [
   'CONCERT',
@@ -29,8 +30,23 @@ const EVENT_TYPES = [
   'OTHER',
 ]
 
+withDefaults(defineProps<{ showDateRange?: boolean }>(), { showDateRange: true })
+
 const route = useRoute()
 const { queryString, applyFilters } = useEventFilters()
+
+/** Lower bound for the date pickers: the app is about upcoming events, so past dates are out. */
+const today = todayIso()
+
+/**
+ * Opens the browser's calendar on a click anywhere in the field. Without this, Chrome only
+ * opens it from the calendar icon and a click on the text just moves between date segments.
+ * `showPicker` is absent on older browsers, where the icon still works — hence the optional call.
+ */
+function openDatePicker(event: MouseEvent) {
+  const input = event.currentTarget as HTMLInputElement & { showPicker?: () => void }
+  input.showPicker?.()
+}
 
 const genres = useGenres()
 const venues = useAllVenues()
@@ -72,6 +88,36 @@ onMounted(() => {
       />
       <Button type="submit" variant="outline">Search</Button>
     </form>
+
+    <!--
+      Two native date inputs rather than a range-picker component: the browser supplies the
+      calendar, the value is already the ISO `YYYY-MM-DD` the BFF wants, and `min`/`max` express
+      "not in the past" and "to cannot precede from" without any code. They apply on change like
+      the selects, so the bar keeps a single Apply button (the price range's).
+      `color-scheme` is what makes the browser's own calendar follow our dark mode.
+    -->
+    <div v-if="showDateRange" class="flex items-center gap-2">
+      <input
+        :max="queryString('to') || undefined"
+        :min="today"
+        :value="queryString('from')"
+        aria-label="Earliest event date"
+        class="h-8 rounded-lg border border-border bg-background px-2 text-sm outline-none [color-scheme:light] focus-visible:ring-3 focus-visible:ring-ring/50 dark:[color-scheme:dark]"
+        type="date"
+        @change="applyFilters({ from: ($event.target as HTMLInputElement).value })"
+        @click="openDatePicker"
+      />
+      <span class="text-sm text-muted-foreground">–</span>
+      <input
+        :min="queryString('from') || today"
+        :value="queryString('to')"
+        aria-label="Latest event date"
+        class="h-8 rounded-lg border border-border bg-background px-2 text-sm outline-none [color-scheme:light] focus-visible:ring-3 focus-visible:ring-ring/50 dark:[color-scheme:dark]"
+        type="date"
+        @change="applyFilters({ to: ($event.target as HTMLInputElement).value })"
+        @click="openDatePicker"
+      />
+    </div>
 
     <select
       :value="queryString('eventType')"

@@ -155,6 +155,16 @@ test('falls back to the bare title when the event has no venue', async ({ page }
   )
 })
 
+test('omits the date-range filter, whose job the visible window already does', async ({ page }) => {
+  await page.goto('/calendar')
+  await expect(page.getByRole('link', { name: /Calendar Gig/ })).toBeVisible()
+
+  // The rest of the shared bar is there; only the date range is suppressed here.
+  await expect(selectWithOption(page, 'All venues')).toBeVisible()
+  await expect(page.getByLabel('Earliest event date')).toHaveCount(0)
+  await expect(page.getByLabel('Latest event date')).toHaveCount(0)
+})
+
 test('refetches the visible range with a filter from the shared filter bar', async ({ page }) => {
   const errors = collectPageErrors(page)
   await page.goto('/calendar')

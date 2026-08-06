@@ -65,7 +65,8 @@ function openEvent(slug: string) {
       <h1 class="text-3xl font-bold tracking-tight">Calendar</h1>
       <p class="text-muted-foreground">Browse upcoming music events across Berlin.</p>
     </header>
-    <EventFilterBar />
+    <!-- No date range here: FullCalendar's visible window already is the range. -->
+    <EventFilterBar :show-date-range="false" />
     <p v-if="error" class="text-sm text-destructive">{{ error }}</p>
     <EventCalendar :events="events" @dates-set="loadRange" @event-click="openEvent" />
   </main>
