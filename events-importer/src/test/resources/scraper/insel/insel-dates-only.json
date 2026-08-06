@@ -1,0 +1,48 @@
+{
+ "data": {
+  "allDatoCmsEvent": {
+   "edges": [
+    {
+     "node": {
+      "time": "2022-02-19T18:30:00+01:00",
+      "eventType": {
+       "eventTypeShort": "Konzert"
+      }
+     }
+    },
+    {
+     "node": {
+      "time": "2022-02-26T18:30:00+01:00",
+      "eventType": {
+       "eventTypeShort": "Konzert"
+      }
+     }
+    },
+    {
+     "node": {
+      "time": "2022-02-26T18:30:00+01:00",
+      "eventType": {
+       "eventTypeShort": "Konzert"
+      }
+     }
+    },
+    {
+     "node": {
+      "time": "2022-02-26T18:30:00+01:00",
+      "eventType": {
+       "eventTypeShort": "Konzert"
+      }
+     }
+    },
+    {
+     "node": {
+      "time": "2022-04-23T18:30:00+02:00",
+      "eventType": {
+       "eventTypeShort": "Konzert"
+      }
+     }
+    }
+   ]
+  }
+ }
+}

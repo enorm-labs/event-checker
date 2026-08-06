@@ -118,6 +118,9 @@ enum class EventSource {
     /** Huxleys Neue Welt Berlin – a 1,600-capacity concert hall in a former ballroom on the Hasenheide. */
     HUXLEYS,
 
+    /** Kulturhaus Insel Berlin – the concert house on the Insel der Jugend, a Spree island in Treptower Park, with a hall and a summer garden. */
+    INSEL,
+
     /**
      * Junction Bar Berlin – a basement live-music and DJ bar near Mehringdamm.
      *

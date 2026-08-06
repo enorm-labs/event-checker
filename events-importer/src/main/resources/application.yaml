@@ -6,8 +6,11 @@ spring:
     name: events-importer
   http:
     codecs:
-      # Max response body size buffered in memory (guards against OOM from huge pages during scraping)
-      max-in-memory-size: 2MB
+      # Max response body size buffered in memory (guards against OOM from huge pages during scraping).
+      # Raised from 2MB for Kulturhaus Insel Berlin, whose Gatsby static-query artefact ships the venue's
+      # whole event archive in one 2.2MB response; at the configured import concurrency of 4 the worst
+      # case is 32MB in flight.
+      max-in-memory-size: 8MB
   flyway:
     schemas: events
   r2dbc:

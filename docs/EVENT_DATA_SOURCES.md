@@ -7,8 +7,8 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 
 | Status                              | Meaning                                                                              | Count |
 |-------------------------------------|--------------------------------------------------------------------------------------|------:|
-| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    81 |
-| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |     8 |
+| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    82 |
+| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |     7 |
 | ⛔ [Blocked](#-blocked--deferred)   | Website analyzed, but no usable listings (no programme page, JS-only, or too sparse) |    87 |
 | ❓ [Unanalyzed](#-not-analyzed-yet) | No URL recorded yet — website still needs a first look                               |     0 |
 
@@ -55,6 +55,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Kantine am Berghain         | https://www.berghain.berlin/de/program/kantine-am-berghain/ | Concert Hall | Shares BERGHAIN importer                              |
 | Kater                       | https://www.katerclub.de/                                   | Techno Club  | Homepage programme; ___ floor rules mark lineups      |
 | Klunkerkranich              | https://klunkerkranich.org/events/                          | Bar          | WordPress; ISO date in slug; ~10-day horizon          |
+| Kulturhaus Insel Berlin     | https://www.inselberlin.de/                                 | Concert Hall | Gatsby static-query JSON; times in the blurb          |
 | Kulturhaus Peter Edel       | https://www.peteredel.de/events/                            | Concert Hall | Umbraco grid; month heading carries the year          |
 | LARK                        | https://larkberlin.com/events/                              | Club         | WP REST + ACF; post date is the event date            |
 | Lido                        | https://www.lido-berlin.de/                                 | Concert Hall | Clean slugs; doors + start; "Ausverkauft" badge       |
@@ -100,7 +101,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Zenner                      | https://zenner.berlin/programm                              | Club         | Gatsby/Sanity page-data JSON; UTC dates; archive      |
 | Zitadelle                   | https://citadel-music-festival.de/events                    | Open Air     | Festival site; WordPress/EM; summer season only       |
 
-80 importer classes cover 81 sources: only Kantine am Berghain has no class of its own, sharing the Berghain importer outright. Three other groups share a
+81 importer classes cover 82 sources: only Kantine am Berghain has no class of its own, sharing the Berghain importer outright. Three other groups share a
 *listing and parser* while keeping one thin `@Component` per venue, so they do not reduce the count — Club der Visionäre, Sonnenraum and MS Hoppetosse; the
 three Velomax halls; and Uber Arena with the Uber Eats Music Hall.
 
@@ -124,7 +125,6 @@ count when the next batch is prioritised.
 
 | Name                             | URL                                                   | Type         | Priority | Comment                                                       |
 |----------------------------------|-------------------------------------------------------|--------------|----------|---------------------------------------------------------------|
-| Insel der Jugend                 | https://www.inselberlin.de/                           | Open Air     | High     | Gatsby static-query JSON (DatoCMS); 39 upcoming, descriptions |
 | Gärten der Welt (Arena)          | https://www.gaertenderwelt.de/events/veranstaltungen/ | Open Air     | Medium   | TYPO3; 9 paginated pages, ISO date in detail URL, categories  |
 | Colosseum                        | https://www.colosseumberlin.com/event                 | Concert Hall | Medium   | Wix Events; 19 dated readings, talks and live podcasts        |
 | Fitzroy                          | https://fitzroy-berlin.de/events/                     | Club         | Medium   | WP REST `event` + ACF — the Madame Claude / LARK codebase     |
