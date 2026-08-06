@@ -91,6 +91,9 @@ enum class EventSource {
     /** Frannz Club Berlin – a club and concert venue in the Kulturbrauerei, across pop, indie, hip-hop and electronic music. */
     FRANNZ,
 
+    /** Gärten der Welt Berlin – the Marzahn landscape park of international themed gardens, whose Arena stages open-air concerts and park festivals. */
+    GAERTEN_DER_WELT,
+
     /** gART.n Berlin – an open-air garden club on the Rummelsburger Bucht, running daytime techno and house parties at the weekend. */
     GARTN,
 

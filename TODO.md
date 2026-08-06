@@ -119,7 +119,17 @@ scraper's own KDoc instead, so only what should actually be *repaired* is listed
 - [ ] **Promoter display names lose genuine acronyms.** `PromoterNormalizer.deshout` is a bare title-caser, without the `ACRONYMS` / short-initialism guards
   `ArtistNormalizer` already has, so `TV Noir` → `Tv Noir` and `Bossa FM` → `Bossa Fm`. Share one de-shout between the two normalizers. Same change should fold
   Zitadelle's `tip Berlin` / `Tip` onto one spelling via `NAME_CORRECTIONS`. Display-only — slugs are case-insensitive and unaffected — but existing rows keep
-  their casing until re-created.
+  their casing until re-created. The two steps compound where the descriptor strip runs first: Gärten der Welt's `HB Music` loses `Music` and is then
+  de-shouted to the unreadable `Hb`, which no longer names anything.
+- [ ] **A `feat.` co-bill is stored as one artist.** `splitHeadlinerTitle` cuts a title on `/`, `+` and conjunctions, and `ROLE_LABEL_PREFIX` recognises
+  `feat.` only where it *opens* a segment — so Gärten der Welt's `Stereoact: Ich liebe das Leben Party 2027 feat. Lena Marie Engel` becomes a single 63-character
+  "artist" instead of `Stereoact` plus a guest. The marker is already spelled out in `ROLE_LABEL_PREFIX`; splitting on it mid-title (guest → `SUPPORT`) is the
+  fix. Cross-cutting, so it needs a `--full` re-seed and a diff.
+- [ ] **An event name minted as a headliner because the venue typed the night `CONCERT`.** `buildArtistsForEventType` trusts a `CONCERT` category to mean the
+  title names the act, but a venue that has no better bucket files non-musical shows there too: Gärten der Welt labels `Drone Art Show: Harry Potter` and
+  `Taschenlampenweihnachtskonzert` "Konzerte", and both become artist rows. `isNonArtistName` already rejects the festival family; catching these needs the same
+  curated vocabulary the `NON_ARTIST_NAMES` item below calls for — a format-word denylist (`… show`, `…konzert` with no person in the title) is the shape, but
+  it must not swallow an act genuinely named that way.
 - [ ] **Huxleys' genre and promoter are stored de-slugified.** Both are read from WordPress taxonomy slugs on the `article` element, so a stylised genre loses
   its punctuation (`kpop` → `Kpop`, not `K-Pop`) and a legal form comes back title-cased word by word (`Concert Concept Veranstaltungs Gmbh`). Needs a
   corrections map for the known slugs, in the same place as the promoter fix above.

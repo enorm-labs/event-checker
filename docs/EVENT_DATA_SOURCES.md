@@ -7,8 +7,8 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 
 | Status                              | Meaning                                                                              | Count |
 |-------------------------------------|--------------------------------------------------------------------------------------|------:|
-| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    82 |
-| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |     7 |
+| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    83 |
+| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |     6 |
 | ⛔ [Blocked](#-blocked--deferred)   | Website analyzed, but no usable listings (no programme page, JS-only, or too sparse) |    87 |
 | ❓ [Unanalyzed](#-not-analyzed-yet) | No URL recorded yet — website still needs a first look                               |     0 |
 
@@ -43,6 +43,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Festsaal Kreuzberg          | https://festsaal-kreuzberg.de/de                            | Concert Hall | Nuxt/Wagtail SSR; `ld+json` empty; no prices          |
 | Frannz Club                 | https://frannz.eu/                                          | Club         |                                                       |
 | gART.n                      | https://www.gartn.xyz/                                      | Techno Club  | Carrd one-pager; year from weekday; no prices         |
+| Gärten der Welt             | https://www.gaertenderwelt.de/events/veranstaltungen/       | Open Air     | TYPO3 events2; paged; park activities excluded        |
 | Golden Gate                 | https://goldengate-berlin.de/                               | Techno Club  | Elementor; current Thu–Sat block only; door-only      |
 | Gretchen                    | https://www.gretchen-club.de/                               | Club         |                                                       |
 | Havanna                     | https://www.havanna-berlin.de/                              | Club         | Undated weekly nights; occurrences derived            |
@@ -101,7 +102,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Zenner                      | https://zenner.berlin/programm                              | Club         | Gatsby/Sanity page-data JSON; UTC dates; archive      |
 | Zitadelle                   | https://citadel-music-festival.de/events                    | Open Air     | Festival site; WordPress/EM; summer season only       |
 
-81 importer classes cover 82 sources: only Kantine am Berghain has no class of its own, sharing the Berghain importer outright. Three other groups share a
+82 importer classes cover 83 sources: only Kantine am Berghain has no class of its own, sharing the Berghain importer outright. Three other groups share a
 *listing and parser* while keeping one thin `@Component` per venue, so they do not reduce the count — Club der Visionäre, Sonnenraum and MS Hoppetosse; the
 three Velomax halls; and Uber Arena with the Uber Eats Music Hall.
 
@@ -125,7 +126,6 @@ count when the next batch is prioritised.
 
 | Name                             | URL                                                   | Type         | Priority | Comment                                                       |
 |----------------------------------|-------------------------------------------------------|--------------|----------|---------------------------------------------------------------|
-| Gärten der Welt (Arena)          | https://www.gaertenderwelt.de/events/veranstaltungen/ | Open Air     | Medium   | TYPO3; 9 paginated pages, ISO date in detail URL, categories  |
 | Colosseum                        | https://www.colosseumberlin.com/event                 | Concert Hall | Medium   | Wix Events; 19 dated readings, talks and live podcasts        |
 | Fitzroy                          | https://fitzroy-berlin.de/events/                     | Club         | Medium   | WP REST `event` + ACF — the Madame Claude / LARK codebase     |
 | Monster Ronson's Ichiban Karaoke | https://www.karaokemonster.de/events                  | Bar          | Medium   | Webflow; nightly host + time, ~12-day window, year-less dates |
@@ -133,11 +133,15 @@ count when the next batch is prioritised.
 | KAOS Berlin                      | https://kaosberlin.de/veranstaltungen/                | Techno Club  | Low      | The Events Calendar REST API, as Cosmic Comedy; 4 upcoming    |
 | DSTRKT Club Berlin               | https://www.dstrkt.de/                                | Club         | Low      | Wix one-pager; 2 dated events, which is the whole programme   |
 
-Three of these need a decision made once, not per event. **Fitzroy** is on its summer break: the ACF API holds a dense July programme and resumes on 12
+Two of these need a decision made once, not per event. **Fitzroy** is on its summer break: the ACF API holds a dense July programme and resumes on 12
 September, so only 2 events are upcoming today and a fixture captured now would be unrepresentative — scaffold it in September, when the listing is
 representative again. **Monster Ronson's** writes its dates as `Wed 5 Aug`, so the year comes from the weekday, as for gART.n and VOID Club; its programme is a
-nightly karaoke host rather than a booking, which the Havanna precedent already covers. **Gärten der Welt** publishes guided tours and workshops alongside its
-`Konzerte` and `Bühne/Theater` categories — the categories are on every row, so the filter is a decision about breadth, not a parsing problem.
+nightly karaoke host rather than a booking, which the Havanna precedent already covers.
+
+The third such decision, **Gärten der Welt**'s, was made when it was [imported](#-imported) on 6 August 2026, and is the precedent for the next park- or
+campus-like source: the row's category decides whether it is programme at all. Its guided tours, workshops, yoga sessions and handicraft afternoons — 28 of the
+41 upcoming rows — are park activities rather than a stage programme, so they are excluded and the remaining 13 are imported. The rule lives in one predicate,
+`isProgrammeCategory`, which is where to revisit it.
 
 *A theater, comedy or arena-scale room is in scope, not just live-music clubs. Bar jeder Vernunft set that precedent — its programme is imported, with the
 venue's own genre deciding whether a night is a concert or a staged show. That precedent does **not** extend to classical concerts and orchestras: those are
