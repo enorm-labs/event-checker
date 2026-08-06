@@ -49,9 +49,9 @@ is tracked in [TODO.md](../TODO.md).
 **Discovery frontend** (Vue 3)
 
 - Home, **calendar**, and event **search/list** pages, plus **event / venue / artist / promoter** detail pages and an About page.
-- Filtering by date range, event type, venue, district (12 boroughs), genre, price range, free-only and exclude-sold-out, with free-text search; "Free" and
-  "Sold Out" badges. One shared filter bar serves both the **list and the calendar** — bar the date range, which only the list shows, since the calendar's
-  visible window already is one — and every filter lives in the URL, so a narrowed view is shareable.
+- Filtering by date range (with **Tonight / This weekend / Next 7 days** shortcuts), event type, venue, district (12 boroughs), genre, price range, free-only
+  and exclude-sold-out, with free-text search; "Free" and "Sold Out" badges. One shared filter bar serves both the **list and the calendar** — bar the date
+  range, which only the list shows, since the calendar's visible window already is one — and every filter lives in the URL, so a narrowed view is shareable.
 
 **Public read API — BFF** (`/api/…`, OpenAPI/Swagger documented)
 
