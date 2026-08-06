@@ -421,6 +421,23 @@ Java version is managed via SDKMAN (`.sdkmanrc` pins `java=25.0.2-tem`; run `sdk
     - `label-pr.yml` — Derives labels from the Conventional Commits PR title (`feat(scraper): …` → `feat` + `importer`, `fix(api)!: …` → `fix` +
       `breaking-change`) via `actions/github-script`. Creates any missing label on demand and re-syncs when the title is edited. Uses `pull_request_target` so
       fork PRs get a writable token; safe because it never checks out or runs PR code.
+- **When CI misbehaves, check [githubstatus.com](https://www.githubstatus.com/) before debugging this repo.** Scriptable as
+  `https://www.githubstatus.com/api/v2/summary.json`. A GitHub-side incident mimics repo-level bugs closely enough to send you hunting through trigger and path
+  filters that are perfectly fine. Symptoms seen during the 2026-08-06 Actions outage:
+    - **No run is created at all** for a PR — nothing to re-run, and `gh run rerun` cannot help. Trigger webhooks were throttled to ~15%. The tell-tale: a PR
+      that gets no label either, since `label-pr.yml` was dropped by the same throttle.
+    - **A run "fails" with zero steps executed**, annotated `The job was not acquired by Runner of type hosted even after multiple attempts`. That is runner
+      starvation, *not* a test failure — read the annotation before concluding the code is broken, and never merge past a red check without checking which of
+      the two it is.
+    - **Runs appear for branches deleted hours ago** as the throttled backlog replays. They are noise about the past, not signal about `main`.
+    - Do not trust the **Webhooks** component on the status page: it read *Operational* throughout, while the Actions incident text was the thing saying
+      workflow-triggering webhooks were being dropped. Read the incident, not the component grid.
+    - `gh run list --branch <name>` can look empty while `gh pr view --json statusCheckRollup` still shows CodeQL "Analyze" checks — CodeQL is GitHub's
+      **default setup** (`event: dynamic`), which runs on a separate path from the workflow files here and so survives outages that stop everything else.
+    - The `head_sha` filter on `/actions/runs` needs the **full 40-character SHA**; an abbreviated one silently returns `total_count: 0` and looks exactly like
+      "no runs were created".
+    - With CI unavailable, the honest fallback is a local `/verify` against the merged commit — and say in the PR that CI never ran, rather than implying a
+      green build.
 - **Dependabot** (`.github/dependabot.yml`) checks for Gradle dependency updates weekly. Updates are grouped by ecosystem (e.g. `kotlin`, `spring-boot`,
   `spring-modulith`, `testcontainers`, `jackson`, `springdoc`, `kotest`, `postgresql`, `flyway`, `reactor`, `detekt`, `owasp`,
   `gradle-plugins`)
