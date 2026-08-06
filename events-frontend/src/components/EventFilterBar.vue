@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button'
 import { useEventFilters } from '@/composables/useEventFilters'
 import { useGenres } from '@/composables/useGenres'
 import { useAllVenues } from '@/composables/useVenues'
+import { DATE_PRESETS, type DateRange } from '@/lib/dateRanges'
 import { DISTRICTS } from '@/lib/districts'
 import { todayIso } from '@/lib/format'
 
@@ -46,6 +47,21 @@ const today = todayIso()
 function openDatePicker(event: MouseEvent) {
   const input = event.currentTarget as HTMLInputElement & { showPicker?: () => void }
   input.showPicker?.()
+}
+
+/**
+ * A preset is just the two date bounds, so it stays in the URL like every other filter and a
+ * preset link is shareable. Clicking the active one clears the range again, which is the only
+ * way back to "any date" without emptying both inputs by hand.
+ */
+function togglePreset(range: DateRange) {
+  const active = isPresetActive(range)
+  applyFilters({ from: active ? '' : range.from, to: active ? '' : range.to })
+}
+
+/** True when the URL's range is exactly this preset — it renders as the pressed button. */
+function isPresetActive(range: DateRange): boolean {
+  return queryString('from') === range.from && queryString('to') === range.to
 }
 
 const genres = useGenres()
@@ -96,7 +112,7 @@ onMounted(() => {
       the selects, so the bar keeps a single Apply button (the price range's).
       `color-scheme` is what makes the browser's own calendar follow our dark mode.
     -->
-    <div v-if="showDateRange" class="flex items-center gap-2">
+    <div v-if="showDateRange" class="flex flex-wrap items-center gap-2">
       <input
         :max="queryString('to') || undefined"
         :min="today"
@@ -117,6 +133,22 @@ onMounted(() => {
         @change="applyFilters({ to: ($event.target as HTMLInputElement).value })"
         @click="openDatePicker"
       />
+
+      <!--
+        Shortcuts for the ranges people actually ask for. They only set the same from/to the
+        inputs do, so the two stay consistent and a preset is as shareable as any other filter.
+      -->
+      <Button
+        v-for="preset in DATE_PRESETS"
+        :key="preset.label"
+        :aria-pressed="isPresetActive(preset.range())"
+        :variant="isPresetActive(preset.range()) ? 'default' : 'outline'"
+        size="sm"
+        type="button"
+        @click="togglePreset(preset.range())"
+      >
+        {{ preset.label }}
+      </Button>
     </div>
 
     <select

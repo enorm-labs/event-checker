@@ -184,6 +184,51 @@ test('filters by a date range, applying each bound as it is picked', async ({ pa
   await expect(eventHeading(page, 'Default Event A')).toHaveCount(0)
 })
 
+test('applies a date preset, marks it pressed, and clears it on a second click', async ({
+  page,
+}) => {
+  const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Berlin' }).format(new Date())
+  await page.goto('/events')
+  await expect(eventHeading(page, 'Default Event A')).toBeVisible()
+
+  const tonight = page.getByRole('button', { name: 'Tonight' })
+  await tonight.click()
+
+  // A preset is nothing but the two bounds, so it lands in the URL like any other filter.
+  await expect(page).toHaveURL(new RegExp(`[?&]from=${today}\\b`))
+  await expect(page).toHaveURL(new RegExp(`[?&]to=${today}\\b`))
+  await expect(eventHeading(page, 'Gig In Range')).toBeVisible()
+  await expect(tonight).toHaveAttribute('aria-pressed', 'true')
+  // The date inputs and the preset are two views of the same state.
+  await expect(page.getByLabel('Earliest event date')).toHaveValue(today)
+
+  await tonight.click()
+
+  await expect(page).not.toHaveURL(/[?&]from=/)
+  await expect(tonight).toHaveAttribute('aria-pressed', 'false')
+  await expect(eventHeading(page, 'Default Event A')).toBeVisible()
+})
+
+test('each preset sends its own range and only one reads as pressed', async ({ page }) => {
+  await page.goto('/events')
+  await expect(eventHeading(page, 'Default Event A')).toBeVisible()
+
+  await page.getByRole('button', { name: 'Next 7 days' }).click()
+
+  await expect(page.getByRole('button', { name: 'Next 7 days' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  )
+  await expect(page.getByRole('button', { name: 'Tonight' })).toHaveAttribute(
+    'aria-pressed',
+    'false',
+  )
+
+  // "Next 7 days" spans a week, so its bounds differ — unlike Tonight's single day.
+  const url = new URL(page.url())
+  expect(url.searchParams.get('from')).not.toBe(url.searchParams.get('to'))
+})
+
 test('bounds the date inputs so the range cannot invert or reach into the past', async ({
   page,
 }) => {
@@ -238,14 +283,18 @@ test('paginates through results, preserving no filter', async ({ page }) => {
   const errors = collectPageErrors(page)
   await page.goto('/events')
 
+  // `name` is a substring match by default, which would also catch the "Next 7 days" date
+  // preset — so the pagination control has to be pinned by its exact accessible name.
+  const nextButton = page.getByRole('button', { name: 'Next', exact: true })
+
   await expect(eventHeading(page, 'Default Event A')).toBeVisible()
   await expect(page.getByRole('button', { name: 'Previous' })).toBeDisabled()
 
-  await page.getByRole('button', { name: 'Next' }).click()
+  await nextButton.click()
 
   await expect(page).toHaveURL(/[?&]page=1\b/)
   await expect(eventHeading(page, 'Second Page Event')).toBeVisible()
   await expect(page.getByText('Page 2 of 2')).toBeVisible()
-  await expect(page.getByRole('button', { name: 'Next' })).toBeDisabled()
+  await expect(nextButton).toBeDisabled()
   expect(errors, 'unexpected uncaught exceptions').toEqual([])
 })
