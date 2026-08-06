@@ -76,6 +76,9 @@ enum class EventSource {
     /** Crack Bellmer Berlin – a RAW-Gelände microclub and dance bar mixing house and techno nights with drag shows, swing parties and live jazz. */
     CRACK_BELLMER,
 
+    /** Der Weiße Hase Berlin – a techno club in the RAW-Gelände arches on Revaler Straße, running raves and DJ nights. */
+    DER_WEISSE_HASE,
+
     /** Duncker Club Berlin – a long-running goth, wave and indie club in Prenzlauer Berg. */
     DUNCKER,
 

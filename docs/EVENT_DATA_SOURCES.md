@@ -7,8 +7,8 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 
 | Status                              | Meaning                                                                              | Count |
 |-------------------------------------|--------------------------------------------------------------------------------------|------:|
-| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    79 |
-| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |    10 |
+| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    80 |
+| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |     9 |
 | ⛔ [Blocked](#-blocked--deferred)   | Website analyzed, but no usable listings (no programme page, JS-only, or too sparse) |    87 |
 | ❓ [Unanalyzed](#-not-analyzed-yet) | No URL recorded yet — website still needs a first look                               |     0 |
 
@@ -37,6 +37,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Columbiahalle               | https://www.columbiahalle.berlin/veranstaltungen.html       | Concert Hall | Contao; one page, month headings carry the year       |
 | Cosmic Comedy Club          | https://comedyclubberlin.com/wp-json/tribe/events/v1/events | Comedy Club  | The Events Calendar REST API; cursor-paged; no prices |
 | Crack Bellmer               | https://www.crackbellmer.de/program/this-month              | Bar          | Webflow; month tabs filter one list; no prices        |
+| Der Weiße Hase              | https://derweissehase.club/events                           | Club         | Contao; invalid `<p>` nesting; RA ticket links        |
 | Duncker Club                | https://www.dunckerclub.de/                                 | Club         |                                                       |
 | Eschschloraque Rümschrümp   | https://www.eschschloraque.de/                              | Bar          | Drupal 7; front page = full nodes; RDFa datetimes     |
 | Festsaal Kreuzberg          | https://festsaal-kreuzberg.de/de                            | Concert Hall | Nuxt/Wagtail SSR; `ld+json` empty; no prices          |
@@ -98,7 +99,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Zenner                      | https://zenner.berlin/programm                              | Club         | Gatsby/Sanity page-data JSON; UTC dates; archive      |
 | Zitadelle                   | https://citadel-music-festival.de/events                    | Open Air     | Festival site; WordPress/EM; summer season only       |
 
-78 importer classes cover 79 sources: only Kantine am Berghain has no class of its own, sharing the Berghain importer outright. Three other groups share a
+79 importer classes cover 80 sources: only Kantine am Berghain has no class of its own, sharing the Berghain importer outright. Three other groups share a
 *listing and parser* while keeping one thin `@Component` per venue, so they do not reduce the count — Club der Visionäre, Sonnenraum and MS Hoppetosse; the
 three Velomax halls; and Uber Arena with the Uber Eats Music Hall.
 
@@ -122,7 +123,6 @@ count when the next batch is prioritised.
 
 | Name                             | URL                                                   | Type         | Priority | Comment                                                       |
 |----------------------------------|-------------------------------------------------------|--------------|----------|---------------------------------------------------------------|
-| Der Weiße Hase                   | https://derweissehase.club/events                     | Club         | High     | Contao; weekday + date + time + full DJ lineup per row        |
 | Kulturhaus Peter Edel            | https://www.peteredel.de/events/                      | Concert Hall | High     | 36 dated shows to May 2027; VVK/AK prices, seating, support   |
 | Insel der Jugend                 | https://www.inselberlin.de/                           | Open Air     | High     | Gatsby static-query JSON (DatoCMS); 39 upcoming, descriptions |
 | Gärten der Welt (Arena)          | https://www.gaertenderwelt.de/events/veranstaltungen/ | Open Air     | Medium   | TYPO3; 9 paginated pages, ISO date in detail URL, categories  |
