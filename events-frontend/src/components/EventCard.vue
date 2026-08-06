@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
 import type { EventSummary } from '@/api/types'
-import { formatDate, formatPrice, formatTime, todayIso } from '@/lib/format'
+import { eventLabel, formatDate, formatPrice, formatTime, todayIso } from '@/lib/format'
 
 const props = defineProps<{ event: EventSummary }>()
 
@@ -36,7 +36,19 @@ const isLive = computed(
             <span class="relative inline-flex size-2 rounded-full bg-primary" />
             <span class="sr-only">Live tonight</span>
           </span>
-          <h3 class="truncate leading-tight font-semibold">{{ event.title }}</h3>
+          <!--
+            Both lines are `truncate`d, so a long one is cut off with no way to read the rest.
+            The native `title` tooltip spells each out on hover — the same affordance the
+            calendar cells got, sharing `eventLabel` so the two can't drift. Scoped to the
+            clipped elements rather than the whole card, so hovering the card doesn't pop a
+            tooltip over information that is already fully visible.
+          -->
+          <h3
+            :title="eventLabel(event.title, event.venue?.name)"
+            class="truncate leading-tight font-semibold"
+          >
+            {{ event.title }}
+          </h3>
         </div>
         <span
           v-if="event.soldOut"
@@ -51,7 +63,11 @@ const isLive = computed(
           Free
         </span>
       </div>
-      <p v-if="event.subtitle" class="truncate text-sm text-muted-foreground">
+      <p
+        v-if="event.subtitle"
+        :title="event.subtitle"
+        class="truncate text-sm text-muted-foreground"
+      >
         {{ event.subtitle }}
       </p>
       <p class="text-sm text-muted-foreground">

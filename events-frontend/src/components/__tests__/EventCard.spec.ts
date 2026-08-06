@@ -56,6 +56,20 @@ describe('EventCard', () => {
     expect(both.text()).not.toContain('Free')
   })
 
+  it('spells the clipped title and subtitle out as tooltips', () => {
+    const wrapper = mount(EventCard, { props: { event }, global: { stubs } })
+    expect(wrapper.get('h3').attributes('title')).toBe('Tonight Show @ Lido')
+    expect(wrapper.get('p').attributes('title')).toBe('with support')
+  })
+
+  it('falls back to the bare title when the event has no venue', () => {
+    const wrapper = mount(EventCard, {
+      props: { event: { ...event, venue: undefined } },
+      global: { stubs },
+    })
+    expect(wrapper.get('h3').attributes('title')).toBe('Tonight Show')
+  })
+
   it('marks an event happening today as live', () => {
     const wrapper = mount(EventCard, {
       props: { event: { ...event, eventDate: todayIso() } },
