@@ -7,8 +7,8 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 
 | Status                              | Meaning                                                                              | Count |
 |-------------------------------------|--------------------------------------------------------------------------------------|------:|
-| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    84 |
-| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |     5 |
+| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    85 |
+| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |     4 |
 | ⛔ [Blocked](#-blocked--deferred)   | Website analyzed, but no usable listings (no programme page, JS-only, or too sparse) |    87 |
 | ❓ [Unanalyzed](#-not-analyzed-yet) | No URL recorded yet — website still needs a first look                               |     0 |
 
@@ -72,6 +72,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Mikropol                    | https://mikropol-berlin.de/                                 | Club         | Events-Manager list + detail; "verlegt in den …"      |
 | Modus Berlin                | https://modus-berlin.de/events                              | Club         | List + detail; rendered date wins over stale slug     |
 | Monarch                     | https://www.kottimonarch.de/                                | Bar          | PHP /programm.php; type + status inline in title      |
+| Monster Ronson's Ichiban Karaoke | https://www.karaokemonster.de/                         | Bar          | Webflow; ~12-day window; banded prices; closure cards |
 | MS Hoppetosse               | https://hoppetosse.berlin/                                  | Techno Club  | Shares the CdV listing; winter location only          |
 | Neue Zukunft                | https://neue-zukunft.org/                                   | Club         | Elfsight Event Calendar widget API                    |
 | OHM                         | https://ohmberlin.com/                                      | Techno Club  | Year-less dd/MM; only 1–3 nights listed at a time     |
@@ -103,7 +104,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Zenner                      | https://zenner.berlin/programm                              | Club         | Gatsby/Sanity page-data JSON; UTC dates; archive      |
 | Zitadelle                   | https://citadel-music-festival.de/events                    | Open Air     | Festival site; WordPress/EM; summer season only       |
 
-83 importer classes cover 84 sources: only Kantine am Berghain has no class of its own, sharing the Berghain importer outright. Three other groups share a
+84 importer classes cover 85 sources: only Kantine am Berghain has no class of its own, sharing the Berghain importer outright. Three other groups share a
 *listing and parser* while keeping one thin `@Component` per venue, so they do not reduce the count — Club der Visionäre, Sonnenraum and MS Hoppetosse; the
 three Velomax halls; and Uber Arena with the Uber Eats Music Hall.
 
@@ -128,15 +129,13 @@ count when the next batch is prioritised.
 | Name                             | URL                                                   | Type         | Priority | Comment                                                       |
 |----------------------------------|-------------------------------------------------------|--------------|----------|---------------------------------------------------------------|
 | Fitzroy                          | https://fitzroy-berlin.de/events/                     | Club         | Medium   | WP REST `event` + ACF — the Madame Claude / LARK codebase     |
-| Monster Ronson's Ichiban Karaoke | https://www.karaokemonster.de/events                  | Bar          | Medium   | Webflow; nightly host + time, ~12-day window, year-less dates |
 | Morphine Raum                    | http://www.morphinerecords.com/events                 | Club         | Medium   | Hand-coded; `dd.MM.yy` + title per row, detail page each      |
 | KAOS Berlin                      | https://kaosberlin.de/veranstaltungen/                | Techno Club  | Low      | The Events Calendar REST API, as Cosmic Comedy; 4 upcoming    |
 | DSTRKT Club Berlin               | https://www.dstrkt.de/                                | Club         | Low      | Wix one-pager; 2 dated events, which is the whole programme   |
 
-Two of these need a decision made once, not per event. **Fitzroy** is on its summer break: the ACF API holds a dense July programme and resumes on 12
+One of these needs a decision made once, not per event. **Fitzroy** is on its summer break: the ACF API holds a dense July programme and resumes on 12
 September, so only 2 events are upcoming today and a fixture captured now would be unrepresentative — scaffold it in September, when the listing is
-representative again. **Monster Ronson's** writes its dates as `Wed 5 Aug`, so the year comes from the weekday, as for gART.n and VOID Club; its programme is a
-nightly karaoke host rather than a booking, which the Havanna precedent already covers.
+representative again.
 
 The third such decision, **Gärten der Welt**'s, was made when it was [imported](#-imported) on 6 August 2026, and is the precedent for the next park- or
 campus-like source: the row's category decides whether it is programme at all. Its guided tours, workshops, yoga sessions and handicraft afternoons — 28 of the

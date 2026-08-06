@@ -180,6 +180,9 @@ enum class EventSource {
     /** Monarch Berlin – a bar and club overlooking Kottbusser Tor, hosting DJ nights and live sets across electronic, indie and experimental music. */
     MONARCH,
 
+    /** Monster Ronson's Ichiban Karaoke Berlin – the Friedrichshain karaoke bar with a big stage and private boxes, hosted nightly by drag and cabaret MCs. */
+    MONSTER_RONSONS,
+
     /** MS Hoppetosse Berlin – the moored Spree salon boat that is Club der Visionäre's winter location, with a club floor and an upper-deck bar. */
     MS_HOPPETOSSE,
 
