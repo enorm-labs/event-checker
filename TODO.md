@@ -111,6 +111,11 @@ scraper's own KDoc instead, so only what should actually be *repaired* is listed
   release — so both tails are stored as part of the performer and will never resolve to the plain `Current 93` / `Xmal Deutschland` imported from another
   house. Neither an en-dash split nor a blanket tail strip is safe on its own (an act may legitimately carry either), so this needs the series names
   themselves — the same curated-vocabulary question as `NON_ARTIST_NAMES` below.
+- [ ] **A venue's seating information has nowhere to go.** Kulturhaus Peter Edel badges every one of its 39 events with two facts a ticket buyer decides on —
+  whether the room is seated (`Bestuhlt` / `Teilbestuhlt` / `Unbestuhlt`) and whether a seat is guaranteed (`Freie Platzwahl` / `Keine Sitzplatzgarantie` /
+  `Mit Sitzplatzreservierung`) — and `PeterEdelOverviewPageScraper` drops both because `Event` has no field for them. It is not a Peter-Edel-only signal: Bar
+  jeder Vernunft, Admiralspalast, Theater im Delphi and the arena-scale rooms all seat some shows and not others, and the same distinction shows up in their
+  prose. Needs a decision on the shape first — a `seating` enum on `event` plus a boolean, or a single free-text column — before any scraper starts filling it.
 - [ ] **Promoter display names lose genuine acronyms.** `PromoterNormalizer.deshout` is a bare title-caser, without the `ACRONYMS` / short-initialism guards
   `ArtistNormalizer` already has, so `TV Noir` → `Tv Noir` and `Bossa FM` → `Bossa Fm`. Share one de-shout between the two normalizers. Same change should fold
   Zitadelle's `tip Berlin` / `Tip` onto one spelling via `NAME_CORRECTIONS`. Display-only — slugs are case-insensitive and unaffected — but existing rows keep

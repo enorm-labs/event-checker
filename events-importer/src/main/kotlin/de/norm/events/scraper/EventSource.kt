@@ -183,6 +183,9 @@ enum class EventSource {
     /** Panke Culture Berlin – a club, café and gallery in a Wedding backyard: club nights, live music, markets and exhibitions. */
     PANKE,
 
+    /** Kulturhaus Peter Edel Berlin – the Weißensee Bildungs- und Kulturzentrum, mixing concerts, comedy, theatre, readings and dance teas. */
+    PETER_EDEL,
+
     /** Privatclub Berlin – a club below the Markthalle near Schlesisches Tor, across soul, funk, indie, hip-hop and electronic music. */
     PRIVATCLUB,
 
