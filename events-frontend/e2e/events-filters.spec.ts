@@ -54,6 +54,8 @@ function eventsResponseFor(sp: URLSearchParams) {
   if (sp.get('excludeSoldOut') === 'true') return eventPage(['Available Only'])
   if (sp.get('free') === 'true') return eventPage(['Free Show'])
   if (sp.get('minPrice') || sp.get('maxPrice')) return eventPage(['Cheap Gig'])
+  if (sp.get('from') && sp.get('to')) return eventPage(['Gig In Range'])
+  if (sp.get('from')) return eventPage(['Gig From Date'])
 
   return Number(sp.get('page') ?? '0') >= 1
     ? eventPage(['Second Page Event'], { page: 1, totalPages: 2, totalElements: 21 })
@@ -163,6 +165,39 @@ test('filters by price range', async ({ page }) => {
   await expect(page).toHaveURL(/[?&]minPrice=10\b/)
   await expect(page).toHaveURL(/[?&]maxPrice=30\b/)
   await expect(eventHeading(page, 'Cheap Gig')).toBeVisible()
+})
+
+test('filters by a date range, applying each bound as it is picked', async ({ page }) => {
+  await page.goto('/events')
+  await expect(eventHeading(page, 'Default Event A')).toBeVisible()
+
+  // Native date inputs apply on change, so the earliest bound alone already narrows the list.
+  await page.getByLabel('Earliest event date').fill('2026-09-01')
+
+  await expect(page).toHaveURL(/[?&]from=2026-09-01\b/)
+  await expect(eventHeading(page, 'Gig From Date')).toBeVisible()
+
+  await page.getByLabel('Latest event date').fill('2026-09-30')
+
+  await expect(page).toHaveURL(/[?&]to=2026-09-30\b/)
+  await expect(eventHeading(page, 'Gig In Range')).toBeVisible()
+  await expect(eventHeading(page, 'Default Event A')).toHaveCount(0)
+})
+
+test('bounds the date inputs so the range cannot invert or reach into the past', async ({
+  page,
+}) => {
+  await page.goto('/events?from=2026-09-01&to=2026-09-30')
+  await expect(eventHeading(page, 'Gig In Range')).toBeVisible()
+
+  // `min`/`max` come from the sibling bound, so the browser enforces from <= to for us.
+  await expect(page.getByLabel('Earliest event date')).toHaveAttribute('max', '2026-09-30')
+  await expect(page.getByLabel('Latest event date')).toHaveAttribute('min', '2026-09-01')
+  // The lower bound is today: this app is about upcoming events.
+  await expect(page.getByLabel('Earliest event date')).toHaveAttribute(
+    'min',
+    new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Berlin' }).format(new Date()),
+  )
 })
 
 test('hides sold-out events when the toggle is checked', async ({ page }) => {

@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import { type LocationQueryRaw, useRoute, useRouter } from 'vue-router'
-import type { EventFilterValues } from './useEvents'
+import type { EventDateRange, EventFilterValues } from './useEvents'
 
 /**
  * Reads and writes the event filters that live in the URL query, so any view showing the filter
@@ -30,6 +30,16 @@ export function useEventFilters() {
     free: queryString('free') === 'true' || undefined,
   }))
 
+  /**
+   * The date range, returned separately from {@link filters} so only views that own their dates
+   * can opt into it. The calendar derives `from`/`to` from its visible window and must never
+   * merge these in; the events list spreads both.
+   */
+  const dateRange = computed<EventDateRange>(() => ({
+    from: queryString('from') || undefined,
+    to: queryString('to') || undefined,
+  }))
+
   function applyFilters(patch: LocationQueryRaw) {
     // Any filter change resets to the first page; empty values drop out of the URL.
     const next: LocationQueryRaw = { ...route.query, ...patch, page: undefined }
@@ -39,5 +49,5 @@ export function useEventFilters() {
     router.push({ query: next })
   }
 
-  return { queryString, filters, applyFilters }
+  return { queryString, filters, dateRange, applyFilters }
 }

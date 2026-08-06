@@ -15,10 +15,13 @@ const router = useRouter()
 
 // Filters live in the URL query so list views are shareable and survive back/forward; the
 // filter bar writes them and `useEventFilters` reads them back (see EventFilterBar.vue).
-const { queryString, filters } = useEventFilters()
+const { queryString, filters, dateRange } = useEventFilters()
 
+// The list owns its dates, so it merges the range in; the BFF defaults to today onwards when
+// both bounds are absent, which is the right empty state here.
 const params = computed<EventSearchParams>(() => ({
   ...filters.value,
+  ...dateRange.value,
   page: queryString('page') ? Number(queryString('page')) : 0,
   size: PAGE_SIZE,
 }))

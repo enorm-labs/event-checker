@@ -23,6 +23,13 @@ export interface EventSearchParams {
 }
 
 /**
+ * An inclusive event-date range, as ISO `YYYY-MM-DD` strings. Deliberately kept out of
+ * {@link EventFilterValues}: the calendar owns its own `from`/`to` (the visible window), so it
+ * must not be able to receive a range from the filter bar. Only the list view reads this.
+ */
+export type EventDateRange = Pick<EventSearchParams, 'from' | 'to'>
+
+/**
  * The criteria the shared `EventFilterBar` controls — the subset of {@link EventSearchParams}
  * that is neither a date range nor pagination. The events list and the calendar send exactly
  * these, which is why both can share one component (see `useEventFilters`).
