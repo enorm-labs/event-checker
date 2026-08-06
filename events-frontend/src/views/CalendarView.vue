@@ -35,7 +35,8 @@ async function load() {
       title: event.title ?? '',
       start: event.startTime ? `${event.eventDate}T${event.startTime}` : event.eventDate,
       url: `/events/${event.slug}`,
-      extendedProps: { slug: event.slug },
+      // `venue` backs the calendar's hover tooltip, where the clipped title is spelled out.
+      extendedProps: { slug: event.slug, venue: event.venue?.name },
     }))
     error.value = null
   } catch (e) {
