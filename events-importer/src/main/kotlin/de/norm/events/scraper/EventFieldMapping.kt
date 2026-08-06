@@ -163,6 +163,7 @@ private val TITLE_NOISE_PATTERN =
  * cleanEventTitle("Luna Simao (verschoben aus 2026)")           // "Luna Simao"
  * cleanEventTitle("Singalong -Das Mitsing-Event (ausverkauft)") // "Singalong -Das Mitsing-Event"
  * cleanEventTitle("Adventurous Juan  (DJ-Set)")                 // "Adventurous Juan (DJ-Set)"
+ * cleanEventTitle("Wer singt\u00A0dann Lieder?")                // "Wer singt dann Lieder?"
  * cleanEventTitle("The Adicts")                                 // "The Adicts"
  * ```
  */
@@ -172,8 +173,15 @@ fun cleanEventTitle(title: String): String {
     return stripped.ifBlank { collapsed }
 }
 
-/** A run of whitespace (including a line break) inside a title, collapsed to one space. */
-private val WHITESPACE_RUN = Regex("""\s+""")
+/**
+ * A run of whitespace (including a line break) inside a title, collapsed to one space.
+ *
+ * The two non-breaking spaces are listed explicitly because Java's `\s` matches ASCII whitespace
+ * only, while a CMS editor produces them without meaning to — Colosseum's "JOSH. Solo - Wer\u00A0singt
+ * dann Lieder für dich?" is one such pasted title. They render as an ordinary space, so a title
+ * that keeps them looks right while no longer matching a search for the words around them.
+ */
+private val WHITESPACE_RUN = Regex("""[\s\u00A0\u202F]+""")
 
 /**
  * Invisible formatting characters that carry no meaning in an event title: the zero-width
