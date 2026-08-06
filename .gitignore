@@ -4,3 +4,5 @@
 .playwright-mcp
 build
 temp
+# Worktrees created by `claude --worktree` (see README → Parallel work with Git worktrees)
+.claude/worktrees/

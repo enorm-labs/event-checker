@@ -232,14 +232,14 @@ subprojects sharing a root `settings.gradle.kts`, plus a standalone frontend pro
   via `owasp-suppressions.xml`. SARIF output is uploaded to GitHub Code Scanning; the HTML report is uploaded as a CI artifact.
     - **`scanProjects` is intentionally unset.** Empty means "scan every project", which is what the aggregate report wants. The plugin matches a configured
       entry against `project.path` (`:events-core`), *not* `project.name` (`events-core`) — a name list matches nothing, so every project is skipped and the
-      report reads `Dependencies Scanned: 0` while the build passes the CVSS gate trivially. That was live in this repo until 2026-08-05 and nothing failed;
-      **a green OWASP run is not evidence the scan looked at anything.** When changing this config, read `Dependencies Scanned` in the HTML report, not the
-      exit code. The healthy baseline is ~208 dependencies scanned.
+      report reads `Dependencies Scanned: 0` while the build passes the CVSS gate trivially. That was live in this repo until 2026-08-05 and nothing failed; **a
+      green OWASP run is not evidence the scan looked at anything.** When changing this config, read `Dependencies Scanned` in the HTML report, not the exit
+      code. The healthy baseline is ~208 dependencies scanned.
     - **`skipConfigurations` excludes the build-tool classpaths** (`detekt`, `detektPlugins`, the four `ktlint*` configurations, and the Kotlin
-      compiler-plugin/script ones). They carry their own, often much older, copies of Kotlin and logging libraries that no BOM override can reach and that
-      never ship. This narrows the scan deliberately — a real CVE in detekt or ktlint will not be reported here; Dependabot still watches them via the
-      submitted dependency graph. **Do not add anything to that list that ships.** Names must match exactly (the plugin does a `contains` on the configuration
-      name, with no globbing), so a renamed or newly added tool configuration silently starts being scanned again rather than erroring.
+      compiler-plugin/script ones). They carry their own, often much older, copies of Kotlin and logging libraries that no BOM override can reach and that never
+      ship. This narrows the scan deliberately — a real CVE in detekt or ktlint will not be reported here; Dependabot still watches them via the submitted
+      dependency graph. **Do not add anything to that list that ships.** Names must match exactly (the plugin does a `contains` on the configuration name, with
+      no globbing), so a renamed or newly added tool configuration silently starts being scanned again rather than erroring.
     - **Suppression entries are scoped by `packageUrl` regex, and getting the scope wrong fails open.** Two entries originally anchored on
       `org.jetbrains.(kotlin|kotlinx)/` and missed IntelliJ's repackaged `org.jetbrains.intellij.deps.kotlinx` artifacts, which alone failed the enforced scan.
       Check a new pattern against the real package URLs in the HTML report before trusting it.
@@ -287,6 +287,22 @@ claim). Neither `bootRun` nor this script hot-reloads Kotlin — restart (`down`
 When launching these from an agent shell, redirect the command's own output (`> file 2>&1 < /dev/null`) — the detached `bootRun`/`vite` process inherits the
 tool's stdout pipe and keeps the call hanging long after the script itself has exited.
 
+**Working in a git worktree** (a session started with `claude --worktree`, or any `git worktree add` checkout — see
+[README → Parallel work with Git worktrees](./README.md#parallel-work-with-git-worktrees)). Files and Gradle output are isolated; the local runtime is not.
+
+- **Export `COMPOSE_PROJECT_NAME=event-checker` before any `bootRun` or `scripts/dev-env.sh up` in a worktree.** Docker Compose names the project after the
+  directory containing the `compose.yaml` it is given, and both paths pass the worktree's copy — so without the override the worktree starts a *second*
+  Postgres on a new empty volume, which collides with the main checkout on host port `56298` and makes `diff-snapshot` report every existing source as `GONE`.
+  With it, the running `event-checker-postgres-1` container and its seeded data are reused.
+- **One stack at a time.** Ports `8081` / `8080` / `5173` are fixed in `application.yaml` and `dev-env.sh`; `IMPORTER_HOST` / `BFF_HOST` only change the URL the
+  script polls, not the port the JVM binds. Run `scripts/dev-env.sh down` in the other checkout before `up` here, and remember `bootRun` does not hot-reload —
+  whichever worktree started the JVM is the code under test.
+- **Never trigger an import while another worktree is importing.** `snapshot` / `diff-snapshot` are per-source counts over the whole shared database, so the
+  other session's events land in this session's regression diff.
+- **Expect conflicts in the files every importer PR touches**: the count table and moved row in `docs/EVENT_DATA_SOURCES.md` (recount after rebasing rather than
+  trusting either side), the alphabetical header list and venue block in `http/importer/dev-seed.http` (a "keep both" resolution silently fuses two blocks —
+  rebuild by hand), the new `EventSource.kt` enum entry, and the `TODO.md` bugs list. Rebase onto `main`; never merge `main` in.
+
 The **configuration cache** is enabled (`org.gradle.configuration-cache=true` in `gradle.properties`), so repeat builds skip the configuration phase. Every task
 above benefits except `dependencyCheckAggregate` — the OWASP plugin's `Aggregate` task reaches for `project.rootProject` / `project.subprojects` at execution
 time, which the configuration cache forbids. That task still runs correctly without the flag, but the cache entry is discarded on every invocation and the build
@@ -312,20 +328,20 @@ Java version is managed via SDKMAN (`.sdkmanrc` pins `java=25.0.2-tem`; run `sdk
 - **Kotlin DSL** for all Gradle build scripts (`build.gradle.kts`).
 - **Kotlin 2.4.10** with **Spring Boot 4.1.0**; plugin versions pinned in `settings.gradle.kts` `pluginManagement`.
 - **ktlint 1.8.0** enforced project-wide via root `subprojects` block; do not override per-module.
-- **detekt 2.0.0-alpha.6** (`dev.detekt` plugin, migrated from `io.gitlab.arturbosch.detekt`) applied project-wide. The 2.0 line is still pre-release; the
-  alpha is tracked deliberately because it is what supports current Kotlin (see the compatibility-table link in `settings.gradle.kts`). Builds upon default
-  config with overrides in root `detekt.yml` (currently only `MaxLineLength: 160`). Run `./gradlew detekt` to analyze all modules.
+- **detekt 2.0.0-alpha.6** (`dev.detekt` plugin, migrated from `io.gitlab.arturbosch.detekt`) applied project-wide. The 2.0 line is still pre-release; the alpha
+  is tracked deliberately because it is what supports current Kotlin (see the compatibility-table link in `settings.gradle.kts`). Builds upon default config
+  with overrides in root `detekt.yml` (currently only `MaxLineLength: 160`). Run `./gradlew detekt` to analyze all modules.
 - **Max line length**: 160 characters (enforced by both `.editorconfig` and `detekt.yml`).
 - Centralized library versions in **`gradle.properties`** (`java.version`, `jsoup.version`, `kotest.version`,
   `kotlin-logging.version`, `mockk.version`, `mockwebserver.version`, `slugify.version`, `spring-modulith.version`,
   `springdoc.version`), read in the module build scripts via `property("…")`; plugin versions in `settings.gradle.kts`
   `pluginManagement`. They live in `gradle.properties` rather than root `extra[...]` because Gradle 10 removes the implicit lookup of parent-project properties
   that the `extra[...]` form depended on.
-    - **`gradle.properties` also holds a second, different kind of entry** — the "Spring Boot BOM overrides (CVE remediation)" block
-      (`netty.version`, `postgresql.version`, `log4j2.version`, `jackson-2-bom.version`, `jackson-bom.version`) plus `scram.version`. These are **not** ordinary
-      project versions and must not be bumped on sight. Each overrides a version the Spring Boot BOM would otherwise manage, and exists only because the BOM's
-      version carries a known CVE. `io.spring.dependency-management` resolves BOM properties from Gradle project properties, so naming the BOM's own property
-      here is enough to reach every module that applies the Boot plugin.
+    - **`gradle.properties` also holds a second, different kind of entry** — the "Spring Boot BOM overrides (CVE remediation)" block (`netty.version`,
+      `postgresql.version`, `log4j2.version`, `jackson-2-bom.version`, `jackson-bom.version`) plus `scram.version`. These are **not** ordinary project versions
+      and must not be bumped on sight. Each overrides a version the Spring Boot BOM would otherwise manage, and exists only because the BOM's version carries a
+      known CVE. `io.spring.dependency-management` resolves BOM properties from Gradle project properties, so naming the BOM's own property here is enough to
+      reach every module that applies the Boot plugin.
     - **They are temporary by design: delete each one once a Spring Boot release ships an equal or newer version.** An override kept past its purpose pins the
       project *behind* the BOM, so later Boot upgrades stop raising that dependency and the staleness is invisible. `/update-dependencies` checks this on every
       run.
@@ -371,9 +387,9 @@ Java version is managed via SDKMAN (`.sdkmanrc` pins `java=25.0.2-tem`; run `sdk
   all domain tables via `@BeforeEach` so each test starts with a clean database. Extend this instead of repeating boilerplate.
 - **Kotest assertions**: The importer uses `io.kotest:kotest-assertions-core` for expressive test matchers (e.g. `shouldBe`, `shouldContain`).
 - **MockK**: The importer uses `io.mockk:mockk` for mocking in Kotlin tests (preferred over Mockito). Used for unit-testing services with injected dependencies.
-- **MockWebServer**: `ApiClientTest` and `HtmlFetcherTest` drive the real `WebClient` pipeline against a local server rather than mocking HTTP. Use the
-  **`com.squareup.okhttp3:mockwebserver3`** artifact (package `mockwebserver3`), *not* the legacy `com.squareup.okhttp3:mockwebserver` — the latter still ships
-  at 5.x purely as a deprecation bridge whose `MockWebServer` extends JUnit 4's `ExternalResource`, which would put `junit:junit` back on the classpath of this
+- **MockWebServer**: `ApiClientTest` and `HtmlFetcherTest` drive the real `WebClient` pipeline against a local server rather than mocking HTTP. Use the **
+  `com.squareup.okhttp3:mockwebserver3`** artifact (package `mockwebserver3`), *not* the legacy `com.squareup.okhttp3:mockwebserver` — the latter still ships at
+  5.x purely as a deprecation bridge whose `MockWebServer` extends JUnit 4's `ExternalResource`, which would put `junit:junit` back on the classpath of this
   JUnit 5-only project. API notes: `MockResponse` is immutable (`MockResponse.Builder().code(…).body(…).build()`), the server is closed with `close()` rather
   than `shutdown()`, and the recorded request line is `RecordedRequest.target` (the okhttp 4 `path` property is gone; `target` includes the query string, so it
   is a drop-in replacement).
@@ -395,8 +411,8 @@ Java version is managed via SDKMAN (`.sdkmanrc` pins `java=25.0.2-tem`; run `sdk
     - `dependency-review.yml` — Runs on PRs to diff dependency changes between base and head. Flags newly introduced vulnerabilities (high+ severity) and
       license issues using the GitHub Advisory Database. Complements OWASP Dependency-Check with fast, PR-scoped feedback.
     - `dependency-submission.yml` — Submits Gradle dependency graph to GitHub on `main` push (for Dependabot alerts/security).
-    - `dependency-check-scheduled.yml` — The authoritative nightly OWASP Dependency-Check on `main`. Owns the shared NVD cache that the informational PR scan
-      in `build-backend.yml` restores.
+    - `dependency-check-scheduled.yml` — The authoritative nightly OWASP Dependency-Check on `main`. Owns the shared NVD cache that the informational PR scan in
+      `build-backend.yml` restores.
     - `label-pr.yml` — Derives labels from the Conventional Commits PR title (`feat(scraper): …` → `feat` + `importer`, `fix(api)!: …` → `fix` +
       `breaking-change`) via `actions/github-script`. Creates any missing label on demand and re-syncs when the title is edited. Uses `pull_request_target` so
       fork PRs get a writable token; safe because it never checks out or runs PR code.
