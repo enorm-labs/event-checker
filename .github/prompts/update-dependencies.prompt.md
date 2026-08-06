@@ -195,6 +195,26 @@ npm run lint
 npm run test:unit
 ```
 
+## Step 11: Refresh the README Version Badges
+
+The badge row at the top of [`README.md`](../../README.md) hardcodes versions that this run may have changed. Badges are the first thing a reader sees, and
+nothing in the build fails when they go stale — so update them here, in the same commit as the bump that made them wrong.
+
+| Badge         | Source of truth                                                         | Update when                                   |
+|---------------|-------------------------------------------------------------------------|-----------------------------------------------|
+| `Kotlin`      | `kotlin("jvm") version "..."` in `settings.gradle.kts`                  | always, to the exact version                  |
+| `Spring Boot` | `id("org.springframework.boot") version "..."` in `settings.gradle.kts` | always, to the exact version                  |
+| `Java`        | `java.version` in `gradle.properties`                                   | major only — the badge carries no minor/patch |
+| `Vue.js`      | `"vue"` in `events-frontend/package.json`                               | major only — the badge reads `3`, not `3.5.41` |
+
+Only the version segment of the shields.io URL changes; leave the colour, logo and link target alone. Note that `%20` encodes the space in `Spring%20Boot`, so
+edit the number, not the surrounding path. Check every badge even if you think the bump was unrelated — a Spring Boot bump can drag Kotlin along via
+compatibility, and a frontend-only run can still cross a Vue major.
+
+The README's "Update the Gradlew Wrapper" section also carries a version — the `--gradle-version <x>` example. That one is illustrative rather than a claim, but
+an example older than the wrapper itself reads as neglect, so match it to `distributionUrl` in `gradle/wrapper/gradle-wrapper.properties` whenever you notice a
+gap. This prompt does not bump the wrapper itself; that is a separate manual step.
+
 ## Output Summary
 
 After completing the update, provide a summary table:
@@ -206,6 +226,7 @@ After completing the update, provide a summary table:
 
 Also note:
 
+- Which **README badges** were refreshed, and which were already correct.
 - Any dependencies that were **skipped** because only pre-release versions were available.
 - Any **major version bumps** that were applied, with a brief note on breaking changes (if any).
 - Any dependencies already at their **latest stable version** (no update needed).

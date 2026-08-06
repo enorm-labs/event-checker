@@ -4,8 +4,8 @@
 [![Build & Test Frontend](https://github.com/enorm-labs/event-checker/actions/workflows/build-frontend.yml/badge.svg)](https://github.com/enorm-labs/event-checker/actions/workflows/build-frontend.yml)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE)
 [![Status](https://img.shields.io/badge/Status-In%20Development-orange.svg)](#project-status)
-[![Kotlin](https://img.shields.io/badge/Kotlin-2.3.21-7F52FF.svg?logo=kotlin&logoColor=white)](https://kotlinlang.org)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.0.6-6DB33F.svg?logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
+[![Kotlin](https://img.shields.io/badge/Kotlin-2.4.10-7F52FF.svg?logo=kotlin&logoColor=white)](https://kotlinlang.org)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1.0-6DB33F.svg?logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
 [![Java](https://img.shields.io/badge/Java-25-ED8B00.svg?logo=openjdk&logoColor=white)](https://openjdk.org)
 [![Vue.js](https://img.shields.io/badge/Vue.js-3-4FC08D.svg?logo=vuedotjs&logoColor=white)](https://vuejs.org)
 
@@ -340,7 +340,7 @@ Docs: https://github.com/ben-manes/gradle-versions-plugin
 ./gradlew wrapper --gradle-version latest
 
 # The following command upgrades the Wrapper to a specific version:
-./gradlew wrapper --gradle-version 9.5.0
+./gradlew wrapper --gradle-version 9.6.1
 ```
 
 Docs: https://docs.gradle.org/current/userguide/gradle_wrapper.html
