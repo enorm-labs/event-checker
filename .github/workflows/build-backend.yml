@@ -15,6 +15,12 @@ on:
       - 'events-frontend/**'
       - '*.md'
       - 'docs/**'
+  # Manual trigger, for when the automatic ones cannot be relied on: during the 2026-08-06 Actions
+  # outage GitHub dropped ~85% of webhooks, so four PRs merged with no run ever created — and
+  # `gh run rerun` is no help when there is no run to re-run. Ignores the path filters above, so it
+  # also serves "build this ref anyway". Pick the branch to run it on from the Actions tab, or
+  # `gh workflow run build-backend.yml --ref <branch>`.
+  workflow_dispatch:
 
 permissions:
   contents: read
