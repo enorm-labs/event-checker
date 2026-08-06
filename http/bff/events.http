@@ -80,6 +80,10 @@ Accept: application/json
 GET {{bff-host}}/events/calendar?from=2026-07-15&to=2026-06-19
 Accept: application/json
 
+### Calendar — same optional filters as the search endpoint
+GET {{bff-host}}/events/calendar?from=2026-06-19&to=2026-07-15&district=friedrichshain-kreuzberg&genre=punk&maxPrice=20&excludeSoldOut=true
+Accept: application/json
+
 ### Get event by slug (uses the slug captured from the list request above)
 GET {{bff-host}}/events/{{event_slug}}
 Accept: application/json

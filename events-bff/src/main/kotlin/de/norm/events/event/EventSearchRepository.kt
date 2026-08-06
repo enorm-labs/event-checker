@@ -81,6 +81,24 @@ class EventSearchRepository(
         return EventIdPage(ids, total)
     }
 
+    /**
+     * Every matching event ID in default chronological order, unpaged — backs the calendar view,
+     * which renders a whole visible range at once rather than a page of it. Safe to leave unpaged
+     * because the caller has already bounded the range (see `EventService.MAX_CALENDAR_DAYS`).
+     */
+    suspend fun searchAll(filter: EventFilter): List<Long> {
+        val params = mutableMapOf<String, Any>()
+        val where = buildWhereClause(filter, params)
+
+        return databaseClient
+            .sql("SELECT e.id FROM $SCHEMA.event e $where $DEFAULT_ORDER")
+            .bindAll(params)
+            .map { row: Readable -> row.get(0, Long::class.javaObjectType)!! }
+            .all()
+            .collectList()
+            .awaitSingle()
+    }
+
     /** Assembles the `WHERE` clause for the present filters, registering bound values in [params]. */
     private fun buildWhereClause(
         filter: EventFilter,

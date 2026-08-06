@@ -13,6 +13,11 @@ import { expect, type Page, type Route, test } from '@playwright/test'
  * click and navigates via vue-router instead. Toolbar controls are plain buttons:
  * prev/next/today (aria-label) and month/week/list (text).
  *
+ * The page also carries the shared filter bar (see events-filters.spec.ts for its full
+ * behaviour on the list page); here we only assert that a filter reaches the calendar
+ * feed and survives range navigation, since the calendar refetches on two independent
+ * triggers — the visible window and the URL query.
+ *
  * The feed matcher (`/events/calendar?…`) and the event-detail matcher
  * (`/events/calendar-gig`) are deliberately non-overlapping so they don't collide.
  */
@@ -42,14 +47,36 @@ function collectCalendarFroms(page: Page): string[] {
   return froms
 }
 
+/** The native <select> that contains the given placeholder option. */
+function selectWithOption(page: Page, optionName: string) {
+  return page.locator('select', { has: page.getByRole('option', { name: optionName }) })
+}
+
 test.beforeEach(async ({ page }) => {
+  // Populate the filter bar's venue dropdown so its options can be selected.
+  await page.route(/\/api\/venues/, (route) =>
+    json(route, {
+      content: [
+        { slug: 'lido', name: 'Lido' },
+        { slug: 'berghain', name: 'Berghain' },
+      ],
+      page: 0,
+      size: 500,
+      totalElements: 2,
+      totalPages: 1,
+    }),
+  )
+  await page.route(/\/api\/genres/, (route) => json(route, [{ slug: 'techno', name: 'Techno' }]))
+
   // Place a single event on the first visible day of whatever range is requested, so it
-  // renders in every view (month/week/list) without depending on the current date.
+  // renders in every view (month/week/list) without depending on the current date. The
+  // title is keyed off the venue filter, so a rendered event proves which query was sent.
   await page.route(calendarFeed, (route) => {
-    const from = new URL(route.request().url()).searchParams.get('from') ?? '2026-07-01'
-    return json(route, [
-      { slug: 'calendar-gig', title: 'Calendar Gig', eventDate: from, startTime: '20:00' },
-    ])
+    const query = new URL(route.request().url()).searchParams
+    const from = query.get('from') ?? '2026-07-01'
+    const [slug, title] =
+      query.get('venue') === 'lido' ? ['lido-gig', 'Lido Gig'] : ['calendar-gig', 'Calendar Gig']
+    return json(route, [{ slug, title, eventDate: from, startTime: '20:00' }])
   })
 })
 
@@ -98,6 +125,34 @@ test('refetches when switching the calendar view', async ({ page }) => {
   await page.getByRole('tab', { name: 'List view' }).click()
 
   await expect.poll(() => froms.length).toBeGreaterThan(initialCount)
+})
+
+test('refetches the visible range with a filter from the shared filter bar', async ({ page }) => {
+  const errors = collectPageErrors(page)
+  await page.goto('/calendar')
+  await expect(page.getByRole('link', { name: /Calendar Gig/ })).toBeVisible()
+
+  await selectWithOption(page, 'All venues').selectOption('lido')
+
+  await expect(page).toHaveURL(/[?&]venue=lido\b/)
+  await expect(page.getByRole('link', { name: /Lido Gig/ })).toBeVisible()
+  await expect(page.getByRole('link', { name: /Calendar Gig/ })).toHaveCount(0)
+  expect(errors, 'unexpected uncaught exceptions').toEqual([])
+})
+
+test('keeps the active filter when navigating to another month', async ({ page }) => {
+  const froms = collectCalendarFroms(page)
+  // Deep-linking a filter proves the bar reads its state back out of the URL.
+  await page.goto('/calendar?venue=lido')
+  await expect(page.getByRole('link', { name: /Lido Gig/ })).toBeVisible()
+  await expect(selectWithOption(page, 'All venues')).toHaveValue('lido')
+
+  const initialCount = froms.length
+  await page.getByRole('button', { name: 'next' }).click()
+
+  await expect.poll(() => froms.length).toBeGreaterThan(initialCount)
+  await expect(page).toHaveURL(/[?&]venue=lido\b/)
+  await expect(page.getByRole('link', { name: /Lido Gig/ })).toBeVisible()
 })
 
 test('shows an error state when the calendar feed fails', async ({ page }) => {

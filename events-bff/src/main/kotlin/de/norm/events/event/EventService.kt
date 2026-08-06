@@ -57,14 +57,18 @@ class EventService(
     suspend fun today(): List<EventSummaryResponse> = summariesFor(eventRepository.findByEventDateOrderByStartTime(LocalDate.now()).toList())
 
     /**
-     * Events within an inclusive date range, for the calendar view.
+     * Events within an inclusive date range, for the calendar view. [filter] carries the same
+     * optional criteria as [search] — the calendar is the search endpoint's other rendering —
+     * and its own date range is overridden by [from]/[to], which the view derives from the
+     * visible window.
      *
      * @throws ResponseStatusException 400 if the range is inverted or exceeds [MAX_CALENDAR_DAYS].
      */
     @Transactional(readOnly = true)
     suspend fun calendar(
         from: LocalDate,
-        to: LocalDate
+        to: LocalDate,
+        filter: EventFilter = EventFilter()
     ): List<EventSummaryResponse> {
         if (to.isBefore(from)) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "'to' must not be before 'from'")
@@ -72,7 +76,8 @@ class EventService(
         if (from.plusDays(MAX_CALENDAR_DAYS) <= to) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Date range must not exceed $MAX_CALENDAR_DAYS days")
         }
-        return summariesFor(eventRepository.findByEventDateBetweenOrderByEventDateAscStartTimeAsc(from, to).toList())
+        val ids = eventSearchRepository.searchAll(filter.copy(from = from, to = to))
+        return summariesFor(hydrateOrdered(ids))
     }
 
     /**

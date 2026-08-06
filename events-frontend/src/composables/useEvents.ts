@@ -22,6 +22,24 @@ export interface EventSearchParams {
   sort?: string[]
 }
 
+/**
+ * The criteria the shared `EventFilterBar` controls — the subset of {@link EventSearchParams}
+ * that is neither a date range nor pagination. The events list and the calendar send exactly
+ * these, which is why both can share one component (see `useEventFilters`).
+ */
+export type EventFilterValues = Pick<
+  EventSearchParams,
+  | 'q'
+  | 'eventType'
+  | 'venue'
+  | 'district'
+  | 'genre'
+  | 'minPrice'
+  | 'maxPrice'
+  | 'excludeSoldOut'
+  | 'free'
+>
+
 /** Today's events for the Home "Tonight" section. */
 export function useTodayEvents() {
   return useAsync<EventSummary[]>(() => unwrap(api.GET('/events/today')), "tonight's events")
@@ -37,10 +55,15 @@ export function useUpcomingEvents(from: string, size = 12) {
 
 /**
  * Fetches events within an inclusive date range for the calendar. The BFF caps the range at
- * 92 days; standard month/week views stay well within that.
+ * 92 days; standard month/week views stay well within that. `filters` accepts the same criteria
+ * as the search endpoint, so the calendar and the list narrow their results identically.
  */
-export function fetchCalendarEvents(from: string, to: string): Promise<EventSummary[]> {
-  return unwrap(api.GET('/events/calendar', { params: { query: { from, to } } }))
+export function fetchCalendarEvents(
+  from: string,
+  to: string,
+  filters: EventFilterValues = {},
+): Promise<EventSummary[]> {
+  return unwrap(api.GET('/events/calendar', { params: { query: { ...filters, from, to } } }))
 }
 
 /**
