@@ -110,7 +110,10 @@ scraper's own KDoc instead, so only what should actually be *repaired* is listed
   date, but `splitHeadlinerTitle` cuts only on `/`, `+` and conjunctions, and `stripArtistSuffix` recognises a ` - ` tail only when it names a tour, a year or a
   release — so both tails are stored as part of the performer and will never resolve to the plain `Current 93` / `Xmal Deutschland` imported from another
   house. Neither an en-dash split nor a blanket tail strip is safe on its own (an act may legitimately carry either), so this needs the series names
-  themselves — the same curated-vocabulary question as `NON_ARTIST_NAMES` below.
+  themselves — the same curated-vocabulary question as `NON_ARTIST_NAMES` below. Morphine Raum bills its whole programme this way and shows the shape at its
+  worst: `Raphael Rogiński – Qırım` and `Alister Spence – Within Without` fuse the album onto the act (3 of 11 events), and where the tail is a *member list*
+  the conjunction split then fires inside it — `PICI - Clémence Manachère & Polina Pohozha` becomes `Pici - Clémence Manachère` plus `Polina Pohozha`, so the
+  first artist row is neither the duo nor either member.
 - [ ] **A venue's seating information has nowhere to go.** Kulturhaus Peter Edel badges every one of its 39 events with two facts a ticket buyer decides on —
   whether the room is seated (`Bestuhlt` / `Teilbestuhlt` / `Unbestuhlt`) and whether a seat is guaranteed (`Freie Platzwahl` / `Keine Sitzplatzgarantie` /
   `Mit Sitzplatzreservierung`) — and `PeterEdelOverviewPageScraper` drops both because `Event` has no field for them. It is not a Peter-Edel-only signal: Bar

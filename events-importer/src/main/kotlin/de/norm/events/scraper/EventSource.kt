@@ -183,6 +183,9 @@ enum class EventSource {
     /** Monster Ronson's Ichiban Karaoke Berlin – the Friedrichshain karaoke bar with a big stage and private boxes, hosted nightly by drag and cabaret MCs. */
     MONSTER_RONSONS,
 
+    /** Morphine Raum Berlin – the Kreuzberg backyard room of the Morphine Records label, staging experimental, improvised and non-Western concerts. */
+    MORPHINE,
+
     /** MS Hoppetosse Berlin – the moored Spree salon boat that is Club der Visionäre's winter location, with a club floor and an upper-deck bar. */
     MS_HOPPETOSSE,
 

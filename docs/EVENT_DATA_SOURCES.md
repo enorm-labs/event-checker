@@ -7,8 +7,8 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 
 | Status                              | Meaning                                                                              | Count |
 |-------------------------------------|--------------------------------------------------------------------------------------|------:|
-| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    85 |
-| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |     4 |
+| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    86 |
+| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |     3 |
 | ⛔ [Blocked](#-blocked--deferred)   | Website analyzed, but no usable listings (no programme page, JS-only, or too sparse) |    87 |
 | ❓ [Unanalyzed](#-not-analyzed-yet) | No URL recorded yet — website still needs a first look                               |     0 |
 
@@ -73,6 +73,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Modus Berlin                | https://modus-berlin.de/events                              | Club         | List + detail; rendered date wins over stale slug     |
 | Monarch                     | https://www.kottimonarch.de/                                | Bar          | PHP /programm.php; type + status inline in title      |
 | Monster Ronson's Ichiban Karaoke | https://www.karaokemonster.de/                         | Bar          | Webflow; ~12-day window; banded prices; closure cards |
+| Morphine Raum               | http://www.morphinerecords.com/events                       | Club         | Hand-coded Kirby; ARCHIVE row skipped; price ranges   |
 | MS Hoppetosse               | https://hoppetosse.berlin/                                  | Techno Club  | Shares the CdV listing; winter location only          |
 | Neue Zukunft                | https://neue-zukunft.org/                                   | Club         | Elfsight Event Calendar widget API                    |
 | OHM                         | https://ohmberlin.com/                                      | Techno Club  | Year-less dd/MM; only 1–3 nights listed at a time     |
@@ -104,7 +105,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Zenner                      | https://zenner.berlin/programm                              | Club         | Gatsby/Sanity page-data JSON; UTC dates; archive      |
 | Zitadelle                   | https://citadel-music-festival.de/events                    | Open Air     | Festival site; WordPress/EM; summer season only       |
 
-84 importer classes cover 85 sources: only Kantine am Berghain has no class of its own, sharing the Berghain importer outright. Three other groups share a
+85 importer classes cover 86 sources: only Kantine am Berghain has no class of its own, sharing the Berghain importer outright. Three other groups share a
 *listing and parser* while keeping one thin `@Component` per venue, so they do not reduce the count — Club der Visionäre, Sonnenraum and MS Hoppetosse; the
 three Velomax halls; and Uber Arena with the Uber Eats Music Hall.
 
@@ -129,7 +130,6 @@ count when the next batch is prioritised.
 | Name                             | URL                                                   | Type         | Priority | Comment                                                       |
 |----------------------------------|-------------------------------------------------------|--------------|----------|---------------------------------------------------------------|
 | Fitzroy                          | https://fitzroy-berlin.de/events/                     | Club         | Medium   | WP REST `event` + ACF — the Madame Claude / LARK codebase     |
-| Morphine Raum                    | http://www.morphinerecords.com/events                 | Club         | Medium   | Hand-coded; `dd.MM.yy` + title per row, detail page each      |
 | KAOS Berlin                      | https://kaosberlin.de/veranstaltungen/                | Techno Club  | Low      | The Events Calendar REST API, as Cosmic Comedy; 4 upcoming    |
 | DSTRKT Club Berlin               | https://www.dstrkt.de/                                | Club         | Low      | Wix one-pager; 2 dated events, which is the whole programme   |
 
