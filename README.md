@@ -191,6 +191,18 @@ claude
 
 `.claude/worktrees/` is gitignored, so Claude-created worktrees never show up as untracked files in the main checkout.
 
+IntelliJ can do the same from the UI ([JetBrains docs](https://www.jetbrains.com/help/idea/use-git-worktrees.html)):
+
+* **Create** — Git tool window (<kbd>⌘9</kbd>) → **Worktrees** → **New Worktree**, or main menu **Git | New Worktree**. Pick the source branch (`origin/main`),
+  a project name and a location *outside* this repository, e.g. `../event-checker-tresor`. The worktree opens as its own project window. The same branch cannot
+  be checked out in two worktrees, so give each one a new branch.
+* **Switch** — double-click a worktree in the same **Worktrees** tab; or right-click a branch in the **Log** tab and choose **Open Worktree**.
+* **Remove** — select it in **Worktrees** and click **Delete** (not possible for the main or the currently open worktree, and commit first). If you deleted the
+  directory by hand, the entry shows as *Prunable* — **Prune** clears all of them.
+
+The usual caveat about `.idea/workspace.xml` making IntelliJ treat every worktree as one project does not apply here: all of `.idea` is gitignored. Each
+worktree window therefore needs its own SDK and run configurations — see the next two steps.
+
 #### 2. Set the worktree up
 
 A worktree checks out tracked files only, so each one needs its own environment:
