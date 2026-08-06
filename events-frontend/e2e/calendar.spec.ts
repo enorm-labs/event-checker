@@ -10,8 +10,10 @@ import { expect, type Page, type Route, test } from '@playwright/test'
  * clock (FullCalendar opens on the real "today").
  *
  * FullCalendar renders events that carry a URL as <a> links; the view intercepts the
- * click and navigates via vue-router instead. Toolbar controls are plain buttons:
- * prev/next/today (aria-label) and month/week/list (text).
+ * click and navigates via vue-router instead, and `eventDidMount` puts the full
+ * "<title> @ <venue>" label on the link's native `title` attribute (the cell clips the
+ * visible text). Toolbar controls are plain buttons: prev/next/today (aria-label) and
+ * month/week/list (text).
  *
  * The page also carries the shared filter bar (see events-filters.spec.ts for its full
  * behaviour on the list page); here we only assert that a filter reaches the calendar
@@ -76,7 +78,9 @@ test.beforeEach(async ({ page }) => {
     const from = query.get('from') ?? '2026-07-01'
     const [slug, title] =
       query.get('venue') === 'lido' ? ['lido-gig', 'Lido Gig'] : ['calendar-gig', 'Calendar Gig']
-    return json(route, [{ slug, title, eventDate: from, startTime: '20:00' }])
+    return json(route, [
+      { slug, title, eventDate: from, startTime: '20:00', venue: { slug: 'lido', name: 'Lido' } },
+    ])
   })
 })
 
@@ -125,6 +129,30 @@ test('refetches when switching the calendar view', async ({ page }) => {
   await page.getByRole('tab', { name: 'List view' }).click()
 
   await expect.poll(() => froms.length).toBeGreaterThan(initialCount)
+})
+
+test('spells the clipped title out as a "<title> @ <venue>" tooltip', async ({ page }) => {
+  await page.goto('/calendar')
+
+  // The cell text is clipped by CSS; the native `title` attribute carries the full label.
+  await expect(page.getByRole('link', { name: /Calendar Gig/ })).toHaveAttribute(
+    'title',
+    'Calendar Gig @ Lido',
+  )
+})
+
+test('falls back to the bare title when the event has no venue', async ({ page }) => {
+  await page.route(calendarFeed, (route) => {
+    const from = new URL(route.request().url()).searchParams.get('from') ?? '2026-07-01'
+    return json(route, [{ slug: 'venueless-gig', title: 'Venueless Gig', eventDate: from }])
+  })
+
+  await page.goto('/calendar')
+
+  await expect(page.getByRole('link', { name: /Venueless Gig/ })).toHaveAttribute(
+    'title',
+    'Venueless Gig',
+  )
 })
 
 test('refetches the visible range with a filter from the shared filter bar', async ({ page }) => {

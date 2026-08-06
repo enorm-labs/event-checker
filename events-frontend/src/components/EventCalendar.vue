@@ -1,5 +1,12 @@
 <script lang="ts" setup>
-import type { CalendarOptions, DatesSetInfo, EventClickInfo, EventInput } from '@fullcalendar/vue3'
+import type {
+  CalendarOptions,
+  DatesSetInfo,
+  EventClickInfo,
+  EventDisplayInfo,
+  EventInput,
+  MountInfo,
+} from '@fullcalendar/vue3'
 import { computed } from 'vue'
 import FullCalendar from '@fullcalendar/vue3'
 // v7 ships plugins as subpaths of the framework package; the standalone
@@ -53,6 +60,18 @@ function handleEventClick(arg: EventClickInfo) {
   if (slug) emit('eventClick', slug)
 }
 
+/**
+ * A month cell is far narrower than most event titles, so the visible text is clipped. Expose
+ * the full label — "<title> @ <venue>" — as the element's native `title` tooltip, which is
+ * what FullCalendar recommends for this: no extra dependency, and no floating element to fight
+ * the cells' clipping. Venue comes from `extendedProps` and is optional, so the tooltip
+ * degrades to the bare title rather than rendering a dangling "@".
+ */
+function handleEventDidMount(arg: MountInfo<EventDisplayInfo>) {
+  const venue = arg.event.extendedProps.venue as string | undefined
+  arg.el.title = venue ? `${arg.event.title} @ ${venue}` : arg.event.title
+}
+
 // FullCalendar is encapsulated here so the rest of the app sees a single, on-theme
 // component (see ADR-011). The CSS-variable bridge to our shadcn tokens lives in <style> below.
 const options = computed<CalendarOptions>(() => ({
@@ -77,6 +96,7 @@ const options = computed<CalendarOptions>(() => ({
   events: props.events,
   datesSet: handleDatesSet,
   eventClick: handleEventClick,
+  eventDidMount: handleEventDidMount,
 }))
 </script>
 
