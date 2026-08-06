@@ -31,6 +31,17 @@ export function formatPrice(amount?: number | null, currency?: string | null): s
   }).format(amount)
 }
 
+/**
+ * The full one-line label for an event — `"<title> @ <venue>"`. Used as the hover tooltip
+ * wherever the visible title is clipped (calendar cells, event cards), so those surfaces read
+ * the same. Falls back to the bare title when the venue is unknown, rather than leaving a
+ * dangling "@".
+ */
+export function eventLabel(title?: string | null, venueName?: string | null): string {
+  if (!title) return venueName ?? ''
+  return venueName ? `${title} @ ${venueName}` : title
+}
+
 /** Today's date in Berlin as an ISO date string (`YYYY-MM-DD`), for default date filters. */
 export function todayIso(): string {
   return new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Berlin' }).format(new Date())

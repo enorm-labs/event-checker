@@ -1,6 +1,24 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { todayIso, tomorrowIso } from '@/lib/format'
+import { eventLabel, todayIso, tomorrowIso } from '@/lib/format'
+
+describe('eventLabel', () => {
+  it('joins the title and venue with an @', () => {
+    expect(eventLabel('The Adicts', 'Lido')).toBe('The Adicts @ Lido')
+  })
+
+  it('omits the @ when the venue is missing, rather than dangling it', () => {
+    expect(eventLabel('The Adicts', undefined)).toBe('The Adicts')
+    expect(eventLabel('The Adicts', null)).toBe('The Adicts')
+    expect(eventLabel('The Adicts', '')).toBe('The Adicts')
+  })
+
+  it('degrades to the venue alone when the title is missing, never a leading @', () => {
+    expect(eventLabel(undefined, 'Lido')).toBe('Lido')
+    expect(eventLabel('', 'Lido')).toBe('Lido')
+    expect(eventLabel(undefined, undefined)).toBe('')
+  })
+})
 
 describe('date helpers', () => {
   afterEach(() => {

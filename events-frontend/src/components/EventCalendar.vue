@@ -8,6 +8,7 @@ import type {
   MountInfo,
 } from '@fullcalendar/vue3'
 import { computed } from 'vue'
+import { eventLabel } from '@/lib/format'
 import FullCalendar from '@fullcalendar/vue3'
 // v7 ships plugins as subpaths of the framework package; the standalone
 // @fullcalendar/daygrid et al. have no v7 release.
@@ -62,14 +63,12 @@ function handleEventClick(arg: EventClickInfo) {
 
 /**
  * A month cell is far narrower than most event titles, so the visible text is clipped. Expose
- * the full label — "<title> @ <venue>" — as the element's native `title` tooltip, which is
- * what FullCalendar recommends for this: no extra dependency, and no floating element to fight
- * the cells' clipping. Venue comes from `extendedProps` and is optional, so the tooltip
- * degrades to the bare title rather than rendering a dangling "@".
+ * the full label as the element's native `title` tooltip, which is what FullCalendar recommends
+ * for this: no extra dependency, and no floating element to fight the cells' clipping. The
+ * label itself is shared with EventCard via {@link eventLabel} so the two read identically.
  */
 function handleEventDidMount(arg: MountInfo<EventDisplayInfo>) {
-  const venue = arg.event.extendedProps.venue as string | undefined
-  arg.el.title = venue ? `${arg.event.title} @ ${venue}` : arg.event.title
+  arg.el.title = eventLabel(arg.event.title, arg.event.extendedProps.venue as string | undefined)
 }
 
 // FullCalendar is encapsulated here so the rest of the app sees a single, on-theme
