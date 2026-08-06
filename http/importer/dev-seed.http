@@ -35,6 +35,7 @@
 ###   Festsaal Kreuzberg   — https://festsaal-kreuzberg.de/de/programm/
 ###   Frannz Club          — https://frannz.eu/
 ###   gART.n               — https://www.gartn.xyz/
+###   Gärten der Welt      — https://www.gaertenderwelt.de/events/veranstaltungen/
 ###   Golden Gate          — https://goldengate-berlin.de/
 ###   Gretchen             — https://www.gretchen-club.de/
 ###   Havanna              — https://www.havanna-berlin.de/events
@@ -1565,6 +1566,65 @@ Accept: application/json
 
 > {%
     client.test("gART.n import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Gärten der Welt (Blumberger Damm 44, Berlin-Marzahn — the Arena sits inside the park)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Gärten der Welt venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Gärten der Welt",
+    "address": "Blumberger Damm 44",
+    "city": "Berlin",
+    "postalCode": "12685",
+    "district": "marzahn-hellersdorf",
+    "latitude": 52.53726,
+    "longitude": 13.57492,
+    "websiteUrl": "https://www.gaertenderwelt.de",
+    "description": "Marzahn landscape park of international themed gardens, whose open-air Arena stages concerts, park festivals and open-air cinema."
+}
+
+> {%
+    client.global.set("gaerten_der_welt_venue_id", response.body.id);
+    client.test("Gärten der Welt venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Gärten der Welt event source ---
+# Links the venue to the GaertenDerWeltWebsiteImporter.
+# The sourceType "GAERTEN_DER_WELT" matches EventSource.GAERTEN_DER_WELT.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{gaerten_der_welt_venue_id}},
+    "name": "Gärten der Welt",
+    "url": "https://www.gaertenderwelt.de/events/veranstaltungen/",
+    "sourceType": "GAERTEN_DER_WELT",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Gärten der Welt event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Gärten der Welt import ---
+POST {{importer-host}}/api/admin/event-sources/garten-der-welt/import
+Accept: application/json
+
+> {%
+    client.test("Gärten der Welt import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}
