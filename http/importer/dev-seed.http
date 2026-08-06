@@ -47,6 +47,7 @@
 ###   Kantine am Berghain  — https://www.berghain.berlin/de/program/kantine-am-berghain/
 ###   Kater                — https://www.katerclub.de/
 ###   Klunkerkranich       — https://klunkerkranich.org/events/
+###   Kulturhaus Peter Edel — https://www.peteredel.de/events/
 ###   LARK                 — https://larkberlin.com/wp-json/wp/v2/event
 ###   Lido                 — https://www.lido-berlin.de/
 ###   Loge                 — https://www.loge-berlin.org/event-list
@@ -2271,6 +2272,65 @@ Accept: application/json
 
 > {%
     client.test("Klunkerkranich import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Kulturhaus Peter Edel (Berliner Allee 125, Berlin-Weißensee)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Kulturhaus Peter Edel venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Kulturhaus Peter Edel",
+    "address": "Berliner Allee 125",
+    "city": "Berlin",
+    "postalCode": "13088",
+    "district": "pankow",
+    "latitude": 52.55583,
+    "longitude": 13.46083,
+    "websiteUrl": "https://www.peteredel.de",
+    "description": "The Bildungs- und Kulturzentrum in Weissensee, programming concerts, comedy, theatre, readings, children's shows and dance teas."
+}
+
+> {%
+    client.global.set("peter_edel_venue_id", response.body.id);
+    client.test("Kulturhaus Peter Edel venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Kulturhaus Peter Edel event source ---
+# Links the venue to the PeterEdelWebsiteImporter.
+# The sourceType "PETER_EDEL" matches EventSource.PETER_EDEL.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{peter_edel_venue_id}},
+    "name": "Kulturhaus Peter Edel",
+    "url": "https://www.peteredel.de/events/",
+    "sourceType": "PETER_EDEL",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Kulturhaus Peter Edel event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Kulturhaus Peter Edel import ---
+POST {{importer-host}}/api/admin/event-sources/kulturhaus-peter-edel/import
+Accept: application/json
+
+> {%
+    client.test("Kulturhaus Peter Edel import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}
