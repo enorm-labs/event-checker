@@ -45,6 +45,19 @@ class EventFieldMappingTest {
         cleanEventTitle("Iggi Kelly  Nachholtermin vom 28.04.26-") shouldBe "Iggi Kelly"
     }
 
+    // Java's `\s` matches ASCII whitespace only, so a non-breaking space a CMS editor produced
+    // without meaning to (Colosseum's "JOSH. Solo - Wer singt dann Lieder für dich?") would
+    // otherwise survive the collapse: the title looks right but stops matching a word search.
+    @Test
+    fun `cleanEventTitle collapses non-breaking spaces`() {
+        cleanEventTitle("Wer singt\u00A0dann Lieder?") shouldBe "Wer singt dann Lieder?"
+        cleanEventTitle("babywho\u00A0CONNECT") shouldBe "babywho CONNECT"
+        // The narrow no-break space too, which a German CMS emits before a unit or an abbreviation.
+        cleanEventTitle("Some\u202FAct") shouldBe "Some Act"
+        // A non-breaking space adjacent to an ordinary one collapses to a single space, not two.
+        cleanEventTitle("Some \u00A0 Act") shouldBe "Some Act"
+    }
+
     // A zero-width character is invisible, so it is never part of a name — an editor pasted it in
     // (MAAYA's "HOMECOMING DJ WORKSHOP"). `\s` does not match it, so it survives both the trim and
     // the collapse unless it is removed outright.

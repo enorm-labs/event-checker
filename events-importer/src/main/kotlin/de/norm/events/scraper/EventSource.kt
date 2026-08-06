@@ -64,6 +64,9 @@ enum class EventSource {
     /** Club OST Berlin – a techno club on the Rummelsburger Bucht in Alt-Stralau, programming raves and club nights. */
     CLUB_OST,
 
+    /** Colosseum Berlin – a former Prenzlauer Berg cinema on Gleimstraße, run as an event house for readings, book premieres, talks and live podcasts. */
+    COLOSSEUM,
+
     /** Columbia Theater Berlin – a mid-sized concert hall at Tempelhofer Feld, next door to the Columbiahalle. */
     COLUMBIA_THEATER,
 

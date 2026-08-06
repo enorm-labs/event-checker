@@ -7,8 +7,8 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 
 | Status                              | Meaning                                                                              | Count |
 |-------------------------------------|--------------------------------------------------------------------------------------|------:|
-| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    83 |
-| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |     6 |
+| ✅ [Imported](#-imported)           | Importer implemented and scheduled                                                   |    84 |
+| 🔨 [Ready](#-ready-to-implement)    | Website analyzed, listings are scrapable — these are the next importers to build     |     5 |
 | ⛔ [Blocked](#-blocked--deferred)   | Website analyzed, but no usable listings (no programme page, JS-only, or too sparse) |    87 |
 | ❓ [Unanalyzed](#-not-analyzed-yet) | No URL recorded yet — website still needs a first look                               |     0 |
 
@@ -33,6 +33,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Clash Club                  | https://clash-berlin.de/                                    | Club         | WordPress; sparse — no times, prices or text          |
 | Club der Visionäre          | https://clubdervisionaere.com/programm                      | Techno Club  | WordPress; one listing, 3 rooms by CSS class          |
 | Club OST                    | https://clubost.de/                                         | Techno Club  | Django; homepage is the programme; RA tickets         |
+| Colosseum                   | https://www.colosseumberlin.com/event                       | Concert Hall | Wix Events warmup JSON; external shops feign sold-out |
 | Columbia Theater            | https://columbia-theater.de/                                | Concert Hall | WordPress; date in slug; status via `data-*` flag     |
 | Columbiahalle               | https://www.columbiahalle.berlin/veranstaltungen.html       | Concert Hall | Contao; one page, month headings carry the year       |
 | Cosmic Comedy Club          | https://comedyclubberlin.com/wp-json/tribe/events/v1/events | Comedy Club  | The Events Calendar REST API; cursor-paged; no prices |
@@ -102,7 +103,7 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 | Zenner                      | https://zenner.berlin/programm                              | Club         | Gatsby/Sanity page-data JSON; UTC dates; archive      |
 | Zitadelle                   | https://citadel-music-festival.de/events                    | Open Air     | Festival site; WordPress/EM; summer season only       |
 
-82 importer classes cover 83 sources: only Kantine am Berghain has no class of its own, sharing the Berghain importer outright. Three other groups share a
+83 importer classes cover 84 sources: only Kantine am Berghain has no class of its own, sharing the Berghain importer outright. Three other groups share a
 *listing and parser* while keeping one thin `@Component` per venue, so they do not reduce the count — Club der Visionäre, Sonnenraum and MS Hoppetosse; the
 three Velomax halls; and Uber Arena with the Uber Eats Music Hall.
 
@@ -126,7 +127,6 @@ count when the next batch is prioritised.
 
 | Name                             | URL                                                   | Type         | Priority | Comment                                                       |
 |----------------------------------|-------------------------------------------------------|--------------|----------|---------------------------------------------------------------|
-| Colosseum                        | https://www.colosseumberlin.com/event                 | Concert Hall | Medium   | Wix Events; 19 dated readings, talks and live podcasts        |
 | Fitzroy                          | https://fitzroy-berlin.de/events/                     | Club         | Medium   | WP REST `event` + ACF — the Madame Claude / LARK codebase     |
 | Monster Ronson's Ichiban Karaoke | https://www.karaokemonster.de/events                  | Bar          | Medium   | Webflow; nightly host + time, ~12-day window, year-less dates |
 | Morphine Raum                    | http://www.morphinerecords.com/events                 | Club         | Medium   | Hand-coded; `dd.MM.yy` + title per row, detail page each      |

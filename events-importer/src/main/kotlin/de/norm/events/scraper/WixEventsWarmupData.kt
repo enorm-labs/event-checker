@@ -1,5 +1,6 @@
 package de.norm.events.scraper
 
+import de.norm.events.event.EventStatus
 import de.norm.events.scraper.WixEventsWarmupData.WIX_EVENTS_APP_DEF_ID
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jsoup.nodes.Document
@@ -12,8 +13,8 @@ import java.time.ZoneId
 import java.time.format.DateTimeParseException
 
 // Shared reader for the Wix Events payload that Wix server-side-injects into every page
-// hosting a Wix Events widget (currently Loge's /event-list and Maxxim's /partys). Although
-// the widget renders client-side, the full event data is emitted as strict JSON in a
+// hosting a Wix Events widget (currently Loge's /event-list, Maxxim's /partys and Colosseum's
+// /event). Although the widget renders client-side, the full event data is emitted as strict JSON in a
 // `<script type="application/json" id="wix-warmup-data">` block — a stable, machine-readable
 // source (ADR-007 §"Prefer a JSON / API Source") that survives visual redesigns and carries
 // clean ISO timestamps rather than the German date text ("17. Juli 2026") in the rendered cards.
@@ -121,3 +122,30 @@ internal fun parseWixSchedule(config: JsonNode): Pair<LocalDate?, LocalTime?> {
 
 /** Default zone for Wix schedules missing a usable `timeZoneId` — every scraped venue is in Berlin. */
 private val FALLBACK_ZONE: ZoneId = ZoneId.of("Europe/Berlin")
+
+/**
+ * Maps Wix's numeric event `status` to a domain [EventStatus] name.
+ *
+ * Wix serialises its `EventStatus` enum as an ordinal in the warmup payload:
+ * `0` SCHEDULED, `1` STARTED, `2` ENDED, `3` CANCELED, `4` DRAFT. Only the
+ * cancellation is meaningful here — a started/ended night is simply in the past,
+ * and a draft is never published to the widget — so everything else keeps the
+ * `SCHEDULED` default rather than inventing statuses the model has no place for.
+ */
+internal fun mapWixEventStatus(status: JsonNode): String =
+    if (status.asInt(WIX_STATUS_SCHEDULED) == WIX_STATUS_CANCELED) EventStatus.CANCELLED.name else EventStatus.SCHEDULED.name
+
+private const val WIX_STATUS_SCHEDULED = 0
+private const val WIX_STATUS_CANCELED = 3
+
+/**
+ * Wix `registration.type` ordinals: `1` RSVP, `2` TICKETS, `3` EXTERNAL, `4` NO_REGISTRATION.
+ *
+ * Only `TICKETS` means Wix itself sells the tickets, and it is the **only** value for which the
+ * `registration.ticketing` block describes reality. An event whose tickets are sold elsewhere
+ * (`EXTERNAL`) still carries a `ticketing` node, but one that has no ticket definitions and
+ * therefore reports `"soldOut": true` for an event that is on sale at the promoter's shop — see
+ * [de.norm.events.scraper.colosseum.ColosseumOverviewPageScraper], where three of eighteen events
+ * are external. Gate every read of `ticketing` on this value.
+ */
+internal const val WIX_REGISTRATION_TICKETS = 2

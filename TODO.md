@@ -144,6 +144,11 @@ scraper's own KDoc instead, so only what should actually be *repaired* is listed
 - [ ] **The screening keyword misses German compounds.** `SCREENING_TITLE_WORD_PATTERN` (`EventTypeMapping.kt`) anchors on `\bkino\b` to protect real act names
   ("Alkinoos Ioannidis"), so Kater's monthly `Nomadenkino` film night is typed `PARTY` instead of `SCREENING`. A suffix-anchored match (`\w+kino\b`) keeping the
   act-name guard would catch the compounds; cross-cutting, so it needs a re-seed and a diff.
+- [ ] **The football keywords cannot tell a match screening from a football talk.** `SCREENING_TITLE_KEYWORDS` (`EventTypeMapping.kt`) carries `fussball` and
+  `11freunde` for Lido's and Astra's public viewings, so Colosseum's `Der Fussball mein Leben & Ich` — an on-stage evening with Thomas Schaaf, ticketed through
+  the 11Freunde shop — is typed `SCREENING` rather than left `OTHER`. The signal that separates the two is the screening verb, not the sport: a public viewing
+  says *Public Viewing* / *Live-Screening* / *Übertragung* or names a fixture (`EM Italien - Albanien`), while a talk names people. Narrowing the sport words to
+  those contexts is cross-cutting — it touches Lido and Astra — so it needs a re-seed and a diff.
 - [ ] **Astra's dateless featured teaser is dropped whenever its detail fetch fails** — `11FREUNDE WM-QUARTIER` drops on every run. The teaser carries no date
   of its own, so one failed fetch loses the event entirely; a retry, or reusing the last-known date for that `sourceId`, would keep it. Lido runs on the same
   Kulturhäuser platform and has the same teaser, so fix it once for both.

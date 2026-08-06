@@ -1,11 +1,12 @@
 package de.norm.events.scraper.maxxim
 
-import de.norm.events.event.EventStatus
 import de.norm.events.event.EventType
 import de.norm.events.scraper.EventSource
 import de.norm.events.scraper.ScrapedEvent
+import de.norm.events.scraper.WIX_REGISTRATION_TICKETS
 import de.norm.events.scraper.WixEventsWarmupData
 import de.norm.events.scraper.cleanEventTitle
+import de.norm.events.scraper.mapWixEventStatus
 import de.norm.events.scraper.parseWixSchedule
 import de.norm.events.scraper.resolveUrl
 import de.norm.events.scraper.stringOrNull
@@ -83,7 +84,10 @@ class MaxximOverviewPageScraper {
             return null
         }
 
-        val ticketing = node.path("registration").path("ticketing")
+        // Every night in the live programme is Wix-ticketed, but the guard costs nothing and keeps a
+        // future externally ticketed night from being reported sold out — see [WIX_REGISTRATION_TICKETS].
+        val registration = node.path("registration")
+        val ticketing = registration.path("ticketing").takeIf { registration.path("type").asInt(0) == WIX_REGISTRATION_TICKETS }
         return ScrapedEvent(
             title = title,
             description = node.stringOrNull("description"),
@@ -94,9 +98,9 @@ class MaxximOverviewPageScraper {
             imageUrl = node.path("mainImage").stringOrNull("url"),
             sourceUrl = resolveUrl(baseUrl, "/event-details/$slug"),
             sourceId = "${EventSource.MAXXIM.sourceIdPrefix}$slug",
-            pricePresale = parseTicketPrice(ticketing.path("lowestTicketPrice")),
-            priceNote = parsePriceRangeNote(ticketing),
-            soldOut = ticketing.path("soldOut").asBoolean(false),
+            pricePresale = ticketing?.let { parseTicketPrice(it.path("lowestTicketPrice")) },
+            priceNote = ticketing?.let { parsePriceRangeNote(it) },
+            soldOut = ticketing?.path("soldOut")?.asBoolean(false) == true,
             status = mapWixEventStatus(node.path("status"))
         )
     }
@@ -120,18 +124,3 @@ class MaxximOverviewPageScraper {
         return if (lowest != null && highest != null && lowest != highest) "$lowest – $highest" else null
     }
 }
-
-/**
- * Maps Wix's numeric event `status` to a domain [EventStatus] name.
- *
- * Wix serialises its `EventStatus` enum as an ordinal in the warmup payload:
- * `0` SCHEDULED, `1` STARTED, `2` ENDED, `3` CANCELED, `4` DRAFT. Only the
- * cancellation is meaningful here — a started/ended night is simply in the past,
- * and a draft is never published to the widget — so everything else keeps the
- * `SCHEDULED` default rather than inventing statuses the model has no place for.
- */
-internal fun mapWixEventStatus(status: JsonNode): String =
-    if (status.asInt(WIX_STATUS_SCHEDULED) == WIX_STATUS_CANCELED) EventStatus.CANCELLED.name else EventStatus.SCHEDULED.name
-
-private const val WIX_STATUS_SCHEDULED = 0
-private const val WIX_STATUS_CANCELED = 3
