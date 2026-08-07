@@ -1,6 +1,6 @@
 # Plan — Site Footer, Version Display & Legal Pages
 
-> Status: **Phases 1–5 implemented** (2026-08-07); Phases 6–7 still proposal.
+> Status: **Phases 1–6 implemented** (2026-08-07); Phase 7 (localisation) still proposal.
 > Related: [TODO.md §Legal / Compliance](../TODO.md) · [BRANDING.md](BRANDING.md) · [ADR-012 (cloud platform)](adr/ADR-012_CLOUD_PLATFORM.md) ·
 > [PRODUCT_OVERVIEW.md](PRODUCT_OVERVIEW.md)
 >
@@ -1236,7 +1236,36 @@ projects**, build). The notices chunk is 77 kB raw / 11.5 kB gzip and lazy-loade
 
 `dependency-review.yml` licence rules first (cheapest), then the Stage-1 generators (§9.1), then the `/legal/notices` page rendering the generated data.
 
-### Phase 6 — community files
+### Phase 6 — community files ✅ done (2026-08-07)
+
+Delivered as planned, plus the footer's "Contributing" link, which Phase 1 had deferred to here.
+Four things worth recording:
+
+- **The Code of Conduct is the verbatim Contributor Covenant 3.0**, fetched from source rather than
+  paraphrased, with only the two adopter placeholders filled — a code of conduct that has been
+  reworded is no longer the thing people think they are agreeing to. The CC BY-SA 4.0 attribution
+  block is intact, as that licence requires. A script assertion fails if any `[NOTE: …]` placeholder
+  survives.
+- **A fourth issue form was added ("Something else").** The plan specified `blank_issues_enabled: false`
+  plus three forms, which would have left a plain question with nowhere to go. The obvious fix —
+  a `contact_links` entry pointing at Discussions — turned out to be a dead link, because
+  **Discussions is not enabled on this repository**. A one-textarea form keeps structure the default
+  without closing the door.
+- **The private-report route is GitHub's security advisory form**, used for both security reports
+  *and* artist removal requests. Neither belongs on a public tracker, and it is the only
+  confidential channel that exists until `event-junkie.de` is registered. Both the CoC and
+  `SECURITY.md` say so plainly rather than listing an address that does not yet receive mail.
+- **`SECURITY.md` scopes itself to the code**, because nothing is deployed: it points researchers at
+  the scrapers, which parse untrusted HTML from dozens of third-party sites and are by far the
+  largest untrusted-input surface here, and it explicitly asks people *not* to test against the
+  venues' own websites.
+
+Verified: frontend `type-check`, `lint`, `test:unit` (85), `test:e2e` across all five projects
+(533 passed, 2 skipped on WebKit by design), `build`, `check:licenses`; every issue template parses
+and every label it applies already exists; all relative links and heading anchors in the new
+Markdown resolve.
+
+**Original scope, for reference:**
 
 New: `CONTRIBUTING.md`,
 [

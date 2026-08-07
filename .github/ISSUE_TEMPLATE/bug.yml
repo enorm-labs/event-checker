@@ -1,0 +1,49 @@
+name: 🐛 Bug in the site or the API
+description: Something is broken — a page, a filter, the calendar, an endpoint.
+title: 'fix: '
+labels: ['bug']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For an event with the *wrong details*, please use the "Wrong or missing event data" form
+        instead — that is a data problem rather than a code one, and it needs different information.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: And what you expected instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: How can we reproduce it?
+      placeholder: |
+        1. Go to /events
+        2. Filter by genre "Techno"
+        3. ...
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: >-
+        The version and commit from the bottom of any page, e.g. `v0.1.0 · 9f1a2b3`. This tells us
+        exactly which build you saw, which is usually the difference between reproducing a bug and
+        guessing at it.
+      placeholder: v0.1.0 · 9f1a2b3
+    validations:
+      required: false
+
+  - type: input
+    id: environment
+    attributes:
+      label: Browser and device
+      placeholder: Firefox 141 on Android
+    validations:
+      required: false

@@ -63,11 +63,10 @@ describe('AppFooter', () => {
     for (const link of legal) expect(link.attributes('target')).toBeUndefined()
   })
 
-  it('carries no link to a page that does not exist yet', () => {
-    // Only links that resolve, in every phase. CONTRIBUTING.md arrives with Phase 6 (§11).
+  it('links the contribution guide', () => {
     const wrapper = mount_()
-    const hrefs = wrapper.findAll('a').map((a) => a.attributes('href') ?? '')
-    expect(hrefs.some((href) => href.includes('CONTRIBUTING'))).toBe(false)
+    const contributing = wrapper.get('a[href$="/blob/main/CONTRIBUTING.md"]')
+    expect(contributing.text()).toBe('Contributing')
   })
 
   it('gives each link group an accessible name so they are distinguishable from the main nav', () => {
