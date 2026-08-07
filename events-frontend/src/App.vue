@@ -3,11 +3,12 @@ import { computed, ref, watch } from 'vue'
 import { RouterLink, RouterView, useRouter } from 'vue-router'
 import { Moon, Sun } from '@lucide/vue'
 import { Button } from '@/components/ui/button'
+import AppFooter from '@/components/AppFooter.vue'
+import BaseBadge from '@/components/BaseBadge.vue'
 import BrandLogo from '@/components/BrandLogo.vue'
 import GitHubMark from '@/components/GitHubMark.vue'
 import { pageTitle } from '@/composables/usePageTitle'
-
-const REPOSITORY_URL = 'https://github.com/enorm-labs/event-checker'
+import { REPOSITORY_URL } from '@/lib/links'
 
 // Screen-reader route announcer. Client-side navigations don't move focus or re-read the
 // page, so a changed document title goes unheard. Mirror the title into an aria-live region
@@ -43,24 +44,58 @@ function toggleDark() {
 const themeToggleLabel = computed(() =>
   isDark.value ? 'Switch to light mode' : 'Switch to dark mode',
 )
+
+// Same rule for the beta badge: one string behind both the tooltip and the accessible name.
+// "beta" alone would be a useless link name for a screen-reader user reading links out of context.
+const BETA_LABEL =
+  'Event Junkie is in beta — data may be incomplete or out of date. See what that means.'
 </script>
 
 <template>
-  <div class="min-h-screen bg-background text-foreground">
+  <div class="flex min-h-screen flex-col bg-background text-foreground">
     <!-- Announces route changes to screen readers; visually hidden. -->
     <div aria-atomic="true" aria-live="polite" class="sr-only" role="status">
       {{ announcement }}
     </div>
 
+    <!-- WCAG 2.4.1 Bypass Blocks: the header repeats on every route, so a keyboard or switch user
+         would otherwise tab through the brand, four nav links and two icon controls before
+         reaching content — on every navigation. Hidden until focused, and the first focusable
+         element in the document. It targets the wrapper below rather than each view's own <main>
+         so there is one target instead of seven to keep in sync. -->
+    <a
+      class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-background focus:px-4 focus:py-2 focus:text-foreground focus:ring-3 focus:ring-ring/50"
+      href="#main-content"
+    >
+      Skip to content
+    </a>
+
     <header class="border-b border-border">
-      <!-- Below `sm` the row wraps: brand + controls stay on the first line and the links drop to a
-           second one. All seven items in a single row overflow a ~390px viewport — see the
-           header-overflow guard in e2e/smoke.spec.ts. -->
+      <!-- Below `sm` the row wraps: brand, beta badge and controls stay on the first line and the
+           links drop to a second one. All of them in a single row overflow a ~390px viewport — see
+           the header-overflow guard in e2e/smoke.spec.ts, which is what keeps this honest as items
+           are added. -->
+      <!-- Named because the footer contributes a second navigation landmark: with more than one,
+           each needs a distinguishable accessible name so screen-reader users can tell the
+           landmark list apart. e2e selectors address it by this name. -->
       <nav
+        aria-label="Main"
         class="mx-auto flex max-w-5xl flex-wrap items-center gap-x-4 gap-y-3 p-4 text-sm font-medium sm:flex-nowrap sm:gap-6"
       >
-        <RouterLink class="mr-2 rounded-sm transition-opacity hover:opacity-80" to="/">
+        <RouterLink class="rounded-sm transition-opacity hover:opacity-80" to="/">
           <BrandLogo />
+        </RouterLink>
+
+        <!-- A link rather than a tooltip-only marker: a `title` is invisible on touch devices and
+             is not reliably announced, so the explanation has to be reachable by clicking. Targets
+             the About page's #beta section; the router's scrollBehavior handles the anchor. -->
+        <RouterLink
+          :aria-label="BETA_LABEL"
+          :title="BETA_LABEL"
+          class="mr-2 rounded-full transition-opacity hover:opacity-80"
+          to="/about#beta"
+        >
+          <BaseBadge variant="outline">beta</BaseBadge>
         </RouterLink>
         <div class="order-last flex w-full items-center gap-4 sm:order-none sm:w-auto sm:gap-6">
           <RouterLink
@@ -117,6 +152,12 @@ const themeToggleLabel = computed(() =>
       </nav>
     </header>
 
-    <RouterView />
+    <!-- `tabindex="-1"` makes this focusable by the skip link without adding it to the tab order.
+         `flex-1` pushes the footer to the bottom on short pages. -->
+    <div id="main-content" class="flex-1" tabindex="-1">
+      <RouterView />
+    </div>
+
+    <AppFooter />
   </div>
 </template>

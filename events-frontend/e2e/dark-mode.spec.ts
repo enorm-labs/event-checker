@@ -11,7 +11,7 @@ import { expect, type Page, test } from '@playwright/test'
 const html = (page: Page) => page.locator('html')
 const toggle = (page: Page) => page.getByRole('button', { name: /switch to (dark|light) mode/i })
 const navLink = (page: Page, name: string) =>
-  page.getByRole('navigation').getByRole('link', { name, exact: true })
+  page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name, exact: true })
 
 test('defaults to dark for a new visitor', async ({ page }) => {
   // Fresh context = no stored preference, so the pre-paint script opts into dark.

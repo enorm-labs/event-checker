@@ -26,6 +26,43 @@
   See [GitHub CLI quickstart](https://docs.github.com/en/github-cli/github-cli/quickstart) and
   [CLI reference](https://docs.github.com/en/github-cli/github-cli/github-cli-reference).
 
+## Privacy & GDPR — re-check when infrastructure or features change
+
+The public privacy notice (`/legal/privacy`, `events-frontend/src/views/legal/PrivacyView.vue`) and the imprint describe **what this system actually does**.
+They are only correct as long as that description matches reality, and the changes that break them do not look like privacy work. **Before merging, check
+whether your change falls into any category below — and if it does, say so explicitly in the PR description and update
+[docs/FOOTER_AND_LEGAL_PLAN.md](docs/FOOTER_AND_LEGAL_PLAN.md) §7 plus the privacy page in the same PR.**
+
+**Infrastructure and operations**
+
+- Choosing or changing a hosting provider, CDN, WAF, DNS, mail, backup, or object-storage provider — each is a processor that must be *named*, needs an Art. 28
+  DPA in place, and, if it is outside the EU/EEA, a transfer mechanism. This is a live question: [ADR-012](docs/adr/ADR-012_CLOUD_PLATFORM.md) is still
+  **Proposed**, and the privacy notice currently says so.
+- Changing log content, log retention, or IP handling (truncation/anonymisation) — the notice states a retention period; it must be the real one.
+- Adding monitoring, error tracking, uptime checks, APM, or a metrics backend that receives request or user data.
+- Adding a staging or preview environment reachable from the internet.
+
+**Features**
+
+- **Anything stored on the visitor's device** — a cookie, `localStorage`, `sessionStorage`, IndexedDB, or the Cache API. § 25 TDDDG covers *storage on terminal
+  equipment*, not cookies specifically. Today every stored item is strictly necessary, so **no consent banner is required** — that is a property worth
+  protecting deliberately. The first non-essential item (analytics ID, A/B bucket, recommendation history) makes a consent banner mandatory and is a product
+  decision, not an implementation detail. **Escalate rather than implement.**
+- **Any third-party resource loaded by the browser** — a font, script, iframe, map, embed, social widget, or image hotlinked from another host. Each one
+  transmits the visitor's IP address to that host. Fonts are self-hosted (`@fontsource-variable/geist`) for exactly this reason; keep it that way.
+- **Any outbound call made from the frontend** to a domain we do not operate. The GitHub API is the tempting one — see FOOTER_AND_LEGAL_PLAN.md §4.1 for why the
+  footer's version does not come from it.
+- **Accounts, login, sessions, newsletter, contact form, comments, favourites, or notifications** — each introduces user data we do not process at all today,
+  and needs its own legal basis, retention period and deletion route.
+- **New personal data in the domain model.** Artist names are already personal data (§7.3 of the plan, and §4 of the privacy notice). Adding contact details,
+  social handles, photographs of identifiable people, or user-submitted content extends that materially.
+- **Analytics of any kind**, including self-hosted and "cookieless" tools. Self-hosted and cookieless is a better posture, but it is still processing and still
+  needs a legal basis and a notice entry.
+
+**Commercial changes** — ads, affiliate links, sponsorships, donations, or paid features also change the § 5 DDG imprint analysis, not just the privacy notice.
+
+When in doubt, flag it in the PR rather than deciding silently. The cost of raising it is a sentence; the cost of missing it is a legal defect on a public site.
+
 ## Project Overview
 
 Event Checker is a multi-module Kotlin/Spring Boot application for discovering music events in Berlin. It uses a **Gradle multi-project build** with three
@@ -324,6 +361,12 @@ Java version is managed via SDKMAN (`.sdkmanrc` pins `java=25.0.2-tem`; run `sdk
 
 ## Code Conventions
 
+- **Application version**: lives in `version` in the root `gradle.properties` — the single source of truth. Gradle applies it to every project, so
+  `build.gradle.kts` must **not** assign `version` in its `subprojects` block; a leftover assignment silently wins while the build stays green.
+  `events-frontend/package.json` mirrors it **by hand**, deliberately without the `-SNAPSHOT` suffix (npm SemVer has no such convention), so the two files are
+  intentionally not byte-identical — both move in one commit. A release build overrides the version from the tag (`-Pversion=0.1.0`) rather than editing the
+  file. The version the site displays always comes from `GET /meta`, which is stamped from the build — never from `package.json`. See
+  [docs/FOOTER_AND_LEGAL_PLAN.md](docs/FOOTER_AND_LEGAL_PLAN.md) §4.
 - **Package structure**: `de.norm.events.<module-name>` — organize by feature/domain, not layer.
 - **Kotlin DSL** for all Gradle build scripts (`build.gradle.kts`).
 - **Kotlin 2.4.10** with **Spring Boot 4.1.0**; plugin versions pinned in `settings.gradle.kts` `pluginManagement`.

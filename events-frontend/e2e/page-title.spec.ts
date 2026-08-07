@@ -45,7 +45,7 @@ test('updates the title when navigating between static routes', async ({ page })
   await page.goto('/')
   await expect(page).toHaveTitle(HOME_TITLE)
 
-  const nav = page.getByRole('navigation')
+  const nav = page.getByRole('navigation', { name: 'Main' })
   await nav.getByRole('link', { name: 'Events', exact: true }).click()
   await expect(page).toHaveTitle(`Events · ${APP_NAME}`)
 
@@ -62,7 +62,10 @@ test('announces route changes in an aria-live region for screen readers', async 
   await expect(announcer).toHaveText('')
 
   // A client-side navigation populates it with the new page title.
-  await page.getByRole('navigation').getByRole('link', { name: 'Events', exact: true }).click()
+  await page.getByRole('navigation', { name: 'Main' }).getByRole('link', {
+    name: 'Events',
+    exact: true,
+  }).click()
   await expect(announcer).toHaveText(`Events · ${APP_NAME}`)
 })
 
@@ -72,7 +75,10 @@ test('keeps og:title and the meta description in sync', async ({ page }) => {
   await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /Berlin/)
 
   // The social title tracks the active view, not just the static landing value.
-  await page.getByRole('navigation').getByRole('link', { name: 'About', exact: true }).click()
+  await page.getByRole('navigation', { name: 'Main' }).getByRole('link', {
+    name: 'About',
+    exact: true,
+  }).click()
   await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
     'content',
     `About · ${APP_NAME}`,

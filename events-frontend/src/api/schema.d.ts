@@ -72,6 +72,23 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/meta': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Report the version and commit of the running backend */
+    get: operations['meta']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/genres': {
     parameters: {
       query?: never
@@ -389,6 +406,29 @@ export interface components {
       websiteUrl?: string | null
       /** @description URL of the promoter's logo image */
       imageUrl?: string | null
+    }
+    /** @description Version and commit of the running backend, for the frontend footer */
+    MetaResponse: {
+      /**
+       * @description Application version. `dev` when the build did not stamp one — i.e. running from the IDE or `bootRun`.
+       * @example 0.1.0
+       */
+      version?: string
+      /**
+       * @description Full commit SHA the running artifact was built from; null when unavailable.
+       * @example 9f1a2b3c4d5e6f708192a3b4c5d6e7f809a1b2c3
+       */
+      commit?: string | null
+      /**
+       * @description First seven characters of `commit`, for display; null when the commit is unavailable.
+       * @example 9f1a2b3
+       */
+      commitShort?: string | null
+      /**
+       * @description When the running artifact was built (ISO-8601); null when the build did not stamp one.
+       * @example 2026-08-07T12:49:19Z
+       */
+      buildTime?: string | null
     }
     /** @description A normalized genre tag */
     GenreTagResponse: {
@@ -877,6 +917,26 @@ export interface operations {
         }
         content: {
           '*/*': components['schemas']['PromoterDetailResponse']
+        }
+      }
+    }
+  }
+  meta: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          '*/*': components['schemas']['MetaResponse']
         }
       }
     }

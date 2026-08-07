@@ -18,6 +18,14 @@ const props = defineProps<{
 </script>
 
 <template>
+  <!--
+    The accessible name arrives as a fall-through `aria-label` from the call site (all five
+    currently pass one); the rule cannot see across the component boundary. This is a latent risk
+    rather than a false alarm — nothing forces a future consumer to pass one — so the stronger fix
+    is to make the label a required prop. Left as a follow-up because it changes the API of a
+    shared component and every call site, which is more than this change should carry.
+  -->
+  <!-- eslint-disable-next-line vuejs-accessibility/form-control-has-label -->
   <select :class="cn(FIELD_CLASS, props.class)" :value="modelValue">
     <slot />
   </select>

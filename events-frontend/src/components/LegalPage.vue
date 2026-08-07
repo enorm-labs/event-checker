@@ -1,0 +1,37 @@
+<script lang="ts" setup>
+/**
+ * Shared shell for the pages under `/legal/*`: one column width, one heading rhythm, one place
+ * for the "last reviewed" line. Deliberately a hand-rolled prose scale on the same
+ * `mx-auto max-w-3xl` measure the other static views use, rather than a typography plugin —
+ * these are three pages of body copy, not a CMS.
+ */
+import { LAST_REVIEWED } from '@/lib/legal'
+
+defineProps<{
+  title: string
+  /** Shown under the heading — one sentence on what this page is for. */
+  intro?: string
+  /** Legal pages state when they were last checked against reality; the notices page does not. */
+  showReviewDate?: boolean
+}>()
+</script>
+
+<template>
+  <main class="mx-auto max-w-3xl space-y-6 p-8">
+    <header class="space-y-2">
+      <h1 class="text-3xl font-bold tracking-tight">{{ title }}</h1>
+      <p v-if="intro" class="text-muted-foreground">{{ intro }}</p>
+      <p v-if="showReviewDate" class="text-sm text-muted-foreground">
+        Last reviewed: <time :datetime="LAST_REVIEWED">{{ LAST_REVIEWED }}</time>
+      </p>
+    </header>
+
+    <!-- `[&_x]` selectors rather than a class on every element: the page bodies below are plain
+         semantic markup, which keeps them readable as documents and easy to translate later. -->
+    <div
+      class="space-y-6 text-muted-foreground [&_a]:text-foreground [&_a]:underline [&_a]:underline-offset-4 [&_dt]:font-medium [&_dt]:text-foreground [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:tracking-tight [&_h2]:text-foreground [&_h3]:font-medium [&_h3]:text-foreground [&_li]:my-1 [&_p]:my-2 [&_section]:space-y-2 [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:pl-6"
+    >
+      <slot />
+    </div>
+  </main>
+</template>

@@ -230,6 +230,46 @@ Reference: [Styling with utility classes](https://tailwindcss.com/docs/styling-w
 - Use `fetch` or a thin wrapper for HTTP calls — no heavy HTTP client libraries needed.
 - Type API responses with TypeScript interfaces matching the backend's response DTOs.
 
+## Versioning
+
+The application version lives in **`version` in the root `gradle.properties`** — that is the single source of truth.
+
+- `events-frontend/package.json` **mirrors** it, kept in step **by hand**. Nothing generates or verifies it, so a version bump is one change touching two files.
+- The mirror is deliberately **without** the `-SNAPSHOT` suffix that `gradle.properties` carries: npm's SemVer has no such convention, and `0.1.0-SNAPSHOT`
+  reads as a malformed prerelease. The two files are *intentionally* not byte-identical — do not "fix" this.
+- **Do not bump `version` in `package.json` on its own.** It is `private: true` and never published, so nothing breaks visibly if it drifts — which is exactly
+  why it needs the discipline.
+- **The version the site displays never comes from `package.json`.** The footer reads `GET /meta`, which the backend stamps from the Gradle build (see
+  `useAppMeta.ts`). A stale `package.json` therefore cannot put a wrong version on screen; it only misleads people reading the repository.
+
+## Accessibility
+
+**Target: WCAG 2.1 Level AA.** These rules encode what the codebase already does — follow them rather than rediscovering them. Background and the current gap
+list: [docs/FOOTER_AND_LEGAL_PLAN.md §12](../docs/FOOTER_AND_LEGAL_PLAN.md).
+
+- **Every interactive element needs an accessible name.** Icon-only controls carry an `aria-label`. Where a `title` tooltip is also present, derive both from
+  **one** `computed` so they cannot drift — see the theme toggle in `App.vue`.
+- **Decorative SVGs get `aria-hidden="true"`** (`PulseMark`, `GitHubMark`). Meaningful images get a real `alt`; `alt=""` is correct only when the image adds
+  nothing the surrounding text does not already say.
+- **Every view renders exactly one `<main>`.** The detail views inherit theirs from `BaseDetailView` — do not add a second.
+- **Do not remove a focus indicator.** `outline-none` is acceptable only when paired with a `focus-visible:` ring, as in `components/ui/button/index.ts`.
+- **Prefer a reka-ui / shadcn-vue primitive** over a hand-rolled interactive component. They handle focus management, keyboard interaction and ARIA that a
+  bespoke `div` will not.
+- **Form controls need a label** — a `<label>` element, or an `aria-label` where the design has no visible label (as in `EventFilterBar.vue`).
+- **Write e2e selectors by role and accessible name** (`getByRole('link', { name: … })`). This is the house style *and* it makes the Playwright suite an
+  accessibility regression test.
+- **Colour is never the only carrier of meaning** (1.4.1). New colour pairs must clear 4.5:1 for body text and 3:1 for large text and UI boundaries (1.4.3,
+  1.4.11).
+- **The skip link in `App.vue` must stay the first focusable element** in the document, and `#main-content` must keep its `tabindex="-1"` — that is what makes
+  it focusable as a skip target without entering the tab order.
+- **`<html lang>` in `index.html` is not decorative.** It is currently `en`; it becomes dynamic when locales land. Never blank it.
+
+Two checks enforce this, and **neither may be silenced to make a build pass** — fix the markup, or raise it:
+
+- `eslint-plugin-vuejs-accessibility` (`flat/recommended`) runs inside `npm run lint`.
+- `@axe-core/playwright` sweeps every static route in both themes via `e2e/a11y.spec.ts` during `npm run test:e2e`. If it reports a contrast failure, fix the
+  design token rather than excluding the rule.
+
 ## Linting & Formatting
 
 The project uses a two-tier linting strategy:

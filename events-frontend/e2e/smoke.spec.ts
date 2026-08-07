@@ -47,7 +47,7 @@ for (const route of staticRoutes) {
     await expect(page.getByRole('heading', { level: 1, name: route.heading })).toBeVisible()
 
     // Shared app shell rendered.
-    await expect(page.getByRole('navigation')).toBeVisible()
+    await expect(page.getByRole('navigation', { name: 'Main' })).toBeVisible()
 
     expect(errors, 'unexpected uncaught exceptions').toEqual([])
   })
@@ -57,7 +57,7 @@ test('navigates between static routes via the nav bar', async ({ page }) => {
   const errors = collectPageErrors(page)
 
   await page.goto('/')
-  const nav = page.getByRole('navigation')
+  const nav = page.getByRole('navigation', { name: 'Main' })
 
   for (const route of staticRoutes) {
     await nav.getByRole('link', { name: route.nav, exact: true }).click()
@@ -69,16 +69,17 @@ test('navigates between static routes via the nav bar', async ({ page }) => {
 })
 
 test('header nav fits its viewport without overflowing', async ({ page }) => {
-  // The header packs a brand lockup, four nav links and two icon controls in; on a ~390px screen
-  // one row overflowed and pushed the controls off-screen, so the nav wraps below `sm`. Runs on
-  // every project — the two mobile ones are what this actually guards.
+  // The header packs a brand lockup, a beta badge, four nav links and two icon controls in; on a
+  // ~390px screen one row overflowed and pushed the controls off-screen, so the nav wraps below
+  // `sm`. Runs on every project — the two mobile ones are what this actually guards. The badge is
+  // the most recent addition and the reason this check is not merely historical.
   //
   // Scoped to the nav rather than the whole document because this runs without a BFF, so the
   // data-driven routes render their error state. The document-level check lives in
   // home-feeds.spec.ts, where the feeds are mocked and real cards exist to overflow.
   await page.goto('/about')
 
-  const nav = page.getByRole('navigation')
+  const nav = page.getByRole('navigation', { name: 'Main' })
   await expect(nav).toBeVisible()
 
   const box = await nav.evaluate((el) => ({ scroll: el.scrollWidth, client: el.clientWidth }))
@@ -93,10 +94,25 @@ test('header nav fits its viewport without overflowing', async ({ page }) => {
   )
 })
 
+test('app shell marks the app as beta and explains what that means', async ({ page }) => {
+  await page.goto('/venues')
+
+  const badge = page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: /beta/i })
+  await expect(badge).toBeVisible()
+  // "beta" alone is a useless accessible name out of context, so the link carries a full sentence.
+  await expect(badge).toHaveAttribute('aria-label', /data may be incomplete/i)
+  await expect(badge).toHaveAttribute('title', /data may be incomplete/i)
+
+  await badge.click()
+
+  await expect(page).toHaveURL(/\/about#beta$/)
+  await expect(page.getByRole('heading', { name: 'Why it says beta' })).toBeVisible()
+})
+
 test('app shell links to the source repository on GitHub', async ({ page }) => {
   await page.goto('/about')
 
-  const link = page.getByRole('navigation').getByRole('link', { name: 'Source code on GitHub' })
+  const link = page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Source code on GitHub' })
   await expect(link).toBeVisible()
   await expect(link).toHaveAttribute('href', 'https://github.com/enorm-labs/event-checker')
   await expect(link).toHaveAttribute('title', 'Source code on GitHub')
