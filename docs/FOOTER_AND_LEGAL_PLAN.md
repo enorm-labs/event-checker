@@ -1301,7 +1301,7 @@ workflow and `AGENTS.md` as the source of truth for conventions, `./gradlew clea
 drive `label-pr.yml` and the release notes), the rebase-not-merge rule, how importers are structured for the most likely contribution type, the version-bump
 rule touching both `gradle.properties` and `package.json` (§4.6), a link to `CODE_OF_CONDUCT.md`, and the Apache-2.0 inbound=outbound licensing statement.
 
-### Phase 7 (follow-up, separate plan) — localisation
+### Phase 7 (follow-up, separate plan) — localisation → planned in [LOCALISATION_PLAN.md](LOCALISATION_PLAN.md)
 
 Full English/German localisation of the site, as agreed in §6.2. Not part of this plan's delivery, but it is the immediate next piece of work and it retires
 §6.1's interim answer: once locales exist, the legal pages are simply two more localised routes and the "which language is authoritative" question becomes a

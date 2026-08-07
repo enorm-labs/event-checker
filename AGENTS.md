@@ -549,6 +549,10 @@ Java version is managed via SDKMAN (`.sdkmanrc` pins `java=25.0.2-tem`; run `sdk
 | ADR: Optimistic locking (event src)   | `docs/adr/ADR-009_OPTIMISTIC_LOCKING_EVENT_SOURCE.md`                                                     |
 | ADR: Frontend styling framework       | `docs/adr/ADR-010_FRONTEND_STYLING_FRAMEWORK.md`                                                          |
 | ADR: Event-calendar library           | `docs/adr/ADR-011_CALENDAR_LIBRARY.md`                                                                    |
+| ADR: Cloud platform & hosting         | `docs/adr/ADR-012_CLOUD_PLATFORM.md`                                                                      |
+| ADR: Localisation (English + German)  | `docs/adr/ADR-013_LOCALISATION.md`                                                                        |
+| Plan: footer, legal pages, versioning | `docs/FOOTER_AND_LEGAL_PLAN.md`                                                                           |
+| Plan: localisation                    | `docs/LOCALISATION_PLAN.md`                                                                               |
 | Frontend entry point                  | `events-frontend/src/main.ts`                                                                             |
 | IntelliJ HTTP Client requests         | `http/importer/` (admin) and `http/bff/` (public read) `.http` files + shared `http/http-client.env.json` |
 | Local dev environment control script  | `scripts/dev-env.sh` (start/stop the stack, seed sources, trigger imports, inspect + diff the data)       |
