@@ -265,5 +265,10 @@ licenseReport {
     // Checked by `./gradlew checkLicense`. Deliberately an *allow*-list here, unlike the CI
     // deny-list in dependency-review.yml: this runs over the full resolved tree where we control
     // the data, so an unknown licence should stop and be looked at rather than pass silently.
-    allowedLicensesFile = file("config/allowed-licenses.json")
+    //
+    // JVM-only, hence the filename: the frontend is not a Gradle subproject, so npm dependencies
+    // are invisible to this task. They have their own allow-list in the same vocabulary problem's
+    // other dialect (SPDX ids) — config/allowed-licenses-npm.json, enforced by
+    // `npm run check:licenses`. The two files are one policy expressed twice; change them together.
+    allowedLicensesFile = file("config/allowed-licenses-jvm.json")
 }

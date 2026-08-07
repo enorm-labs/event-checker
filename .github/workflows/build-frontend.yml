@@ -50,6 +50,13 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      # Audits every production npm dependency against config/allowed-licenses-npm.json. The
+      # backend's `./gradlew checkLicense` only ever sees the JVM tree — the frontend is not a
+      # Gradle subproject — so without this the several hundred npm packages were covered only by
+      # dependency-review, which looks at newly introduced dependencies and never the existing tree.
+      - name: Check dependency licences
+        run: npm run check:licenses
+
       - name: Build
         run: npm run build
 

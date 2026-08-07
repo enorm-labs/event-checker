@@ -1,0 +1,48 @@
+{
+  "_comment": [
+    "Licence allow-list for the FRONTEND's production npm dependencies.",
+    "Enforced by `npm run check:licenses` in events-frontend (scripts/check-licenses.mjs).",
+    "Policy and reasoning: docs/FOOTER_AND_LEGAL_PLAN.md §9.2.",
+    "",
+    "This is the npm half of one policy. The JVM half is config/allowed-licenses-jvm.json, checked",
+    "by `./gradlew checkLicense`. They are separate files because the two ecosystems speak",
+    "different vocabularies — npm reports SPDX identifiers ('BSD-2-Clause'), while the Gradle",
+    "plugin reports its normaliser's prose names ('The 2-Clause BSD License'). Same policy, two",
+    "dialects: change them together.",
+    "",
+    "SCOPE — `dependencies`, not `devDependencies`. Build and test tooling never reaches a user.",
+    "Note this is still broader than what is bundled and served: it is the dependency graph, so",
+    "build-time transitives such as @babel/* (via vue -> @vue/compiler-sfc) appear here.",
+    "",
+    "DUAL LICENCES — a package passes if ANY of its licences is allowed, matching how the Gradle",
+    "plugin behaves. '(MIT OR CC0-1.0)' therefore passes on MIT.",
+    "",
+    "TO ADD AN ENTRY — permissive, or weak copyleft used as an unmodified library. Strong copyleft",
+    "(GPL without the Classpath Exception), network copyleft (AGPL) and source-available licences",
+    "(SSPL, BUSL, Elastic-2.0) are NOT acceptable: this project ships a public network service whose",
+    "own source is Apache-2.0. Add a line to `_rationale` for anything that is not obviously",
+    "permissive, rather than adding it silently."
+  ],
+  "allowedLicenses": [
+    "0BSD",
+    "Apache-2.0",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "BlueOak-1.0.0",
+    "CC-BY-4.0",
+    "CC0-1.0",
+    "ISC",
+    "MIT",
+    "MIT-0",
+    "MPL-2.0",
+    "OFL-1.1",
+    "Public Domain",
+    "Unlicense"
+  ],
+  "_rationale": {
+    "BlueOak-1.0.0": "Plain-language permissive licence used by the npm/glob family. No copyleft; attribution only, which the notices page provides.",
+    "MPL-2.0": "Weak copyleft, file-level. Reaches us only via lightningcss, a Tailwind v4 transitive used unmodified, so the source-disclosure obligation does not attach to our code. Prefer a permissive alternative if one appears.",
+    "CC-BY-4.0": "caniuse-lite's browser-support DATA, not code. Requires attribution, which the notices page provides. Build-time only; none of it is served.",
+    "OFL-1.1": "The SIL Open Font License, covering @fontsource-variable/geist. This one DOES ship — the font is self-hosted and served to every visitor, deliberately (see the privacy notice). OFL permits bundling and web-serving; it forbids selling the font on its own and reusing the Reserved Font Name, neither of which we come near."
+  }
+}

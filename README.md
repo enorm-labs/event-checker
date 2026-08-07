@@ -415,3 +415,39 @@ The NVD rate-limits unauthenticated requests, making the initial database downlo
 3. For **CI (GitHub Actions)**, add it as a repository secret named `NVD_API_KEY`
    (Settings → Secrets and variables → Actions → New repository secret).
 
+
+### Dependency Licences & Open-Source Notices
+
+Every runtime dependency's licence is checked against a policy, and the full list is published on the site at `/legal/notices`.
+
+**Two checks, one policy.** They exist separately because the two ecosystems report licence names in different vocabularies — npm uses SPDX identifiers
+(`BSD-2-Clause`), the Gradle plugin uses its normaliser's prose names (`The 2-Clause BSD License`). Change them together.
+
+```bash
+# JVM runtime dependencies (all three Gradle modules)
+./gradlew checkLicense --no-configuration-cache
+
+# Frontend production npm dependencies
+cd events-frontend && npm run check:licenses
+```
+
+- Policy files: [`config/allowed-licenses-jvm.json`](./config/allowed-licenses-jvm.json) and [`config/allowed-licenses-npm.json`](./config/allowed-licenses-npm.json).
+- A third gate, [`dependency-review.yml`](./.github/workflows/dependency-review.yml), carries a deny-list applied to *newly introduced* dependencies at PR time.
+- **Do not widen an allow-list to make a build pass.** AGPL, GPL without the Classpath Exception, and source-available licences (SSPL, BUSL, Elastic-2.0) are
+  not acceptable for a public network service whose own source is Apache-2.0. AGPL is the one to watch: its § 13 obligation fires on *network interaction*, not
+  distribution. See [docs/FOOTER_AND_LEGAL_PLAN.md §9.2](./docs/FOOTER_AND_LEGAL_PLAN.md).
+
+**Regenerating the notices page.** `events-frontend/src/assets/notices.json` is generated and committed — never hand-edited. Regenerate it whenever
+dependencies change on either side:
+
+```bash
+./gradlew generateLicenseReport --no-configuration-cache   # writes build/reports/dependency-license/licenses.json
+cd events-frontend && npm run generate:notices             # merges both ecosystems into src/assets/notices.json
+```
+
+The `--no-configuration-cache` flag is required: the licence-report plugin is not configuration-cache compatible (same as `dependencyCheckAggregate` — see the
+note in [`gradle.properties`](./gradle.properties)). The generator writes no timestamp, so re-running it with unchanged dependencies produces an identical file
+and an empty diff.
+
+It is committed rather than generated at build time because the frontend is not a Gradle subproject: its build must not have to invoke Gradle, and the page then
+works under `npm run dev` with nothing else run first.

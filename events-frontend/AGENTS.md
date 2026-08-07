@@ -254,9 +254,21 @@ npm run generate:notices                                   # events-frontend; me
 
 - The `--no-configuration-cache` flag is required — the licence-report plugin is not configuration-cache compatible (see the note in `gradle.properties`).
 - The generator deliberately writes **no timestamp**, so re-running it with unchanged dependencies produces an identical file and an empty diff.
-- Licence policy lives in `config/allowed-licenses.json`, enforced by `./gradlew checkLicense --no-configuration-cache`, with a matching deny-list for new
-  dependencies in `.github/workflows/dependency-review.yml`. **Do not widen the allow-list to make a build pass** — see [docs/FOOTER_AND_LEGAL_PLAN.md §9.2](../docs/FOOTER_AND_LEGAL_PLAN.md)
-  for which licences are acceptable and why; AGPL, GPL without the Classpath Exception, and source-available licences (SSPL, BUSL, Elastic) are not.
+Licence policy is enforced on both sides, in two files because the ecosystems report licence names differently (SPDX ids vs the Gradle normaliser's prose
+names). They are one policy — change them together:
+
+```bash
+npm run check:licenses                                     # this project's production dependencies, vs config/allowed-licenses-npm.json
+./gradlew checkLicense --no-configuration-cache            # the JVM modules, vs config/allowed-licenses-jvm.json (repository root)
+```
+
+`.github/workflows/dependency-review.yml` adds a third gate: a deny-list applied to *newly introduced* dependencies at PR time.
+
+**Do not widen an allow-list to make a build pass.** AGPL, GPL without the Classpath Exception, and source-available licences (SSPL, BUSL, Elastic-2.0) are not
+acceptable — see [docs/FOOTER_AND_LEGAL_PLAN.md §9.2](../docs/FOOTER_AND_LEGAL_PLAN.md). If a licence genuinely belongs on the list, record why in the policy
+file's `_rationale`.
+
+The same guidance is in the [README](../README.md#dependency-licences--open-source-notices) for people not reading this file.
 
 ## Accessibility
 
