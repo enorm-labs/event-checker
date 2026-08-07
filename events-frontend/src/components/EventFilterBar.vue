@@ -11,6 +11,8 @@
 import { onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { Button } from '@/components/ui/button'
+import BaseInput from '@/components/BaseInput.vue'
+import BaseSelect from '@/components/BaseSelect.vue'
 import { useEventFilters } from '@/composables/useEventFilters'
 import { useGenres } from '@/composables/useGenres'
 import { useAllVenues } from '@/composables/useVenues'
@@ -96,12 +98,7 @@ onMounted(() => {
 <template>
   <div class="flex flex-wrap items-end gap-3 rounded-xl border border-border bg-card p-4">
     <form class="flex gap-2" @submit.prevent="applyFilters({ q: search })">
-      <input
-        v-model="search"
-        class="h-8 rounded-lg border border-border bg-background px-3 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
-        placeholder="Search events…"
-        type="search"
-      />
+      <BaseInput v-model="search" class="px-3" placeholder="Search events…" type="search" />
       <Button type="submit" variant="outline">Search</Button>
     </form>
 
@@ -110,25 +107,24 @@ onMounted(() => {
       calendar, the value is already the ISO `YYYY-MM-DD` the BFF wants, and `min`/`max` express
       "not in the past" and "to cannot precede from" without any code. They apply on change like
       the selects, so the bar keeps a single Apply button (the price range's).
-      `color-scheme` is what makes the browser's own calendar follow our dark mode.
+      The browser's own calendar follows our dark mode via the `color-scheme` declared on
+      `:root`/`.dark` in main.css, which covers every native control rather than just these two.
     -->
     <div v-if="showDateRange" class="flex flex-wrap items-center gap-2">
-      <input
+      <BaseInput
         :max="queryString('to') || undefined"
         :min="today"
-        :value="queryString('from')"
+        :model-value="queryString('from')"
         aria-label="Earliest event date"
-        class="h-8 rounded-lg border border-border bg-background px-2 text-sm outline-none [color-scheme:light] focus-visible:ring-3 focus-visible:ring-ring/50 dark:[color-scheme:dark]"
         type="date"
         @change="applyFilters({ from: ($event.target as HTMLInputElement).value })"
         @click="openDatePicker"
       />
       <span class="text-sm text-muted-foreground">–</span>
-      <input
+      <BaseInput
         :min="queryString('from') || today"
-        :value="queryString('to')"
+        :model-value="queryString('to')"
         aria-label="Latest event date"
-        class="h-8 rounded-lg border border-border bg-background px-2 text-sm outline-none [color-scheme:light] focus-visible:ring-3 focus-visible:ring-ring/50 dark:[color-scheme:dark]"
         type="date"
         @change="applyFilters({ to: ($event.target as HTMLInputElement).value })"
         @click="openDatePicker"
@@ -151,10 +147,9 @@ onMounted(() => {
       </Button>
     </div>
 
-    <select
-      :value="queryString('eventType')"
+    <BaseSelect
+      :model-value="queryString('eventType')"
       aria-label="Filter by event type"
-      class="h-8 rounded-lg border border-border bg-background px-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
       @change="applyFilters({ eventType: ($event.target as HTMLSelectElement).value })"
     >
       <option value="">All types</option>
@@ -166,47 +161,44 @@ onMounted(() => {
       <option v-for="type in EVENT_TYPES" :key="type" :value="type">
         {{ formatEventType(type) }}
       </option>
-    </select>
+    </BaseSelect>
 
-    <select
-      :value="queryString('venue')"
+    <BaseSelect
+      :model-value="queryString('venue')"
       aria-label="Filter by venue"
-      class="h-8 rounded-lg border border-border bg-background px-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
       @change="applyFilters({ venue: ($event.target as HTMLSelectElement).value })"
     >
       <option value="">All venues</option>
       <option v-for="v in venues.data.value ?? []" :key="v.slug" :value="v.slug ?? ''">
         {{ v.name }}
       </option>
-    </select>
+    </BaseSelect>
 
-    <select
-      :value="queryString('district')"
+    <BaseSelect
+      :model-value="queryString('district')"
       aria-label="Filter by district"
-      class="h-8 rounded-lg border border-border bg-background px-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
       @change="applyFilters({ district: ($event.target as HTMLSelectElement).value })"
     >
       <option value="">All districts</option>
       <option v-for="d in DISTRICTS" :key="d.slug" :value="d.slug">{{ d.label }}</option>
-    </select>
+    </BaseSelect>
 
-    <select
-      :value="queryString('genre')"
+    <BaseSelect
+      :model-value="queryString('genre')"
       aria-label="Filter by genre"
-      class="h-8 rounded-lg border border-border bg-background px-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
       @change="applyFilters({ genre: ($event.target as HTMLSelectElement).value })"
     >
       <option value="">All genres</option>
       <option v-for="tag in genres.data.value ?? []" :key="tag.slug" :value="tag.slug ?? ''">
         {{ tag.name }}
       </option>
-    </select>
+    </BaseSelect>
 
     <form class="flex items-center gap-2" @submit.prevent="applyFilters({ minPrice, maxPrice })">
-      <input
+      <BaseInput
         v-model="minPrice"
         aria-label="Minimum presale price"
-        class="h-8 w-20 rounded-lg border border-border bg-background px-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+        class="w-20"
         inputmode="decimal"
         min="0"
         placeholder="Min €"
@@ -214,10 +206,10 @@ onMounted(() => {
         type="number"
       />
       <span class="text-sm text-muted-foreground">–</span>
-      <input
+      <BaseInput
         v-model="maxPrice"
         aria-label="Maximum presale price"
-        class="h-8 w-20 rounded-lg border border-border bg-background px-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+        class="w-20"
         inputmode="decimal"
         min="0"
         placeholder="Max €"

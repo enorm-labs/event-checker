@@ -2,6 +2,7 @@
 import { computed, onMounted, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { Button } from '@/components/ui/button'
+import BaseBadge from '@/components/BaseBadge.vue'
 import SectionLabel from '@/components/SectionLabel.vue'
 import { useEvent } from '@/composables/useEvent'
 import { usePageTitle } from '@/composables/usePageTitle'
@@ -53,24 +54,11 @@ watch(slug, run)
           <span>{{ formatDate(event.eventDate) }}</span>
           <span v-if="event.startTime">· {{ formatTime(event.startTime) }}</span>
           <span v-if="event.venue?.name">· {{ event.venue.name }}</span>
-          <span
-            v-if="event.status && event.status !== 'SCHEDULED'"
-            class="rounded-full bg-destructive/10 px-2 py-0.5 text-xs font-medium text-destructive"
-          >
+          <BaseBadge v-if="event.status && event.status !== 'SCHEDULED'" variant="destructive">
             {{ event.status }}
-          </span>
-          <span
-            v-if="event.soldOut"
-            class="rounded-full bg-destructive/10 px-2 py-0.5 text-xs font-medium text-destructive"
-          >
-            Sold out
-          </span>
-          <span
-            v-else-if="event.free"
-            class="rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-400"
-          >
-            Free
-          </span>
+          </BaseBadge>
+          <BaseBadge v-if="event.soldOut" variant="destructive">Sold out</BaseBadge>
+          <BaseBadge v-else-if="event.free" variant="success">Free</BaseBadge>
         </div>
       </header>
 
@@ -103,9 +91,7 @@ watch(slug, run)
             </RouterLink>
             <span v-else class="font-medium">{{ entry.artist?.name }}</span>
             <div class="flex items-center gap-2 text-xs text-muted-foreground">
-              <span v-if="entry.stage" class="rounded-full border border-border px-2 py-0.5">
-                {{ entry.stage }}
-              </span>
+              <BaseBadge v-if="entry.stage" variant="outline">{{ entry.stage }}</BaseBadge>
               <span v-if="entry.role">
                 {{ roleLabels[entry.role] ?? entry.role }}
               </span>

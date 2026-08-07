@@ -107,13 +107,56 @@ events-frontend/
 
 See [ADR-010](../docs/adr/ADR-010_FRONTEND_STYLING_FRAMEWORK.md) for the decision and rationale.
 
+Reference: [Styling with utility classes](https://tailwindcss.com/docs/styling-with-utility-classes).
+
 - **Styling** — use **Tailwind utility classes** in templates. Avoid hand-written CSS; reach for `<style scoped>`
-  only when utilities genuinely can't express something. Global styles and the design tokens live in
-  `src/assets/main.css`.
+  only when utilities genuinely can't express something (e.g. bridging a third-party library's CSS variables to
+  our tokens, as `EventCalendar.vue` does). Global styles and the design tokens live in `src/assets/main.css`.
 - **Theming** — the colour/radius/typography tokens are **CSS variables** in `src/assets/main.css`
   (`:root` for light, `.dark` for dark mode). Re-theme by editing those variables — do **not** hardcode hex
   colours in components; use the semantic Tailwind tokens (`bg-background`, `text-foreground`, `bg-primary`,
   `text-muted-foreground`, `border-border`, etc.).
+- **No raw palette colours either** — `bg-emerald-500`, `text-slate-600` and friends are as off-limits as hex.
+  They don't flip with the theme, so they drag a hand-written `dark:` override along with them and drift from
+  the palette. If a semantic token is missing for the meaning you need (success, warning, …), **add the token**
+  to `main.css` — both `:root` and `.dark` — and use that.
+- **Deliberately unused tokens** — `--font-heading` and the `--chart-*` / `--sidebar-*` sets in `main.css` have
+  no references in `src/`. They are shadcn registry defaults, kept so a future `chart`/`sidebar` component
+  themes correctly on arrival. Don't "clean them up"; do keep an eye on tokens we added ourselves going unused.
+- **Arbitrary values (`[…]`) are a last resort** — in order of preference:
+  1. a built-in utility — `grayscale-50`, not `grayscale-[0.5]`; check the docs before bracketing;
+  2. a `@theme` token when the value recurs or carries brand meaning — a second sighting of
+     `tracking-[0.18em]`/`tracking-[0.2em]` means it should have been `--tracking-eyebrow`;
+  3. an arbitrary value, for genuinely one-off values (a decorative blur radius, a hero glow's dimensions).
+
+  Arbitrary **variants** (`[&.router-link-exact-active]:…`, `dark:[color-scheme:dark]`) are fine — the rule is
+  about magic *values*.
+- **Inline `style` is allowed only** for values utilities can't express: dynamic values from data, or setting a
+  CSS variable that utilities then read (`class="bg-(--glow)"`). Not as an escape hatch from writing classes.
+- **Never put two conflicting utilities on one element** (`class="grid flex"`) — the winner is decided by
+  stylesheet order, not markup order. Branch with a ternary or `cn()` instead.
+- **Extract repeated class lists into components, not `@apply`** — the moment the same class list appears a
+  third time, it wants to be a component (or a cva variant on an existing one), not a copy-paste. A `v-for`
+  over the markup counts as extraction too — the class list appears once either way. Where the shared thing is
+  genuinely just a string of classes used by two sibling primitives, an exported constant (`FIELD_CLASS` in
+  `@/lib/utils`) beats duplicating it.
+  **`@apply` is reserved for the `@layer base` resets in `main.css`** (`*`, `body`). Do not introduce
+  `.some-component { @apply … }`: it gives up the utility model, hides the styling from the component that
+  owns it, and grows the CSS bundle.
+- **Registry primitive vs. `Base*` wrapper** — reach for `npx shadcn-vue@latest add <name>` first, but check
+  what it renders. The registry's `Select` (and several others) are Reka UI listboxes, **not** native form
+  controls: swapping one in breaks the browser's own dropdown/date picker and every Playwright
+  `selectOption`/`fill` in `e2e/`. Where native behaviour matters, write a thin `Base*` wrapper around the real
+  element instead — `BaseInput.vue`, `BaseSelect.vue` — carrying the shared classes and letting attributes and
+  listeners fall through. `BaseBadge.vue` follows the same shape, with `cva` variants like the shadcn ones.
+- **Keep classes in the official Tailwind order** — layout → box model → typography → visual → variants last,
+  matching the order the surrounding files already use. This is **not automated**: the official ordering tool is
+  a Prettier plugin, and this project uses oxfmt (see "Linting & Formatting" — do not add Prettier). Match the
+  neighbouring files by hand. If drift becomes a problem, `eslint-plugin-better-tailwindcss` (peer-compatible
+  with our eslint 10 / oxlint 1.x / Tailwind 4.x) has an `enforce-consistent-class-order` rule and would be the
+  route to add — no Prettier required.
+- **Prefer shorthand** — `py-4` over `pt-4 pb-4`, `flex justify-between` over `flex flex-row justify-between`,
+  `border-black/50` over a separate opacity utility.
 - **Components** — add shadcn-vue components with `npx shadcn-vue@latest add <name>` (e.g. `button`, `card`,
   `dialog`). They are generated into `src/components/ui/<name>/` and are **owned by us** — edit them freely;
   they are not managed/upgraded by npm. Import via the `@/components/ui/...` alias.
@@ -130,6 +173,11 @@ See [ADR-010](../docs/adr/ADR-010_FRONTEND_STYLING_FRAMEWORK.md) for the decisio
   This applies **only** to vendored `src/components/ui/**` components — our own components (e.g.
   `EventCalendar.vue`) are not registry-managed.
 
+- **Vendored `ui/` components: reach for a variant, not a one-off `class`** — they accept a `class` prop (that's
+  the shadcn pattern, merged via `cn()`), but using it to invent per-call-site colours or sizes erodes the
+  consistency the variants exist to enforce. Add a `variant`/`size` to the component's `cva` config instead.
+  A one-off `class` for *layout* at the call site (margins, `w-full`) is fine — it's appearance that must stay
+  in the variants.
 - **Class merging** — compose conditional classes with the `cn()` helper from `@/lib/utils`
   (clsx + tailwind-merge), as the generated components do.
 - **Icons** — use **`@lucide/vue`** (`import { CalendarDays } from '@lucide/vue'`) for new icons.

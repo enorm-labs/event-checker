@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
 import type { EventSummary } from '@/api/types'
+import BaseBadge from '@/components/BaseBadge.vue'
 import {
   eventLabel,
   formatDate,
@@ -38,7 +39,7 @@ const isLive = computed(
       v-if="event.imageUrl"
       :alt="event.title ?? ''"
       :src="event.imageUrl"
-      class="size-20 shrink-0 rounded-lg object-cover grayscale-[0.5] transition duration-300 group-hover:grayscale-0"
+      class="size-20 shrink-0 rounded-lg object-cover grayscale-50 transition duration-300 group-hover:grayscale-0"
       loading="lazy"
     />
     <div class="min-w-0 flex-1 space-y-1">
@@ -65,18 +66,8 @@ const isLive = computed(
             {{ event.title }}
           </h3>
         </div>
-        <span
-          v-if="event.soldOut"
-          class="shrink-0 rounded-full bg-destructive/10 px-2 py-0.5 text-xs font-medium text-destructive"
-        >
-          Sold out
-        </span>
-        <span
-          v-else-if="event.free"
-          class="shrink-0 rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-400"
-        >
-          Free
-        </span>
+        <BaseBadge v-if="event.soldOut" class="shrink-0" variant="destructive">Sold out</BaseBadge>
+        <BaseBadge v-else-if="event.free" class="shrink-0" variant="success">Free</BaseBadge>
       </div>
       <p
         v-if="event.subtitle"
@@ -96,19 +87,8 @@ const isLive = computed(
           the type pill is outlined rather than filled. Same row, same size, but the eye can tell
           "Club night" from "Techno" without reading them.
         -->
-        <span
-          v-if="eventType"
-          class="rounded-full border border-border px-2 py-0.5 text-xs font-medium text-foreground/70"
-        >
-          {{ eventType }}
-        </span>
-        <span
-          v-for="tag in event.genreTags"
-          :key="tag"
-          class="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground"
-        >
-          {{ tag }}
-        </span>
+        <BaseBadge v-if="eventType" variant="outline">{{ eventType }}</BaseBadge>
+        <BaseBadge v-for="tag in event.genreTags" :key="tag">{{ tag }}</BaseBadge>
         <span
           v-if="formatPrice(event.pricePresale, event.priceCurrency)"
           class="ml-auto text-sm font-medium"

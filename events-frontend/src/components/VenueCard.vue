@@ -21,7 +21,7 @@ const location = computed(() =>
       v-if="venue.imageUrl"
       :alt="venue.name ?? ''"
       :src="venue.imageUrl"
-      class="size-20 shrink-0 rounded-lg object-cover grayscale-[0.5] transition duration-300 group-hover:grayscale-0"
+      class="size-20 shrink-0 rounded-lg object-cover grayscale-50 transition duration-300 group-hover:grayscale-0"
       loading="lazy"
     />
     <div class="min-w-0 flex-1 space-y-1">
