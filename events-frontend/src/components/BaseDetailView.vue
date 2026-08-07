@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import EventCard from '@/components/EventCard.vue'
 import SectionLabel from '@/components/SectionLabel.vue'
 import { usePageTitle } from '@/composables/usePageTitle'
+import { useLocalePath } from '@/composables/useLocalePath'
 
 /**
  * Presentational shell shared by the artist, venue, and promoter detail pages. Owns the
@@ -38,6 +39,8 @@ const props = defineProps<{
 }>()
 
 usePageTitle(() => (props.notFound ? `${props.kind} not found` : (props.name ?? props.kind)))
+
+const localePath = useLocalePath()
 </script>
 
 <template>
@@ -48,7 +51,7 @@ usePageTitle(() => (props.notFound ? `${props.kind} not found` : (props.name ?? 
       <h1 class="text-2xl font-bold tracking-tight">{{ kind }} not found</h1>
       <p class="text-muted-foreground">{{ notFoundText }}</p>
       <Button as-child variant="outline">
-        <RouterLink to="/events">Browse events</RouterLink>
+        <RouterLink :to="localePath('/events')">Browse events</RouterLink>
       </Button>
     </div>
 

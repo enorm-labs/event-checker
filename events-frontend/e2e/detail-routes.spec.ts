@@ -142,13 +142,14 @@ test('links nested entities and navigates from an event to its venue', async ({ 
 
   await page.goto('/events/mock-event')
 
-  // Nested data is bound into working router links.
+  // Nested data is bound into working router links, locale-prefixed (ADR-013 §Decision 2).
   await expect(page.getByRole('link', { name: 'Mock Artist' })).toHaveAttribute(
     'href',
-    '/artists/mock-artist',
+    '/en/artists/mock-artist',
   )
   const venueLink = page.getByRole('link', { name: 'Mock Venue' })
-  await expect(venueLink).toHaveAttribute('href', '/venues/mock-venue')
+  // In-app links are locale-prefixed (ADR-013 §Decision 2).
+  await expect(venueLink).toHaveAttribute('href', '/en/venues/mock-venue')
 
   await venueLink.click()
 

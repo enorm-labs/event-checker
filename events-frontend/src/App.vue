@@ -9,6 +9,7 @@ import BrandLogo from '@/components/BrandLogo.vue'
 import GitHubMark from '@/components/GitHubMark.vue'
 import { pageTitle } from '@/composables/usePageTitle'
 import { REPOSITORY_URL } from '@/lib/links'
+import { useLocalePath } from '@/composables/useLocalePath'
 
 // Screen-reader route announcer. Client-side navigations don't move focus or re-read the
 // page, so a changed document title goes unheard. Mirror the title into an aria-live region
@@ -49,6 +50,8 @@ const themeToggleLabel = computed(() =>
 // "beta" alone would be a useless link name for a screen-reader user reading links out of context.
 const BETA_LABEL =
   'Event Junkie is in beta — data may be incomplete or out of date. See what that means.'
+
+const localePath = useLocalePath()
 </script>
 
 <template>
@@ -82,7 +85,7 @@ const BETA_LABEL =
         aria-label="Main"
         class="mx-auto flex max-w-5xl flex-wrap items-center gap-x-4 gap-y-3 p-4 text-sm font-medium sm:flex-nowrap sm:gap-6"
       >
-        <RouterLink class="rounded-sm transition-opacity hover:opacity-80" to="/">
+        <RouterLink class="rounded-sm transition-opacity hover:opacity-80" :to="localePath('/')">
           <BrandLogo />
         </RouterLink>
 
@@ -93,32 +96,32 @@ const BETA_LABEL =
           :aria-label="BETA_LABEL"
           :title="BETA_LABEL"
           class="mr-2 rounded-full transition-opacity hover:opacity-80"
-          to="/about#beta"
+          :to="localePath('/about#beta')"
         >
           <BaseBadge variant="outline">beta</BaseBadge>
         </RouterLink>
         <div class="order-last flex w-full items-center gap-4 sm:order-none sm:w-auto sm:gap-6">
           <RouterLink
             class="text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
-            to="/events"
+            :to="localePath('/events')"
           >
             Events
           </RouterLink>
           <RouterLink
             class="text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
-            to="/venues"
+            :to="localePath('/venues')"
           >
             Venues
           </RouterLink>
           <RouterLink
             class="text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
-            to="/calendar"
+            :to="localePath('/calendar')"
           >
             Calendar
           </RouterLink>
           <RouterLink
             class="text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
-            to="/about"
+            :to="localePath('/about')"
           >
             About
           </RouterLink>

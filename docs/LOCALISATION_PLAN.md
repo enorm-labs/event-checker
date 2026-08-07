@@ -1,6 +1,6 @@
 # Plan — Localisation (English + German)
 
-> Status: **plan / proposal** (2026-08-07). Nothing here is implemented yet.
+> Status: **Phase 1 implemented** (2026-08-07); Phases 2–5 still proposal.
 > Delivers Phase 7 of [FOOTER_AND_LEGAL_PLAN.md](FOOTER_AND_LEGAL_PLAN.md) §6.2, which agreed the work and recorded the constraints it places on code written
 > since.
 > Related: [BRANDING.md](BRANDING.md) · [ADR-010 (styling)](adr/ADR-010_FRONTEND_STYLING_FRAMEWORK.md) · [ADR-011 (calendar)](adr/ADR-011_CALENDAR_LIBRARY.md)
@@ -169,7 +169,17 @@ translate-the-chrome boundary, the four formatting rules, and which version of t
 (genre tags → data; prices → stay `de-DE`; default locale → `Accept-Language` falling back to `en`); the German tagline is deferred to BRANDING.md as a brand
 rather than architectural decision. **Blocks everything below until the status moves to Accepted.**
 
-**Phase 1 — plumbing, no visible change.** Install `vue-i18n` + the plugin, bump `engines.node`, add the locale files with **English only**, wire `useI18n`,
+**Phase 1 — plumbing.** ✅ done (2026-08-07). Three things differed from the sketch below:
+> - **Only `en` is published.** `LOCALES` lists what exists, and the route matcher is built from it, so `/de/*` is not routable until German messages ship.
+>   Declaring `de` early would have made `/de/events` render English — the half-state this plan warned about, arriving through the routing layer instead of the
+>   catalogue.
+> - **It is not quite "no visible change": URLs move** to `/en/…`. Content is untouched, but every link, bookmark and test URL gains a prefix.
+> - **`formatEventType` became `humaniseEventType`** and moved behind `useFormat()`, which prefers the catalogue and falls back to sentence-casing for enum
+>   values the frontend has not seen. The BFF's `EventType` can gain a value in a release that ships before the frontend.
+>
+> A trailing-slash bug surfaced and was fixed: `/` redirected to `/en/` while every in-app link produced `/en` — two URLs for one page.
+>
+> Original scope: Install `vue-i18n` + the plugin, bump `engines.node`, add the locale files with **English only**, wire `useI18n`,
 make `formatDate` locale-aware and convert `formatEventType` to a lookup. Route prefixes and the redirect from `/`. Reactive `<html lang>`. At the end of this
 phase the site looks identical and only English exists — which is exactly what makes it safe to review.
 

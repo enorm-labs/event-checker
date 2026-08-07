@@ -21,6 +21,7 @@ import {
   RELEASES_URL,
   REPOSITORY_URL,
 } from '@/lib/links'
+import { useLocalePath } from '@/composables/useLocalePath'
 
 // Hardcoded rather than `new Date().getFullYear()`: a clock-derived year makes an archived page
 // claim a copyright it never carried, and it would make any snapshot test depend on the date (§3).
@@ -40,6 +41,8 @@ const releaseUrl = computed(() => {
   if (!version || version === 'dev' || version.includes('-SNAPSHOT')) return null
   return releaseTagUrl(version)
 })
+
+const localePath = useLocalePath()
 </script>
 
 <template>
@@ -86,13 +89,15 @@ const releaseUrl = computed(() => {
           <h2 id="footer-legal-heading" class="font-medium text-foreground">Legal</h2>
           <ul class="space-y-2">
             <li>
-              <RouterLink :class="linkClass" to="/legal/imprint">Imprint</RouterLink>
+              <RouterLink :class="linkClass" :to="localePath('/legal/imprint')">Imprint</RouterLink>
             </li>
             <li>
-              <RouterLink :class="linkClass" to="/legal/privacy">Privacy</RouterLink>
+              <RouterLink :class="linkClass" :to="localePath('/legal/privacy')">Privacy</RouterLink>
             </li>
             <li>
-              <RouterLink :class="linkClass" to="/legal/notices">Open-source notices</RouterLink>
+              <RouterLink :class="linkClass" :to="localePath('/legal/notices')"
+                >Open-source notices</RouterLink
+              >
             </li>
           </ul>
         </nav>

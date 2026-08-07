@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
 import type { VenueSummary } from '@/api/types'
 import { districtLabel } from '@/lib/districts'
+import { useLocalePath } from '@/composables/useLocalePath'
 
 const props = defineProps<{ venue: VenueSummary }>()
 
@@ -10,11 +11,13 @@ const props = defineProps<{ venue: VenueSummary }>()
 const location = computed(() =>
   [props.venue.address, districtLabel(props.venue.district)].filter(Boolean).join(' · '),
 )
+
+const localePath = useLocalePath()
 </script>
 
 <template>
   <RouterLink
-    :to="`/venues/${venue.slug}`"
+    :to="localePath(`/venues/${venue.slug}`)"
     class="group flex gap-4 rounded-xl border border-border bg-card p-3 shadow-sm transition-all hover:border-primary/40 hover:shadow-md motion-safe:hover:-translate-y-0.5"
   >
     <img

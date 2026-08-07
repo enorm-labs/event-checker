@@ -33,7 +33,8 @@ describe('VenueCard', () => {
 
   it('links to the venue detail route', () => {
     const wrapper = mount(VenueCard, { props: { venue }, global: { stubs } })
-    expect(wrapper.get('a').attributes('href')).toBe('/venues/lido')
+    // Locale-prefixed: every in-app link carries the active locale (ADR-013 §Decision 2).
+    expect(wrapper.get('a').attributes('href')).toBe('/en/venues/lido')
   })
 
   it('falls back to the city when address and district are missing', () => {

@@ -33,7 +33,8 @@ describe('EventCard', () => {
 
   it('links to the event detail route', () => {
     const wrapper = mount(EventCard, { props: { event }, global: { stubs } })
-    expect(wrapper.get('a').attributes('href')).toBe('/events/tonight-show')
+    // Locale-prefixed: every in-app link carries the active locale (ADR-013 §Decision 2).
+    expect(wrapper.get('a').attributes('href')).toBe('/en/events/tonight-show')
   })
 
   it('shows a sold-out badge when the event is sold out', () => {

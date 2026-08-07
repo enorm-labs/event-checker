@@ -27,7 +27,8 @@ dev server (`/api` → `http://localhost:8080`).
 - **Vitest** (unit tests, jsdom environment)
 - **Playwright** (end-to-end tests, multi-browser)
 
-**Node version**: `^20.19.0 || >=22.12.0` (enforced via `engines` in `package.json`).
+**Node version**: `>=22.13.0` (enforced via `engines` in `package.json`; `.nvmrc` pins 24). Node 20 was dropped when `vue-i18n` was adopted — it requires
+Node ≥ 22 and `@intlify/unplugin-vue-i18n` ≥ 22.13. See [ADR-013](../docs/adr/ADR-013_LOCALISATION.md).
 
 This project is **not** a Gradle subproject — it is managed separately via npm and has its own CI workflow
 (`build-frontend.yml`).
@@ -229,6 +230,25 @@ Reference: [Styling with utility classes](https://tailwindcss.com/docs/styling-w
 - The Vite dev server proxies `/api` requests to the BFF backend at `http://localhost:8080`.
 - Use `fetch` or a thin wrapper for HTTP calls — no heavy HTTP client libraries needed.
 - Type API responses with TypeScript interfaces matching the backend's response DTOs.
+
+## Localisation
+
+The site is locale-routed: every page lives under `/<locale>/…`, and `src/i18n/locales.ts` is the single list of what is published. See
+[ADR-013](../docs/adr/ADR-013_LOCALISATION.md) and [docs/LOCALISATION_PLAN.md](../docs/LOCALISATION_PLAN.md).
+
+- **Every in-app link goes through `useLocalePath()`.** A bare `to="/events"` still *works* — the catch-all redirects it — but costs a redirect on every
+  navigation and briefly shows the wrong URL. `localePath('/events')` → `/en/events`.
+- **Adding a locale means adding it to `LOCALES`** *and* shipping its message catalogue in the same change. The route matcher is built from that list, so a
+  locale becomes routable the moment it is listed — and a `/de` URL rendering English is worse than no `/de` at all.
+- **User-facing strings belong in `src/i18n/messages/`**, not in templates. (String extraction is Phase 2 of the plan; until then most strings are still
+  inline. New strings should go into the catalogue.)
+- **`lib/format.ts` stays pure** — its functions take a locale argument. `composables/useFormat.ts` is the thin layer that supplies it from the active i18n
+  instance, so unit tests can call the helpers without mounting an app.
+- **`todayIso()`'s `en-CA` is a format, not a language.** It is the shortest way to get `YYYY-MM-DD` out of `Intl`. Making it locale-aware breaks every date
+  filter *silently*, because `12.6.2026` is still a plausible date. Do not touch it.
+- **Event-type labels come from the `eventType.*` catalogue**, with `humaniseEventType()` as the fallback for values the frontend has not been taught yet — the
+  BFF enum can gain a value in a backend release that ships first.
+- Component tests get the i18n plugin automatically via `src/test/setup.ts`; no per-spec wiring needed.
 
 ## Versioning
 

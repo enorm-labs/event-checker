@@ -1,5 +1,8 @@
 <script lang="ts" setup>
 import { RouterLink } from 'vue-router'
+import { useLocalePath } from '@/composables/useLocalePath'
+
+const localePath = useLocalePath()
 </script>
 
 <template>
@@ -39,7 +42,10 @@ import { RouterLink } from 'vue-router'
       <p class="text-muted-foreground">
         What beta does <em>not</em> mean: nothing here is a trial you get charged for, no data about
         you is sold or shared, and nothing tracks you — see the
-        <RouterLink class="text-foreground underline underline-offset-4" to="/legal/privacy">
+        <RouterLink
+          class="text-foreground underline underline-offset-4"
+          :to="localePath('/legal/privacy')"
+        >
           privacy page
         </RouterLink>
         , which is short for exactly that reason.

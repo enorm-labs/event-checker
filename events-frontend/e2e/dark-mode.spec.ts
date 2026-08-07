@@ -40,9 +40,9 @@ test('theme choice persists across in-app navigation', async ({ page }) => {
   await toggle(page).click()
   await expect(html(page)).toHaveClass(/dark/)
 
-  // The logo is the home link.
+  // The logo is the home link. Home is the locale root — `/en`, not `/` (ADR-013 §Decision 2).
   await navLink(page, 'Event Junkie').click()
-  await expect(page).toHaveURL(/\/$/)
+  await expect(page).toHaveURL(/\/en$/)
   await expect(html(page)).toHaveClass(/dark/)
 })
 

@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed (2026-08-07)
+Accepted (2026-08-07)
 
 > Phase 0 of [LOCALISATION_PLAN.md](../LOCALISATION_PLAN.md), which delivers Phase 7 of
 > [FOOTER_AND_LEGAL_PLAN.md](../FOOTER_AND_LEGAL_PLAN.md) §6.2. That document agreed the work and recorded the constraints it has been placing on frontend code
@@ -78,7 +78,7 @@ decision:
 
 ## Decision
 
-**Proposed:**
+**Accepted, and implemented from Phase 1 onward:**
 
 ### 1. `vue-i18n` v11 with `@intlify/unplugin-vue-i18n`, Composition API only
 
