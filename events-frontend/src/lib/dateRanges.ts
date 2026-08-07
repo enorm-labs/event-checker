@@ -55,8 +55,10 @@ export function nextSevenDays(): DateRange {
  * The presets the filter bar offers, in display order. Each range is computed on click rather
  * than up front, so a page left open overnight still resolves "tonight" against the current day.
  */
-export const DATE_PRESETS: readonly { label: string; range: () => DateRange }[] = [
-  { label: 'Tonight', range: tonight },
-  { label: 'This weekend', range: thisWeekend },
-  { label: 'Next 7 days', range: nextSevenDays },
+// `key` rather than a literal label: these are rendered as buttons, so the text is UI chrome and
+// belongs in the message catalogue (`dateRange.*`). The key doubles as the list key.
+export const DATE_PRESETS: readonly { key: string; range: () => DateRange }[] = [
+  { key: 'dateRange.tonight', range: tonight },
+  { key: 'dateRange.thisWeekend', range: thisWeekend },
+  { key: 'dateRange.next7Days', range: nextSevenDays },
 ]

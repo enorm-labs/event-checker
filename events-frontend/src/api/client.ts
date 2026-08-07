@@ -1,4 +1,6 @@
 import createClient from 'openapi-fetch'
+
+import { i18n } from '@/i18n'
 import type { paths } from './schema'
 
 /** Abort a request that has not responded within this window, so the UI never hangs forever. */
@@ -49,20 +51,23 @@ export async function unwrap<T>(request: Promise<FetchResult<T>>): Promise<T> {
 }
 
 /**
- * Maps a thrown request failure to a user-facing message about loading `label` (e.g.
- * "tonight's events"). Transient problems (server errors, rate limiting, timeouts, connectivity)
- * are worth a reload and say so; other failures get a plain message. Callers handle 404 separately
- * via their own `notFound` state.
+ * Maps a thrown request failure to a user-facing message about loading `subjectKey` — a key in
+ * `errors.subject.*` naming what failed, e.g. "tonight's events". Transient problems (server
+ * errors, rate limiting, timeouts, connectivity) are worth a reload and say so; other failures get
+ * a plain message. Callers handle 404 separately via their own `notFound` state.
+ *
+ * Translates via the global i18n instance rather than `useI18n()` because this runs inside an
+ * async `catch`, long after any setup() context has gone.
  */
-export function describeError(e: unknown, label = 'this content'): string {
+export function describeError(e: unknown, subjectKey = 'errors.subject.generic'): string {
+  const t = i18n.global.t
+  const subject = t(subjectKey)
   if (e instanceof ApiError) {
-    if (e.status === 429 || e.status >= 500) {
-      return `Couldn't load ${label}. The server is having trouble right now — please try reloading in a moment.`
-    }
-    return `Couldn't load ${label}. Please try reloading.`
+    if (e.status === 429 || e.status >= 500) return t('errors.serverTrouble', { subject })
+    return t('errors.reload', { subject })
   }
   if (e instanceof DOMException && e.name === 'TimeoutError') {
-    return `Couldn't load ${label}. The request timed out — please check your connection and reload.`
+    return t('errors.timeout', { subject })
   }
-  return `Couldn't load ${label}. Please check your connection and reload.`
+  return t('errors.connection', { subject })
 }

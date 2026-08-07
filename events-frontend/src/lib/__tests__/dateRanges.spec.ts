@@ -53,7 +53,7 @@ describe('date range presets', () => {
       freezeOn(`2026-08-0${day}`)
       for (const preset of DATE_PRESETS) {
         const { from, to } = preset.range()
-        expect(from <= to, `${preset.label} on 2026-08-0${day}`).toBe(true)
+        expect(from <= to, `${preset.key} on 2026-08-0${day}`).toBe(true)
       }
     }
   })

@@ -1,6 +1,6 @@
 # Plan — Localisation (English + German)
 
-> Status: **Phase 1 implemented** (2026-08-07); Phases 2–5 still proposal.
+> Status: **Phases 1–2 implemented** (2026-08-07); Phases 3–5 still proposal.
 > Delivers Phase 7 of [FOOTER_AND_LEGAL_PLAN.md](FOOTER_AND_LEGAL_PLAN.md) §6.2, which agreed the work and recorded the constraints it places on code written
 > since.
 > Related: [BRANDING.md](BRANDING.md) · [ADR-010 (styling)](adr/ADR-010_FRONTEND_STYLING_FRAMEWORK.md) · [ADR-011 (calendar)](adr/ADR-011_CALENDAR_LIBRARY.md)
@@ -183,7 +183,25 @@ rather than architectural decision. **Blocks everything below until the status m
 make `formatDate` locale-aware and convert `formatEventType` to a lookup. Route prefixes and the redirect from `/`. Reactive `<html lang>`. At the end of this
 phase the site looks identical and only English exists — which is exactly what makes it safe to review.
 
-**Phase 2 — extraction.** Move all ~145 template strings and the TypeScript strings into the English catalogue. Mechanical, large, and best reviewed as its own
+**Phase 2 — extraction.** ✅ done (2026-08-07). **One decision below turned out to be wrong and was changed.**
+>
+> The plan assumed the legal pages would become an `en/legal.json` namespace, "several hundred lines of prose". Measured, the About page and the three legal
+> pages carry **~1,600 words across 49 paragraphs, with 29 inline links, `<strong>` and `<code>` elements *inside* those paragraphs**. Every way of putting that
+> in JSON is bad: HTML inside strings rendered with `v-html`; `<i18n-t>` component interpolation at 29 sites; or shattering sentences into fragments no
+> translator could work from.
+>
+> **So long-form prose stays in components, and those pages get a per-locale component in Phase 4.** Only their *chrome* is extracted — the review-date label
+> and the provisional banner heading. Everything else on those four pages is untouched.
+>
+> Extracted: **11 namespace files**, every string in the app chrome, plus the TypeScript side — route titles became `titleKey` message keys, date presets carry
+> a key instead of an English label, and `describeError` now takes a subject *key* and translates through the global i18n instance (it runs in an async `catch`,
+> long after any setup context). The brand name "Event Junkie" is deliberately left as a literal in `BrandLogo` and the home hero — it is not translated.
+>
+> The key-parity test landed with it (`src/i18n/__tests__/messages.spec.ts`): identical key sets, no empty strings, matching `{named}` placeholders, and a
+> catalogue for every published locale. It compares English against itself for now, which is the point — parity is enforced *before* German arrives rather than
+> remembered afterwards.
+>
+> Original scope: Move all ~145 template strings and the TypeScript strings into the English catalogue. Mechanical, large, and best reviewed as its own
 diff with no behaviour change. The key-parity test lands here, comparing English against itself until German arrives.
 
 **Phase 3 — German UI.** Write `de` messages for everything except the legal pages. Add the footer locale switcher. Extend the axe sweep to `/de`.

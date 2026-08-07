@@ -49,7 +49,10 @@ export type EventFilterValues = Pick<
 
 /** Today's events for the Home "Tonight" section. */
 export function useTodayEvents() {
-  return useAsync<EventSummary[]>(() => unwrap(api.GET('/events/today')), "tonight's events")
+  return useAsync<EventSummary[]>(
+    () => unwrap(api.GET('/events/today')),
+    'errors.subject.tonightsEvents',
+  )
 }
 
 /** First page of upcoming events from a given start date (inclusive), for the Home feed. */
@@ -57,7 +60,7 @@ export function useUpcomingEvents(from: string, size = 12) {
   return useAsync<EventSummary[]>(async () => {
     const page = await unwrap(api.GET('/events', { params: { query: { from, size } } }))
     return page.content ?? []
-  }, 'upcoming events')
+  }, 'errors.subject.upcomingEvents')
 }
 
 /**

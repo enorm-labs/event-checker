@@ -15,7 +15,7 @@ export interface VenueSearchParams {
  * Paged venue search for the venues overview page. `params` is read lazily on each `run()`,
  * so callers re-run after changing the search term or the page.
  */
-export function useVenueSearch(params: () => VenueSearchParams, label = 'venues') {
+export function useVenueSearch(params: () => VenueSearchParams, label = 'errors.subject.venues') {
   return useAsync<VenuePage>(
     () => unwrap(api.GET('/venues', { params: { query: params() } })),
     label,
@@ -30,5 +30,5 @@ export function useAllVenues() {
   return useAsync<VenueSummary[]>(async () => {
     const page = await unwrap(api.GET('/venues', { params: { query: { size: 500 } } }))
     return page.content ?? []
-  }, 'venues')
+  }, 'errors.subject.venues')
 }

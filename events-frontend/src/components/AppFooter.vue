@@ -9,6 +9,7 @@
  * sentence for a user of an aggregator, and nobody clicks through to read it (§7.6).
  */
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { RouterLink } from 'vue-router'
 import BrandLogo from '@/components/BrandLogo.vue'
 import { useAppMeta } from '@/composables/useAppMeta'
@@ -26,6 +27,8 @@ import { useLocalePath } from '@/composables/useLocalePath'
 // Hardcoded rather than `new Date().getFullYear()`: a clock-derived year makes an archived page
 // claim a copyright it never carried, and it would make any snapshot test depend on the date (§3).
 const COPYRIGHT_YEAR = 2026
+
+const { t } = useI18n()
 
 const linkClass = 'text-muted-foreground hover:text-foreground'
 
@@ -51,53 +54,58 @@ const localePath = useLocalePath()
       <div class="grid gap-8 sm:grid-cols-2 md:grid-cols-3">
         <div class="space-y-3">
           <BrandLogo always-show-wordmark />
-          <p class="text-sm text-muted-foreground">Can't get enough of Berlin</p>
+          <p class="text-sm text-muted-foreground">{{ t('footer.tagline') }}</p>
           <!-- "Alle Angaben ohne Gewähr", in the register the brand actually speaks (§7.6). -->
-          <p class="max-w-prose text-sm text-muted-foreground">
-            Event data is aggregated from public sources and provided without warranty — always
-            check with the venue before you go.
-          </p>
+          <p class="max-w-prose text-sm text-muted-foreground">{{ t('footer.disclaimer') }}</p>
         </div>
 
         <nav aria-labelledby="footer-project-heading" class="space-y-3 text-sm">
-          <h2 id="footer-project-heading" class="font-medium text-foreground">Project</h2>
+          <h2 id="footer-project-heading" class="font-medium text-foreground">
+            {{ t('footer.project') }}
+          </h2>
           <ul class="space-y-2">
             <li>
               <a :class="linkClass" :href="REPOSITORY_URL" rel="noopener" target="_blank">
-                Source on GitHub
+                {{ t('footer.sourceOnGitHub') }}
               </a>
             </li>
             <li>
               <a :class="linkClass" :href="NEW_ISSUE_URL" rel="noopener" target="_blank">
-                Report an issue
+                {{ t('footer.reportAnIssue') }}
               </a>
             </li>
             <li>
               <a :class="linkClass" :href="CONTRIBUTING_URL" rel="noopener" target="_blank">
-                Contributing
+                {{ t('footer.contributing') }}
               </a>
             </li>
             <li>
               <a :class="linkClass" :href="RELEASES_URL" rel="noopener" target="_blank">
-                Changelog
+                {{ t('footer.changelog') }}
               </a>
             </li>
           </ul>
         </nav>
 
         <nav aria-labelledby="footer-legal-heading" class="space-y-3 text-sm">
-          <h2 id="footer-legal-heading" class="font-medium text-foreground">Legal</h2>
+          <h2 id="footer-legal-heading" class="font-medium text-foreground">
+            {{ t('footer.legal') }}
+          </h2>
           <ul class="space-y-2">
             <li>
-              <RouterLink :class="linkClass" :to="localePath('/legal/imprint')">Imprint</RouterLink>
+              <RouterLink :class="linkClass" :to="localePath('/legal/imprint')">{{
+                t('footer.imprint')
+              }}</RouterLink>
             </li>
             <li>
-              <RouterLink :class="linkClass" :to="localePath('/legal/privacy')">Privacy</RouterLink>
+              <RouterLink :class="linkClass" :to="localePath('/legal/privacy')">{{
+                t('footer.privacy')
+              }}</RouterLink>
             </li>
             <li>
-              <RouterLink :class="linkClass" :to="localePath('/legal/notices')"
-                >Open-source notices</RouterLink
-              >
+              <RouterLink :class="linkClass" :to="localePath('/legal/notices')">{{
+                t('footer.notices')
+              }}</RouterLink>
             </li>
           </ul>
         </nav>
@@ -109,9 +117,9 @@ const localePath = useLocalePath()
         <!-- Two clauses, deliberately: the copyright covers this site's own design and text, the
              licence covers the code. Event data is neither ours to licence nor covered here (§3). -->
         <p>
-          © {{ COPYRIGHT_YEAR }} Event Junkie ·
+          {{ t('footer.copyright', { year: COPYRIGHT_YEAR }) }} ·
           <a :class="linkClass" :href="LICENSE_URL" rel="noopener" target="_blank">
-            Code under Apache-2.0
+            {{ t('footer.licence') }}
           </a>
         </p>
 

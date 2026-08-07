@@ -15,7 +15,7 @@ export default defineConfig({
     // Precompiles the message catalogues at build time so the vue-i18n *message compiler* is not
     // shipped to the browser. Without it the runtime is meaningfully larger and every message is
     // compiled on first use. See docs/adr/ADR-013_LOCALISATION.md.
-    vueI18n({ include: fileURLToPath(new URL('./src/i18n/messages/**', import.meta.url)) }),
+    vueI18n({ include: fileURLToPath(new URL('./src/i18n/messages/**/*.json', import.meta.url)) }),
   ],
   resolve: {
     alias: {

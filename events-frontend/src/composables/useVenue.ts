@@ -6,6 +6,6 @@ import { useAsync } from './useAsync'
 export function useVenue(slug: () => string) {
   return useAsync<VenueDetail>(
     () => unwrap(api.GET('/venues/{slug}', { params: { path: { slug: slug() } } })),
-    'this venue',
+    'errors.subject.venue',
   )
 }

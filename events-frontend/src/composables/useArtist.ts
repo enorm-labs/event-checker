@@ -6,6 +6,6 @@ import { useAsync } from './useAsync'
 export function useArtist(slug: () => string) {
   return useAsync<ArtistDetail>(
     () => unwrap(api.GET('/artists/{slug}', { params: { path: { slug: slug() } } })),
-    'this artist',
+    'errors.subject.artist',
   )
 }

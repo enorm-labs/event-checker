@@ -6,6 +6,7 @@ import BaseBadge from '@/components/BaseBadge.vue'
 import { eventLabel, formatPrice, formatTime, todayIso } from '@/lib/format'
 import { useFormat } from '@/composables/useFormat'
 import { useLocalePath } from '@/composables/useLocalePath'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps<{ event: EventSummary }>()
 
@@ -27,6 +28,8 @@ const isLive = computed(
 )
 
 const localePath = useLocalePath()
+
+const { t } = useI18n()
 </script>
 
 <template>
@@ -49,7 +52,7 @@ const localePath = useLocalePath()
               class="absolute inline-flex size-full rounded-full bg-primary opacity-75 motion-safe:animate-ping"
             />
             <span class="relative inline-flex size-2 rounded-full bg-primary" />
-            <span class="sr-only">Live tonight</span>
+            <span class="sr-only">{{ t('events.card.liveTonight') }}</span>
           </span>
           <!--
             Both lines are `truncate`d, so a long one is cut off with no way to read the rest.
@@ -65,8 +68,12 @@ const localePath = useLocalePath()
             {{ event.title }}
           </h3>
         </div>
-        <BaseBadge v-if="event.soldOut" class="shrink-0" variant="destructive">Sold out</BaseBadge>
-        <BaseBadge v-else-if="event.free" class="shrink-0" variant="success">Free</BaseBadge>
+        <BaseBadge v-if="event.soldOut" class="shrink-0" variant="destructive">{{
+          t('events.card.soldOut')
+        }}</BaseBadge>
+        <BaseBadge v-else-if="event.free" class="shrink-0" variant="success">{{
+          t('events.card.free')
+        }}</BaseBadge>
       </div>
       <p
         v-if="event.subtitle"

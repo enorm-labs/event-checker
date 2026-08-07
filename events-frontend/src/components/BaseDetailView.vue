@@ -6,6 +6,7 @@ import EventCard from '@/components/EventCard.vue'
 import SectionLabel from '@/components/SectionLabel.vue'
 import { usePageTitle } from '@/composables/usePageTitle'
 import { useLocalePath } from '@/composables/useLocalePath'
+import { useI18n } from 'vue-i18n'
 
 /**
  * Presentational shell shared by the artist, venue, and promoter detail pages. Owns the
@@ -41,17 +42,19 @@ const props = defineProps<{
 usePageTitle(() => (props.notFound ? `${props.kind} not found` : (props.name ?? props.kind)))
 
 const localePath = useLocalePath()
+
+const { t } = useI18n()
 </script>
 
 <template>
   <main class="mx-auto max-w-3xl space-y-8 p-8">
-    <p v-if="loading" class="text-sm text-muted-foreground">Cueing it up…</p>
+    <p v-if="loading" class="text-sm text-muted-foreground">{{ t('common.states.loading') }}</p>
 
     <div v-else-if="notFound" class="space-y-3">
       <h1 class="text-2xl font-bold tracking-tight">{{ kind }} not found</h1>
       <p class="text-muted-foreground">{{ notFoundText }}</p>
       <Button as-child variant="outline">
-        <RouterLink :to="localePath('/events')">Browse events</RouterLink>
+        <RouterLink :to="localePath('/events')">{{ t('common.actions.browseEvents') }}</RouterLink>
       </Button>
     </div>
 
@@ -76,8 +79,10 @@ const localePath = useLocalePath()
       <slot />
 
       <section class="space-y-4">
-        <SectionLabel>Upcoming events</SectionLabel>
-        <p v-if="eventsLoading" class="text-sm text-muted-foreground">Cueing it up…</p>
+        <SectionLabel>{{ t('common.upcomingEvents') }}</SectionLabel>
+        <p v-if="eventsLoading" class="text-sm text-muted-foreground">
+          {{ t('common.states.loading') }}
+        </p>
         <p v-else-if="eventsError" class="text-sm text-destructive">{{ eventsError }}</p>
         <p v-else-if="!events?.content?.length" class="text-sm text-muted-foreground">
           {{ emptyText }}

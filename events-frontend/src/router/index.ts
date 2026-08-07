@@ -3,13 +3,14 @@ import { h } from 'vue'
 import { RouterView } from 'vue-router'
 import { formatTitle, setPageTitle } from '../composables/usePageTitle'
 import { isLocale, LOCALES, type Locale, rememberLocale, resolveLocale } from '../i18n/locales'
-import { setI18nLocale } from '../i18n'
+import { i18n, setI18nLocale } from '../i18n'
 import HomeView from '../views/HomeView.vue'
 
 declare module 'vue-router' {
   interface RouteMeta {
-    // Per-view page title. Detail views set their title from loaded data instead (see usePageTitle).
-    title?: string
+    // Per-view page title, as a message key. Detail views set their title from loaded data
+    // instead (see usePageTitle), so theirs is intentionally unset.
+    titleKey?: string
   }
 }
 
@@ -45,14 +46,14 @@ const router = createRouter({
         {
           path: 'calendar',
           name: 'calendar',
-          meta: { title: 'Calendar' },
+          meta: { titleKey: 'pageTitle.calendar' },
           // Lazy-loaded so FullCalendar's weight does not affect first paint elsewhere (see ADR-011).
           component: () => import('../views/CalendarView.vue'),
         },
         {
           path: 'events',
           name: 'events',
-          meta: { title: 'Events' },
+          meta: { titleKey: 'pageTitle.events' },
           component: () => import('../views/EventsView.vue'),
         },
         {
@@ -63,7 +64,7 @@ const router = createRouter({
         {
           path: 'venues',
           name: 'venues',
-          meta: { title: 'Venues' },
+          meta: { titleKey: 'pageTitle.venues' },
           component: () => import('../views/VenuesView.vue'),
         },
         {
@@ -84,7 +85,7 @@ const router = createRouter({
         {
           path: 'about',
           name: 'about',
-          meta: { title: 'About' },
+          meta: { titleKey: 'pageTitle.about' },
           // route level code-splitting
           // this generates a separate chunk (About.[hash].js) for this route
           // which is lazy-loaded when the route is visited.
@@ -96,19 +97,19 @@ const router = createRouter({
         {
           path: 'legal/imprint',
           name: 'imprint',
-          meta: { title: 'Imprint' },
+          meta: { titleKey: 'pageTitle.imprint' },
           component: () => import('../views/legal/ImprintView.vue'),
         },
         {
           path: 'legal/privacy',
           name: 'privacy',
-          meta: { title: 'Privacy' },
+          meta: { titleKey: 'pageTitle.privacy' },
           component: () => import('../views/legal/PrivacyView.vue'),
         },
         {
           path: 'legal/notices',
           name: 'notices',
-          meta: { title: 'Open-source notices' },
+          meta: { titleKey: 'pageTitle.notices' },
           component: () => import('../views/legal/NoticesView.vue'),
         },
       ],
@@ -154,7 +155,7 @@ router.beforeEach((to) => {
 // Static views get their title from route meta. Detail views override it once their entity loads,
 // so their meta is intentionally left unset (falls back to the home title).
 router.afterEach((to) => {
-  setPageTitle(formatTitle(to.meta.title))
+  setPageTitle(formatTitle(to.meta.titleKey ? i18n.global.t(to.meta.titleKey) : null))
 })
 
 export default router

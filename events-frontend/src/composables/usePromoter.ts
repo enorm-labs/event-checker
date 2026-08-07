@@ -6,6 +6,6 @@ import { useAsync } from './useAsync'
 export function usePromoter(slug: () => string) {
   return useAsync<PromoterDetail>(
     () => unwrap(api.GET('/promoters/{slug}', { params: { path: { slug: slug() } } })),
-    'this promoter',
+    'errors.subject.promoter',
   )
 }
