@@ -11,6 +11,10 @@
      'Geist Variable' family — no external font request (see docs/BRANDING.md §5.3). */
   --font-sans: 'Geist Variable', sans-serif;
   --font-heading: var(--font-sans);
+  /* The editorial "eyebrow" tracking (SectionLabel, the hero tagline) — one value so the two
+     can't drift apart the way `tracking-[0.18em]` and `tracking-[0.2em]` did. */
+  --tracking-eyebrow: 0.18em;
+  --color-success: var(--success);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -66,6 +70,10 @@
   --accent: oklch(0.96 0.02 295);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
+  /* Free / available — the positive counterpart to --destructive, used the same way
+     (`bg-success/10` + `text-success`). A token rather than a raw emerald-* utility so it
+     flips with the theme instead of needing a hand-written dark: override. */
+  --success: oklch(0.508 0.118 165.612);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.55 0.24 295);
@@ -83,6 +91,11 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.55 0.24 295);
+
+  /* Makes the browser's own widgets — date pickers, scrollbars, number spinners — follow the
+     theme. Previously bolted onto the two date inputs as [color-scheme:light] /
+     dark:[color-scheme:dark]; declared here it covers every native control in the app. */
+  color-scheme: light;
 }
 
 .dark {
@@ -102,6 +115,7 @@
   --accent: oklch(0.27 0.03 295);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
+  --success: oklch(0.765 0.177 163.223);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.72 0.2 295);
@@ -118,6 +132,8 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.72 0.2 295);
+
+  color-scheme: dark;
 }
 
 @layer base {

@@ -6,10 +6,7 @@ withDefaults(defineProps<{ as?: string }>(), { as: 'h2' })
 </script>
 
 <template>
-  <component
-    :is="as"
-    class="font-mono text-sm font-medium tracking-[0.18em] text-primary uppercase"
-  >
+  <component :is="as" class="font-mono text-sm font-medium tracking-eyebrow text-primary uppercase">
     <slot />
   </component>
 </template>

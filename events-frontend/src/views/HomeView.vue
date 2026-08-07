@@ -38,7 +38,7 @@ onMounted(() => {
         <h1 class="text-4xl font-extrabold tracking-tight sm:text-6xl">
           Event <span class="text-primary">Junkie</span>
         </h1>
-        <p class="font-mono text-xs tracking-[0.2em] text-muted-foreground uppercase sm:text-sm">
+        <p class="font-mono text-xs tracking-eyebrow text-muted-foreground uppercase sm:text-sm">
           {{ TAGLINE }}
         </p>
         <Button as-child size="lg">

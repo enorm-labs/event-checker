@@ -2,6 +2,8 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { type LocationQueryRaw, useRoute, useRouter } from 'vue-router'
 import { Button } from '@/components/ui/button'
+import BaseInput from '@/components/BaseInput.vue'
+import BaseSelect from '@/components/BaseSelect.vue'
 import SectionLabel from '@/components/SectionLabel.vue'
 import VenueCard from '@/components/VenueCard.vue'
 import { useVenueSearch, type VenueSearchParams } from '@/composables/useVenues'
@@ -68,24 +70,18 @@ watch(() => route.query, run, { deep: true })
 
     <div class="flex flex-wrap items-end gap-3 rounded-xl border border-border bg-card p-4">
       <form class="flex gap-2" @submit.prevent="applyFilters({ q: search })">
-        <input
-          v-model="search"
-          class="h-8 rounded-lg border border-border bg-background px-3 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
-          placeholder="Search venues…"
-          type="search"
-        />
+        <BaseInput v-model="search" class="px-3" placeholder="Search venues…" type="search" />
         <Button type="submit" variant="outline">Search</Button>
       </form>
 
-      <select
-        :value="queryString('district')"
+      <BaseSelect
+        :model-value="queryString('district')"
         aria-label="Filter by district"
-        class="h-8 rounded-lg border border-border bg-background px-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
         @change="applyFilters({ district: ($event.target as HTMLSelectElement).value })"
       >
         <option value="">All districts</option>
         <option v-for="d in DISTRICTS" :key="d.slug" :value="d.slug">{{ d.label }}</option>
-      </select>
+      </BaseSelect>
     </div>
 
     <p v-if="loading" class="text-sm text-muted-foreground">Rounding up the rooms…</p>
