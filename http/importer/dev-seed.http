@@ -10,7 +10,7 @@
 ### run finishes. Poll `GET /api/admin/event-sources` to watch each source's status.
 ###
 ### Sources (alphabetical):
-###   Admiralspalast      — https://www.admiralspalast.theater/veranstaltungsuebersicht.html
+###   Admiralspalast       — https://www.admiralspalast.theater/veranstaltungsuebersicht.html
 ###   ÆDEN                 — https://aedenberlin.com/events/
 ###   Alte Kantine         — https://alte-kantine.eu/
 ###   AMT                  — https://www.club-amt.berlin/events
@@ -61,11 +61,6 @@
 ###   MAXXIM               — https://www.maxxim-berlin.de/partys
 ###   Metropol             — https://metropol-berlin.de/events
 ###   migas                — https://migas.berlin/program/
-###   Tresor               — https://tresorberlin.com/club/events/
-###   Uber Arena           — https://www.uber-arena.de/events/all
-###   Uber Eats Music Hall — https://www.uber-eats-music-hall.de/events/all
-###   UFO im Velodrom      — https://www.velomax.de/events
-###   Velodrom             — https://www.velomax.de/events
 ###   Mikropol             — https://mikropol-berlin.de/events/
 ###   Modus Berlin         — https://modus-berlin.de/events
 ###   Monarch              — https://kottimonarch.de/programm.php
@@ -74,7 +69,7 @@
 ###   MS Hoppetosse        — https://hoppetosse.berlin/program/
 ###   Neue Zukunft         — https://neue-zukunft.org/
 ###   OHM                  — https://ohmberlin.com/
-###   Panke Culture       — https://www.pankeculture.com/programme/
+###   Panke Culture        — https://www.pankeculture.com/programme/
 ###   Parkbühne Wuhlheide  — https://www.wuhlheide.de/programm
 ###   Privatclub           — https://privatclub-berlin.de/
 ###   Quasimodo            — https://quasimodo.club/events
@@ -90,8 +85,13 @@
 ###   Supamolly            — https://www.supamolly.de/?p=programm
 ###   Tempodrom            — https://www.tempodrom.de/programm-und-tickets/
 ###   Theater im Delphi    — https://theater-im-delphi.de/programm/
+###   Tresor               — https://tresorberlin.com/club/events/
+###   Uber Arena           — https://www.uber-arena.de/events/all
+###   Uber Eats Music Hall — https://www.uber-eats-music-hall.de/events/all
+###   UFO im Velodrom      — https://www.velomax.de/events
 ###   Urania               — https://www.urania.de/kalender/
 ###   Urban Spree          — https://www.urbanspree.com/program/
+###   Velodrom             — https://www.velomax.de/events
 ###   VOID Club            — https://www.void-club.de/
 ###   Wild at Heart        — https://www.wildatheartberlin.de/concerts.php
 ###   Zenner               — https://zenner.berlin/programm
@@ -3108,301 +3108,6 @@ Accept: application/json
 %}
 
 ### ————————————————————————————————————————————————————————————
-### Tresor (Köpenicker Str. 70, Berlin-Mitte — im Heizkraftwerk)
-### ————————————————————————————————————————————————————————————
-
-### --- Create Tresor venue ---
-POST {{importer-host}}/api/admin/venues
-Content-Type: application/json
-
-{
-    "name": "Tresor",
-    "address": "Köpenicker Str. 70",
-    "city": "Berlin",
-    "postalCode": "10179",
-    "district": "mitte",
-    "latitude": 52.51083,
-    "longitude": 13.42056,
-    "websiteUrl": "https://tresorberlin.com",
-    "description": "The techno institution in a disused power plant on Koepenicker Strasse, with the Tresor vault floor, the Globus floor above it and the Aurora Bar."
-}
-
-> {%
-    client.global.set("tresor_venue_id", response.body.id);
-    client.test("Tresor venue created", function () {
-        client.assert(response.status === 201, "Expected 201 but got " + response.status);
-    });
-%}
-
-### --- Create Tresor event source ---
-# Links the venue to the TresorWebsiteImporter.
-# The sourceType "TRESOR" matches EventSource.TRESOR.
-POST {{importer-host}}/api/admin/event-sources
-Content-Type: application/json
-
-{
-    "venueId": {{tresor_venue_id}},
-    "name": "Tresor",
-    "url": "https://tresorberlin.com/club/events/",
-    "sourceType": "TRESOR",
-    "enabled": true,
-    "importIntervalMinutes": 1440,
-    "maxRetries": 3
-}
-
-> {%
-    client.test("Tresor event source created", function () {
-        client.assert(response.status === 201, "Expected 201 but got " + response.status);
-    });
-%}
-
-### --- Trigger initial Tresor import ---
-POST {{importer-host}}/api/admin/event-sources/tresor/import
-Accept: application/json
-
-> {%
-    client.test("Tresor import triggered", function () {
-        client.assert(response.status === 202, "Expected 202 but got " + response.status);
-    });
-%}
-
-### ————————————————————————————————————————————————————————————
-### Uber Arena (Mühlenstr. 12-30, Berlin-Friedrichshain)
-### ————————————————————————————————————————————————————————————
-
-### --- Create Uber Arena venue ---
-POST {{importer-host}}/api/admin/venues
-Content-Type: application/json
-
-{
-    "name": "Uber Arena",
-    "address": "Mühlenstr. 12-30",
-    "city": "Berlin",
-    "postalCode": "10243",
-    "district": "friedrichshain-kreuzberg",
-    "latitude": 52.50506,
-    "longitude": 13.44339,
-    "websiteUrl": "https://www.uber-arena.de",
-    "description": "Berlin's largest indoor arena on the Spree, hosting touring concerts, shows and comedy alongside its resident sport teams."
-}
-
-> {%
-    client.global.set("uber_arena_venue_id", response.body.id);
-    client.test("Uber Arena venue created", function () {
-        client.assert(response.status === 201, "Expected 201 but got " + response.status);
-    });
-%}
-
-### --- Create Uber Arena event source ---
-# Links the venue to the UberArenaWebsiteImporter.
-# The sourceType "UBER_ARENA" matches EventSource.UBER_ARENA.
-POST {{importer-host}}/api/admin/event-sources
-Content-Type: application/json
-
-{
-    "venueId": {{uber_arena_venue_id}},
-    "name": "Uber Arena",
-    "url": "https://www.uber-arena.de/events/all",
-    "sourceType": "UBER_ARENA",
-    "enabled": true,
-    "importIntervalMinutes": 1440,
-    "maxRetries": 3
-}
-
-> {%
-    client.test("Uber Arena event source created", function () {
-        client.assert(response.status === 201, "Expected 201 but got " + response.status);
-    });
-%}
-
-### --- Trigger initial Uber Arena import ---
-POST {{importer-host}}/api/admin/event-sources/uber-arena/import
-Accept: application/json
-
-> {%
-    client.test("Uber Arena import triggered", function () {
-        client.assert(response.status === 202, "Expected 202 but got " + response.status);
-    });
-%}
-
-### ————————————————————————————————————————————————————————————
-### Uber Eats Music Hall (Uber Platz 2, Berlin-Friedrichshain)
-### ————————————————————————————————————————————————————————————
-
-### --- Create Uber Eats Music Hall venue ---
-POST {{importer-host}}/api/admin/venues
-Content-Type: application/json
-
-{
-    "name": "Uber Eats Music Hall",
-    "address": "Uber Platz 2",
-    "city": "Berlin",
-    "postalCode": "10243",
-    "district": "friedrichshain-kreuzberg",
-    "latitude": 52.50410,
-    "longitude": 13.44251,
-    "websiteUrl": "https://www.uber-eats-music-hall.de",
-    "description": "Mid-size concert hall next door to the Uber Arena, programming touring bands, comedy and staged shows."
-}
-
-> {%
-    client.global.set("uber_eats_music_hall_venue_id", response.body.id);
-    client.test("Uber Eats Music Hall venue created", function () {
-        client.assert(response.status === 201, "Expected 201 but got " + response.status);
-    });
-%}
-
-### --- Create Uber Eats Music Hall event source ---
-# Links the venue to the UberEatsMusicHallWebsiteImporter.
-# The sourceType "UBER_EATS_MUSIC_HALL" matches EventSource.UBER_EATS_MUSIC_HALL.
-POST {{importer-host}}/api/admin/event-sources
-Content-Type: application/json
-
-{
-    "venueId": {{uber_eats_music_hall_venue_id}},
-    "name": "Uber Eats Music Hall",
-    "url": "https://www.uber-eats-music-hall.de/events/all",
-    "sourceType": "UBER_EATS_MUSIC_HALL",
-    "enabled": true,
-    "importIntervalMinutes": 1440,
-    "maxRetries": 3
-}
-
-> {%
-    client.test("Uber Eats Music Hall event source created", function () {
-        client.assert(response.status === 201, "Expected 201 but got " + response.status);
-    });
-%}
-
-### --- Trigger initial Uber Eats Music Hall import ---
-POST {{importer-host}}/api/admin/event-sources/uber-eats-music-hall/import
-Accept: application/json
-
-> {%
-    client.test("Uber Eats Music Hall import triggered", function () {
-        client.assert(response.status === 202, "Expected 202 but got " + response.status);
-    });
-%}
-
-### ————————————————————————————————————————————————————————————
-### UFO im Velodrom (Paul-Heyse-Str. 26, Berlin — Velomax)
-### ————————————————————————————————————————————————————————————
-
-### --- Create UFO im Velodrom venue ---
-POST {{importer-host}}/api/admin/venues
-Content-Type: application/json
-
-{
-    "name": "UFO im Velodrom",
-    "address": "Paul-Heyse-Str. 26",
-    "city": "Berlin",
-    "postalCode": "10407",
-    "district": "pankow",
-    "latitude": 52.53056,
-    "longitude": 13.45111,
-    "websiteUrl": "https://www.ufo-velodrom.de",
-    "description": "The smaller hall configured inside the Velodrom, used for mid-sized concerts and listed as its own venue on the Velomax programme."
-}
-
-> {%
-    client.global.set("ufo_venue_id", response.body.id);
-    client.test("UFO im Velodrom venue created", function () {
-        client.assert(response.status === 201, "Expected 201 but got " + response.status);
-    });
-%}
-
-### --- Create UFO im Velodrom event source ---
-# Links the venue to the UfoImVelodromWebsiteImporter.
-# The sourceType "UFO_IM_VELODROM" matches EventSource.UFO_IM_VELODROM.
-POST {{importer-host}}/api/admin/event-sources
-Content-Type: application/json
-
-{
-    "venueId": {{ufo_venue_id}},
-    "name": "UFO im Velodrom",
-    "url": "https://www.velomax.de/events",
-    "sourceType": "UFO_IM_VELODROM",
-    "enabled": true,
-    "importIntervalMinutes": 1440,
-    "maxRetries": 3
-}
-
-> {%
-    client.test("UFO im Velodrom event source created", function () {
-        client.assert(response.status === 201, "Expected 201 but got " + response.status);
-    });
-%}
-
-### --- Trigger initial UFO im Velodrom import ---
-POST {{importer-host}}/api/admin/event-sources/ufo-im-velodrom/import
-Accept: application/json
-
-> {%
-    client.test("UFO im Velodrom import triggered", function () {
-        client.assert(response.status === 202, "Expected 202 but got " + response.status);
-    });
-%}
-
-### ————————————————————————————————————————————————————————————
-### Velodrom (Paul-Heyse-Str. 26, Berlin — Velomax)
-### ————————————————————————————————————————————————————————————
-
-### --- Create Velodrom venue ---
-POST {{importer-host}}/api/admin/venues
-Content-Type: application/json
-
-{
-    "name": "Velodrom",
-    "address": "Paul-Heyse-Str. 26",
-    "city": "Berlin",
-    "postalCode": "10407",
-    "district": "pankow",
-    "latitude": 52.53075,
-    "longitude": 13.45112,
-    "websiteUrl": "https://www.velodrom.de",
-    "description": "A cycling arena at S-Bahnhof Landsberger Allee that doubles as one of Berlin's larger concert venues."
-}
-
-> {%
-    client.global.set("velodrom_venue_id", response.body.id);
-    client.test("Velodrom venue created", function () {
-        client.assert(response.status === 201, "Expected 201 but got " + response.status);
-    });
-%}
-
-### --- Create Velodrom event source ---
-# Links the venue to the VelodromWebsiteImporter.
-# The sourceType "VELODROM" matches EventSource.VELODROM.
-POST {{importer-host}}/api/admin/event-sources
-Content-Type: application/json
-
-{
-    "venueId": {{velodrom_venue_id}},
-    "name": "Velodrom",
-    "url": "https://www.velomax.de/events",
-    "sourceType": "VELODROM",
-    "enabled": true,
-    "importIntervalMinutes": 1440,
-    "maxRetries": 3
-}
-
-> {%
-    client.test("Velodrom event source created", function () {
-        client.assert(response.status === 201, "Expected 201 but got " + response.status);
-    });
-%}
-
-### --- Trigger initial Velodrom import ---
-POST {{importer-host}}/api/admin/event-sources/velodrom/import
-Accept: application/json
-
-> {%
-    client.test("Velodrom import triggered", function () {
-        client.assert(response.status === 202, "Expected 202 but got " + response.status);
-    });
-%}
-
-### ————————————————————————————————————————————————————————————
 ### Mikropol (Naumannstr. 33, Berlin-Schöneberg)
 ### ————————————————————————————————————————————————————————————
 
@@ -3875,65 +3580,6 @@ Accept: application/json
 %}
 
 ### ————————————————————————————————————————————————————————————
-### Parkbühne Wuhlheide (An der Wuhlheide 187, Berlin-Köpenick)
-### ————————————————————————————————————————————————————————————
-
-### --- Create Parkbühne Wuhlheide venue ---
-POST {{importer-host}}/api/admin/venues
-Content-Type: application/json
-
-{
-    "name": "Parkbühne Wuhlheide",
-    "address": "An der Wuhlheide 187",
-    "city": "Berlin",
-    "postalCode": "12459",
-    "district": "treptow-koepenick",
-    "latitude": 52.46177,
-    "longitude": 13.56405,
-    "websiteUrl": "https://www.wuhlheide.de",
-    "description": "A large open-air amphitheatre in the Wuhlheide park, running a seasonal summer programme of touring concerts."
-}
-
-> {%
-    client.global.set("wuhlheide_venue_id", response.body.id);
-    client.test("Parkbühne Wuhlheide venue created", function () {
-        client.assert(response.status === 201, "Expected 201 but got " + response.status);
-    });
-%}
-
-### --- Create Parkbühne Wuhlheide event source ---
-# Links the venue to the WuhlheideWebsiteImporter.
-# The sourceType "WUHLHEIDE" matches EventSource.WUHLHEIDE.
-POST {{importer-host}}/api/admin/event-sources
-Content-Type: application/json
-
-{
-    "venueId": {{wuhlheide_venue_id}},
-    "name": "Parkbühne Wuhlheide",
-    "url": "https://www.wuhlheide.de/programm",
-    "sourceType": "WUHLHEIDE",
-    "enabled": true,
-    "importIntervalMinutes": 1440,
-    "maxRetries": 3
-}
-
-> {%
-    client.test("Parkbühne Wuhlheide event source created", function () {
-        client.assert(response.status === 201, "Expected 201 but got " + response.status);
-    });
-%}
-
-### --- Trigger initial Parkbühne Wuhlheide import ---
-POST {{importer-host}}/api/admin/event-sources/parkbuhne-wuhlheide/import
-Accept: application/json
-
-> {%
-    client.test("Parkbühne Wuhlheide import triggered", function () {
-        client.assert(response.status === 202, "Expected 202 but got " + response.status);
-    });
-%}
-
-### ————————————————————————————————————————————————————————————
 ### Panke Culture (Gerichtstr. 23, Berlin-Wedding — im Hinterhof)
 ### ————————————————————————————————————————————————————————————
 
@@ -3988,6 +3634,65 @@ Accept: application/json
 
 > {%
     client.test("Panke Culture import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Parkbühne Wuhlheide (An der Wuhlheide 187, Berlin-Köpenick)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Parkbühne Wuhlheide venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Parkbühne Wuhlheide",
+    "address": "An der Wuhlheide 187",
+    "city": "Berlin",
+    "postalCode": "12459",
+    "district": "treptow-koepenick",
+    "latitude": 52.46177,
+    "longitude": 13.56405,
+    "websiteUrl": "https://www.wuhlheide.de",
+    "description": "A large open-air amphitheatre in the Wuhlheide park, running a seasonal summer programme of touring concerts."
+}
+
+> {%
+    client.global.set("wuhlheide_venue_id", response.body.id);
+    client.test("Parkbühne Wuhlheide venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Parkbühne Wuhlheide event source ---
+# Links the venue to the WuhlheideWebsiteImporter.
+# The sourceType "WUHLHEIDE" matches EventSource.WUHLHEIDE.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{wuhlheide_venue_id}},
+    "name": "Parkbühne Wuhlheide",
+    "url": "https://www.wuhlheide.de/programm",
+    "sourceType": "WUHLHEIDE",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Parkbühne Wuhlheide event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Parkbühne Wuhlheide import ---
+POST {{importer-host}}/api/admin/event-sources/parkbuhne-wuhlheide/import
+Accept: application/json
+
+> {%
+    client.test("Parkbühne Wuhlheide import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}
@@ -4819,6 +4524,242 @@ Accept: application/json
 %}
 
 ### ————————————————————————————————————————————————————————————
+### Tresor (Köpenicker Str. 70, Berlin-Mitte — im Heizkraftwerk)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Tresor venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Tresor",
+    "address": "Köpenicker Str. 70",
+    "city": "Berlin",
+    "postalCode": "10179",
+    "district": "mitte",
+    "latitude": 52.51083,
+    "longitude": 13.42056,
+    "websiteUrl": "https://tresorberlin.com",
+    "description": "The techno institution in a disused power plant on Koepenicker Strasse, with the Tresor vault floor, the Globus floor above it and the Aurora Bar."
+}
+
+> {%
+    client.global.set("tresor_venue_id", response.body.id);
+    client.test("Tresor venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Tresor event source ---
+# Links the venue to the TresorWebsiteImporter.
+# The sourceType "TRESOR" matches EventSource.TRESOR.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{tresor_venue_id}},
+    "name": "Tresor",
+    "url": "https://tresorberlin.com/club/events/",
+    "sourceType": "TRESOR",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Tresor event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Tresor import ---
+POST {{importer-host}}/api/admin/event-sources/tresor/import
+Accept: application/json
+
+> {%
+    client.test("Tresor import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Uber Arena (Mühlenstr. 12-30, Berlin-Friedrichshain)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Uber Arena venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Uber Arena",
+    "address": "Mühlenstr. 12-30",
+    "city": "Berlin",
+    "postalCode": "10243",
+    "district": "friedrichshain-kreuzberg",
+    "latitude": 52.50506,
+    "longitude": 13.44339,
+    "websiteUrl": "https://www.uber-arena.de",
+    "description": "Berlin's largest indoor arena on the Spree, hosting touring concerts, shows and comedy alongside its resident sport teams."
+}
+
+> {%
+    client.global.set("uber_arena_venue_id", response.body.id);
+    client.test("Uber Arena venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Uber Arena event source ---
+# Links the venue to the UberArenaWebsiteImporter.
+# The sourceType "UBER_ARENA" matches EventSource.UBER_ARENA.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{uber_arena_venue_id}},
+    "name": "Uber Arena",
+    "url": "https://www.uber-arena.de/events/all",
+    "sourceType": "UBER_ARENA",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Uber Arena event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Uber Arena import ---
+POST {{importer-host}}/api/admin/event-sources/uber-arena/import
+Accept: application/json
+
+> {%
+    client.test("Uber Arena import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Uber Eats Music Hall (Uber Platz 2, Berlin-Friedrichshain)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Uber Eats Music Hall venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Uber Eats Music Hall",
+    "address": "Uber Platz 2",
+    "city": "Berlin",
+    "postalCode": "10243",
+    "district": "friedrichshain-kreuzberg",
+    "latitude": 52.50410,
+    "longitude": 13.44251,
+    "websiteUrl": "https://www.uber-eats-music-hall.de",
+    "description": "Mid-size concert hall next door to the Uber Arena, programming touring bands, comedy and staged shows."
+}
+
+> {%
+    client.global.set("uber_eats_music_hall_venue_id", response.body.id);
+    client.test("Uber Eats Music Hall venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Uber Eats Music Hall event source ---
+# Links the venue to the UberEatsMusicHallWebsiteImporter.
+# The sourceType "UBER_EATS_MUSIC_HALL" matches EventSource.UBER_EATS_MUSIC_HALL.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{uber_eats_music_hall_venue_id}},
+    "name": "Uber Eats Music Hall",
+    "url": "https://www.uber-eats-music-hall.de/events/all",
+    "sourceType": "UBER_EATS_MUSIC_HALL",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Uber Eats Music Hall event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Uber Eats Music Hall import ---
+POST {{importer-host}}/api/admin/event-sources/uber-eats-music-hall/import
+Accept: application/json
+
+> {%
+    client.test("Uber Eats Music Hall import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### UFO im Velodrom (Paul-Heyse-Str. 26, Berlin — Velomax)
+### ————————————————————————————————————————————————————————————
+
+### --- Create UFO im Velodrom venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "UFO im Velodrom",
+    "address": "Paul-Heyse-Str. 26",
+    "city": "Berlin",
+    "postalCode": "10407",
+    "district": "pankow",
+    "latitude": 52.53056,
+    "longitude": 13.45111,
+    "websiteUrl": "https://www.ufo-velodrom.de",
+    "description": "The smaller hall configured inside the Velodrom, used for mid-sized concerts and listed as its own venue on the Velomax programme."
+}
+
+> {%
+    client.global.set("ufo_venue_id", response.body.id);
+    client.test("UFO im Velodrom venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create UFO im Velodrom event source ---
+# Links the venue to the UfoImVelodromWebsiteImporter.
+# The sourceType "UFO_IM_VELODROM" matches EventSource.UFO_IM_VELODROM.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{ufo_venue_id}},
+    "name": "UFO im Velodrom",
+    "url": "https://www.velomax.de/events",
+    "sourceType": "UFO_IM_VELODROM",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("UFO im Velodrom event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial UFO im Velodrom import ---
+POST {{importer-host}}/api/admin/event-sources/ufo-im-velodrom/import
+Accept: application/json
+
+> {%
+    client.test("UFO im Velodrom import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
 ### Urania (An der Urania 17, Berlin-Schöneberg)
 ### ————————————————————————————————————————————————————————————
 
@@ -4932,6 +4873,65 @@ Accept: application/json
 
 > {%
     client.test("Urban Spree import triggered", function () {
+        client.assert(response.status === 202, "Expected 202 but got " + response.status);
+    });
+%}
+
+### ————————————————————————————————————————————————————————————
+### Velodrom (Paul-Heyse-Str. 26, Berlin — Velomax)
+### ————————————————————————————————————————————————————————————
+
+### --- Create Velodrom venue ---
+POST {{importer-host}}/api/admin/venues
+Content-Type: application/json
+
+{
+    "name": "Velodrom",
+    "address": "Paul-Heyse-Str. 26",
+    "city": "Berlin",
+    "postalCode": "10407",
+    "district": "pankow",
+    "latitude": 52.53075,
+    "longitude": 13.45112,
+    "websiteUrl": "https://www.velodrom.de",
+    "description": "A cycling arena at S-Bahnhof Landsberger Allee that doubles as one of Berlin's larger concert venues."
+}
+
+> {%
+    client.global.set("velodrom_venue_id", response.body.id);
+    client.test("Velodrom venue created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Create Velodrom event source ---
+# Links the venue to the VelodromWebsiteImporter.
+# The sourceType "VELODROM" matches EventSource.VELODROM.
+POST {{importer-host}}/api/admin/event-sources
+Content-Type: application/json
+
+{
+    "venueId": {{velodrom_venue_id}},
+    "name": "Velodrom",
+    "url": "https://www.velomax.de/events",
+    "sourceType": "VELODROM",
+    "enabled": true,
+    "importIntervalMinutes": 1440,
+    "maxRetries": 3
+}
+
+> {%
+    client.test("Velodrom event source created", function () {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+%}
+
+### --- Trigger initial Velodrom import ---
+POST {{importer-host}}/api/admin/event-sources/velodrom/import
+Accept: application/json
+
+> {%
+    client.test("Velodrom import triggered", function () {
         client.assert(response.status === 202, "Expected 202 but got " + response.status);
     });
 %}
