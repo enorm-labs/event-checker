@@ -1,5 +1,6 @@
 import dev.detekt.gradle.Detekt
 import org.jlleitschuh.gradle.ktlint.KtlintExtension
+import org.springframework.boot.gradle.dsl.SpringBootExtension
 
 // Centralized dependency versions live in `gradle.properties` – change them there to update
 // all subprojects at once.
@@ -17,9 +18,34 @@ plugins {
     id("org.owasp.dependencycheck")
 }
 
+// The commit the artifacts are built from, stamped into build-info.properties below.
+//
+// The FULL sha is stamped and the short form derived when rendering, so the footer's commit link
+// and `git log` searches both work from one value. `providers.exec` rather than the
+// `gradle-git-properties` plugin: this build runs with the configuration cache enabled, and a
+// plugin that shells out to git at configuration time is exactly the pattern that breaks it —
+// the same tax already paid for `dependencyCheckAggregate`.
+//
+// GITHUB_SHA wins when present so CI does not depend on the checkout's git metadata (actions/checkout
+// makes a shallow clone; `rev-parse HEAD` still works there, but the env var is cheaper and exact).
+// "unknown" keeps a build from a source tarball with no .git directory from failing outright.
+val gitCommit: Provider<String> =
+    providers
+        .environmentVariable("GITHUB_SHA")
+        .orElse(
+            providers
+                .exec { commandLine("git", "rev-parse", "HEAD") }
+                .standardOutput
+                .asText
+                .map { it.trim() }
+        ).orElse("unknown")
+
 subprojects {
     group = "de.norm"
-    version = "0.0.1-SNAPSHOT"
+    // `version` is deliberately NOT assigned here: it comes from `version` in gradle.properties,
+    // which Gradle applies to every project. Re-adding an assignment would silently override that
+    // single source of truth, and the build would stay green while the footer showed a stale
+    // number. See docs/FOOTER_AND_LEGAL_PLAN.md §4.2.
 
     apply(plugin = "org.jlleitschuh.gradle.ktlint") // Version should be inherited from parent
     apply(plugin = "dev.detekt")
@@ -50,6 +76,29 @@ subprojects {
             sarif.required.set(true)
             // Markdown reports are used by CI to post detekt metrics to the job summary
             markdown.required.set(true)
+        }
+    }
+
+    // Stamp META-INF/build-info.properties into every Boot application, which auto-configures a
+    // `BuildProperties` bean. The BFF serves it at `GET /meta` (the frontend footer) and both apps
+    // expose it at `/actuator/info` (operators) — reading one bean, so the two can never disagree.
+    // Configured here rather than per-module so the git plumbing below exists once.
+    // See docs/FOOTER_AND_LEGAL_PLAN.md §4.3.
+    plugins.withId("org.springframework.boot") {
+        configure<SpringBootExtension> {
+            buildInfo {
+                // `build.time` is deliberately left at Boot's default. Two things worth knowing
+                // before "optimising" it away: it is NOT a task input, so it does not make
+                // `bootBuildInfo` re-run (verified — the task stays UP-TO-DATE across builds); and
+                // suppressing it needs `excludes.add("time")`, since on Boot 4 an unset
+                // `properties { time = null }` falls back to `Instant.now()` rather than being
+                // omitted (BuildInfoProperties.getTimeIfNotExcluded). Drop it only if this project
+                // ever adopts a reproducible-build requirement — until then, knowing when a
+                // running instance was built is worth more to an operator than byte-identical jars.
+                properties {
+                    additional.put("commit", gitCommit)
+                }
+            }
         }
     }
 

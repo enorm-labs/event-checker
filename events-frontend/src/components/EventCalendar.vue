@@ -7,9 +7,9 @@ import type {
   EventInput,
   MountInfo,
 } from '@fullcalendar/vue3'
+import FullCalendar from '@fullcalendar/vue3'
 import { computed } from 'vue'
 import { eventLabel } from '@/lib/format'
-import FullCalendar from '@fullcalendar/vue3'
 // v7 ships plugins as subpaths of the framework package; the standalone
 // @fullcalendar/daygrid et al. have no v7 release.
 import classicThemePlugin from '@fullcalendar/vue3/themes/classic'
@@ -124,8 +124,14 @@ const options = computed<CalendarOptions>(() => ({
   /* buttons */
   --fc-classic-button: var(--primary);
   --fc-classic-button-border: var(--primary);
-  --fc-classic-button-strong: color-mix(in oklch, var(--primary) 80%, black);
-  --fc-classic-button-strong-border: color-mix(in oklch, var(--primary) 80%, black);
+  /* The pressed/active shade. Mixing toward `--foreground` rather than a literal `black` is
+     deliberate: `--primary-foreground` is near-black in dark mode and near-white in light, so a
+     fixed darkening moved the *background* toward the text colour in dark mode and dropped the
+     active view button ("Month") to 3.0:1 — a WCAG 1.4.3 failure the axe sweep caught.
+     `--foreground` is always the opposite end from `--primary-foreground`, so this shifts away
+     from the text in both themes and contrast can only improve. Do not put `black` back. */
+  --fc-classic-button-strong: color-mix(in oklch, var(--primary) 80%, var(--foreground));
+  --fc-classic-button-strong-border: color-mix(in oklch, var(--primary) 80%, var(--foreground));
   --fc-classic-button-outline: var(--ring);
   --fc-classic-button-foreground: var(--primary-foreground);
 
@@ -148,7 +154,12 @@ const options = computed<CalendarOptions>(() => ({
 
   /* neutral foregrounds */
   --fc-classic-foreground: var(--foreground);
-  --fc-classic-faint-foreground: color-mix(in oklch, var(--muted-foreground) 70%, transparent);
+  /* `faint-foreground` styles the day numbers of adjacent months. It used to fade
+     `muted-foreground` to 70% alpha, which put it under 4.5:1 and failed WCAG 1.4.3 — caught by
+     the axe sweep in e2e/a11y.spec.ts. "Faint" is carried by the cell's `--fc-classic-faint`
+     background instead; dimming the text below the contrast threshold is the one way not to do
+     it. Do not reintroduce an alpha here. */
+  --fc-classic-faint-foreground: var(--muted-foreground);
   --fc-classic-muted-foreground: var(--muted-foreground);
 
   /* neutral borders */

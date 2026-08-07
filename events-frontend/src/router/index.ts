@@ -65,7 +65,33 @@ const router = createRouter({
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/AboutView.vue'),
     },
+    // Legal pages, nested under /legal/* so later additions (accessibility statement, data
+    // sources) have an obvious home. Lazy-loaded like every other non-home route: they are read
+    // rarely and should not weigh on first paint.
+    {
+      path: '/legal/imprint',
+      name: 'imprint',
+      meta: { title: 'Imprint' },
+      component: () => import('../views/legal/ImprintView.vue'),
+    },
+    {
+      path: '/legal/privacy',
+      name: 'privacy',
+      meta: { title: 'Privacy' },
+      component: () => import('../views/legal/PrivacyView.vue'),
+    },
+    {
+      path: '/legal/notices',
+      name: 'notices',
+      meta: { title: 'Open-source notices' },
+      component: () => import('../views/legal/NoticesView.vue'),
+    },
   ],
+  // Legal pages are linked from the footer, so they are always reached from the bottom of a
+  // scrolled page; without this the browser keeps the old offset and the imprint opens mid-document.
+  scrollBehavior(to) {
+    return to.hash ? { el: to.hash, behavior: 'smooth' } : { top: 0 }
+  },
 })
 
 // Static views get their title from route meta. Detail views override it once their

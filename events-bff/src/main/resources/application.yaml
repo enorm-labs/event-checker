@@ -5,6 +5,27 @@ spring:
     properties:
       schema: events
 
+# `info` joins the default `health`, so operators can ask a running instance which build it is.
+# It must NOT be routed through the public ingress — the browser gets `GET /meta` instead, which
+# is a curated, OpenAPI-documented contract rather than a framework-shaped payload
+# (docs/FOOTER_AND_LEGAL_PLAN.md §4.4). Once the Helm chart exists, prefer moving the management
+# endpoints to their own port (management.server.port) so the split is enforced by the network
+# rather than by an ingress rule that has to stay correct forever.
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  info:
+    build:
+      # Reads META-INF/build-info.properties, stamped by the `bootBuildInfo` task.
+      enabled: true
+    git:
+      # Set explicitly because the *absence* of a git.properties file is a deliberate decision, not
+      # an oversight: the commit arrives through build-info.properties as `build.commit` instead, so
+      # no gradle-git-properties plugin is needed. Do not "fix" this by adding one.
+      enabled: false
+
 ---
 # Local development only — activate with `--spring.profiles.active=local` (IntelliJ: run
 # configuration → "Active profiles: local"). Mirrors the console output to a file so a run can

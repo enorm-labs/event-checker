@@ -1,6 +1,7 @@
 import { globalIgnores } from 'eslint/config'
 import { defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescript'
 import pluginVue from 'eslint-plugin-vue'
+import pluginVueA11y from 'eslint-plugin-vuejs-accessibility'
 import pluginPlaywright from 'eslint-plugin-playwright'
 import pluginVitest from '@vitest/eslint-plugin'
 import pluginOxlint from 'eslint-plugin-oxlint'
@@ -21,6 +22,30 @@ export default defineConfigWithVueTs(
 
   ...pluginVue.configs['flat/essential'],
   vueTsConfigs.recommended,
+
+  // Accessibility lint — the static half of the WCAG 2.1 AA target
+  // (docs/FOOTER_AND_LEGAL_PLAN.md §12.3). Catches missing form labels, bad `alt`, redundant
+  // roles and click handlers on non-interactive elements at lint time; the axe sweep in
+  // e2e/a11y.spec.ts covers what static analysis cannot see (contrast, focus order, live regions).
+  // Do not disable a rule here to make a build pass — fix the markup, or raise it.
+  ...pluginVueA11y.configs['flat/recommended'],
+
+  {
+    name: 'app/a11y-overrides',
+    files: ['**/*.vue'],
+    rules: {
+      // `label-has-for` defaults to requiring nesting AND a for/id pair. Wrapping the control in
+      // its <label> is implicit association — valid HTML, correctly announced by screen readers,
+      // and what the checkbox filters in EventFilterBar.vue do. Requiring `some` rather than
+      // `every` restores the actual WCAG bar (1.3.1 / 4.1.2): a label must be associated, not
+      // associated twice. This relaxes an over-strict default; it does not permit unlabelled
+      // controls, which the rule still catches.
+      'vuejs-accessibility/label-has-for': [
+        'error',
+        { required: { some: ['nesting', 'id'] }, allowChildren: true },
+      ],
+    },
+  },
 
   {
     ...pluginPlaywright.configs['flat/recommended'],
