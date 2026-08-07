@@ -12,6 +12,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { RouterLink } from 'vue-router'
 import BrandLogo from '@/components/BrandLogo.vue'
+import LocaleSwitcher from '@/components/LocaleSwitcher.vue'
 import { useAppMeta } from '@/composables/useAppMeta'
 import {
   commitUrl,
@@ -122,6 +123,8 @@ const localePath = useLocalePath()
             {{ t('footer.licence') }}
           </a>
         </p>
+
+        <LocaleSwitcher class="mt-4 sm:mt-0" />
 
         <!-- Renders nothing until /meta resolves. A version is worth exactly one thing — telling
              you what someone was running when they report a bug — so it must never cost a layout

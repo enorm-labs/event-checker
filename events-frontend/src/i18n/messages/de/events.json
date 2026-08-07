@@ -1,0 +1,41 @@
+{
+  "eyebrow": "Such dir was aus",
+  "title": "Events",
+  "subtitle": "Kommende Musikveranstaltungen in Berlin durchstöbern und filtern.",
+  "empty": "Zu diesen Filtern gibt es nichts. Mach sie etwas weiter und versuch es noch mal.",
+  "filters": {
+    "searchPlaceholder": "Events durchsuchen …",
+    "earliestDate": "Frühestes Datum",
+    "latestDate": "Spätestes Datum",
+    "allTypes": "Alle Arten",
+    "allVenues": "Alle Locations",
+    "allDistricts": "Alle Bezirke",
+    "allGenres": "Alle Genres",
+    "byType": "Nach Art filtern",
+    "byVenue": "Nach Location filtern",
+    "byDistrict": "Nach Bezirk filtern",
+    "byGenre": "Nach Genre filtern",
+    "minPrice": "Mindestpreis im Vorverkauf",
+    "maxPrice": "Höchstpreis im Vorverkauf",
+    "minPricePlaceholder": "ab €",
+    "maxPricePlaceholder": "bis €",
+    "hideSoldOut": "Ausverkaufte ausblenden",
+    "freeOnly": "Nur kostenlose"
+  },
+  "card": {
+    "liveTonight": "Heute Abend live",
+    "soldOut": "Ausverkauft",
+    "free": "Kostenlos"
+  },
+  "detail": {
+    "notFound": "Event nicht gefunden",
+    "notFoundBody": "Das ist vorbei — wie die letzte Runde. Draußen warten genug andere Nächte.",
+    "lineup": "Line-up",
+    "venue": "Location",
+    "tickets": "Tickets",
+    "promoters": "Veranstalter",
+    "buyTickets": "Tickets kaufen",
+    "eventPage": "Event-Seite",
+    "facebook": "Facebook"
+  }
+}

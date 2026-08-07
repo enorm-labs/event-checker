@@ -26,5 +26,8 @@
     "loading": "Cueing it up…",
     "loadingVenues": "Rounding up the rooms…"
   },
-  "upcomingEvents": "Upcoming events"
+  "upcomingEvents": "Upcoming events",
+  "locale": {
+    "label": "Language"
+  }
 }

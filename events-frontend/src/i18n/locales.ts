@@ -10,13 +10,17 @@
 /**
  * The locales this site actually publishes. The first is the fallback.
  *
- * **`'de'` joins this list in Phase 3 of docs/LOCALISATION_PLAN.md, when German messages exist** —
- * not before. Listing a locale here makes `/de/*` routable and makes the language resolvable from
- * `Accept-Language`, so adding it early would send German-speaking visitors to URLs that render
- * English. The list drives the route matcher directly (see `router/index.ts`), so the two cannot
- * drift apart.
+ * Listing a locale here makes `/<locale>/*` routable **and** makes it resolvable from
+ * `Accept-Language` — so a German-speaking visitor lands on `/de` from that moment on. It drives
+ * the route matcher directly (see `router/index.ts`), so the two cannot drift apart, and the
+ * key-parity test fails if a published locale has no message catalogue.
+ *
+ * **Before go-live, every published locale needs its legal pages in that language** — an
+ * English-only imprint and privacy notice on a site presenting itself in German is the one
+ * configuration FOOTER_AND_LEGAL_PLAN §6.1 rules out. German legal pages are Phase 4; until they
+ * exist, those pages carry a visible notice saying so.
  */
-export const LOCALES = ['en'] as const
+export const LOCALES = ['en', 'de'] as const
 
 export type Locale = (typeof LOCALES)[number]
 
@@ -32,6 +36,19 @@ export const DEFAULT_LOCALE: Locale = 'en'
  * storing anything else here — see the privacy rules in AGENTS.md.
  */
 export const LOCALE_STORAGE_KEY = 'locale'
+
+/**
+ * The BCP-47 tag each UI locale formats dates and numbers with.
+ *
+ * A UI locale is not a formatting locale. Bare `en` resolves to US conventions in `Intl`, so dates
+ * come out "Jun 12, 2026" — month first, which is wrong for a Berlin audience reading a European
+ * site. `en-GB` gives "12 Jun 2026". This mapping was added after Phase 1 changed `formatDate` to
+ * take the active locale and silently switched the English format to US ordering.
+ */
+export const INTL_LOCALES: Record<Locale, string> = {
+  en: 'en-GB',
+  de: 'de-DE',
+}
 
 export function isLocale(value: unknown): value is Locale {
   return typeof value === 'string' && (LOCALES as readonly string[]).includes(value)

@@ -1,0 +1,30 @@
+import calendar from './calendar.json'
+import common from './common.json'
+import dateRange from './dateRange.json'
+import errors from './errors.json'
+import eventType from './eventType.json'
+import events from './events.json'
+import footer from './footer.json'
+import home from './home.json'
+import legal from './legal.json'
+import pageTitle from './pageTitle.json'
+import venues from './venues.json'
+
+/**
+ * The German catalogue. Mirrors the English one file for file — the key-parity test in
+ * `src/i18n/__tests__/messages.spec.ts` fails if the two ever diverge.
+ *
+ */
+export default {
+  calendar,
+  common,
+  dateRange,
+  errors,
+  eventType,
+  events,
+  footer,
+  home,
+  legal,
+  pageTitle,
+  venues,
+}

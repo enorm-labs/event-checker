@@ -1,5 +1,6 @@
 import { createI18n } from 'vue-i18n'
 
+import de from './messages/de'
 import en from './messages/en'
 import { DEFAULT_LOCALE, type Locale } from './locales'
 
@@ -10,9 +11,9 @@ import { DEFAULT_LOCALE, type Locale } from './locales'
  * vue-i18n v11 and removed in v12, so this is not a style preference — writing against it now
  * makes v12 a version bump rather than a migration (ADR-013 §Decision 1).
  *
- * German messages arrive in Phase 3 of docs/LOCALISATION_PLAN.md. Until then only `en` is
- * registered, which is deliberate: this phase is plumbing, and a half-translated locale in the
- * catalogue would look like progress while silently falling back to English.
+ * Both published locales are registered eagerly. The catalogues are small (~4 kB each, precompiled
+ * by the Vite plugin), so lazy-loading them would add a request and a loading state to save less
+ * than one icon's worth of bytes.
  */
 type MessageSchema = typeof en
 
@@ -24,10 +25,10 @@ export const i18n = createI18n<[MessageSchema], Locale, false>({
   legacy: false,
   locale: DEFAULT_LOCALE,
   fallbackLocale: DEFAULT_LOCALE,
-  messages: { en },
-  // These two silence the console warnings for keys that exist in `en` but not yet elsewhere.
-  // Keep them OFF once `de` exists — a missing translation should be noisy, and the key-parity
-  // test in Phase 2 is what stops one shipping.
+  messages: { en, de },
+  // Left ON deliberately now that a second locale exists: a missing translation should be noisy in
+  // development. The key-parity test in src/i18n/__tests__/messages.spec.ts is what stops one
+  // reaching a build in the first place.
   missingWarn: true,
   fallbackWarn: true,
 })

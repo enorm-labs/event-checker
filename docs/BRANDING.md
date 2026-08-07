@@ -10,7 +10,7 @@
 |--------------------------|------------------------------------------------------------------------------------------------------------------------|
 | **Public name**          | **Event Junkie** (domain: `event-junkie.de`)                                                                           |
 | **Internal / repo name** | **Event Checker** (repo, modules, READMEs, ADRs — see the naming rule below)                                           |
-| **Tagline**              | *Can't get enough of Berlin*                                                                                           |
+| **Tagline**              | *Can't get enough of Berlin* · DE: *Von Berlin kriegst du nie genug* — **proposed, needs a brand decision (see §Localisation below)**                                                                                           |
 | **One-liner**            | Your always-fresh feed of what's on across Berlin's venues — concerts, club nights, festivals, and the odd quiz night. |
 | **Scope**                | All music, every genre and room size — not just techno. Berlin-only for now.                                           |
 
