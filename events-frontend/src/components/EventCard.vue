@@ -3,16 +3,13 @@ import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
 import type { EventSummary } from '@/api/types'
 import BaseBadge from '@/components/BaseBadge.vue'
-import {
-  eventLabel,
-  formatDate,
-  formatEventType,
-  formatPrice,
-  formatTime,
-  todayIso,
-} from '@/lib/format'
+import { eventLabel, formatPrice, formatTime, todayIso } from '@/lib/format'
+import { useFormat } from '@/composables/useFormat'
+import { useLocalePath } from '@/composables/useLocalePath'
 
 const props = defineProps<{ event: EventSummary }>()
+
+const { formatDate, formatEventType } = useFormat()
 
 // `OTHER` is the importers' catch-all — it tells a reader nothing the card doesn't already say,
 // so it's dropped rather than spending a pill on it. Every other type earns its place.
@@ -28,11 +25,13 @@ const eventType = computed(() =>
 const isLive = computed(
   () => Boolean(props.event.eventDate) && props.event.eventDate === todayIso(),
 )
+
+const localePath = useLocalePath()
 </script>
 
 <template>
   <RouterLink
-    :to="`/events/${event.slug}`"
+    :to="localePath(`/events/${event.slug}`)"
     class="group flex gap-4 rounded-xl border border-border bg-card p-3 shadow-sm transition-all hover:border-primary/40 hover:shadow-md motion-safe:hover:-translate-y-0.5"
   >
     <img

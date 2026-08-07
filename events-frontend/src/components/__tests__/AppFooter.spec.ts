@@ -53,11 +53,12 @@ describe('AppFooter', () => {
 
   it('links the legal pages as in-app routes, not as external links', () => {
     const wrapper = mount_()
-    const legal = wrapper.findAll('a').filter((a) => a.attributes('href')?.startsWith('/legal/'))
+    const legal = wrapper.findAll('a').filter((a) => a.attributes('href')?.includes('/legal/'))
+    // Locale-prefixed: every in-app link carries the active locale (ADR-013 §Decision 2).
     expect(legal.map((a) => a.attributes('href'))).toEqual([
-      '/legal/imprint',
-      '/legal/privacy',
-      '/legal/notices',
+      '/en/legal/imprint',
+      '/en/legal/privacy',
+      '/en/legal/notices',
     ])
     // A RouterLink, so no full page reload and no new tab.
     for (const link of legal) expect(link.attributes('target')).toBeUndefined()

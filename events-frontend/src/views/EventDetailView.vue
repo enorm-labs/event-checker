@@ -6,7 +6,9 @@ import BaseBadge from '@/components/BaseBadge.vue'
 import SectionLabel from '@/components/SectionLabel.vue'
 import { useEvent } from '@/composables/useEvent'
 import { usePageTitle } from '@/composables/usePageTitle'
-import { formatDate, formatPrice, formatTime } from '@/lib/format'
+import { formatPrice, formatTime } from '@/lib/format'
+import { useFormat } from '@/composables/useFormat'
+import { useLocalePath } from '@/composables/useLocalePath'
 
 const route = useRoute()
 const slug = computed(() => String(route.params.slug))
@@ -28,6 +30,9 @@ const roleLabels: Record<string, string> = {
 
 onMounted(run)
 watch(slug, run)
+
+const localePath = useLocalePath()
+const { formatDate } = useFormat()
 </script>
 
 <template>
@@ -40,7 +45,7 @@ watch(slug, run)
         This one's gone — like last call. Plenty more nights out there.
       </p>
       <Button as-child variant="outline">
-        <RouterLink to="/">Back to home</RouterLink>
+        <RouterLink :to="localePath('/')">Back to home</RouterLink>
       </Button>
     </div>
 
@@ -84,7 +89,7 @@ watch(slug, run)
           >
             <RouterLink
               v-if="entry.artist?.slug"
-              :to="`/artists/${entry.artist.slug}`"
+              :to="localePath(`/artists/${entry.artist.slug}`)"
               class="font-medium text-primary underline-offset-4 hover:underline"
             >
               {{ entry.artist.name }}
@@ -105,7 +110,7 @@ watch(slug, run)
           <SectionLabel>Venue</SectionLabel>
           <RouterLink
             v-if="event.venue.slug"
-            :to="`/venues/${event.venue.slug}`"
+            :to="localePath(`/venues/${event.venue.slug}`)"
             class="font-medium text-primary underline-offset-4 hover:underline"
           >
             {{ event.venue.name }}
@@ -145,7 +150,7 @@ watch(slug, run)
           >
             <RouterLink
               v-if="promoter.slug"
-              :to="`/promoters/${promoter.slug}`"
+              :to="localePath(`/promoters/${promoter.slug}`)"
               class="text-primary underline-offset-4 hover:underline"
             >
               {{ promoter.name }}</RouterLink

@@ -18,7 +18,10 @@ import { useGenres } from '@/composables/useGenres'
 import { useAllVenues } from '@/composables/useVenues'
 import { DATE_PRESETS, type DateRange } from '@/lib/dateRanges'
 import { DISTRICTS } from '@/lib/districts'
-import { formatEventType, todayIso } from '@/lib/format'
+import { todayIso } from '@/lib/format'
+import { useFormat } from '@/composables/useFormat'
+
+const { formatEventType } = useFormat()
 
 const EVENT_TYPES = [
   'CONCERT',

@@ -76,7 +76,7 @@ subprojects sharing a root `settings.gradle.kts`, plus a standalone frontend pro
 - **`events-importer`** – Imports events from external sources into the database (Spring Boot 4 + WebFlux + R2DBC + Flyway). Runs on port `8081`. Owns all
   Flyway migrations under `src/main/resources/db/migration/`.
 - **`events-frontend`** – Vue 3 SPA (Vite 8, TypeScript 6, Vue Router). Uses oxlint/oxfmt for linting/formatting. Not a Gradle subproject — managed separately
-  via npm. Requires Node `^20.19.0 || >=22.12.0` (see `engines` in `package.json`).
+  via npm. Requires Node `>=22.13.0` (see `engines` in `package.json`) — raised from 20 when vue-i18n was adopted, see ADR-013.
 
 ## Architecture Decisions
 

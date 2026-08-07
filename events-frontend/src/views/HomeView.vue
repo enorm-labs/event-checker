@@ -9,6 +9,7 @@ import SectionLabel from '@/components/SectionLabel.vue'
 import { useTodayEvents, useUpcomingEvents } from '@/composables/useEvents'
 import { TAGLINE } from '@/composables/usePageTitle'
 import { tomorrowIso } from '@/lib/format'
+import { useLocalePath } from '@/composables/useLocalePath'
 
 const today = useTodayEvents()
 // Upcoming starts tomorrow — today's events live in the "Tonight" section above.
@@ -18,6 +19,8 @@ onMounted(() => {
   today.run()
   upcoming.run()
 })
+
+const localePath = useLocalePath()
 </script>
 
 <template>
@@ -42,7 +45,7 @@ onMounted(() => {
           {{ TAGLINE }}
         </p>
         <Button as-child size="lg">
-          <RouterLink to="/calendar">
+          <RouterLink :to="localePath('/calendar')">
             <CalendarDays />
             Browse calendar
           </RouterLink>

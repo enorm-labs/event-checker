@@ -20,13 +20,17 @@ import { expect, type Page, test } from '@playwright/test'
  */
 
 /** Static routes and the stable <h1> each is expected to mount. */
+// `path` is what a visitor types (unprefixed paths redirect); `url` is where they end up, since
+// routes are locale-prefixed (ADR-013 §Decision 2) and home is the locale root itself — `/en`, not
+// `/en/`. This suite is pinned to English deliberately: it tests behaviour, and English is simply
+// the stable handle for it (docs/LOCALISATION_PLAN.md §4).
 const staticRoutes = [
   // `nav` is the accessible name of the nav link — home's is the brand logo, not "Home".
-  { path: '/', name: 'home', nav: 'Event Junkie', heading: 'Event Junkie' },
-  { path: '/events', name: 'events', nav: 'Events', heading: 'Events' },
-  { path: '/venues', name: 'venues', nav: 'Venues', heading: 'Venues' },
-  { path: '/calendar', name: 'calendar', nav: 'Calendar', heading: 'Calendar' },
-  { path: '/about', name: 'about', nav: 'About', heading: 'About' },
+  { path: '/', url: '/en', name: 'home', nav: 'Event Junkie', heading: 'Event Junkie' },
+  { path: '/events', url: '/en/events', name: 'events', nav: 'Events', heading: 'Events' },
+  { path: '/venues', url: '/en/venues', name: 'venues', nav: 'Venues', heading: 'Venues' },
+  { path: '/calendar', url: '/en/calendar', name: 'calendar', nav: 'Calendar', heading: 'Calendar' },
+  { path: '/about', url: '/en/about', name: 'about', nav: 'About', heading: 'About' },
 ] as const
 
 /** Attach an uncaught-exception collector before navigation. */
@@ -61,7 +65,7 @@ test('navigates between static routes via the nav bar', async ({ page }) => {
 
   for (const route of staticRoutes) {
     await nav.getByRole('link', { name: route.nav, exact: true }).click()
-    await expect(page).toHaveURL(new RegExp(`${route.path.replace('/', '\\/')}$`))
+    await expect(page).toHaveURL(new RegExp(`${route.url.replaceAll('/', '\\/')}$`))
     await expect(page.getByRole('heading', { level: 1, name: route.heading })).toBeVisible()
   }
 

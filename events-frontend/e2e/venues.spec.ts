@@ -42,7 +42,8 @@ test('lists venues returned by the API', async ({ page }) => {
   await page.goto('/venues')
 
   await expect(page.getByRole('heading', { level: 1, name: 'Venues' })).toBeVisible()
-  await expect(page.getByRole('link', { name: /Lido/ })).toHaveAttribute('href', '/venues/lido')
+  // In-app links are locale-prefixed (ADR-013 §Decision 2).
+  await expect(page.getByRole('link', { name: /Lido/ })).toHaveAttribute('href', '/en/venues/lido')
   await expect(page.getByRole('link', { name: /Astra Kulturhaus/ })).toBeVisible()
   expect(errors, 'unexpected uncaught exceptions').toEqual([])
 })
