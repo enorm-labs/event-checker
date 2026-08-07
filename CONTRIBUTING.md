@@ -18,6 +18,9 @@ wrong for weeks without noticing. Nobody sees that faster than someone who went 
 Two things go **privately** instead: [security problems](./SECURITY.md), and artists or organisers asking for their name or details to be removed — you do not
 need a reason and you should not have to ask in public.
 
+Questions and product ideas belong in [Discussions](https://github.com/enorm-labs/event-checker/discussions) rather than the issue tracker — they are
+conversations rather than units of work, and one that turns out to be actionable can be converted into an issue, so nothing is lost by starting there.
+
 ## Before you write code
 
 **Open an issue first** for anything beyond a small fix. Not bureaucracy — this project has a strong opinion about how importers, modules and the data model fit

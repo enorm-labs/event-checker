@@ -39,8 +39,8 @@ websites, so a redesigned programme page can leave us quietly wrong for weeks.
 - [Suggest a venue](https://github.com/enorm-labs/event-checker/issues/new?template=new-venue.yml)
 - [Bug in the site or API](https://github.com/enorm-labs/event-checker/issues/new?template=bug.yml)
 
-Security problems go through [private disclosure](./SECURITY.md), never a public issue. Taking part means agreeing to the
-[Code of Conduct](./CODE_OF_CONDUCT.md).
+Questions and product ideas go to [Discussions](https://github.com/enorm-labs/event-checker/discussions). Security problems go through
+[private disclosure](./SECURITY.md), never a public issue. Taking part means agreeing to the [Code of Conduct](./CODE_OF_CONDUCT.md).
 
 ## TODO
 
