@@ -1,0 +1,41 @@
+{
+  "eyebrow": "Pick your poison",
+  "title": "Events",
+  "subtitle": "Browse and filter upcoming music events across Berlin.",
+  "empty": "Nothing matches those filters. Ease up and try again.",
+  "filters": {
+    "searchPlaceholder": "Search events…",
+    "earliestDate": "Earliest event date",
+    "latestDate": "Latest event date",
+    "allTypes": "All types",
+    "allVenues": "All venues",
+    "allDistricts": "All districts",
+    "allGenres": "All genres",
+    "byType": "Filter by event type",
+    "byVenue": "Filter by venue",
+    "byDistrict": "Filter by district",
+    "byGenre": "Filter by genre",
+    "minPrice": "Minimum presale price",
+    "maxPrice": "Maximum presale price",
+    "minPricePlaceholder": "Min €",
+    "maxPricePlaceholder": "Max €",
+    "hideSoldOut": "Hide sold out",
+    "freeOnly": "Free only"
+  },
+  "card": {
+    "liveTonight": "Live tonight",
+    "soldOut": "Sold out",
+    "free": "Free"
+  },
+  "detail": {
+    "notFound": "Event not found",
+    "notFoundBody": "This one's gone — like last call. Plenty more nights out there.",
+    "lineup": "Lineup",
+    "venue": "Venue",
+    "tickets": "Tickets",
+    "promoters": "Promoters",
+    "buyTickets": "Buy tickets",
+    "eventPage": "Event page",
+    "facebook": "Facebook"
+  }
+}

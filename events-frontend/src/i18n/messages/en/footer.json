@@ -1,0 +1,15 @@
+{
+  "tagline": "Can't get enough of Berlin",
+  "disclaimer": "Event data is aggregated from public sources and provided without warranty — always check with the venue before you go.",
+  "project": "Project",
+  "sourceOnGitHub": "Source on GitHub",
+  "reportAnIssue": "Report an issue",
+  "contributing": "Contributing",
+  "changelog": "Changelog",
+  "legal": "Legal",
+  "imprint": "Imprint",
+  "privacy": "Privacy",
+  "notices": "Open-source notices",
+  "copyright": "© {year} Event Junkie",
+  "licence": "Code under Apache-2.0"
+}

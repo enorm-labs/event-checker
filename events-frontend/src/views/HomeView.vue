@@ -10,6 +10,7 @@ import { useTodayEvents, useUpcomingEvents } from '@/composables/useEvents'
 import { TAGLINE } from '@/composables/usePageTitle'
 import { tomorrowIso } from '@/lib/format'
 import { useLocalePath } from '@/composables/useLocalePath'
+import { useI18n } from 'vue-i18n'
 
 const today = useTodayEvents()
 // Upcoming starts tomorrow — today's events live in the "Tonight" section above.
@@ -21,6 +22,8 @@ onMounted(() => {
 })
 
 const localePath = useLocalePath()
+
+const { t } = useI18n()
 </script>
 
 <template>
@@ -47,20 +50,22 @@ const localePath = useLocalePath()
         <Button as-child size="lg">
           <RouterLink :to="localePath('/calendar')">
             <CalendarDays />
-            Browse calendar
+            {{ t('common.actions.browseCalendar') }}
           </RouterLink>
         </Button>
       </div>
     </section>
 
     <section class="space-y-4">
-      <SectionLabel>Tonight</SectionLabel>
-      <p v-if="today.loading.value" class="text-sm text-muted-foreground">Cueing it up…</p>
+      <SectionLabel>{{ t('home.tonight') }}</SectionLabel>
+      <p v-if="today.loading.value" class="text-sm text-muted-foreground">
+        {{ t('common.states.loading') }}
+      </p>
       <p v-else-if="today.error.value" class="text-sm text-destructive">
         {{ today.error.value }}
       </p>
       <p v-else-if="!today.data.value?.length" class="text-sm text-muted-foreground">
-        Nothing on tonight? In Berlin? Unlikely — try the calendar.
+        {{ t('home.tonightEmpty') }}
       </p>
       <div v-else class="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <EventCard v-for="event in today.data.value" :key="event.slug" :event="event" />
@@ -68,13 +73,15 @@ const localePath = useLocalePath()
     </section>
 
     <section class="space-y-4">
-      <SectionLabel>Upcoming</SectionLabel>
-      <p v-if="upcoming.loading.value" class="text-sm text-muted-foreground">Cueing it up…</p>
+      <SectionLabel>{{ t('home.upcoming') }}</SectionLabel>
+      <p v-if="upcoming.loading.value" class="text-sm text-muted-foreground">
+        {{ t('common.states.loading') }}
+      </p>
       <p v-else-if="upcoming.error.value" class="text-sm text-destructive">
         {{ upcoming.error.value }}
       </p>
       <p v-else-if="!upcoming.data.value?.length" class="text-sm text-muted-foreground">
-        Nothing upcoming right now — check back soon.
+        {{ t('home.upcomingEmpty') }}
       </p>
       <div v-else class="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <EventCard v-for="event in upcoming.data.value" :key="event.slug" :event="event" />

@@ -8,6 +8,9 @@
  * avoid. Both flags must be `false` before go-live; a unit test keeps them honest.
  */
 import { CONTACT_DETAILS_ARE_PROVISIONAL, INFRASTRUCTURE_IS_PROPOSED } from '@/lib/legal'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 </script>
 
 <template>
@@ -15,7 +18,7 @@ import { CONTACT_DETAILS_ARE_PROVISIONAL, INFRASTRUCTURE_IS_PROPOSED } from '@/l
     v-if="CONTACT_DETAILS_ARE_PROVISIONAL || INFRASTRUCTURE_IS_PROPOSED"
     class="rounded-lg border border-border bg-muted/50 p-4 text-sm"
   >
-    <p class="font-medium text-foreground">This page is not final.</p>
+    <p class="font-medium text-foreground">{{ t('legal.notFinal') }}</p>
     <ul class="mt-2 list-disc space-y-1 pl-5">
       <li v-if="CONTACT_DETAILS_ARE_PROVISIONAL">
         The postal address and email address below are placeholders. Real contact details are added

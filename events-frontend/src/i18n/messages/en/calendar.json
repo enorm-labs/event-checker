@@ -1,0 +1,10 @@
+{
+  "eyebrow": "Plan your nights",
+  "title": "Calendar",
+  "subtitle": "Browse upcoming music events across Berlin.",
+  "view": {
+    "month": "Month",
+    "week": "Week",
+    "list": "List"
+  }
+}

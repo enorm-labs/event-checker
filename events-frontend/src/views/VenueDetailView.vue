@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 import BaseDetailView from '@/components/BaseDetailView.vue'
 import { useEventSearch } from '@/composables/useEvents'
 import { useVenue } from '@/composables/useVenue'
+import { useI18n } from 'vue-i18n'
 
 const route = useRoute()
 const slug = computed(() => String(route.params.slug))
@@ -31,6 +32,8 @@ function reload() {
 
 onMounted(reload)
 watch(slug, reload)
+
+const { t } = useI18n()
 </script>
 
 <template>
@@ -57,7 +60,7 @@ watch(slug, reload)
         rel="noopener noreferrer"
         target="_blank"
       >
-        Website
+        {{ t('common.actions.website') }}
       </a>
     </template>
 

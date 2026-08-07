@@ -6,6 +6,6 @@ import { useAsync } from './useAsync'
 export function useEvent(slug: () => string) {
   return useAsync<EventDetail>(
     () => unwrap(api.GET('/events/{slug}', { params: { path: { slug: slug() } } })),
-    'this event',
+    'errors.subject.event',
   )
 }

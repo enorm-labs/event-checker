@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { RouterLink, RouterView, useRouter } from 'vue-router'
 import { Moon, Sun } from '@lucide/vue'
 import { Button } from '@/components/ui/button'
@@ -15,6 +16,8 @@ import { useLocalePath } from '@/composables/useLocalePath'
 // page, so a changed document title goes unheard. Mirror the title into an aria-live region
 // on each change. The initial load is skipped (via router.isReady) because assistive tech
 // already announces the document then; announcing it again would be duplicate noise.
+const { t } = useI18n()
+
 const announcement = ref('')
 const router = useRouter()
 let ready = false
@@ -43,13 +46,12 @@ function toggleDark() {
 
 // One source for the toggle's accessible name and its hover tooltip — they must not drift.
 const themeToggleLabel = computed(() =>
-  isDark.value ? 'Switch to light mode' : 'Switch to dark mode',
+  isDark.value ? t('common.nav.toLightMode') : t('common.nav.toDarkMode'),
 )
 
 // Same rule for the beta badge: one string behind both the tooltip and the accessible name.
 // "beta" alone would be a useless link name for a screen-reader user reading links out of context.
-const BETA_LABEL =
-  'Event Junkie is in beta — data may be incomplete or out of date. See what that means.'
+const betaLabel = computed(() => t('common.nav.betaLabel'))
 
 const localePath = useLocalePath()
 </script>
@@ -70,7 +72,7 @@ const localePath = useLocalePath()
       class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-background focus:px-4 focus:py-2 focus:text-foreground focus:ring-3 focus:ring-ring/50"
       href="#main-content"
     >
-      Skip to content
+      {{ t('common.skipToContent') }}
     </a>
 
     <header class="border-b border-border">
@@ -82,7 +84,7 @@ const localePath = useLocalePath()
            each needs a distinguishable accessible name so screen-reader users can tell the
            landmark list apart. e2e selectors address it by this name. -->
       <nav
-        aria-label="Main"
+        :aria-label="t('common.nav.label')"
         class="mx-auto flex max-w-5xl flex-wrap items-center gap-x-4 gap-y-3 p-4 text-sm font-medium sm:flex-nowrap sm:gap-6"
       >
         <RouterLink class="rounded-sm transition-opacity hover:opacity-80" :to="localePath('/')">
@@ -93,37 +95,37 @@ const localePath = useLocalePath()
              is not reliably announced, so the explanation has to be reachable by clicking. Targets
              the About page's #beta section; the router's scrollBehavior handles the anchor. -->
         <RouterLink
-          :aria-label="BETA_LABEL"
-          :title="BETA_LABEL"
+          :aria-label="betaLabel"
+          :title="betaLabel"
           class="mr-2 rounded-full transition-opacity hover:opacity-80"
           :to="localePath('/about#beta')"
         >
-          <BaseBadge variant="outline">beta</BaseBadge>
+          <BaseBadge variant="outline">{{ t('common.nav.beta') }}</BaseBadge>
         </RouterLink>
         <div class="order-last flex w-full items-center gap-4 sm:order-none sm:w-auto sm:gap-6">
           <RouterLink
             class="text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
             :to="localePath('/events')"
           >
-            Events
+            {{ t('common.nav.events') }}
           </RouterLink>
           <RouterLink
             class="text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
             :to="localePath('/venues')"
           >
-            Venues
+            {{ t('common.nav.venues') }}
           </RouterLink>
           <RouterLink
             class="text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
             :to="localePath('/calendar')"
           >
-            Calendar
+            {{ t('common.nav.calendar') }}
           </RouterLink>
           <RouterLink
             class="text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
             :to="localePath('/about')"
           >
-            About
+            {{ t('common.nav.about') }}
           </RouterLink>
         </div>
         <div class="ml-auto flex items-center gap-2">
@@ -131,12 +133,12 @@ const localePath = useLocalePath()
                (it wins over `title`), so the two stay in sync deliberately. -->
           <Button
             :href="REPOSITORY_URL"
-            aria-label="Source code on GitHub"
+            :aria-label="t('common.nav.sourceOnGitHub')"
             as="a"
             rel="noopener"
             size="icon"
             target="_blank"
-            title="Source code on GitHub"
+            :title="t('common.nav.sourceOnGitHub')"
             variant="outline"
           >
             <GitHubMark />

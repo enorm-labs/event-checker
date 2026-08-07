@@ -7,6 +7,7 @@ import EventFilterBar from '@/components/EventFilterBar.vue'
 import SectionLabel from '@/components/SectionLabel.vue'
 import { type EventSearchParams, useEventSearch } from '@/composables/useEvents'
 import { useEventFilters } from '@/composables/useEventFilters'
+import { useI18n } from 'vue-i18n'
 
 const PAGE_SIZE = 20
 
@@ -40,22 +41,24 @@ function goToPage(target: number) {
 
 onMounted(run)
 watch(() => route.query, run, { deep: true })
+
+const { t } = useI18n()
 </script>
 
 <template>
   <main class="mx-auto max-w-5xl space-y-6 p-8">
     <header class="space-y-1">
-      <SectionLabel as="p">Pick your poison</SectionLabel>
-      <h1 class="text-3xl font-bold tracking-tight">Events</h1>
-      <p class="text-muted-foreground">Browse and filter upcoming music events across Berlin.</p>
+      <SectionLabel as="p">{{ t('events.eyebrow') }}</SectionLabel>
+      <h1 class="text-3xl font-bold tracking-tight">{{ t('events.title') }}</h1>
+      <p class="text-muted-foreground">{{ t('events.subtitle') }}</p>
     </header>
 
     <EventFilterBar />
 
-    <p v-if="loading" class="text-sm text-muted-foreground">Cueing it up…</p>
+    <p v-if="loading" class="text-sm text-muted-foreground">{{ t('common.states.loading') }}</p>
     <p v-else-if="error" class="text-sm text-destructive">{{ error }}</p>
     <p v-else-if="!page?.content?.length" class="text-sm text-muted-foreground">
-      Nothing matches those filters. Ease up and try again.
+      {{ t('events.empty') }}
     </p>
     <template v-else>
       <p class="text-sm text-muted-foreground">
@@ -67,7 +70,7 @@ watch(() => route.query, run, { deep: true })
 
       <div v-if="totalPages > 1" class="flex items-center justify-between gap-3 pt-2">
         <Button :disabled="currentPage <= 0" variant="outline" @click="goToPage(currentPage - 1)">
-          Previous
+          {{ t('common.actions.previous') }}
         </Button>
         <span class="text-sm text-muted-foreground">
           Page {{ currentPage + 1 }} of {{ totalPages }}
@@ -77,7 +80,7 @@ watch(() => route.query, run, { deep: true })
           variant="outline"
           @click="goToPage(currentPage + 1)"
         >
-          Next
+          {{ t('common.actions.next') }}
         </Button>
       </div>
     </template>

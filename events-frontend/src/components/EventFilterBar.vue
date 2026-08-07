@@ -20,6 +20,7 @@ import { DATE_PRESETS, type DateRange } from '@/lib/dateRanges'
 import { DISTRICTS } from '@/lib/districts'
 import { todayIso } from '@/lib/format'
 import { useFormat } from '@/composables/useFormat'
+import { useI18n } from 'vue-i18n'
 
 const { formatEventType } = useFormat()
 
@@ -96,13 +97,20 @@ onMounted(() => {
   genres.run()
   venues.run()
 })
+
+const { t } = useI18n()
 </script>
 
 <template>
   <div class="flex flex-wrap items-end gap-3 rounded-xl border border-border bg-card p-4">
     <form class="flex gap-2" @submit.prevent="applyFilters({ q: search })">
-      <BaseInput v-model="search" class="px-3" placeholder="Search events…" type="search" />
-      <Button type="submit" variant="outline">Search</Button>
+      <BaseInput
+        v-model="search"
+        class="px-3"
+        :placeholder="t('events.filters.searchPlaceholder')"
+        type="search"
+      />
+      <Button type="submit" variant="outline">{{ t('common.actions.search') }}</Button>
     </form>
 
     <!--
@@ -118,7 +126,7 @@ onMounted(() => {
         :max="queryString('to') || undefined"
         :min="today"
         :model-value="queryString('from')"
-        aria-label="Earliest event date"
+        :aria-label="t('events.filters.earliestDate')"
         type="date"
         @change="applyFilters({ from: ($event.target as HTMLInputElement).value })"
         @click="openDatePicker"
@@ -127,7 +135,7 @@ onMounted(() => {
       <BaseInput
         :min="queryString('from') || today"
         :model-value="queryString('to')"
-        aria-label="Latest event date"
+        :aria-label="t('events.filters.latestDate')"
         type="date"
         @change="applyFilters({ to: ($event.target as HTMLInputElement).value })"
         @click="openDatePicker"
@@ -139,23 +147,23 @@ onMounted(() => {
       -->
       <Button
         v-for="preset in DATE_PRESETS"
-        :key="preset.label"
+        :key="preset.key"
         :aria-pressed="isPresetActive(preset.range())"
         :variant="isPresetActive(preset.range()) ? 'default' : 'outline'"
         size="sm"
         type="button"
         @click="togglePreset(preset.range())"
       >
-        {{ preset.label }}
+        {{ t(preset.key) }}
       </Button>
     </div>
 
     <BaseSelect
       :model-value="queryString('eventType')"
-      aria-label="Filter by event type"
+      :aria-label="t('events.filters.byType')"
       @change="applyFilters({ eventType: ($event.target as HTMLSelectElement).value })"
     >
-      <option value="">All types</option>
+      <option value="">{{ t('events.filters.allTypes') }}</option>
       <!--
         The option value stays the raw enum the BFF filters on; only the label is humanised,
         through the same helper the event cards use — so picking "Club night" here and reading
@@ -168,10 +176,10 @@ onMounted(() => {
 
     <BaseSelect
       :model-value="queryString('venue')"
-      aria-label="Filter by venue"
+      :aria-label="t('events.filters.byVenue')"
       @change="applyFilters({ venue: ($event.target as HTMLSelectElement).value })"
     >
-      <option value="">All venues</option>
+      <option value="">{{ t('events.filters.allVenues') }}</option>
       <option v-for="v in venues.data.value ?? []" :key="v.slug" :value="v.slug ?? ''">
         {{ v.name }}
       </option>
@@ -179,19 +187,19 @@ onMounted(() => {
 
     <BaseSelect
       :model-value="queryString('district')"
-      aria-label="Filter by district"
+      :aria-label="t('events.filters.byDistrict')"
       @change="applyFilters({ district: ($event.target as HTMLSelectElement).value })"
     >
-      <option value="">All districts</option>
+      <option value="">{{ t('events.filters.allDistricts') }}</option>
       <option v-for="d in DISTRICTS" :key="d.slug" :value="d.slug">{{ d.label }}</option>
     </BaseSelect>
 
     <BaseSelect
       :model-value="queryString('genre')"
-      aria-label="Filter by genre"
+      :aria-label="t('events.filters.byGenre')"
       @change="applyFilters({ genre: ($event.target as HTMLSelectElement).value })"
     >
-      <option value="">All genres</option>
+      <option value="">{{ t('events.filters.allGenres') }}</option>
       <option v-for="tag in genres.data.value ?? []" :key="tag.slug" :value="tag.slug ?? ''">
         {{ tag.name }}
       </option>
@@ -200,26 +208,26 @@ onMounted(() => {
     <form class="flex items-center gap-2" @submit.prevent="applyFilters({ minPrice, maxPrice })">
       <BaseInput
         v-model="minPrice"
-        aria-label="Minimum presale price"
+        :aria-label="t('events.filters.minPrice')"
         class="w-20"
         inputmode="decimal"
         min="0"
-        placeholder="Min €"
+        :placeholder="t('events.filters.minPricePlaceholder')"
         step="0.01"
         type="number"
       />
       <span class="text-sm text-muted-foreground">–</span>
       <BaseInput
         v-model="maxPrice"
-        aria-label="Maximum presale price"
+        :aria-label="t('events.filters.maxPrice')"
         class="w-20"
         inputmode="decimal"
         min="0"
-        placeholder="Max €"
+        :placeholder="t('events.filters.maxPricePlaceholder')"
         step="0.01"
         type="number"
       />
-      <Button type="submit" variant="outline">Apply</Button>
+      <Button type="submit" variant="outline">{{ t('common.actions.apply') }}</Button>
     </form>
 
     <label class="flex h-8 items-center gap-2 text-sm text-muted-foreground">
@@ -233,7 +241,7 @@ onMounted(() => {
           })
         "
       />
-      Hide sold out
+      {{ t('events.filters.hideSoldOut') }}
     </label>
 
     <label class="flex h-8 items-center gap-2 text-sm text-muted-foreground">
@@ -243,7 +251,7 @@ onMounted(() => {
         type="checkbox"
         @change="applyFilters({ free: ($event.target as HTMLInputElement).checked ? 'true' : '' })"
       />
-      Free only
+      {{ t('events.filters.freeOnly') }}
     </label>
   </div>
 </template>

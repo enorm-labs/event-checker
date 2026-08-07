@@ -8,6 +8,7 @@ import SectionLabel from '@/components/SectionLabel.vue'
 import VenueCard from '@/components/VenueCard.vue'
 import { useVenueSearch, type VenueSearchParams } from '@/composables/useVenues'
 import { DISTRICTS } from '@/lib/districts'
+import { useI18n } from 'vue-i18n'
 
 const PAGE_SIZE = 24
 
@@ -58,36 +59,45 @@ function goToPage(target: number) {
 
 onMounted(run)
 watch(() => route.query, run, { deep: true })
+
+const { t } = useI18n()
 </script>
 
 <template>
   <main class="mx-auto max-w-5xl space-y-6 p-8">
     <header class="space-y-1">
-      <SectionLabel as="p">Where it goes down</SectionLabel>
-      <h1 class="text-3xl font-bold tracking-tight">Venues</h1>
-      <p class="text-muted-foreground">Every stage, club, and hall we track across Berlin.</p>
+      <SectionLabel as="p">{{ t('venues.eyebrow') }}</SectionLabel>
+      <h1 class="text-3xl font-bold tracking-tight">{{ t('venues.title') }}</h1>
+      <p class="text-muted-foreground">{{ t('venues.subtitle') }}</p>
     </header>
 
     <div class="flex flex-wrap items-end gap-3 rounded-xl border border-border bg-card p-4">
       <form class="flex gap-2" @submit.prevent="applyFilters({ q: search })">
-        <BaseInput v-model="search" class="px-3" placeholder="Search venues…" type="search" />
-        <Button type="submit" variant="outline">Search</Button>
+        <BaseInput
+          v-model="search"
+          class="px-3"
+          :placeholder="t('venues.searchPlaceholder')"
+          type="search"
+        />
+        <Button type="submit" variant="outline">{{ t('common.actions.search') }}</Button>
       </form>
 
       <BaseSelect
         :model-value="queryString('district')"
-        aria-label="Filter by district"
+        :aria-label="t('venues.byDistrict')"
         @change="applyFilters({ district: ($event.target as HTMLSelectElement).value })"
       >
-        <option value="">All districts</option>
+        <option value="">{{ t('venues.allDistricts') }}</option>
         <option v-for="d in DISTRICTS" :key="d.slug" :value="d.slug">{{ d.label }}</option>
       </BaseSelect>
     </div>
 
-    <p v-if="loading" class="text-sm text-muted-foreground">Rounding up the rooms…</p>
+    <p v-if="loading" class="text-sm text-muted-foreground">
+      {{ t('common.states.loadingVenues') }}
+    </p>
     <p v-else-if="error" class="text-sm text-destructive">{{ error }}</p>
     <p v-else-if="!page?.content?.length" class="text-sm text-muted-foreground">
-      No venues match that search. Try a different name.
+      {{ t('venues.empty') }}
     </p>
     <template v-else>
       <p class="text-sm text-muted-foreground">
@@ -99,7 +109,7 @@ watch(() => route.query, run, { deep: true })
 
       <div v-if="totalPages > 1" class="flex items-center justify-between gap-3 pt-2">
         <Button :disabled="currentPage <= 0" variant="outline" @click="goToPage(currentPage - 1)">
-          Previous
+          {{ t('common.actions.previous') }}
         </Button>
         <span class="text-sm text-muted-foreground">
           Page {{ currentPage + 1 }} of {{ totalPages }}
@@ -109,7 +119,7 @@ watch(() => route.query, run, { deep: true })
           variant="outline"
           @click="goToPage(currentPage + 1)"
         >
-          Next
+          {{ t('common.actions.next') }}
         </Button>
       </div>
     </template>

@@ -9,6 +9,7 @@ import { usePageTitle } from '@/composables/usePageTitle'
 import { formatPrice, formatTime } from '@/lib/format'
 import { useFormat } from '@/composables/useFormat'
 import { useLocalePath } from '@/composables/useLocalePath'
+import { useI18n } from 'vue-i18n'
 
 const route = useRoute()
 const slug = computed(() => String(route.params.slug))
@@ -33,19 +34,21 @@ watch(slug, run)
 
 const localePath = useLocalePath()
 const { formatDate } = useFormat()
+
+const { t } = useI18n()
 </script>
 
 <template>
   <main class="mx-auto max-w-3xl space-y-8 p-8">
-    <p v-if="loading" class="text-sm text-muted-foreground">Cueing it up…</p>
+    <p v-if="loading" class="text-sm text-muted-foreground">{{ t('common.states.loading') }}</p>
 
     <div v-else-if="notFound" class="space-y-3">
-      <h1 class="text-2xl font-bold tracking-tight">Event not found</h1>
+      <h1 class="text-2xl font-bold tracking-tight">{{ t('events.detail.notFound') }}</h1>
       <p class="text-muted-foreground">
-        This one's gone — like last call. Plenty more nights out there.
+        {{ t('events.detail.notFoundBody') }}
       </p>
       <Button as-child variant="outline">
-        <RouterLink :to="localePath('/')">Back to home</RouterLink>
+        <RouterLink :to="localePath('/')">{{ t('common.actions.backToHome') }}</RouterLink>
       </Button>
     </div>
 
@@ -62,8 +65,12 @@ const { formatDate } = useFormat()
           <BaseBadge v-if="event.status && event.status !== 'SCHEDULED'" variant="destructive">
             {{ event.status }}
           </BaseBadge>
-          <BaseBadge v-if="event.soldOut" variant="destructive">Sold out</BaseBadge>
-          <BaseBadge v-else-if="event.free" variant="success">Free</BaseBadge>
+          <BaseBadge v-if="event.soldOut" variant="destructive">{{
+            t('events.card.soldOut')
+          }}</BaseBadge>
+          <BaseBadge v-else-if="event.free" variant="success">{{
+            t('events.card.free')
+          }}</BaseBadge>
         </div>
       </header>
 
@@ -80,7 +87,7 @@ const { formatDate } = useFormat()
       </p>
 
       <section v-if="lineup.length" class="space-y-3">
-        <SectionLabel>Lineup</SectionLabel>
+        <SectionLabel>{{ t('events.detail.lineup') }}</SectionLabel>
         <ul class="space-y-2">
           <li
             v-for="entry in lineup"
@@ -107,7 +114,7 @@ const { formatDate } = useFormat()
 
       <section class="grid grid-cols-1 gap-6 sm:grid-cols-2">
         <div v-if="event.venue" class="space-y-1">
-          <SectionLabel>Venue</SectionLabel>
+          <SectionLabel>{{ t('events.detail.venue') }}</SectionLabel>
           <RouterLink
             v-if="event.venue.slug"
             :to="localePath(`/venues/${event.venue.slug}`)"
@@ -130,7 +137,7 @@ const { formatDate } = useFormat()
           "
           class="space-y-1"
         >
-          <SectionLabel>Tickets</SectionLabel>
+          <SectionLabel>{{ t('events.detail.tickets') }}</SectionLabel>
           <p v-if="formatPrice(event.pricePresale, event.priceCurrency)" class="text-sm">
             Presale: {{ formatPrice(event.pricePresale, event.priceCurrency) }}
           </p>
@@ -142,7 +149,7 @@ const { formatDate } = useFormat()
       </section>
 
       <section v-if="event.promoters?.length" class="space-y-1">
-        <SectionLabel>Promoters</SectionLabel>
+        <SectionLabel>{{ t('events.detail.promoters') }}</SectionLabel>
         <p class="flex flex-wrap gap-x-1 text-sm">
           <template
             v-for="(promoter, index) in event.promoters"
@@ -166,13 +173,19 @@ const { formatDate } = useFormat()
         class="flex flex-wrap gap-3"
       >
         <Button v-if="event.ticketUrl" as-child>
-          <a :href="event.ticketUrl" rel="noopener noreferrer" target="_blank">Buy tickets</a>
+          <a :href="event.ticketUrl" rel="noopener noreferrer" target="_blank">{{
+            t('events.detail.buyTickets')
+          }}</a>
         </Button>
         <Button v-if="event.sourceUrl" as-child variant="outline">
-          <a :href="event.sourceUrl" rel="noopener noreferrer" target="_blank">Event page</a>
+          <a :href="event.sourceUrl" rel="noopener noreferrer" target="_blank">{{
+            t('events.detail.eventPage')
+          }}</a>
         </Button>
         <Button v-if="event.facebookEventUrl" as-child variant="outline">
-          <a :href="event.facebookEventUrl" rel="noopener noreferrer" target="_blank">Facebook</a>
+          <a :href="event.facebookEventUrl" rel="noopener noreferrer" target="_blank">{{
+            t('events.detail.facebook')
+          }}</a>
         </Button>
       </section>
     </article>

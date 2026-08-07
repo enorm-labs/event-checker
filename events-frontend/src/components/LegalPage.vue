@@ -6,6 +6,7 @@
  * these are three pages of body copy, not a CMS.
  */
 import { LAST_REVIEWED } from '@/lib/legal'
+import { useI18n } from 'vue-i18n'
 
 defineProps<{
   title: string
@@ -14,6 +15,8 @@ defineProps<{
   /** Legal pages state when they were last checked against reality; the notices page does not. */
   showReviewDate?: boolean
 }>()
+
+const { t } = useI18n()
 </script>
 
 <template>
@@ -22,7 +25,7 @@ defineProps<{
       <h1 class="text-3xl font-bold tracking-tight">{{ title }}</h1>
       <p v-if="intro" class="text-muted-foreground">{{ intro }}</p>
       <p v-if="showReviewDate" class="text-sm text-muted-foreground">
-        Last reviewed: <time :datetime="LAST_REVIEWED">{{ LAST_REVIEWED }}</time>
+        {{ t('legal.lastReviewed') }} <time :datetime="LAST_REVIEWED">{{ LAST_REVIEWED }}</time>
       </p>
     </header>
 
