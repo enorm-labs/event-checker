@@ -83,10 +83,42 @@ test('sets a document title for each legal route', async ({ page }) => {
   }
 })
 
-test('the notices route resolves even though the footer does not link it yet', async ({ page }) => {
-  // Phase 5 fills this page and adds the footer link; until then it must at least not 404.
+test('reaches the open-source notices from the footer and lists real components', async ({
+  page,
+}) => {
+  await page.goto('/')
+
+  await page.getByRole('contentinfo').getByRole('link', { name: 'Open-source notices' }).click()
+
+  await expect(page).toHaveURL(/\/legal\/notices$/)
+  await expect(page.getByRole('heading', { level: 1, name: 'Open-source notices' })).toBeVisible()
+
+  // MIT is by far the largest group, so it is the stable one to assert on. The em dash keeps this
+  // off "MIT-0", which is its own group.
+  await expect(page.locator('summary').filter({ hasText: /^\s*MIT\s+—/ })).toBeVisible()
+})
+
+test('expands a licence group to reveal its components', async ({ page }) => {
   await page.goto('/legal/notices')
 
-  await expect(page.getByRole('heading', { level: 1, name: 'Open-source notices' })).toBeVisible()
-  await expect(page.getByRole('contentinfo').getByRole('link', { name: /notices/i })).toHaveCount(0)
+  const group = page
+    .locator('details')
+    .filter({ has: page.locator('summary').filter({ hasText: /^\s*MIT\s+—/ }) })
+
+  // Collapsed by default — several hundred rows open at once would make the page unusable.
+  await expect(group.locator('li').first()).toBeHidden()
+
+  await group.locator('summary').click()
+
+  await expect(group.locator('li').first()).toBeVisible()
+  await expect(group.getByRole('link', { name: /Read the MIT licence/ })).toBeVisible()
+})
+
+test('states what the notices list does and does not cover', async ({ page }) => {
+  // The list is generated from the dependency graph, which is broader than the shipped bundle and
+  // does not reproduce full licence texts. Claiming otherwise would be the inaccuracy to avoid.
+  await page.goto('/legal/notices')
+
+  await expect(page.getByRole('main')).toContainText('broader than what is served to your browser')
+  await expect(page.getByRole('main')).toContainText('rather than reproducing the full')
 })

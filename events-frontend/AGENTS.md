@@ -242,6 +242,22 @@ The application version lives in **`version` in the root `gradle.properties`** �
 - **The version the site displays never comes from `package.json`.** The footer reads `GET /meta`, which the backend stamps from the Gradle build (see
   `useAppMeta.ts`). A stale `package.json` therefore cannot put a wrong version on screen; it only misleads people reading the repository.
 
+## Open-source notices
+
+`/legal/notices` renders `src/assets/notices.json`, which is **generated and committed** — never hand-edited. Regenerate it whenever dependencies change on
+either side:
+
+```bash
+./gradlew generateLicenseReport --no-configuration-cache   # repository root; writes build/reports/dependency-license/licenses.json
+npm run generate:notices                                   # events-frontend; merges both ecosystems into src/assets/notices.json
+```
+
+- The `--no-configuration-cache` flag is required — the licence-report plugin is not configuration-cache compatible (see the note in `gradle.properties`).
+- The generator deliberately writes **no timestamp**, so re-running it with unchanged dependencies produces an identical file and an empty diff.
+- Licence policy lives in `config/allowed-licenses.json`, enforced by `./gradlew checkLicense --no-configuration-cache`, with a matching deny-list for new
+  dependencies in `.github/workflows/dependency-review.yml`. **Do not widen the allow-list to make a build pass** — see [docs/FOOTER_AND_LEGAL_PLAN.md §9.2](../docs/FOOTER_AND_LEGAL_PLAN.md)
+  for which licences are acceptable and why; AGPL, GPL without the Classpath Exception, and source-available licences (SSPL, BUSL, Elastic) are not.
+
 ## Accessibility
 
 **Target: WCAG 2.1 Level AA.** These rules encode what the codebase already does — follow them rather than rediscovering them. Background and the current gap
