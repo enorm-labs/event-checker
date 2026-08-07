@@ -8,6 +8,7 @@ import AppFooter from '@/components/AppFooter.vue'
 import BaseBadge from '@/components/BaseBadge.vue'
 import BrandLogo from '@/components/BrandLogo.vue'
 import GitHubMark from '@/components/GitHubMark.vue'
+import LocaleSwitcher from '@/components/LocaleSwitcher.vue'
 import { pageTitle } from '@/composables/usePageTitle'
 import { REPOSITORY_URL } from '@/lib/links'
 import { useLocalePath } from '@/composables/useLocalePath'
@@ -129,6 +130,8 @@ const localePath = useLocalePath()
           </RouterLink>
         </div>
         <div class="ml-auto flex items-center gap-2">
+          <!-- Compact, and inside this nav rather than its own landmark — see LocaleSwitcher. -->
+          <LocaleSwitcher class="mr-1" compact />
           <!-- `title` is the hover tooltip only; `aria-label` still supplies the accessible name
                (it wins over `title`), so the two stay in sync deliberately. -->
           <Button
