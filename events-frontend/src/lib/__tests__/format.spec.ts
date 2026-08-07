@@ -1,6 +1,21 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { eventLabel, todayIso, tomorrowIso } from '@/lib/format'
+import { eventLabel, formatEventType, todayIso, tomorrowIso } from '@/lib/format'
+
+describe('formatEventType', () => {
+  it('reads a single-word constant as a capitalised word', () => {
+    expect(formatEventType('CONCERT')).toBe('Concert')
+  })
+
+  it('turns an underscored constant into a sentence-case phrase', () => {
+    expect(formatEventType('CLUB_NIGHT')).toBe('Club night')
+  })
+
+  it('is empty for a missing type, so callers never render a stray label', () => {
+    expect(formatEventType(null)).toBe('')
+    expect(formatEventType(undefined)).toBe('')
+  })
+})
 
 describe('eventLabel', () => {
   it('joins the title and venue with an @', () => {

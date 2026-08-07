@@ -42,6 +42,17 @@ export function eventLabel(title?: string | null, venueName?: string | null): st
   return venueName ? `${title} @ ${venueName}` : title
 }
 
+/**
+ * Turns an event-type constant into a human label — `CLUB_NIGHT` → "Club night". Deliberately a
+ * generic transform rather than a lookup table, so a type added to the BFF enum reads correctly
+ * without a matching change here.
+ */
+export function formatEventType(eventType?: string | null): string {
+  if (!eventType) return ''
+  const words = eventType.replace(/_/g, ' ').toLowerCase()
+  return words.charAt(0).toUpperCase() + words.slice(1)
+}
+
 /** Today's date in Berlin as an ISO date string (`YYYY-MM-DD`), for default date filters. */
 export function todayIso(): string {
   return new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Berlin' }).format(new Date())
