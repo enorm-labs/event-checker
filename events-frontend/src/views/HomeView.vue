@@ -59,7 +59,7 @@ onMounted(() => {
       <p v-else-if="!today.data.value?.length" class="text-sm text-muted-foreground">
         Nothing on tonight? In Berlin? Unlikely — try the calendar.
       </p>
-      <div v-else class="grid gap-3 sm:grid-cols-2">
+      <div v-else class="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <EventCard v-for="event in today.data.value" :key="event.slug" :event="event" />
       </div>
     </section>
@@ -73,7 +73,7 @@ onMounted(() => {
       <p v-else-if="!upcoming.data.value?.length" class="text-sm text-muted-foreground">
         Nothing upcoming right now — check back soon.
       </p>
-      <div v-else class="grid gap-3 sm:grid-cols-2">
+      <div v-else class="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <EventCard v-for="event in upcoming.data.value" :key="event.slug" :event="event" />
       </div>
     </section>

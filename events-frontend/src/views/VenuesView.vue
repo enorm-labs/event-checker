@@ -97,7 +97,7 @@ watch(() => route.query, run, { deep: true })
       <p class="text-sm text-muted-foreground">
         {{ page.totalElements }} {{ page.totalElements === 1 ? 'venue' : 'venues' }} found
       </p>
-      <div class="grid gap-3 sm:grid-cols-2">
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <VenueCard v-for="venue in page.content" :key="venue.slug" :venue="venue" />
       </div>
 

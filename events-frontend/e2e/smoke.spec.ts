@@ -68,6 +68,40 @@ test('navigates between static routes via the nav bar', async ({ page }) => {
   expect(errors, 'unexpected uncaught exceptions').toEqual([])
 })
 
+test('header nav fits its viewport without overflowing', async ({ page }) => {
+  // The header packs a brand lockup, four nav links and two icon controls in; on a ~390px screen
+  // one row overflowed and pushed the controls off-screen, so the nav wraps below `sm`. Runs on
+  // every project — the two mobile ones are what this actually guards.
+  //
+  // Scoped to the nav rather than the whole document because this runs without a BFF, so the
+  // data-driven routes render their error state. The document-level check lives in
+  // home-feeds.spec.ts, where the feeds are mocked and real cards exist to overflow.
+  await page.goto('/about')
+
+  const nav = page.getByRole('navigation')
+  await expect(nav).toBeVisible()
+
+  const box = await nav.evaluate((el) => ({ scroll: el.scrollWidth, client: el.clientWidth }))
+  expect(box.scroll, 'nav content is wider than the nav').toBeLessThanOrEqual(box.client)
+
+  // The right-most control must land inside the viewport, not merely inside a clipped nav.
+  const toggle = page.getByRole('button', { name: /switch to (dark|light) mode/i })
+  const toggleBox = await toggle.boundingBox()
+  const viewport = page.viewportSize()
+  expect(toggleBox && viewport && toggleBox.x + toggleBox.width).toBeLessThanOrEqual(
+    viewport!.width,
+  )
+})
+
+test('app shell links to the source repository on GitHub', async ({ page }) => {
+  await page.goto('/about')
+
+  const link = page.getByRole('navigation').getByRole('link', { name: 'Source code on GitHub' })
+  await expect(link).toBeVisible()
+  await expect(link).toHaveAttribute('href', 'https://github.com/enorm-labs/event-checker')
+  await expect(link).toHaveAttribute('title', 'Source code on GitHub')
+})
+
 test('app shell exposes a working dark-mode toggle', async ({ page }) => {
   await page.goto('/')
 
@@ -76,6 +110,11 @@ test('app shell exposes a working dark-mode toggle', async ({ page }) => {
 
   // New visitors start in dark (the default); toggling switches to light.
   await expect(page.locator('html')).toHaveClass(/dark/)
+  await expect(toggle).toHaveAttribute('title', 'Switch to light mode')
+
   await toggle.click()
+
   await expect(page.locator('html')).not.toHaveClass(/dark/)
+  // The tooltip tracks the theme alongside the accessible name — both read from one computed.
+  await expect(toggle).toHaveAttribute('title', 'Switch to dark mode')
 })

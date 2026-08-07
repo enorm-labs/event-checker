@@ -61,7 +61,7 @@ watch(() => route.query, run, { deep: true })
       <p class="text-sm text-muted-foreground">
         {{ page.totalElements }} {{ page.totalElements === 1 ? 'event' : 'events' }} found
       </p>
-      <div class="grid gap-3 sm:grid-cols-2">
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <EventCard v-for="event in page.content" :key="event.slug" :event="event" />
       </div>
 
