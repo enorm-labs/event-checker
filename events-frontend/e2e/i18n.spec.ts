@@ -125,3 +125,40 @@ test('the legal pages say they are English-only while German is pending', async 
 
   await expect(page.getByRole('main')).toContainText('nur auf Englisch')
 })
+
+test('the header carries a compact locale switcher', async ({ page }) => {
+  await page.goto('/en/venues')
+
+  const header = page.getByRole('navigation', { name: 'Main' })
+  const toGerman = header.getByRole('link', { name: 'Deutsch' })
+
+  // `DE` is the visible label; the accessible name is the full native language name, because "DE"
+  // alone tells a screen-reader user nothing.
+  await expect(toGerman).toHaveText('DE')
+  await expect(toGerman).toHaveAttribute('href', '/de/venues')
+
+  await toGerman.click()
+  await expect(page).toHaveURL(/\/de\/venues$/)
+  await expect(page.locator('html')).toHaveAttribute('lang', 'de')
+})
+
+test('the header switcher adds no second Language landmark', async ({ page }) => {
+  // Two navigation landmarks with the same accessible name are indistinguishable in a screen
+  // reader's landmark list — and ambiguous to any selector addressing them by name. The compact
+  // switcher lives inside the header's own nav instead.
+  await page.goto('/en')
+
+  await expect(page.getByRole('navigation', { name: 'Language' })).toHaveCount(1)
+  await expect(page.getByRole('contentinfo').getByRole('navigation', { name: 'Language' })).toHaveCount(1)
+})
+
+test('both switchers mark the active language', async ({ page }) => {
+  await page.goto('/de/about')
+
+  // "Haupt", not "Main": the landmark's accessible name is itself translated, so a German reader
+  // hears a German landmark list. Selectors addressing landmarks by name are locale-dependent —
+  // which is why the other suites are pinned to /en.
+  const header = page.getByRole('navigation', { name: 'Haupt' })
+  await expect(header.getByRole('link', { name: 'Deutsch' })).toHaveAttribute('aria-current', 'true')
+  await expect(header.getByRole('link', { name: 'English' })).not.toHaveAttribute('aria-current', 'true')
+})
