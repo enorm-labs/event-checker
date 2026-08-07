@@ -1207,6 +1207,16 @@ the page. Five things worth recording:
   already documents for `dependencyCheckAggregate`, and now documented alongside it. Its tasks take
   `--no-configuration-cache`, and `checkLicense` is a *separate* CI step rather than wired into
   `check`, so the main build's cache entry is not discarded on every run (verified: still reused).
+- **Enforcement covers both ecosystems — but only after a correction.** The first cut checked JVM
+  dependencies only: `checkLicense` reads `runtimeClasspath` across the Gradle projects, and the
+  frontend is not one, so the ~485 npm packages were covered solely by `dependency-review`, which
+  sees *newly introduced* dependencies and had therefore never looked at the existing tree. The
+  allow-list, written from the backend tree, silently omitted four licences that exist only on the
+  npm side (BlueOak-1.0.0, MPL-2.0, CC-BY-4.0, OFL-1.1 — all acceptable, none considered).
+  Fixed by `npm run check:licenses`, a frontend counterpart wired into `build-frontend.yml`, and by
+  renaming the policy files to `allowed-licenses-jvm.json` / `allowed-licenses-npm.json` so neither
+  reads as the whole policy. Two files rather than one because the ecosystems report licence names
+  in different vocabularies — SPDX ids vs the Gradle normaliser's prose names.
 - **The page states its own scope**, because the generated list is broader than what ships: it
   covers the dependency graph (642 components), and bundling drops much of it. It also records
   licences rather than reproducing full texts or per-package `NOTICE` files. Claiming completeness

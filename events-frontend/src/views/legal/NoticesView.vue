@@ -34,6 +34,17 @@ function toggle(license: string, open: boolean) {
   if (open) openGroups.value.add(license)
   else openGroups.value.delete(license)
 }
+
+/**
+ * The separator between a component's name and its version, in the form its own ecosystem uses:
+ * `vue@3.5.41` for npm, `org.jsoup:jsoup:1.23.1` for Maven coordinates. Rendering them adjacent
+ * with only markup between produced `vue3.5.41` — Vue condenses the whitespace between elements —
+ * and a bare space would not survive copy-paste as a usable coordinate either.
+ */
+function versionSuffix(component: Component): string {
+  if (!component.version) return ''
+  return `${component.ecosystem === 'backend' ? ':' : '@'}${component.version}`
+}
 </script>
 
 <template>
@@ -93,13 +104,11 @@ function toggle(license: string, open: boolean) {
              hitch on the first paint of this route. -->
         <ul v-if="openGroups.has(group.license)" class="mt-3 text-sm">
           <li v-for="component in group.components" :key="`${component.name}@${component.version}`">
-            <a v-if="component.url" :href="component.url" rel="noopener" target="_blank">
-              {{ component.name }}
-            </a>
-            <span v-else>{{ component.name }}</span>
-            <span v-if="component.version" class="text-muted-foreground">
-              {{ component.version }}
-            </span>
+            <a v-if="component.url" :href="component.url" rel="noopener" target="_blank">{{
+              component.name
+            }}</a>
+            <span v-else>{{ component.name }}</span
+            ><span class="text-muted-foreground">{{ versionSuffix(component) }}</span>
           </li>
         </ul>
       </details>
