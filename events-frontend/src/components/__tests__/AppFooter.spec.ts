@@ -54,17 +54,19 @@ describe('AppFooter', () => {
   it('links the legal pages as in-app routes, not as external links', () => {
     const wrapper = mount_()
     const legal = wrapper.findAll('a').filter((a) => a.attributes('href')?.startsWith('/legal/'))
-    expect(legal.map((a) => a.attributes('href'))).toEqual(['/legal/imprint', '/legal/privacy'])
+    expect(legal.map((a) => a.attributes('href'))).toEqual([
+      '/legal/imprint',
+      '/legal/privacy',
+      '/legal/notices',
+    ])
     // A RouterLink, so no full page reload and no new tab.
     for (const link of legal) expect(link.attributes('target')).toBeUndefined()
   })
 
   it('carries no link to a page that does not exist yet', () => {
-    // Only links that resolve, in every phase. `/legal/notices` exists as a route but has no
-    // generated content until Phase 5; CONTRIBUTING.md arrives with Phase 6 (§11).
+    // Only links that resolve, in every phase. CONTRIBUTING.md arrives with Phase 6 (§11).
     const wrapper = mount_()
     const hrefs = wrapper.findAll('a').map((a) => a.attributes('href') ?? '')
-    expect(hrefs.some((href) => href.includes('/legal/notices'))).toBe(false)
     expect(hrefs.some((href) => href.includes('CONTRIBUTING'))).toBe(false)
   })
 

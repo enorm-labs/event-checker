@@ -16,6 +16,7 @@ plugins {
     id("dev.detekt") apply false
     id("io.github.ben-manes.versions")
     id("org.owasp.dependencycheck")
+    id("com.github.jk1.dependency-license-report")
 }
 
 // The commit the artifacts are built from, stamped into build-info.properties below.
@@ -233,4 +234,36 @@ dependencyCheck {
     // entirely instead of re-downloading on every build — the NVD API is frequently
     // rate-limited or returns 503s, and each contact is a chance to fail the scan.
     nvd.validForHours = 24
+}
+
+// Gradle License Report – collects the licence of every runtime dependency across all three
+// modules and emits JSON that the frontend's /legal/notices page renders. Run
+// `./gradlew generateLicenseReport`, then `npm run generate:notices` in events-frontend to merge
+// it with the npm side. See docs/FOOTER_AND_LEGAL_PLAN.md §9.
+//
+// This is the "Stage 1" tool: it lists and checks, but does not curate or scan source. ORT is the
+// Stage 2 upgrade if policy enforcement beyond an allow-list is ever wanted.
+licenseReport {
+    // Only what actually ships. `runtimeClasspath` excludes the compile-only, test and build-tool
+    // dependencies that never reach a user — attributing detekt or Testcontainers on a public page
+    // would be noise, and their licences carry no distribution obligation for us.
+    configurations = arrayOf("runtimeClasspath")
+
+    projects = arrayOf(project) + subprojects.toTypedArray()
+
+    renderers =
+        arrayOf(
+            com.github.jk1.license.render.JsonReportRenderer("licenses.json", false),
+            com.github.jk1.license.render.InventoryHtmlReportRenderer("licenses.html")
+        )
+
+    // Normalises the many spellings of the same licence ("Apache 2", "The Apache Software
+    // License, Version 2.0", …) into one bundle so the notices page groups correctly. Without it
+    // Apache-2.0 alone appears under half a dozen names.
+    filters = arrayOf(com.github.jk1.license.filter.LicenseBundleNormalizer())
+
+    // Checked by `./gradlew checkLicense`. Deliberately an *allow*-list here, unlike the CI
+    // deny-list in dependency-review.yml: this runs over the full resolved tree where we control
+    // the data, so an unknown licence should stop and be looked at rather than pass silently.
+    allowedLicensesFile = file("config/allowed-licenses.json")
 }

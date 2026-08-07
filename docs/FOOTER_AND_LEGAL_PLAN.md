@@ -1,6 +1,6 @@
 # Plan — Site Footer, Version Display & Legal Pages
 
-> Status: **Phases 1–4 implemented** (2026-08-07); Phases 5–7 still proposal.
+> Status: **Phases 1–5 implemented** (2026-08-07); Phases 6–7 still proposal.
 > Related: [TODO.md §Legal / Compliance](../TODO.md) · [BRANDING.md](BRANDING.md) · [ADR-012 (cloud platform)](adr/ADR-012_CLOUD_PLATFORM.md) ·
 > [PRODUCT_OVERVIEW.md](PRODUCT_OVERVIEW.md)
 >
@@ -1188,7 +1188,41 @@ Verified: `type-check`, `lint`, `test:unit` (85), `test:e2e` across **all five p
 
 Modified: `src/App.vue` (badge + header wrap check), `e2e/smoke.spec.ts` (extend the header-overflow guard to the new item).
 
-### Phase 5 — licence notices
+### Phase 5 — licence notices ✅ done (2026-08-07)
+
+Delivered in the order the plan prescribed: CI deny-list first, then the Stage-1 generators, then
+the page. Five things worth recording:
+
+- **CI uses a deny-list, the local check uses an allow-list**, deliberately. `dependency-review`
+  sees only *new* dependencies and unnormalised SPDX strings, where an allow-list fails on every
+  unrecognised-but-fine spelling and trains people to bypass the gate. `checkLicense` runs over the
+  full resolved tree with normalised names, where an unknown licence *should* stop the build.
+- **The allow-list matches the normaliser's verbatim names** (`The 2-Clause BSD License`, not
+  `BSD-2-Clause`). My first attempt used SPDX identifiers and failed on four perfectly fine
+  dependencies. The file says so, so the next person does not repeat it.
+- **LGPL-2.1 and CC0 are deliberately absent** from the allow-list. Logback and HdrHistogram are
+  dual-licensed and pass on EPL-2.0 and BSD-2 respectively, so keeping those two off means an
+  LGPL-only or CC0-only dependency stops the build and gets a decision rather than passing silently.
+- **The licence-report plugin is not configuration-cache compatible** — the same defect the repo
+  already documents for `dependencyCheckAggregate`, and now documented alongside it. Its tasks take
+  `--no-configuration-cache`, and `checkLicense` is a *separate* CI step rather than wired into
+  `check`, so the main build's cache entry is not discarded on every run (verified: still reused).
+- **The page states its own scope**, because the generated list is broader than what ships: it
+  covers the dependency graph (642 components), and bundling drops much of it. It also records
+  licences rather than reproducing full texts or per-package `NOTICE` files. Claiming completeness
+  would be the inaccuracy this whole section exists to avoid — full reproduction is the ORT
+  (Stage 2) upgrade.
+
+`notices.json` is generated and **committed**: the frontend is not a Gradle subproject, so its
+build must not have to invoke Gradle, and the page then works in `npm run dev` with nothing else
+run first. The generator writes no timestamp, so regenerating with unchanged dependencies yields an
+empty diff.
+
+Verified: `./gradlew clean build koverLog` (95.6%), configuration cache reused on a repeat build,
+`checkLicense` green over the full tree, frontend gate (85 unit, **533 e2e across all five
+projects**, build). The notices chunk is 77 kB raw / 11.5 kB gzip and lazy-loaded.
+
+**Original scope, for reference:**
 
 `dependency-review.yml` licence rules first (cheapest), then the Stage-1 generators (§9.1), then the `/legal/notices` page rendering the generated data.
 

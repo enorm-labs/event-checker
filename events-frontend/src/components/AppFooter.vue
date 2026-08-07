@@ -3,9 +3,8 @@
  * Site footer: provenance, project links and the copyright line.
  *
  * Scope note (docs/FOOTER_AND_LEGAL_PLAN.md §11): only links that actually resolve are rendered.
- * "Contributing" arrives with Phase 6 and the version line with Phase 3 — the plan's own principle
- * is that a footer with dead links is worse than no footer. `/legal/notices` exists as a route but
- * is not linked here until Phase 5 fills it with the generated attribution list.
+ * "Contributing" arrives with Phase 6 — the plan's own principle is that a footer with dead links
+ * is worse than no footer.
  *
  * The disclaimer sits here rather than only on a legal page because it is the single most useful
  * sentence for a user of an aggregator, and nobody clicks through to read it (§7.6).
@@ -86,6 +85,9 @@ const releaseUrl = computed(() => {
             </li>
             <li>
               <RouterLink :class="linkClass" to="/legal/privacy">Privacy</RouterLink>
+            </li>
+            <li>
+              <RouterLink :class="linkClass" to="/legal/notices">Open-source notices</RouterLink>
             </li>
           </ul>
         </nav>
