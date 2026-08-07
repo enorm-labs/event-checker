@@ -16,7 +16,7 @@ import { useGenres } from '@/composables/useGenres'
 import { useAllVenues } from '@/composables/useVenues'
 import { DATE_PRESETS, type DateRange } from '@/lib/dateRanges'
 import { DISTRICTS } from '@/lib/districts'
-import { todayIso } from '@/lib/format'
+import { formatEventType, todayIso } from '@/lib/format'
 
 const EVENT_TYPES = [
   'CONCERT',
@@ -158,7 +158,14 @@ onMounted(() => {
       @change="applyFilters({ eventType: ($event.target as HTMLSelectElement).value })"
     >
       <option value="">All types</option>
-      <option v-for="type in EVENT_TYPES" :key="type" :value="type">{{ type }}</option>
+      <!--
+        The option value stays the raw enum the BFF filters on; only the label is humanised,
+        through the same helper the event cards use — so picking "Club night" here and reading
+        it off a card are the same words.
+      -->
+      <option v-for="type in EVENT_TYPES" :key="type" :value="type">
+        {{ formatEventType(type) }}
+      </option>
     </select>
 
     <select

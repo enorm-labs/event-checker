@@ -2,9 +2,24 @@
 import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
 import type { EventSummary } from '@/api/types'
-import { eventLabel, formatDate, formatPrice, formatTime, todayIso } from '@/lib/format'
+import {
+  eventLabel,
+  formatDate,
+  formatEventType,
+  formatPrice,
+  formatTime,
+  todayIso,
+} from '@/lib/format'
 
 const props = defineProps<{ event: EventSummary }>()
+
+// `OTHER` is the importers' catch-all — it tells a reader nothing the card doesn't already say,
+// so it's dropped rather than spending a pill on it. Every other type earns its place.
+const eventType = computed(() =>
+  props.event.eventType && props.event.eventType !== 'OTHER'
+    ? formatEventType(props.event.eventType)
+    : null,
+)
 
 // An event happening today gets a pulsing "live" dot — it stands out in the Upcoming feed and on
 // venue/artist pages, and reinforces liveness in the Tonight feed. Self-contained, so any caller
@@ -76,6 +91,17 @@ const isLive = computed(
         <template v-if="event.venue?.name"> · {{ event.venue.name }}</template>
       </p>
       <div class="flex flex-wrap items-center gap-1.5 pt-0.5">
+        <!--
+          Type and genre are different taxonomies — one kind of night, many kinds of music — so
+          the type pill is outlined rather than filled. Same row, same size, but the eye can tell
+          "Club night" from "Techno" without reading them.
+        -->
+        <span
+          v-if="eventType"
+          class="rounded-full border border-border px-2 py-0.5 text-xs font-medium text-foreground/70"
+        >
+          {{ eventType }}
+        </span>
         <span
           v-for="tag in event.genreTags"
           :key="tag"

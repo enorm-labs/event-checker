@@ -14,6 +14,7 @@ const event: EventSummary = {
   soldOut: true,
   priceCurrency: 'EUR',
   pricePresale: 25,
+  eventType: 'CLUB_NIGHT',
   genreTags: ['Punk'],
   venue: { slug: 'lido', name: 'Lido', city: 'Berlin' },
 }
@@ -76,6 +77,20 @@ describe('EventCard', () => {
       global: { stubs },
     })
     expect(wrapper.text()).toContain('Live tonight')
+  })
+
+  it('shows the event type as a readable pill alongside the genres', () => {
+    const wrapper = mount(EventCard, { props: { event }, global: { stubs } })
+    expect(wrapper.text()).toContain('Club night')
+    expect(wrapper.text()).toContain('Punk')
+  })
+
+  it('omits the catch-all OTHER type rather than spending a pill on it', () => {
+    const wrapper = mount(EventCard, {
+      props: { event: { ...event, eventType: 'OTHER' } },
+      global: { stubs },
+    })
+    expect(wrapper.text()).not.toContain('Other')
   })
 
   it('does not mark an event on another day as live', () => {
