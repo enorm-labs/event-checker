@@ -1,0 +1,22 @@
+name: 💬 Something else
+description: A question, an idea, or anything the other forms do not fit.
+labels: ['question']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Blank issues are turned off because a report without the venue, the URL or the version
+        usually costs a round trip to become actionable — but not every message is a report. This
+        form exists so nothing gets stuck behind a template that does not fit.
+
+        Two things that belong elsewhere, both private:
+        [security problems](https://github.com/enorm-labs/event-checker/security/advisories/new),
+        and artists or organisers asking for their details to be removed — you do not have to ask
+        for that in public.
+
+  - type: textarea
+    id: body
+    attributes:
+      label: What is on your mind?
+    validations:
+      required: true

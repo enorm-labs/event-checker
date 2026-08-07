@@ -2,9 +2,8 @@
 /**
  * Site footer: provenance, project links and the copyright line.
  *
- * Scope note (docs/FOOTER_AND_LEGAL_PLAN.md §11): only links that actually resolve are rendered.
- * "Contributing" arrives with Phase 6 — the plan's own principle is that a footer with dead links
- * is worse than no footer.
+ * Every link here resolves — the plan's own principle is that a footer with dead links is worse
+ * than no footer (docs/FOOTER_AND_LEGAL_PLAN.md §11).
  *
  * The disclaimer sits here rather than only on a legal page because it is the single most useful
  * sentence for a user of an aggregator, and nobody clicks through to read it (§7.6).
@@ -15,6 +14,7 @@ import BrandLogo from '@/components/BrandLogo.vue'
 import { useAppMeta } from '@/composables/useAppMeta'
 import {
   commitUrl,
+  CONTRIBUTING_URL,
   LICENSE_URL,
   NEW_ISSUE_URL,
   releaseTagUrl,
@@ -67,6 +67,11 @@ const releaseUrl = computed(() => {
             <li>
               <a :class="linkClass" :href="NEW_ISSUE_URL" rel="noopener" target="_blank">
                 Report an issue
+              </a>
+            </li>
+            <li>
+              <a :class="linkClass" :href="CONTRIBUTING_URL" rel="noopener" target="_blank">
+                Contributing
               </a>
             </li>
             <li>

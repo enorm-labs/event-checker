@@ -1,0 +1,41 @@
+name: 🎪 Suggest a venue
+description: A Berlin venue whose events should be on Event Junkie.
+title: 'feat(importer): import events from '
+labels: ['importer', 'enhancement']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Coverage grows one venue at a time, so suggestions genuinely shape what gets built next.
+
+        Before filing, a quick look at
+        [docs/EVENT_DATA_SOURCES.md](https://github.com/enorm-labs/event-checker/blob/main/docs/EVENT_DATA_SOURCES.md)
+        is worth it — the venue may already be listed there as planned, in progress, or blocked.
+
+  - type: input
+    id: venue-name
+    attributes:
+      label: Venue name
+      placeholder: Lido
+    validations:
+      required: true
+
+  - type: input
+    id: events-url
+    attributes:
+      label: The page listing its events
+      description: The programme or calendar page, not the venue's home page — that page is what an importer would read.
+      placeholder: https://www.example-venue.de/programm
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything worth knowing
+      description: |
+        Optional. Useful things: roughly how many events a month, whether the programme is also on a
+        ticket platform, whether the page needs JavaScript to show anything, or whether the venue
+        has said anything about scraping.
+    validations:
+      required: false

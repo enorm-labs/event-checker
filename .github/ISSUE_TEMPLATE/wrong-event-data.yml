@@ -1,0 +1,56 @@
+name: 📅 Wrong or missing event data
+description: An event is wrong, out of date, duplicated, or missing entirely.
+title: 'fix(data): '
+labels: ['bug', 'importer']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you — this is the most useful kind of report we get. Event data is read automatically
+        from venue websites, so when a venue changes its page layout we can be quietly wrong for a
+        while without noticing.
+
+        **The single most useful thing you can give us is the venue's own page for the event.**
+        That is what the importer reads, so it is what we compare against.
+
+  - type: input
+    id: event-url
+    attributes:
+      label: Event on Event Junkie
+      description: The page on our site showing the problem. Leave blank if the event is missing entirely.
+      placeholder: https://event-junkie.de/events/...
+    validations:
+      required: false
+
+  - type: input
+    id: source-url
+    attributes:
+      label: The venue's own page for this event
+      description: Where the correct information lives — the venue's site, or the official ticket seller.
+      placeholder: https://www.example-venue.de/programm/...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What is wrong?
+      options:
+        - The event is missing
+        - The date or time is wrong
+        - The title, line-up or artist is wrong
+        - The price is wrong
+        - It says sold out when it is not (or the reverse)
+        - It is a duplicate of another event
+        - The venue is wrong
+        - Something else
+    validations:
+      required: true
+
+  - type: textarea
+    id: details
+    attributes:
+      label: What should it say instead?
+      description: Whatever you know. "The doors are at 20:00, not 19:00" is a complete report.
+    validations:
+      required: true

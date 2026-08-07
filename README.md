@@ -30,6 +30,18 @@ before it lands.
 🚧 **In Development** — This project is not yet live or deployed to any production environment. The database schema is still evolving and may change without
 migration compatibility between versions. All schema changes are consolidated into a single initial migration (`V001`) until the first production release.
 
+## Contributing
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md). The most useful contribution is telling us when the **event data is wrong** — it is read automatically from venue
+websites, so a redesigned programme page can leave us quietly wrong for weeks.
+
+- [Wrong or missing event data](https://github.com/enorm-labs/event-checker/issues/new?template=wrong-event-data.yml)
+- [Suggest a venue](https://github.com/enorm-labs/event-checker/issues/new?template=new-venue.yml)
+- [Bug in the site or API](https://github.com/enorm-labs/event-checker/issues/new?template=bug.yml)
+
+Security problems go through [private disclosure](./SECURITY.md), never a public issue. Taking part means agreeing to the
+[Code of Conduct](./CODE_OF_CONDUCT.md).
+
 ## TODO
 
 See [TODO.md](./TODO.md)

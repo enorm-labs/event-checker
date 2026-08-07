@@ -1,0 +1,26 @@
+# Issue-template chooser configuration.
+# https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository
+
+# Forms only. A blank issue is almost always missing the one thing needed to act on it — which
+# event, which venue, which URL — and asking for it afterwards costs a round trip and usually loses
+# the reporter. The `contact_links` below cover everything the forms deliberately do not.
+blank_issues_enabled: false
+
+contact_links:
+  # Both of these must stay OFF the public tracker: a security problem should not be public before
+  # it is fixed, and nobody should have to ask for their own name to be removed in front of an
+  # audience. See SECURITY.md and the privacy notice (§4, "Event, artist and venue information").
+  - name: 🔒 Report a security vulnerability
+    url: https://github.com/enorm-labs/event-checker/security/advisories/new
+    about: Private disclosure, straight to the maintainer. Please do not open a public issue for this.
+
+  - name: 🙋 Ask for your name or details to be removed
+    url: https://github.com/enorm-labs/event-checker/security/advisories/new
+    about: >-
+      Artists and organisers — you do not need a reason and you do not have to ask in public.
+      This form is private. (It is labelled for security reports; it is the confidential channel
+      until the site's contact address is live.)
+
+# Note: GitHub Discussions is not enabled on this repository, so there is deliberately no link to
+# it here — a chooser entry pointing at a 404 is worse than none. General questions have their own
+# form ("Something else") instead. If Discussions is enabled later, move that traffic here.
