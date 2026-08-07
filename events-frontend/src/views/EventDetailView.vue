@@ -114,7 +114,7 @@ watch(slug, run)
         </ul>
       </section>
 
-      <section class="grid gap-6 sm:grid-cols-2">
+      <section class="grid grid-cols-1 gap-6 sm:grid-cols-2">
         <div v-if="event.venue" class="space-y-1">
           <SectionLabel>Venue</SectionLabel>
           <RouterLink

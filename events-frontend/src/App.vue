@@ -1,10 +1,13 @@
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { RouterLink, RouterView, useRouter } from 'vue-router'
 import { Moon, Sun } from '@lucide/vue'
 import { Button } from '@/components/ui/button'
 import BrandLogo from '@/components/BrandLogo.vue'
+import GitHubMark from '@/components/GitHubMark.vue'
 import { pageTitle } from '@/composables/usePageTitle'
+
+const REPOSITORY_URL = 'https://github.com/enorm-labs/event-checker'
 
 // Screen-reader route announcer. Client-side navigations don't move focus or re-read the
 // page, so a changed document title goes unheard. Mirror the title into an aria-live region
@@ -35,6 +38,11 @@ function toggleDark() {
     // Ignore storage failures (e.g. private mode); persistence is best-effort.
   }
 }
+
+// One source for the toggle's accessible name and its hover tooltip — they must not drift.
+const themeToggleLabel = computed(() =>
+  isDark.value ? 'Switch to light mode' : 'Switch to dark mode',
+)
 </script>
 
 <template>
@@ -45,44 +53,67 @@ function toggleDark() {
     </div>
 
     <header class="border-b border-border">
-      <nav class="mx-auto flex max-w-5xl items-center gap-4 p-4 text-sm font-medium sm:gap-6">
+      <!-- Below `sm` the row wraps: brand + controls stay on the first line and the links drop to a
+           second one. All seven items in a single row overflow a ~390px viewport — see the
+           header-overflow guard in e2e/smoke.spec.ts. -->
+      <nav
+        class="mx-auto flex max-w-5xl flex-wrap items-center gap-x-4 gap-y-3 p-4 text-sm font-medium sm:flex-nowrap sm:gap-6"
+      >
         <RouterLink class="mr-2 rounded-sm transition-opacity hover:opacity-80" to="/">
           <BrandLogo />
         </RouterLink>
-        <RouterLink
-          class="text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
-          to="/events"
-        >
-          Events
-        </RouterLink>
-        <RouterLink
-          class="text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
-          to="/venues"
-        >
-          Venues
-        </RouterLink>
-        <RouterLink
-          class="text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
-          to="/calendar"
-        >
-          Calendar
-        </RouterLink>
-        <RouterLink
-          class="text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
-          to="/about"
-        >
-          About
-        </RouterLink>
-        <Button
-          :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
-          class="ml-auto"
-          size="icon"
-          variant="outline"
-          @click="toggleDark"
-        >
-          <Moon v-if="isDark" />
-          <Sun v-else />
-        </Button>
+        <div class="order-last flex w-full items-center gap-4 sm:order-none sm:w-auto sm:gap-6">
+          <RouterLink
+            class="text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
+            to="/events"
+          >
+            Events
+          </RouterLink>
+          <RouterLink
+            class="text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
+            to="/venues"
+          >
+            Venues
+          </RouterLink>
+          <RouterLink
+            class="text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
+            to="/calendar"
+          >
+            Calendar
+          </RouterLink>
+          <RouterLink
+            class="text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
+            to="/about"
+          >
+            About
+          </RouterLink>
+        </div>
+        <div class="ml-auto flex items-center gap-2">
+          <!-- `title` is the hover tooltip only; `aria-label` still supplies the accessible name
+               (it wins over `title`), so the two stay in sync deliberately. -->
+          <Button
+            :href="REPOSITORY_URL"
+            aria-label="Source code on GitHub"
+            as="a"
+            rel="noopener"
+            size="icon"
+            target="_blank"
+            title="Source code on GitHub"
+            variant="outline"
+          >
+            <GitHubMark />
+          </Button>
+          <Button
+            :aria-label="themeToggleLabel"
+            :title="themeToggleLabel"
+            size="icon"
+            variant="outline"
+            @click="toggleDark"
+          >
+            <Moon v-if="isDark" />
+            <Sun v-else />
+          </Button>
+        </div>
       </nav>
     </header>
 

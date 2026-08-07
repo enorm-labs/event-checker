@@ -79,7 +79,7 @@ usePageTitle(() => (props.notFound ? `${props.kind} not found` : (props.name ?? 
         <p v-else-if="!events?.content?.length" class="text-sm text-muted-foreground">
           {{ emptyText }}
         </p>
-        <div v-else class="grid gap-3 sm:grid-cols-2">
+        <div v-else class="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <EventCard v-for="event in events.content" :key="event.slug" :event="event" />
         </div>
       </section>

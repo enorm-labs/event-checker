@@ -97,3 +97,38 @@ test('navigates to an event detail from a feed card', async ({ page }) => {
   await expect(page).toHaveURL(/\/events\/tonight-show$/)
   await expect(page.getByRole('heading', { level: 1, name: 'Tonight Show' })).toBeVisible()
 })
+
+test('long titles truncate inside the feed instead of widening the page', async ({ page }) => {
+  // The feed grid had no explicit `grid-cols-1`, so below `sm` its single track sized to
+  // min-content — and the card's `truncate` heading is `white-space: nowrap`, whose min-content
+  // is the whole untruncated string. One long title stretched the track to ~1600px and the
+  // entire page scrolled sideways. Numbered `grid-cols-*` resolve to `minmax(0, 1fr)`, which
+  // caps the track at the container. Needs real cards, hence the mocked feeds in this file.
+  const longTitle = 'An Extraordinarily Long Event Title That Should Truncate Rather Than Expand'
+  await page.route(todayFeed, (route) =>
+    json(route, [
+      {
+        slug: 'long-one',
+        title: longTitle,
+        subtitle: 'A subtitle that is also considerably longer than any narrow viewport allows',
+        eventDate: '2026-07-01',
+        startTime: '21:00',
+        venue: { slug: 'a-venue', name: 'A Venue With A Notably Long Name Attached To It' },
+      },
+    ]),
+  )
+
+  await page.goto('/')
+  await expect(eventHeading(page, longTitle)).toBeVisible()
+
+  const overflow = await page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  )
+  expect(overflow, 'page scrolls horizontally').toBe(0)
+
+  // And the card itself stays inside the viewport rather than being clipped by an ancestor.
+  const card = page.getByRole('link', { name: new RegExp(longTitle.slice(0, 30)) })
+  const box = await card.boundingBox()
+  const viewport = page.viewportSize()
+  expect(box && viewport && box.x + box.width).toBeLessThanOrEqual(viewport!.width)
+})
