@@ -15,16 +15,11 @@ import { expect, type Page, test } from '@playwright/test'
  * link, header, footer), which is where the repeated content lives.
  */
 
-const staticRoutes = [
-  '/',
-  '/events',
-  '/venues',
-  '/calendar',
-  '/about',
-  '/legal/imprint',
-  '/legal/privacy',
-  '/legal/notices',
-] as const
+// Both locales. German is reliably longer than English, so it is where a layout overflow or a
+// contrast regression actually shows up — sweeping only `/en` would miss exactly the cases the
+// translation introduces (docs/LOCALISATION_PLAN.md §4).
+const PATHS = ['', '/events', '/venues', '/calendar', '/about', '/legal/imprint', '/legal/privacy', '/legal/notices']
+const staticRoutes = ['en', 'de'].flatMap((locale) => PATHS.map((path) => `/${locale}${path}`))
 
 /** The conformance target. `best-practice` is deliberately excluded: useful, but not the bar. */
 const TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']

@@ -1,0 +1,33 @@
+{
+  "skipToContent": "Zum Inhalt springen",
+  "nav": {
+    "label": "Haupt",
+    "events": "Events",
+    "venues": "Locations",
+    "calendar": "Kalender",
+    "about": "Über uns",
+    "beta": "beta",
+    "betaLabel": "Event Junkie ist in der Beta — Daten können unvollständig oder veraltet sein. Hier steht, was das heißt.",
+    "sourceOnGitHub": "Quellcode auf GitHub",
+    "toLightMode": "Zum hellen Modus wechseln",
+    "toDarkMode": "Zum dunklen Modus wechseln"
+  },
+  "actions": {
+    "search": "Suchen",
+    "apply": "Anwenden",
+    "previous": "Zurück",
+    "next": "Weiter",
+    "website": "Website",
+    "browseEvents": "Events durchstöbern",
+    "browseCalendar": "Zum Kalender",
+    "backToHome": "Zurück zur Startseite"
+  },
+  "states": {
+    "loading": "Wird aufgelegt …",
+    "loadingVenues": "Wir trommeln die Läden zusammen …"
+  },
+  "upcomingEvents": "Kommende Events",
+  "locale": {
+    "label": "Sprache"
+  }
+}

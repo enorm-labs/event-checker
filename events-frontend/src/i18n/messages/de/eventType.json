@@ -1,0 +1,12 @@
+{
+  "CONCERT": "Konzert",
+  "FESTIVAL": "Festival",
+  "PARTY": "Party",
+  "QUIZ": "Quiz",
+  "CLUB_NIGHT": "Clubnacht",
+  "SHOW": "Show",
+  "SCREENING": "Filmvorführung",
+  "EXHIBITION": "Ausstellung",
+  "READING": "Lesung",
+  "OTHER": "Sonstiges"
+}

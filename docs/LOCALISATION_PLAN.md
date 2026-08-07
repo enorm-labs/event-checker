@@ -1,6 +1,6 @@
 # Plan — Localisation (English + German)
 
-> Status: **Phases 1–2 implemented** (2026-08-07); Phases 3–5 still proposal.
+> Status: **Phases 1–3 implemented** (2026-08-07); Phases 4–5 still proposal.
 > Delivers Phase 7 of [FOOTER_AND_LEGAL_PLAN.md](FOOTER_AND_LEGAL_PLAN.md) §6.2, which agreed the work and recorded the constraints it places on code written
 > since.
 > Related: [BRANDING.md](BRANDING.md) · [ADR-010 (styling)](adr/ADR-010_FRONTEND_STYLING_FRAMEWORK.md) · [ADR-011 (calendar)](adr/ADR-011_CALENDAR_LIBRARY.md)
@@ -204,7 +204,18 @@ phase the site looks identical and only English exists — which is exactly what
 > Original scope: Move all ~145 template strings and the TypeScript strings into the English catalogue. Mechanical, large, and best reviewed as its own
 diff with no behaviour change. The key-parity test lands here, comparing English against itself until German arrives.
 
-**Phase 3 — German UI.** Write `de` messages for everything except the legal pages. Add the footer locale switcher. Extend the axe sweep to `/de`.
+**Phase 3 — German UI.** ✅ done (2026-08-07). German is published: `/de/*` is live, `Accept-Language` resolves to it, and the footer carries a locale switcher.
+>
+> **The legal pages are still English**, which is the state §6.1 rules out *at go-live*. Nothing is deployed, so this is safe on `main` — but it is disclosed on
+> the page itself rather than left for a German reader to find: the provisional banner gains a line, in German, saying the page is English-only for now and that
+> the German version will be the authoritative one. It disappears by itself when Phase 4 lands.
+>
+> **Two bugs surfaced, one of them mine from Phase 1.** `formatDate` was switched to take the active locale and given the bare tag `en` — which `Intl` resolves
+> to US conventions, so English dates had silently become "Jun 12, 2026" instead of "12 Jun 2026". A UI locale is not a formatting locale; `INTL_LOCALES` now
+> maps `en → en-GB` and `de → de-DE`, with a unit test pinning the order. The key-parity test from Phase 2 was also comparing *precompiled message ASTs* rather
+> than source strings — harmless while comparing English to itself, useless the moment a second language existed. It now reads the JSON from disk.
+>
+> Original scope: Write `de` messages for everything except the legal pages. Add the footer locale switcher. Extend the axe sweep to `/de`.
 
 **Phase 4 — German legal pages + go-live coupling.** Imprint and privacy in German, the authoritative-version sentence, the generator cross-check, BRANDING.md's
 German register. **Phases 3 and 4 must be released together** (§1).

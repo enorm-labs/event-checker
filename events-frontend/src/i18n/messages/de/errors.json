@@ -1,0 +1,17 @@
+{
+  "serverTrouble": "{subject} konnten nicht geladen werden. Der Server hat gerade Probleme — bitte lade die Seite gleich noch einmal neu.",
+  "reload": "{subject} konnten nicht geladen werden. Bitte lade die Seite neu.",
+  "timeout": "{subject} konnten nicht geladen werden. Die Anfrage hat zu lange gedauert — prüfe bitte deine Verbindung und lade neu.",
+  "connection": "{subject} konnten nicht geladen werden. Prüfe bitte deine Verbindung und lade neu.",
+  "subject": {
+    "generic": "Diese Inhalte",
+    "tonightsEvents": "Die Events für heute Abend",
+    "upcomingEvents": "Die kommenden Events",
+    "events": "Die Events",
+    "venues": "Die Locations",
+    "venue": "Diese Location",
+    "event": "Dieses Event",
+    "artist": "Dieser Act",
+    "promoter": "Dieser Veranstalter"
+  }
+}

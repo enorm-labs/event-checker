@@ -1,6 +1,7 @@
 import { useI18n } from 'vue-i18n'
 
 import { formatDate, humaniseEventType } from '@/lib/format'
+import { INTL_LOCALES, isLocale } from '@/i18n/locales'
 
 /**
  * Locale-aware wrappers around the pure helpers in `lib/format.ts`.
@@ -12,8 +13,14 @@ export function useFormat() {
   const { locale, t, te } = useI18n()
 
   return {
-    /** `formatDate` bound to the active locale — "Fri, 12 Jun 2026" / "Fr., 12. Juni 2026". */
-    formatDate: (isoDate?: string | null) => formatDate(isoDate, locale.value),
+    /**
+     * `formatDate` bound to the active locale — "Fri, 12 Jun 2026" / "Fr., 12. Juni 2026".
+     *
+     * Maps the UI locale to a formatting tag first: bare `en` means US conventions to `Intl`, and
+     * would render the month first (see {@link INTL_LOCALES}).
+     */
+    formatDate: (isoDate?: string | null) =>
+      formatDate(isoDate, isLocale(locale.value) ? INTL_LOCALES[locale.value] : 'en-GB'),
 
     /**
      * The display label for an event type.

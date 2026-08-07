@@ -1,6 +1,23 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { eventLabel, humaniseEventType, todayIso, tomorrowIso } from '@/lib/format'
+import { eventLabel, formatDate, humaniseEventType, todayIso, tomorrowIso } from '@/lib/format'
+
+describe('formatDate locale handling', () => {
+  it('uses day-before-month for English, not US ordering', () => {
+    // Regression guard. Phase 1 made formatDate locale-aware and passed the bare UI locale `en`,
+    // which Intl resolves to US conventions — "Jun 12, 2026". A Berlin audience reads
+    // "12 Jun 2026". The UI locale is mapped to a formatting tag (INTL_LOCALES) to prevent this.
+    expect(formatDate('2026-06-12', 'en-GB')).toBe('Fri, 12 Jun 2026')
+  })
+
+  it('formats German dates in German', () => {
+    expect(formatDate('2026-06-12', 'de-DE')).toContain('12. Juni 2026')
+  })
+
+  it('returns the input unchanged when it is not an ISO date', () => {
+    expect(formatDate('not-a-date', 'en-GB')).toBe('not-a-date')
+  })
+})
 
 describe('humaniseEventType', () => {
   it('reads a single-word constant as a capitalised word', () => {

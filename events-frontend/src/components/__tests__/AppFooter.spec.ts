@@ -70,13 +70,18 @@ describe('AppFooter', () => {
     expect(contributing.text()).toBe('Contributing')
   })
 
-  it('gives each link group an accessible name so they are distinguishable from the main nav', () => {
+  it('gives every landmark in the footer an accessible name', () => {
+    // The footer contributes three navigation landmarks alongside the header's. With more than
+    // one, each needs a distinguishable name or the landmark list is a row of "navigation".
     const wrapper = mount_()
     const names = wrapper.findAll('nav').map((nav) => {
       const headingId = nav.attributes('aria-labelledby')
-      expect(headingId).toBeTruthy()
-      return wrapper.get(`#${headingId}`).text()
+      // The link groups are labelled by their visible heading; the locale switcher has no heading
+      // of its own and carries an aria-label instead.
+      const name = headingId ? wrapper.get(`#${headingId}`).text() : nav.attributes('aria-label')
+      expect(name, 'a footer landmark has no accessible name').toBeTruthy()
+      return name
     })
-    expect(names).toEqual(['Project', 'Legal'])
+    expect(names).toEqual(['Project', 'Legal', 'Language'])
   })
 })
