@@ -1246,11 +1246,12 @@ Four things worth recording:
   reworded is no longer the thing people think they are agreeing to. The CC BY-SA 4.0 attribution
   block is intact, as that licence requires. A script assertion fails if any `[NOTE: …]` placeholder
   survives.
-- **A fourth issue form was added ("Something else").** The plan specified `blank_issues_enabled: false`
-  plus three forms, which would have left a plain question with nowhere to go. The obvious fix —
-  a `contact_links` entry pointing at Discussions — turned out to be a dead link, because
-  **Discussions is not enabled on this repository**. A one-textarea form keeps structure the default
-  without closing the door.
+- **GitHub Discussions was enabled** to make the chooser work as designed. The plan specified
+  `blank_issues_enabled: false` plus three forms and a Discussions link — but Discussions was *not*
+  enabled on the repository, so that link would have been a dead one. It was turned on rather than
+  worked around, and the chooser now routes questions to Q&A and product ideas to Ideas, keeping
+  the tracker to things that can actually be closed. A discussion that turns out to be actionable
+  converts to an issue, so starting there costs nothing.
 - **The private-report route is GitHub's security advisory form**, used for both security reports
   *and* artist removal requests. Neither belongs on a public tracker, and it is the only
   confidential channel that exists until `event-junkie.de` is registered. Both the CoC and
