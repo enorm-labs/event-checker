@@ -376,12 +376,30 @@ npm run test:a11y -- --project=chromium    # the fast local loop
 `test:a11y` is a **filter over the same suite**, not a second check — `test:e2e` already includes it, so CI needs nothing extra. It exists so markup work does
 not have to pay for the whole e2e run. If axe reports a contrast failure, fix the design token rather than excluding the rule.
 
-The sweep runs in two passes, and both matter:
+The sweep runs in three passes:
 
 1. **Static routes, no BFF** — every static route in both locales, plus a light-theme pass (new visitors get dark, so light is otherwise unexercised).
-2. **Data-driven routes, BFF mocked** — home feeds, the events list with its filter bar and pagination, the venues list, and an event detail page. Without this
-   pass the components carrying nearly all the interactive markup are never scanned, because an error state renders none of them. **If you add a data-driven
-   view, add it here** — the static pass will happily go green on its error state.
+2. **Data-driven routes, BFF mocked** — home feeds, the events list with its filter bar and pagination, the venues list, an event detail page, and the calendar
+   with a populated month grid. Without this pass the components carrying nearly all the interactive markup are never scanned, because an error state renders
+   none of them. **If you add a data-driven view, add it here** — the static pass will happily go green on its error state.
+3. **`best-practice`, informational** — never fails the build. See below.
+
+**The mock matchers must stay non-overlapping**, which takes a lookahead: `/events` has three sub-resources (`/today`, `/calendar`, `/{slug}`) and a naive
+`\/events\/[^/?]+` swallows all three. Playwright consults route handlers in *reverse* registration order, so an overlap silently picks the handler registered
+last — and a feed served an object instead of an array renders an empty state that axe passes happily.
+
+#### The informational `best-practice` pass
+
+axe's `best-practice` rules are recommendations, not WCAG conformance criteria, so they are reported and **never gated**. Gating on them means either fixing
+recommendations under deadline or — far more likely — silencing them one at a time until the whole pass is noise. Findings are printed by rule id in the console
+and attached to the Playwright report.
+
+Three are open today. Fixing any of them is welcome; **promoting the pass to a gate is not the way to get them fixed**:
+
+| Finding | Where | Note |
+|---|---|---|
+| `heading-order` | `/events`, `/venues` | The list pages go `h1` → `h3`, because `EventCard` / `VenueCard` render `h3` — correct on the home page, where an `h2` section heading sits above them. Needs a decision about the shared card component, not a local edit. |
+| `empty-table-header` (7 nodes) | `/calendar` | FullCalendar's own weekday header cells. Third-party markup we do not write. |
 
 ### Why not the axe CLI
 

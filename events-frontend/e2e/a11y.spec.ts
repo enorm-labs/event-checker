@@ -122,10 +122,30 @@ const page1 = <T,>(content: T[], size: number) => ({
   totalPages: 2,
 })
 
-/** Every read endpoint the data-driven views touch, answered with something renderable. */
+/**
+ * Every read endpoint the data-driven views touch, answered with something renderable.
+ *
+ * The matchers are **deliberately non-overlapping**, which takes a lookahead to achieve: `/events`
+ * has three sub-resources (`/today`, `/calendar`, `/{slug}`) and a naive `\/events\/[^/?]+` swallows
+ * all three. Playwright consults route handlers in reverse registration order, so an overlap does
+ * not merely pick the wrong body — it picks the one registered *last*, which is the opposite of
+ * what reading the code top to bottom suggests. The failure is silent here: a feed served an object
+ * instead of an array renders an empty state, and axe passes happily on markup that was never
+ * there.
+ */
 async function mockBff(page: Page): Promise<void> {
   await page.route(/\/api\/events\/today/, (route) => json(route, eventSummaries))
-  await page.route(/\/api\/events\/[^/?]+/, (route) =>
+  // FullCalendar asks for whatever window it is showing, so the events are placed on the requested
+  // `from` date. That keeps a populated grid regardless of the machine's clock — the calendar opens
+  // on the real "today" — which is the same trick calendar.spec.ts uses.
+  await page.route(/\/api\/events\/calendar(\?|$)/, (route) => {
+    const from = new URL(route.request().url()).searchParams.get('from') ?? '2026-08-15'
+    return json(
+      route,
+      eventSummaries.map((event) => ({ ...event, eventDate: from })),
+    )
+  })
+  await page.route(/\/api\/events\/(?!today|calendar)[^/?]+/, (route) =>
     json(route, {
       slug: 'tonight-show',
       title: 'Tonight Show',
@@ -165,6 +185,11 @@ const dataRoutes = [
   { name: 'events list, with results and the filter bar', path: '/en/events' },
   { name: 'venues list, with results', path: '/en/venues' },
   { name: 'an event detail page', path: '/en/events/tonight-show' },
+  // The calendar is the most complex widget on the site and the only one whose markup we do not
+  // write: FullCalendar renders the grid, the toolbar and the event links. Third-party grid markup
+  // is exactly where accessibility problems hide, and the static pass reaches this route with an
+  // empty grid — which scans almost nothing.
+  { name: 'the calendar, with a populated month grid', path: '/en/calendar' },
 ]
 
 for (const route of dataRoutes) {
@@ -175,7 +200,13 @@ for (const route of dataRoutes) {
     await expect(page.getByRole('main')).toBeVisible()
     // The scan must not race the fetch: an empty list renders no cards, and axe would pass on
     // markup that was never there. Waiting on real content is what makes this pass meaningful.
-    await expect(page.getByRole('heading', { name: /Tonight Show|Mock Venue/ }).first()).toBeVisible()
+    // The calendar renders its events as links rather than headings, hence the two shapes.
+    await expect(
+      page
+        .getByRole('heading', { name: /Tonight Show|Mock Venue/ })
+        .or(page.getByRole('link', { name: /Tonight Show/ }))
+        .first(),
+    ).toBeVisible()
 
     const results = await buildScan(page).analyze()
 
@@ -189,6 +220,69 @@ for (const route of dataRoutes) {
     ).toEqual([])
   })
 }
+
+/**
+ * Informational pass — axe's `best-practice` rules, which are **not** part of the WCAG 2.1 AA bar
+ * the suite enforces above.
+ *
+ * Deliberately non-failing. These rules catch genuinely useful things (heading-order jumps, content
+ * outside a landmark, unlabelled regions) but they are recommendations, not conformance criteria,
+ * and gating a build on them means either fixing recommendations under deadline or, far more
+ * likely, silencing them one by one until the whole pass is noise.
+ *
+ * Findings are attached to the Playwright report and printed to the console instead, so they are
+ * there when someone goes looking. If a finding here turns out to matter, the right move is to fix
+ * it — not to promote this pass to a gate.
+ */
+type BestPracticeFinding = { path: string; rule: string; help: string; nodes: number }
+
+/**
+ * Render the findings for the console — named, not just counted, because a bare total is
+ * unactionable and the report attachment is one click further than anyone reading a CI log will go.
+ *
+ * A module-level helper rather than inline branching: `playwright/no-conditional-in-test` is right
+ * that a conditional inside a test body usually hides an untested path, and the exception here is
+ * formatting, not assertion.
+ */
+function summariseBestPractice(findings: BestPracticeFinding[]): string {
+  const header = `axe best-practice: ${findings.length} finding(s) — informational, not a gate.`
+  return [
+    header,
+    ...findings.map((f) => `  ${f.path}  ${f.rule} (${f.nodes} node(s)) — ${f.help}`),
+  ].join('\n')
+}
+
+test('best-practice rules (informational — never fails the build)', async ({ page }, testInfo) => {
+  await mockBff(page)
+
+  const findings: BestPracticeFinding[] = []
+
+  for (const path of ['/en', '/en/events', '/en/venues', '/en/calendar', '/en/about']) {
+    await page.goto(path)
+    await expect(page.getByRole('main')).toBeVisible()
+
+    const results = await new AxeBuilder({ page })
+      .exclude('#__vue-devtools-container__')
+      .withTags(['best-practice'])
+      .analyze()
+
+    findings.push(
+      ...results.violations.map((v) => ({
+        path,
+        rule: v.id,
+        help: v.help,
+        nodes: v.nodes.length,
+      })),
+    )
+  }
+
+  console.info(summariseBestPractice(findings))
+
+  await testInfo.attach('axe-best-practice.json', {
+    body: JSON.stringify(findings, null, 2),
+    contentType: 'application/json',
+  })
+})
 
 test('the skip link is the first thing Tab reaches', async ({ page, browserName }) => {
   // WebKit does not move focus to links on Tab unless macOS "Full Keyboard Access" is enabled —
