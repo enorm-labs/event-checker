@@ -319,6 +319,12 @@ Strategy & sequencing: [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEG
 - [ ] Exercise the Helm chart / container images locally before deploying (k3d or kind; LocalStack for cloud services?) — on the ADR-012 recommendation this
   local k3d work *is* the production deployment path, not a rehearsal for a different target
 - [ ] Maintenance mode — a downtime page for deploys and outages (frontend + BFF behaviour)
+- [x] Performance tests for the BFF read API — [k6](https://k6.io) scripts in [`perf/`](perf) (`smoke.js` · `load.js` · `spike.js`), run locally on demand
+- [ ] **Automate the k6 runs**, once there is somewhere worth pointing them. Deliberately deferred — a GitHub runner is too noisy to baseline against, and a
+  CI run against an empty database would only re-assert what the Testcontainers tests already cover with real data. Two follow-ups, in order:
+    1. Point `perf/smoke.js` and `perf/load.js` at **staging** from a scheduled workflow, once staging exists (blocked on ADR-012)
+    2. Store the results over time rather than gating on a threshold — a p95 that has drifted 40% over two months is the signal; a single red build is not.
+       Prometheus remote-write into the monitoring stack above is the natural home. See [perf/README.md](perf/README.md) §Why there is no CI workflow (yet)
 - [ ] Logging: always attach context (event id, artist id, …)
 - [ ] Checkov scan (if it makes sense)
 - [ ] Infra/tooling update checker beyond Dependabot (Renovate?)
