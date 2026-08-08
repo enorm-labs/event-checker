@@ -304,6 +304,16 @@ subprojects sharing a root `settings.gradle.kts`, plus a standalone frontend pro
 ./gradlew httpTest                  # Run .http files via IntelliJ HTTP Client CLI (requires ijhttp + running importer)
 ```
 
+Performance tests against the BFF's read API ([k6](https://k6.io); `brew install k6`, and the BFF has to be running):
+
+```bash
+k6 run perf/smoke.js           # every endpoint once — safe to run anywhere, ~1s, tolerates an empty DB
+k6 run perf/load.js            # sustained realistic load — watch whether p95 climbs with the VU count
+k6 run perf/spike.js           # a sudden surge — the finding is whether it recovers, not the peak
+```
+
+See [perf/README.md](perf/README.md) for what each answers, the thresholds and how to re-baseline them, and why there is deliberately no CI workflow yet.
+
 Local dev environment (used by `/importer-smoke` and `/next-importer`; run with no arguments for the full command list):
 
 ```bash
@@ -563,3 +573,4 @@ Java version is managed via SDKMAN (`.sdkmanrc` pins `java=25.0.2-tem`; run `sdk
 | Frontend entry point                  | `events-frontend/src/main.ts`                                                                             |
 | IntelliJ HTTP Client requests         | `http/importer/` (admin) and `http/bff/` (public read) `.http` files + shared `http/http-client.env.json` |
 | Local dev environment control script  | `scripts/dev-env.sh` (start/stop the stack, seed sources, trigger imports, inspect + diff the data)       |
+| Performance tests (k6)                | `perf/` — `smoke.js` · `load.js` · `spike.js`, endpoints in `perf/lib/api.js`                             |
