@@ -558,6 +558,7 @@ Java version is managed via SDKMAN (`.sdkmanrc` pins `java=25.0.2-tem`; run `sdk
 | ADR: Event-calendar library           | `docs/adr/ADR-011_CALENDAR_LIBRARY.md`                                                                    |
 | ADR: Cloud platform & hosting         | `docs/adr/ADR-012_CLOUD_PLATFORM.md`                                                                      |
 | ADR: Localisation (English + German)  | `docs/adr/ADR-013_LOCALISATION.md`                                                                        |
+| ADR: Rendering strategy (SPA/SSG/SSR) | `docs/adr/ADR-014_RENDERING_STRATEGY.md`                                                                  |
 | Plan: footer, legal pages, versioning | `docs/FOOTER_AND_LEGAL_PLAN.md`                                                                           |
 | Plan: localisation                    | `docs/LOCALISATION_PLAN.md`                                                                               |
 | Frontend entry point                  | `events-frontend/src/main.ts`                                                                             |

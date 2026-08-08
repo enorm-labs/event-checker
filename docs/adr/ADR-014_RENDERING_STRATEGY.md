@@ -1,0 +1,211 @@
+# ADR-014: Rendering strategy — how HTML reaches crawlers and scrapers
+
+## Status
+
+Proposed (2026-08-08)
+
+> Closes the question [ADR-013](ADR-013_LOCALISATION.md) §Consequences deferred (*"SSR / prerendering — wanted for SEO and tracked separately"*) and that
+> [LOCALISATION_PLAN.md](../LOCALISATION_PLAN.md) §Phase 5 ran into.
+>
+> **Part of the delivery depends on [ADR-012](ADR-012_CLOUD_PLATFORM.md) being executed; the decision does not.** See §Decision 3, which splits the work by that
+> dependency. Rendering-delay figures were checked on **2026-08-08**.
+
+## Context
+
+Every URL on this site serves the same body: `<div id="app"></div>`. Everything else — headings, listings, `hreflang`, `canonical`, JSON-LD — exists only after
+JavaScript runs.
+
+That sounds worse than it is, and this ADR is worth writing mostly to separate the part that is genuinely broken from the part that is folklore.
+
+### Problem 1 — link previews are broken. This one is real
+
+Slack, WhatsApp, iMessage, Discord, LinkedIn and Facebook scrapers do not execute JavaScript; they read the served HTML. `usePageTitle` updates `og:title`
+client-side, so every shared link previews as the generic site title — and **`og:description` is not updated per page at all**, so the description is site-level
+on every route. A specific Friday line-up and the imprint produce identical preview cards.
+
+For a nightlife product this is not cosmetic. Sharing a specific event with friends *is* a primary distribution channel, and it is the moment where the preview
+does the selling. This problem is permanent, unaffected by search-engine improvements, and untouched by any of the sitemap or structured-data work already
+shipped.
+
+### Problem 2 — indexing latency. Smaller than it first appeared
+
+An earlier draft of this ADR claimed Googlebot's render pass takes "days to weeks". **That is not supported by current data and is corrected here**, because a
+decision resting on it would be a decision resting on 2018-era folklore:
+
+- The median crawl-to-render gap is around [10 seconds, with the 25th percentile inside four](https://www.onely.com/blog/googles-rendering-delay-5-seconds/).
+- Across 100,000+ Googlebot fetches, one study found [Google rendered 100% of indexable HTML pages, with no measurable penalty for JavaScript
+  complexity](https://nadiamohamed.me/insights/javascript-seo/).
+
+The honest caveat, which does apply to us: that delay [scales with crawl priority, and low-priority sites can still wait a week or
+more](https://seolinkscan.com/blog/javascript-seo-guide-2026). A brand-new site with no inbound links is exactly a low-priority site — so this is a real risk
+**at launch specifically**, decaying as the site establishes itself. It is a reason to watch Search Console, not a reason to build a rendering architecture up
+front.
+
+### What is already mitigated
+
+| Surface                                       | State                                                                                                   |
+|-----------------------------------------------|---------------------------------------------------------------------------------------------------------|
+| `hreflang` alternates                         | Carried by `sitemap.xml`, a static file needing no rendering — the primary annotation today              |
+| `canonical`, `og:url`, `og:locale`            | JS-injected; reach Googlebot, reach no non-JS consumer                                                   |
+| `schema.org` JSON-LD                          | JS-injected; reaches Googlebot, which is enough — there is no non-JS consumer of structured data         |
+| **Per-page `og:title` / `og:description`**    | **The gap.** Title is JS-injected; description is not set per page at all. Neither reaches a scraper.    |
+
+So what rendering must buy is narrow and specific: **correct per-page head tags in the served HTML for data-driven routes.** Not body content, not first paint,
+not the static pages.
+
+### The requirement that removes half the option space
+
+Data-driven pages must always be up to date — events are imported daily, change daily, and expire.
+
+Worth noting what that implies: **the SPA already satisfies this**, because it fetches at view time. Freshness is therefore not an argument *for* server
+rendering; it is an argument *against* anything computed at build time.
+
+### The deployment it has to fit
+
+[ADR-012](ADR-012_CLOUD_PLATFORM.md) puts the frontend in an nginx container serving a static `dist/`, behind Traefik on Hetzner k3s, behind Cloudflare, with
+processing in Germany. It explicitly assumed the frontend has "no server runtime of its own".
+
+### Criteria
+
+1. **Fixes per-page link previews** — the one real problem.
+2. **Never serves stale data** — see above.
+3. **Degrades safely.** This is maintained by one person in evenings; an option whose failure mode is a blank page is worse than one whose failure mode is a
+   worse preview.
+4. **Adds no processor and no jurisdiction question**, per [AGENTS.md §Privacy](../../AGENTS.md) and ADR-012's German-processing choice.
+5. **Proportionate.** The problem is a handful of `<meta>` tags. The solution should look like that.
+
+## Candidate options
+
+### Option A — Status quo
+
+Costs nothing, fixes nothing. Named because it is what happens if this ADR stalls, and because it is genuinely not catastrophic: Googlebot renders, the sitemap
+carries `hreflang`, structured data works. The unmitigated loss is link previews.
+
+### Option B — Build-time static generation of the static routes (`vite-ssg`)
+
+Prerender the eight static paths × two locales. `vite-ssg` v28.3.0 is compatible with our stack (peers `vite ^8.0.0-0`, `vue-router ^5.0.0-0`, Node ≥20).
+
+**Rejected, and this reverses an earlier draft of this ADR, which led with it.** Measured against Criterion 5 it is the worst trade available: it requires
+restructuring `main.ts` around `ViteSSG`, migrating head management to `@unhead/vue`, and adding SSR guards to five modules that touch `document` — and it
+prerenders home, the two index pages, about and the three legal pages. **Nobody shares the imprint in a group chat.** It is the most expensive option that does
+nothing for Problem 1.
+
+### Option C — Build-time static generation of everything, including detail routes
+
+`includedRoutes` fetches every slug from the BFF at build time.
+
+**Rejected, permanently.** Not for build time or the CI coupling to a database — both solvable — but because it violates Criterion 2 by construction. Importers
+run daily: an event imported on Tuesday has no HTML until the next deploy, and a changed line-up keeps serving the old one. Making it correct means deploying on
+every import, which is a worse system than the one we have.
+
+### Option D — Full server-side rendering with hydration
+
+A Node process renders each request; the client hydrates and behaves as an SPA thereafter. This is the "hybrid SPA + SSR" shape, and it is the technically
+complete answer: previews, freshness, no-JS content and first paint, all at once.
+
+Costs, in the order they would actually hurt:
+
+- **Two module-level singletons would leak across requests.** The `vue-i18n` instance's locale is mutated globally by `setI18nLocale`, and `pageTitle` is a
+  module-scoped `ref`. Under concurrent SSR, one visitor's German request sets the locale another visitor's English response renders with. This is a
+  prerequisite refactor, not a detail.
+- **Its failure mode is a blank page** (Criterion 3), against a problem whose current failure mode is a mediocre preview.
+- **A Node runtime in production** — a new deployable, patching surface and memory profile, changing ADR-012's assumption.
+- Hydration mismatches and server/client double-fetching, both of which are ongoing costs rather than one-off ones.
+
+Not rejected on merit — deferred, with a trigger (§Decision 4).
+
+### Option E — Third-party dynamic rendering (Prerender.io and similar)
+
+**Rejected on two independent grounds.** It routes visitor requests through a new processor, which changes the privacy notice and needs an Art. 28 contract —
+the category [AGENTS.md](../../AGENTS.md) says to escalate rather than implement. And Google has deprecated dynamic rendering as a long-term solution; taking a
+permanent dependency on a workaround its own author has walked away from is a poor trade.
+
+### Option F — Meta injection
+
+Serve the ordinary SPA shell, with the head filled in per route before it leaves our infrastructure. On a request for `/en/events/{slug}`: take the built
+`index.html`, recognise the route, fetch the entity from the BFF, rewrite `<title>`, `og:*`, `twitter:*` and `canonical`, stream the result. The body stays
+`<div id="app"></div>`; the SPA boots and renders exactly as it does today.
+
+- **Fixes Problem 1 completely** — scrapers read the head and stop, so a head-only fix is a total fix for them.
+- **Always fresh**: the data is fetched per request.
+- **Fails safely**: if the injector breaks, visitors get today's behaviour and a generic preview. Nothing goes blank.
+- **Touches none of Option D's prerequisites** — no Vue renders on the server, so the singletons are irrelevant and no SSR guards are needed.
+- Does **not** fix Problem 2: the body is still empty, so Google still uses its render pass. Given the data above, that is an acceptable trade rather than a
+  reluctant one.
+- This is not cloaking — every consumer receives the same document.
+
+## Decision
+
+### 1. No build-time rendering, of any route
+
+Options B and C both rejected. B fails cost/benefit; C fails the freshness requirement by construction. The frontend build stays a plain `vite build` producing
+a static `dist/`, and — a property worth protecting deliberately — **stays independent of the BFF and the database**.
+
+### 2. Meta injection (Option F) for data-driven routes
+
+The primary decision. Event, venue, artist and promoter detail pages get their head tags filled in server-side; everything else is served as it is today.
+
+### 3. Build it in two parts, split by what each part depends on
+
+The work divides cleanly, and only one half needs a deployment:
+
+**Now — computing the tags.** One shared module deriving `{ title, description, image, canonical }` from a route and its entity. This is placement-independent,
+unit-testable, and it carries the trap: **the injector and the client must produce identical values**, or a scraper sees one title and a visitor sees another,
+and `og:url`/`canonical` flip when JavaScript boots. One module used by both is the only reliable way to hold that.
+
+It is also worth doing on its own merits, independent of any injector: it closes the missing per-page `og:description` noted in §Context, which is a real gap
+today and the second finding of the Google SEO-guide review.
+
+**At launch — the transport.** The component that intercepts the response and rewrites the head. This genuinely depends on ADR-012 existing, and building it
+against a guessed deployment would be waste. Leading candidate is a **Cloudflare Worker using `HTMLRewriter`**: Cloudflare is already in the request path, the
+API streams rather than buffers, it needs nothing new in the cluster, and it fits the free plan. The alternative is a small sidecar in k3s, which costs a little
+more operationally and keeps all processing in Germany.
+
+**Do not prototype the transport in Vite dev middleware.** The production shape is a Worker or a sidecar; a dev-server approximation would be thrown away.
+
+### 4. Full SSR (Option D) is deferred, with a named trigger
+
+Revisit when **Search Console shows detail pages indexed late or not at all** after launch — evidence, not anticipation. The prerequisite refactor (per-request
+i18n and page-title state) should be treated as part of that work rather than done speculatively.
+
+### 5. No third-party dynamic rendering
+
+Option E rejected.
+
+## Consequences
+
+**What this decision buys by *not* doing things.** Against the earlier draft, dropping Option B removes the whole restructuring programme: no `ViteSSG` entry
+point, no `@unhead/vue` migration, no SSR guards across five modules, no `import.meta.env.SSR` branching. The existing `seoTags.ts` and `structuredData.ts` stay
+exactly as they are.
+
+**Accepted costs:**
+
+- **The head becomes a two-writer surface.** The injector writes it, then the client overwrites it on boot. They must agree; §Decision 3's shared module is the
+  mechanism, and it needs a test asserting the two produce the same values for the same route.
+- **Detail routes gain a per-request BFF lookup** in front of the HTML response. It needs caching and a timeout, and it must fail open — a slow or failing BFF
+  must yield the unmodified shell, never an error page.
+- **The transport is undecided until ADR-012 is executed.** If it lands on the Cloudflare Worker, that is HTML assembly by a processor already in the path
+  rather than a new one — no new data category — but §7.7 still requires it be raised as a change rather than assumed.
+
+**What stays as it is, deliberately:**
+
+- **Bodies remain client-rendered.** Google's render pass handles them, at a cost the data above says is acceptable.
+- **No new runtime in the cluster** unless the sidecar option is chosen over the Worker.
+
+### When to revisit
+
+- **Search Console shows detail pages indexed late or not at all** — the trigger for Option D.
+- **The i18n and page-title singletons get made per-request for another reason** (testing, an admin app sharing the code) — Option D's main prerequisite
+  disappears and its cost drops sharply.
+- **Preview quality stops being the binding constraint** and first paint starts being one — a performance argument for SSR that this ADR does not make.
+- **A framework move is on the table anyway.** Nuxt subsumes this entire decision. Out of scope here because migrating a working app is far larger than the
+  problem justifies, but if it is ever considered for other reasons, reopen this rather than working around it.
+
+## References
+
+- [ADR-012](ADR-012_CLOUD_PLATFORM.md) — the deployment shape, and the dependency behind the second half of Decision 3
+- [ADR-013](ADR-013_LOCALISATION.md) — deferred this decision; its locale-prefixed URLs are what make per-page head tags worth computing
+- [LOCALISATION_PLAN.md](../LOCALISATION_PLAN.md) §Phase 5 — where the sitemap became the primary `hreflang` carrier, and why
+- [FOOTER_AND_LEGAL_PLAN.md](../FOOTER_AND_LEGAL_PLAN.md) §7.7 — the standing check any new processor or edge processing must clear
+- [Google's rendering delay](https://www.onely.com/blog/googles-rendering-delay-5-seconds/) · [JavaScript SEO in 2026](https://nadiamohamed.me/insights/javascript-seo/) · [crawl priority and render queue](https://seolinkscan.com/blog/javascript-seo-guide-2026)
+- [Cloudflare `HTMLRewriter`](https://developers.cloudflare.com/workers/runtime-apis/html-rewriter/) · [Google Search Central — dynamic rendering](https://developers.google.com/search/docs/crawling-indexing/javascript/dynamic-rendering)

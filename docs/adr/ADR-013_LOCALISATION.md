@@ -146,6 +146,8 @@ Stated on each page once both exist: *Maßgeblich ist die deutsche Fassung.* The
 - **Backend localisation.** The BFF returns data and RFC 9457 problem details; the frontend owns all user-facing language. If that changes, `Accept-Language`
   handling in the BFF is a separate decision.
 - **SSR / prerendering.** Wanted for SEO and tracked separately, but not a prerequisite: `hreflang` and per-locale `og:locale` are worth adding regardless.
+  *(Decided in [ADR-014](ADR-014_RENDERING_STRATEGY.md), 2026-08-08. The "not a prerequisite" judgement held for `hreflang` — the sitemap carries it — but only
+  partly: page-level `og:` tags do need server-side rendering, because the scrapers that consume them do not run JavaScript.)*
 - **A German tagline.** *"Can't get enough of Berlin"* is a pun on the brand premise ([BRANDING.md](../BRANDING.md) §2) and a literal rendering loses it. Whether
   the brand line stays English on the German site is a **brand decision, not an architectural one** — it belongs in BRANDING.md, and many Berlin brands do keep
   an English tagline.
