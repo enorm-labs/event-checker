@@ -266,6 +266,15 @@ The site is locale-routed: every page lives under `/<locale>/…`, and `src/i18n
   touches only the head tags has not really shipped.
 - **Canonical URLs come from `SITE_URL`, never from `window.location`.** Deriving them from the request host makes every alias and preview deployment declare
   itself canonical, which is the duplicate-content problem the tag exists to solve.
+- **Title, description and image come from `src/lib/pageMeta.ts` — nowhere else.** That module will be used twice: by the client today, and by the meta injector
+  server-side ([ADR-014](../docs/adr/ADR-014_RENDERING_STRATEGY.md) §Decision 3). If the two ever compose their own, a shared link previews as one thing and
+  opens as another. `composables/usePageMeta.ts` only writes the tags; it decides nothing.
+- **Entity descriptions are composed from data and punctuation, never from prose.** `Fr., 12. Juni 2026 · Lido, Berlin` needs only `Intl`; "Concert at Lido on
+  Friday" would need the message catalogue, and the injector may run somewhere that has none. Static pages are the exception — they are not data-driven, so they
+  take their description from `pageDescription.*` in the catalogue.
+- **Adding a static route means adding a `descriptionKey` too.** Without one the page falls back to the site-level description, which is the gap this replaced.
+- **Omit a description rather than pad one.** An artist we hold nothing but a name for has nothing true to say, and the site-level text is a better answer than
+  a generated sentence — the same rule the structured data follows.
 - **Structured data (`src/lib/structuredData.ts`) may only describe what the page displays.** That is Google policy, not style — structured data must represent
   visible content. Before adding a property, check the view actually renders it.
 - **Omit rather than guess.** A missing property costs a recommendation; a wrong one is a misrepresentation we volunteered, on a site whose imprint says *alle

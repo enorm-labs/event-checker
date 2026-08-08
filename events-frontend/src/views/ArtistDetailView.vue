@@ -2,8 +2,13 @@
 import { computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import BaseDetailView from '@/components/BaseDetailView.vue'
+import { usePageMeta } from '@/composables/usePageMeta'
+import { placeholderPageMeta, artistPageMeta } from '@/lib/pageMeta'
 import { useArtist } from '@/composables/useArtist'
 import { useEventSearch } from '@/composables/useEvents'
+
+/** Entity label: the eyebrow above the name, the not-found heading, and the placeholder title. */
+const KIND = 'Artist'
 
 const route = useRoute()
 const slug = computed(() => String(route.params.slug))
@@ -32,6 +37,13 @@ function reload() {
 
 onMounted(reload)
 watch(slug, reload)
+
+// Title, description and image for this page — the same values the meta injector will need
+// server-side later (ADR-014 §Decision 3). Mirrors the loading / not-found states the view
+// itself renders.
+usePageMeta(() =>
+  artist.value ? artistPageMeta(artist.value) : placeholderPageMeta(notFound.value ? `${KIND} not found` : KIND),
+)
 </script>
 
 <template>
@@ -46,7 +58,7 @@ watch(slug, reload)
     :not-found="notFound"
     :ready="Boolean(artist)"
     empty-text="No dates on the radar yet — check back soon."
-    kind="Artist"
+    :kind="KIND"
     not-found-text="This act isn't on our radar."
   >
     <template #meta>

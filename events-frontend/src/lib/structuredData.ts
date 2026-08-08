@@ -1,6 +1,6 @@
 import type { EventDetail, VenueDetail } from '@/api/types'
 import { canonicalUrl, SITE_URL } from '@/lib/seo'
-import { APP_NAME } from '@/composables/usePageTitle'
+import { APP_NAME } from '@/lib/pageMeta'
 import type { Locale } from '@/i18n/locales'
 
 /**

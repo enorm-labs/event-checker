@@ -126,6 +126,7 @@ const EVENT = {
   eventDate: '2026-06-12',
   startTime: '20:00',
   description: 'A night of something.',
+  imageUrl: 'https://example.test/poster.jpg',
   ticketUrl: 'https://tickets.test/buy',
   pricePresale: 38,
   priceCurrency: 'EUR',
@@ -195,4 +196,78 @@ test('leaves no structured data behind when the view changes', async ({ page }) 
   await expect(page).toHaveURL(/\/en\/about$/)
 
   expect(await jsonLd(page)).toEqual([])
+})
+
+/**
+ * Per-page title, description and image.
+ *
+ * The unit tests pin what the values should be; these prove they reach the served head through
+ * the router and the async load. The staleness cases matter most — an SPA never reloads, so
+ * nothing clears the head between routes except this code.
+ */
+
+const meta = (page: import('@playwright/test').Page, selector: string) =>
+  page.locator(`head ${selector}`).getAttribute('content')
+
+test('an event page describes itself rather than the site', async ({ page }) => {
+  await page.route(`**/api/events/${EVENT_SLUG}`, (route) =>
+    route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(EVENT) }),
+  )
+
+  await page.goto(`/en/events/${EVENT_SLUG}`)
+  await expect(page.getByRole('heading', { level: 1, name: 'Test Act' })).toBeVisible()
+
+  await expect(page).toHaveTitle('Test Act · Event Junkie')
+  // Facts first, blurb second — what someone deciding whether to open a shared link wants.
+  const description = 'Fri, 12 Jun 2026 · Lido, Berlin — A night of something.'
+  expect(await meta(page, 'meta[name="description"]')).toBe(description)
+  expect(await meta(page, 'meta[property="og:description"]')).toBe(description)
+  expect(await meta(page, 'meta[property="og:image"]')).toBe('https://example.test/poster.jpg')
+})
+
+test('the same event describes itself in German under /de', async ({ page }) => {
+  await page.route(`**/api/events/${EVENT_SLUG}`, (route) =>
+    route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(EVENT) }),
+  )
+
+  await page.goto(`/de/events/${EVENT_SLUG}`)
+  await expect(page.getByRole('heading', { level: 1, name: 'Test Act' })).toBeVisible()
+
+  // Tolerant of the comma: WebKit's ICU renders this as `Fr. 12. Juni 2026`, Chromium's and
+  // Firefox's as `Fr., 12. Juni 2026`. The weekday and date are the point — the punctuation
+  // between them is the engine's business. The unit tests pin the exact string, because they run
+  // against one fixed ICU (Node's).
+  expect(await meta(page, 'meta[property="og:description"]')).toMatch(/Fr\.,? 12\. Juni 2026/)
+})
+
+test('leaves no description or image behind when the view changes', async ({ page }) => {
+  // The failure this prevents: the imprint describing itself as the club night you just looked at,
+  // with the event poster still attached as its preview image.
+  await page.route(`**/api/events/${EVENT_SLUG}`, (route) =>
+    route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(EVENT) }),
+  )
+
+  await page.goto(`/en/events/${EVENT_SLUG}`)
+  await expect(page.getByRole('heading', { level: 1, name: 'Test Act' })).toBeVisible()
+
+  await page.goto('/en/legal/imprint')
+  await expect(page.getByRole('heading', { level: 1, name: 'Imprint' })).toBeVisible()
+
+  expect(await meta(page, 'meta[name="description"]')).toContain('§ 5 DDG')
+  await expect(page.locator('head meta[property="og:image"]')).toHaveCount(0)
+})
+
+test('every static page carries its own description', async ({ page }) => {
+  // Previously all of them served the one site-level description, which is the gap the Google
+  // starter-guide review turned up alongside the missing structured data.
+  const seen = new Set<string>()
+
+  for (const path of ['/en', '/en/events', '/en/venues', '/en/about', '/en/legal/privacy']) {
+    await page.goto(path)
+    const description = await meta(page, 'meta[name="description"]')
+    expect(description, `${path} has no description`).toBeTruthy()
+    seen.add(description!)
+  }
+
+  expect(seen.size, 'static pages share a description').toBe(5)
 })
