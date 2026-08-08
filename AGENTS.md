@@ -421,6 +421,21 @@ Java version is managed via SDKMAN (`.sdkmanrc` pins `java=25.0.2-tem`; run `sdk
       classes are listed by exact name instead: a `de.norm.events.*Entity`-style pattern would silently swallow the BFF/importer persistence classes, which
       *should* be measured.
     - Adding a new `*Module` marker or `*Fixtures` factory therefore needs no config change. Anything else does — in all three places.
+    - **`koverVerify` enforces a line-coverage floor per module**, and `check` (so `build`) runs it. Floors are set in `koverVerificationFloor(...)` in the root
+      `build.gradle.kts`, next to the number each module actually sits at.
+
+      | Module | Actual | Floor |
+      |---|---:|---:|
+      | `events-core` | 100.0% | 95 |
+      | `events-bff` | 98.6% | 92 |
+      | `events-importer` | 95.4% | 90 |
+      | aggregate | 95.6% | 90 |
+
+    - **They are floors, not targets, and the gap is deliberate.** A floor pinned to today's number fails the build for one uncovered line, which teaches people
+      to lower it — and a threshold that gets lowered on contact is worse than no threshold. These catch a *material* regression: a feature landing untested, or
+      a test class quietly ceasing to run. **Do not raise a floor in the same PR that pushes the number up**; raise it when a module has held comfortably above
+      the next step for a while.
+    - **If `koverVerify` fails, write the test.** Lowering the floor is a decision to be argued for in the PR description, not a way to go green.
 - **Kotlin idioms** (per [official coding conventions](https://kotlinlang.org/docs/coding-conventions.html)):
     - **Trailing commas** at declaration sites (constructor params, function params, enum entries, collection literals) — produces cleaner VCS diffs.
     - **Expression bodies** — prefer `fun foo() = expr` over `fun foo() { return expr }` for single-expression functions.

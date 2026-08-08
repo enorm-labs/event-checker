@@ -41,6 +41,27 @@ val gitCommit: Provider<String> =
                 .map { it.trim() }
         ).orElse("unknown")
 
+/**
+ * Per-module line-coverage floors for `koverVerify`, with the number each module actually sits at
+ * when the floor was set. Kept in one place so the whole policy is readable at a glance rather than
+ * scattered across three build files.
+ *
+ *   events-core       100.0%  → floor 95   (pure domain; the data classes are excluded, so what is
+ *                                           measured is the enum companions and MoneyExtensions)
+ *   events-bff         98.6%  → floor 92
+ *   events-importer    95.4%  → floor 90   (the largest module, and the one that grows fastest —
+ *                                           one venue per PR — so it gets the most headroom)
+ *
+ * The aggregate is verified separately at the bottom of this file.
+ */
+fun koverVerificationFloor(module: String): Int? =
+    when (module) {
+        "events-core" -> 95
+        "events-bff" -> 92
+        "events-importer" -> 90
+        else -> null
+    }
+
 subprojects {
     group = "de.norm"
     // `version` is deliberately NOT assigned here: it comes from `version` in gradle.properties,
@@ -103,6 +124,26 @@ subprojects {
                         "de.norm.events.*Module",
                         "de.norm.events.*Fixtures"
                     )
+                }
+            }
+
+            // Line-coverage floors, enforced by `koverVerify`, which `check` (and therefore
+            // `build`) already runs. Until now the task existed with no rules and passed
+            // vacuously.
+            //
+            // **These are floors, not targets.** They sit several points below where each module
+            // actually is, because a floor pinned to today's number fails the build for adding a
+            // single uncovered line — which teaches people to lower it, and a threshold that gets
+            // lowered on contact is worse than none. What these catch is a *material* regression:
+            // a feature landing with no tests at all, or a test class quietly stopping running.
+            //
+            // Raising one is a deliberate act. Do it when a module has held comfortably above the
+            // next step for a while — not in the same PR that happens to push the number up.
+            koverVerificationFloor(name)?.let { floor ->
+                verify {
+                    rule("Line coverage of $name must not fall below $floor%") {
+                        minBound(floor)
+                    }
                 }
             }
         }
@@ -173,6 +214,19 @@ kover {
                     "de.norm.events.*Module",
                     "de.norm.events.*Fixtures"
                 )
+            }
+        }
+
+        // The aggregate floor — 95.6% today. Set at 90, below every per-module floor, because it
+        // is a weighted average: the importer dominates it by size, so the aggregate cannot be
+        // healthier than that module and a tighter number here would just duplicate its rule.
+        //
+        // This is the same figure CI's `mi-kas/kover-report` comment uses for `min-coverage-overall`,
+        // except that one posts a comment and this one fails the build. Keep them in step, or
+        // decide deliberately that the comment is the softer early warning.
+        verify {
+            rule("Aggregate line coverage must not fall below 90%") {
+                minBound(90)
             }
         }
     }
