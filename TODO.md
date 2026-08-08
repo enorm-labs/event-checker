@@ -323,9 +323,13 @@ importer PR.**
 
 - [ ] Move the comedy and theatre venues currently sitting in [Blocked](docs/EVENT_DATA_SOURCES.md) on the scope question into Ready, and scaffold them like any
   other source — prioritised by programme richness as usual
-- [ ] **Retire `CLUB_NIGHT`, merging it into `PARTY`** (decided 2026-08-08). 7 events carry it and the boundary against `PARTY` is drawn by whichever word a
-  venue happened to use — a distinction the data does not support. Needs a migration, the scraper mappings, the i18n labels in both locales, and the filter
-  dropdown. Until it lands, do not add new `CLUB_NIGHT` mappings to any scraper
+- [ ] **Investigate why `PARTY` and `FESTIVAL` discard artists.** `buildArtistsForEventType` early-returns `emptyList()` for both, so any event typed either way
+  contributes no lineup at all — no matter what its title says. That is presumably deliberate (a party's title is usually the night's name, not an act), but it
+  is unconditional, undocumented as a data-quality trade, and affects far more rows than the handful it was presumably written for. Establish how many events
+  are currently losing a recoverable lineup to it before deciding whether to narrow the rule.
+    - **Context:** this is the reason `CLUB_NIGHT` exists as a separate type. Retiring `CLUB_NIGHT` into `PARTY` was proposed on 2026-08-08 and **rejected** on
+      finding this: it would have silently deleted the artist link from all 8 migas events. `CLUB_NIGHT` means *a DJ set where the booked act is the draw* —
+      see [docs/EVENT_SCOPE.md §2](docs/EVENT_SCOPE.md). Fixing this rule is the prerequisite for reopening that merge, not the other way round
 
 ## Operations & Hardening
 
