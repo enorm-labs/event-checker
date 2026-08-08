@@ -48,10 +48,25 @@ illustrative of the *mix*, not of coverage:
 unrecognised label is a signal to extend the mapping rather than something that silently accumulates. The 3% share
 is a health metric: if it climbs, a venue has started using vocabulary nobody has mapped.
 
-**`CLUB_NIGHT` is being retired.** In practice the boundary between it and `PARTY` is drawn by whichever word a
-venue happened to use, and only 7 events carry it — a distinction the data does not support. **Decided 2026-08-08:
-merge into `PARTY`.** Until that lands (it is a data migration plus a mapping change, so its own PR), do not add new
-`CLUB_NIGHT` mappings to any scraper.
+**`CLUB_NIGHT` is a real distinction, not a loose synonym for `PARTY` — and it is load-bearing.** Only 8 events
+carry it, which makes it look like a candidate for merging into `PARTY`. It is not, and the reason is in the code
+rather than in taste:
+
+```kotlin
+// ArtistNameMapping.kt — buildArtistsForEventType
+if (eventType == EventType.FESTIVAL.name || eventType == EventType.PARTY.name) return emptyList()
+```
+
+**Typing a night as `PARTY` discards its lineup.** migas maps its `playing` category to `CLUB_NIGHT` deliberately
+for exactly this reason: there the *title is the artist*, so all 8 of its events would lose their artist link on a
+merge. `PARTY` would also misdescribe the venue, which is a seated listening bar.
+
+So the definition to work from: **`CLUB_NIGHT` is a DJ set where the booked act is the draw** — the artist matters
+and is extracted. `PARTY` is a night where the event is the draw and no lineup is claimed. Map to whichever of those
+is true of the venue, and do not "tidy" one into the other.
+
+*(That `PARTY` and `FESTIVAL` discard artists at all is a separate and larger question — it affects far more than
+these 8 rows, and it is tracked in [../TODO.md](../TODO.md).)*
 
 **`EXHIBITION` means an *opening*, not a *run*.** A `vernissage` has a start time on one evening and imports
 correctly; an exhibition that runs for six weeks does not fit the model at all, because an event carries a date, not
