@@ -11,8 +11,27 @@
 | **Public name**          | **Event Junkie** (domain: `event-junkie.de`)                                                                           |
 | **Internal / repo name** | **Event Checker** (repo, modules, READMEs, ADRs — see the naming rule below)                                           |
 | **Tagline**              | *Can't get enough of Berlin* · DE: *Von Berlin kriegst du nie genug* — the German line is **shipping but not signed off**; see [§8](#8-localisation--the-german-register)                                                        |
+| **Positioning line**     | *The event app that Berlin deserves* — **not the tagline**; see below                                                  |
 | **One-liner**            | Your always-fresh feed of what's on across Berlin's venues — concerts, club nights, festivals, and the odd quiz night. |
-| **Scope**                | All music, every genre and room size — not just techno. Berlin-only for now.                                           |
+| **Scope**                | All music, every genre and room size — not just techno. Berlin-only for now. Which *kinds* of event: [EVENT_SCOPE.md](EVENT_SCOPE.md) |
+
+### Tagline vs. positioning line
+
+Two lines exist and they do different jobs. Keeping them apart is deliberate — using either in the other's place is how the voice goes muddy.
+
+| | *Can't get enough of Berlin* | *The event app that Berlin deserves* |
+|---|---|---|
+| **Role** | Tagline | Positioning line |
+| **Speaks about** | the **user** — it flatters them (§3) | the **product** — what it is trying to be |
+| **Where it goes** | hero, page titles, OG tags, marketing | About page, README, a pitch |
+| **Register** | playful, in-character | plain, sincere |
+
+The positioning line is **not a second tagline**, and should not appear in the hero, the page title or the OG tags. It reads as a claim rather than a wink, and
+the brand's whole premise (§2) is that the app flatters the user rather than itself — a claim in the hero would undercut the tagline sitting next to it.
+
+**German:** the About page already ships it inside a sentence — *"Weil ich die Event-App bauen wollte, die Berlin verdient."* That works because the line sits in
+prose there. A standalone German form (*"Die Event-App, die Berlin verdient"*) is **not signed off**, and would need the same written-not-translated treatment
+as everything else in [§8](#8-localisation--the-german-register) before it goes anywhere on its own.
 
 ### Naming rule
 

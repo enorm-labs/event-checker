@@ -147,9 +147,10 @@ campus-like source: the row's category decides whether it is programme at all. I
 `isProgrammeCategory`, which is where to revisit it.
 
 *A theater, comedy or arena-scale room is in scope, not just live-music clubs. Bar jeder Vernunft set that precedent — its programme is imported, with the
-venue's own genre deciding whether a night is a concert or a staged show. That precedent does **not** extend to classical concerts and orchestras: those are
-still an open question in [../TODO.md](../TODO.md), because the data shape differs — orchestra plus conductor plus soloists rather than a headliner with
-support — so the artist model needs a decision before any such venue leaves [Blocked](#-blocked--deferred).*
+venue's own genre deciding whether a night is a concert or a staged show. **Comedy clubs and theatres were confirmed in scope on 2026-08-08**
+([EVENT_SCOPE.md §5](EVENT_SCOPE.md)), so a venue of either kind sitting in [Blocked](#-blocked--deferred) on that question can be moved here and scaffolded
+like any other source. That precedent still does **not** extend to classical concerts and orchestras: those are **deferred, not rejected** — the data shape
+differs (orchestra plus conductor plus soloists rather than a headliner with support), so `ArtistRole` and the genre vocabulary must be extended first.*
 
 ## ⛔ Blocked / deferred
 
@@ -158,8 +159,10 @@ per [ADR-007](adr/ADR-007_WEB_SCRAPING_STRATEGY.md)), or applying the Havanna-st
 
 **Last re-checked 3 August 2026**, every entry. Two came out of it: Panke Culture, which now publishes a dated programme and has since been
 [imported](#-imported), and the RBB Sendesaal, whose concerts sit in a ROC calendar that turned out to be server-rendered and venue-attributed. The Sendesaal is
-back here as of 4 August — **not on scraping, which works, but on scope**: it is an orchestral house, and whether classical concerts belong in this app is still
-an open question (see *"add classical concerts / orchestras?"* under **Open questions — coverage scope** in [../TODO.md](../TODO.md), which names this venue).
+back here as of 4 August — **not on scraping, which works, but on scope**: it is an orchestral house. As of 2026-08-08 that question has an answer, and the
+answer is *not yet*: classical is **wanted but deferred** until `ArtistRole` and the genre vocabulary can represent an orchestra with a conductor and soloists
+([EVENT_SCOPE.md §5](EVENT_SCOPE.md)). Importing it before then would mean flattening its programme into headliner-plus-support, which is wrong in a way that is
+expensive to unpick later — so it stays here on purpose, not through neglect.
 Answer that question and the importer is a short job; the ROC calendar is server-rendered and attributes each concert to a venue, so
 `.ConcertListItem-location` is the only filter needed. Five entries had their blocker *change* without unblocking, which is worth knowing before anyone spends
 effort on them:

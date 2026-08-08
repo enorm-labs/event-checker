@@ -48,9 +48,15 @@ illustrative of the *mix*, not of coverage:
 unrecognised label is a signal to extend the mapping rather than something that silently accumulates. The 3% share
 is a health metric: if it climbs, a venue has started using vocabulary nobody has mapped.
 
-**`CLUB_NIGHT` is the weakest distinction in the list.** In practice the boundary between it and `PARTY` is drawn by
-whichever word a venue happened to use, and only 7 events carry it. Worth either defining sharply or merging into
-`PARTY` — noted in §5.
+**`CLUB_NIGHT` is being retired.** In practice the boundary between it and `PARTY` is drawn by whichever word a
+venue happened to use, and only 7 events carry it — a distinction the data does not support. **Decided 2026-08-08:
+merge into `PARTY`.** Until that lands (it is a data migration plus a mapping change, so its own PR), do not add new
+`CLUB_NIGHT` mappings to any scraper.
+
+**`EXHIBITION` means an *opening*, not a *run*.** A `vernissage` has a start time on one evening and imports
+correctly; an exhibition that runs for six weeks does not fit the model at all, because an event carries a date, not
+a date range. The type name promises more than the data delivers, and that gap is the subject of the deferred
+decision in §5 — not something to work around in a scraper.
 
 ## 3. What is deliberately excluded
 
@@ -114,22 +120,30 @@ job.
 - **Venue categories imported today**: clubs (52), bars (35), techno clubs (31), concert halls (30), open-air
   spaces (13), arenas (3), theatres (2), comedy clubs (1).
 
-## 5. Open questions
+## 5. Coverage decisions
 
-These are decisions, not tasks — each changes what the app *is*, so none should be settled by an importer PR.
-Tracked as checkboxes under **Open questions — coverage scope** in [../TODO.md](../TODO.md).
+Each of these changes what the app *is*, so **none may be settled by an importer PR.** All five were decided on
+2026-08-08; the two that are still open are open on *sequencing*, not on principle.
 
-| Question | Blocked on | Cost of saying yes |
-|---|---|---|
-| **Classical / orchestras?** (Konzerthaus, Philharmonie, RBB Sendesaal, Berliner Symphoniker) | the artist model — orchestra + conductor + soloists vs. headliner + support | Medium. `ArtistRole` and the genre vocabulary need extending; the scraping is solved for at least one venue |
-| **Comedy clubs?** (Comedy Café Berlin, Quatsch Comedy Club, …) | nothing much | **Lowest of the four.** One comedy club is already imported; this is mostly more venues of a category that already exists |
-| **Theatres?** (Volksbühne, Schaubühne, Berliner Ensemble, …) | nothing much | Low. Theater im Delphi, Heimathafen and Bar jeder Vernunft are already imported — this is coverage, not a new category |
-| **Exhibitions as a first-class thing?** | the time model — a run of weeks, not a start time on one evening | Medium. `EXHIBITION` exists and openings import fine today; a *run* needs a date range in the schema and a display decision |
-| **Sport?** | a genuine product decision | High, and answer it **independently** of the three above. New venues, a different audience, and arguably past the point where this is still a music app |
+| Question | Decision | Blocked on | What it costs |
+|---|---|---|---|
+| **Comedy clubs?** (Comedy Café Berlin, Quatsch Comedy Club, …) | ✅ **Yes** | nothing | Cheapest of the five. Cosmic Comedy is already imported, so this is more venues in a category that exists |
+| **Theatres?** (Volksbühne, Schaubühne, Berliner Ensemble, …) | ✅ **Yes** | nothing | Low. Theater im Delphi, Heimathafen and Bar jeder Vernunft are already imported — coverage, not a new category |
+| **Classical / orchestras?** (Konzerthaus, Philharmonie, RBB Sendesaal, Berliner Symphoniker) | ⏸ **Deferred** — not rejected | the artist model | Medium. `ArtistRole` and the genre vocabulary need extending **first**; the scraping is already solved for RBB Sendesaal |
+| **Exhibitions as first-class runs?** | ⏸ **Deferred** | the time model | Medium. A run of weeks needs a date range in the schema and a display decision. Openings already import fine — see §2 |
+| **Sport?** | ❌ **No** | — | Settled. Different venues, different audience, and past the point where this is a music app |
 
-**Two of these are nearly free and two are not.** Comedy and theatre are coverage questions with categories that
-already exist. Classical and exhibitions each need a model change first, and sport needs a decision about what the
-product is for.
+**What the two yeses unlock.** Comedy and theatre venues can now be moved out of [Blocked](EVENT_DATA_SOURCES.md)
+and scaffolded like any other source — no ADR, no model change, no further discussion. Prioritise them by programme
+richness as usual.
+
+**What the two deferrals mean in practice.** Deferred is not rejected: both are wanted, and both are blocked on a
+model change that has to land first. Do not import an orchestral house by flattening its programme into
+headliner-plus-support — the resulting data would be wrong in a way that is expensive to unpick later. RBB Sendesaal
+stays in *Blocked* until `ArtistRole` grows a conductor and a soloist.
+
+**Sport is settled, and the exclusions in §3.1 are its implementation.** Reopening it means reopening `isSport` and
+the Velomax type map, not just a documentation edit.
 
 ## 6. Changing scope
 

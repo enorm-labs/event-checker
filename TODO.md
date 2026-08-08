@@ -300,24 +300,32 @@ Strategy & sequencing: [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEG
     - [ ] Radio-station event listings (RadioEins, FluxFM, StarFM, …)
     - [ ] Consider importing from Resident Advisor — confirm legality first (probably not allowed)
 
-**Open questions — coverage scope:**
+**Coverage scope — decided 2026-08-08.** Full reasoning and cost in [docs/EVENT_SCOPE.md §5](docs/EVENT_SCOPE.md). **None of these may be reopened in an
+importer PR.**
 
-Context, and what each one costs to say yes to, is in [docs/EVENT_SCOPE.md §5](docs/EVENT_SCOPE.md). Comedy and theatres are coverage questions in categories
-that already exist; classical and exhibitions each need a model change first; sport is a decision about what the product is. **None of these should be settled
-in an importer PR.**
+- [x] **Decided — comedy clubs: yes.** Cosmic Comedy is already imported, so this is more venues in a category that exists (Comedy Café Berlin, Quatsch Comedy
+  Club, …). No model change, no ADR. → *actionable work below*
+- [x] **Decided — theatres: yes.** Theater im Delphi, Heimathafen and Bar jeder Vernunft are already imported; the remaining houses (Volksbühne, Schaubühne,
+  Berliner Ensemble, …) are coverage, not a new category. → *actionable work below*
+- [x] **Decided — sport: no.** Different venues, different audience, past the point where this is a music app. The exclusions already in
+  `AegOverviewPageScraper.isSport` and Velomax's type map **are** this decision's implementation — the Velomax halls drop 32 of 85 listed entries and Uber Arena
+  40 of 128 rather than burying their concerts under `OTHER`. Reopening this means reopening that code, not just a doc.
+- [ ] **Deferred — classical concerts / orchestras (wanted, blocked on the artist model).** Berliner Symphoniker, RBB Sendesaal, Konzerthaus, Philharmonie. Fits
+  the existing `CONCERT` type, but the data shape differs — orchestra/ensemble + conductor + soloists rather than headliner + support — so **`ArtistRole` and the
+  genre vocabulary must be extended first**, with an ADR. Do **not** import an orchestral house by flattening it into headliner-plus-support; the data would be
+  wrong in a way that is expensive to unpick. RBB Sendesaal's scraping is already solved (server-rendered ROC calendar, `.ConcertListItem-location` is the only
+  filter needed) and it stays in Blocked purely on this.
+- [ ] **Deferred — exhibitions as first-class runs (blocked on the time model).** A run of weeks/months rather than a start time on one evening needs a date
+  range in the schema plus a display decision. Note the related honesty gap: `EXHIBITION` today means an *opening* (a `vernissage` has a start time), not a run
+  — see EVENT_SCOPE.md §2.
 
-- [ ] **Question: add classical concerts / orchestras?** e.g. Berliner Symphoniker, RBB Sendesaal, Konzerthaus, Philharmonie. Fits the existing `CONCERT` type,
-  but the data shape differs (orchestra/ensemble + conductor + soloists rather than a headliner + support), so the artist model and genre vocabulary need a look
-  first.
-- [ ] **Question: add comedy clubs?** Berlin has a sizeable English- and German-language stand-up scene (Comedy Café Berlin, Quatsch Comedy Club, …). Mostly a
-  new venue category plus an event type; the least model impact of the questions here.
-- [ ] **Question: add theatres?** Closest to what exists — Theater im Delphi, Heimathafen and Bar jeder Vernunft are already imported, so this is mostly a
-  question of covering the remaining houses (Volksbühne, Schaubühne, Berliner Ensemble, …) rather than a new category.
-- [ ] **Question: add exhibitions?** Museums and galleries have a different time shape — a run of weeks/months rather than a start time on one evening — so it
-  needs a decision on how a date range is modelled and displayed before any importer.
-- [ ] **Question: add sport events?** A completely new category — different venues, different audience, and arguably too much of a scope extension for an
-  events/music-focused app. Answer this one independently of theatres and exhibitions. Note the arenas already force the question: the model has no `SPORT`
-  type, so the Velomax halls drop 32 of 85 listed entries and Uber Arena 40 of 128 rather than burying their concerts under `OTHER`.
+**Actionable now that comedy and theatres are settled:**
+
+- [ ] Move the comedy and theatre venues currently sitting in [Blocked](docs/EVENT_DATA_SOURCES.md) on the scope question into Ready, and scaffold them like any
+  other source — prioritised by programme richness as usual
+- [ ] **Retire `CLUB_NIGHT`, merging it into `PARTY`** (decided 2026-08-08). 7 events carry it and the boundary against `PARTY` is drawn by whichever word a
+  venue happened to use — a distinction the data does not support. Needs a migration, the scraper mappings, the i18n labels in both locales, and the filter
+  dropdown. Until it lands, do not add new `CLUB_NIGHT` mappings to any scraper
 
 ## Operations & Hardening
 
