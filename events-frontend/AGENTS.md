@@ -397,7 +397,7 @@ npm run check:licenses                                     # this project's prod
 acceptable — see [docs/LEGAL.md §9.2](../docs/LEGAL.md). If a licence genuinely belongs on the list, record why in the policy
 file's `_rationale`.
 
-The same guidance is in the [README](../README.md#dependency-licences--open-source-notices) for people not reading this file.
+The same guidance is in the [development guide](../docs/DEVELOPMENT.md#licences-and-open-source-notices) for people not reading this file.
 
 ## Accessibility
 

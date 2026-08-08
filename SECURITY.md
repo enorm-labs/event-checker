@@ -28,7 +28,7 @@ what an attacker could actually achieve with it.
 
 ## Scope
 
-The project is **not deployed anywhere yet** (see [README §Project Status](./README.md#project-status)), so there is no production system to attack. That makes
+The project is **not deployed anywhere yet** (see [README §Status](./README.md#status)), so there is no production system to attack. That makes
 the interesting surface the code itself:
 
 **In scope**

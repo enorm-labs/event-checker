@@ -28,7 +28,8 @@ together, and a pull request that cuts across that is painful to review and dish
 
 ## Getting set up
 
-Everything is in the [README](./README.md) — JDK, Docker, `dev-env.sh`, and how to run each module. The frontend has its own
+Everything is in [docs/DEVELOPMENT.md](./docs/DEVELOPMENT.md) — JDK, Docker, `dev-env.sh`, and how to run each module. The
+[README](./README.md#install) has the four-command version. The frontend has its own
 [README](./events-frontend/README.md).
 
 ## Conventions
@@ -80,7 +81,7 @@ is taken as agreeing that your contribution may be distributed under that licenc
 
 If you add a dependency, its licence has to clear the policy in [config/](./config): permissive or weak copyleft. AGPL, GPL without the Classpath Exception, and
 source-available licences (SSPL, BUSL, Elastic) are not acceptable for a public network service — see the
-[README](./README.md#dependency-licences--open-source-notices).
+[development guide](./docs/DEVELOPMENT.md#licences-and-open-source-notices).
 
 ## Built with AI
 
