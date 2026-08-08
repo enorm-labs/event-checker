@@ -1,4 +1,10 @@
+import com.github.jk1.license.filter.DependencyFilter
+import com.github.jk1.license.filter.LicenseBundleNormalizer
+import com.github.jk1.license.render.InventoryHtmlReportRenderer
+import com.github.jk1.license.render.JsonReportRenderer
+import com.github.jk1.license.render.ReportRenderer
 import dev.detekt.gradle.Detekt
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import org.springframework.boot.gradle.dsl.SpringBootExtension
 
@@ -61,6 +67,30 @@ fun koverVerificationFloor(module: String): Int? =
         "events-importer" -> 90
         else -> null
     }
+
+/**
+ * Whether a Kotlin compiler warning fails the build — off locally, on in CI (`-PwarningsAsErrors`,
+ * passed by `build-backend.yml`).
+ *
+ * The Kotlin warning set is empty, and the only thing that keeps it empty is somebody noticing a
+ * new line scroll past in a terminal. This makes CI notice instead. It is deliberately **not** on
+ * by default: the warnings that appear unbidden are the ones a Kotlin or Spring Boot upgrade
+ * introduces, and turning a dependency bump into a red local build punishes the person doing the
+ * bump at the moment they are least able to act on it. In CI the same failure is a PR check on a
+ * branch, which is where it belongs.
+ *
+ * Accepts a bare `-PwarningsAsErrors` (Gradle passes `""`) as well as an explicit `=true`/`=false`,
+ * so `-PwarningsAsErrors=false` genuinely turns it off rather than enabling it by being present.
+ *
+ * **This does not cover the build scripts themselves.** `build.gradle.kts` is compiled by Gradle's
+ * Kotlin DSL, not by these tasks, so a warning there — like the `arrayOf` intersection one below —
+ * still only ever prints. Nothing available today changes that.
+ */
+val warningsAsErrors: Provider<Boolean> =
+    providers
+        .gradleProperty("warningsAsErrors")
+        .map { it.isBlank() || it.toBooleanStrict() }
+        .orElse(false)
 
 subprojects {
     group = "de.norm"
@@ -169,6 +199,16 @@ subprojects {
                     additional.put("commit", gitCommit)
                 }
             }
+        }
+    }
+
+    // Applied to every Kotlin compilation, `main` and `test` alike — a warning in a test is the
+    // same signal, and two of the three this rule was introduced alongside were in test code.
+    // The per-module `kotlin { compilerOptions { … } }` blocks keep owning `-Xjsr305=strict` and
+    // friends; only the shared, environment-dependent switch lives here.
+    tasks.withType<KotlinCompile>().configureEach {
+        compilerOptions {
+            allWarningsAsErrors = warningsAsErrors
         }
     }
 
@@ -333,22 +373,23 @@ licenseReport {
 
     projects = arrayOf(project) + subprojects.toTypedArray()
 
+    // The explicit `<ReportRenderer>` / `<DependencyFilter>` type arguments are load-bearing, not
+    // decoration. Both properties are Java arrays, so Kotlin infers the element type from the
+    // arguments rather than the target: every renderer and filter the plugin ships is a Groovy
+    // class, so `arrayOf(...)` alone infers the *intersection* `ReportRenderer & GroovyObject`
+    // and warns that reifying an intersection silently falls back to a common supertype. Naming
+    // the interface is the fix the compiler asks for, and it becomes an error in language
+    // version 2.3 (KTLC-13).
     renderers =
-        arrayOf(
-            com.github.jk1.license.render
-                .JsonReportRenderer("licenses.json", false),
-            com.github.jk1.license.render
-                .InventoryHtmlReportRenderer("licenses.html")
+        arrayOf<ReportRenderer>(
+            JsonReportRenderer("licenses.json", false),
+            InventoryHtmlReportRenderer("licenses.html")
         )
 
     // Normalises the many spellings of the same licence ("Apache 2", "The Apache Software
     // License, Version 2.0", …) into one bundle so the notices page groups correctly. Without it
     // Apache-2.0 alone appears under half a dozen names.
-    filters =
-        arrayOf(
-            com.github.jk1.license.filter
-                .LicenseBundleNormalizer()
-        )
+    filters = arrayOf<DependencyFilter>(LicenseBundleNormalizer())
 
     // Checked by `./gradlew checkLicense`. Deliberately an *allow*-list here, unlike the CI
     // deny-list in dependency-review.yml: this runs over the full resolved tree where we control
