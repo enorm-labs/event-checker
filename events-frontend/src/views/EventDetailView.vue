@@ -5,7 +5,10 @@ import { Button } from '@/components/ui/button'
 import BaseBadge from '@/components/BaseBadge.vue'
 import SectionLabel from '@/components/SectionLabel.vue'
 import { useEvent } from '@/composables/useEvent'
-import { usePageTitle } from '@/composables/usePageTitle'
+import { APP_NAME, usePageTitle } from '@/composables/usePageTitle'
+import { useStructuredData } from '@/composables/useStructuredData'
+import { breadcrumbJsonLd, eventJsonLd, type JsonLd } from '@/lib/structuredData'
+import type { Locale } from '@/i18n/locales'
 import { formatPrice, formatTime } from '@/lib/format'
 import { useFormat } from '@/composables/useFormat'
 import { useLocalePath } from '@/composables/useLocalePath'
@@ -35,7 +38,27 @@ watch(slug, run)
 const localePath = useLocalePath()
 const { formatDate } = useFormat()
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
+
+// The rich-result payload: an Event document plus the breadcrumb trail Search renders instead of a
+// bare URL. `eventJsonLd` returns null when Google's required fields are missing, which is why
+// this filters rather than assuming. See lib/structuredData.ts.
+useStructuredData((): JsonLd[] => {
+  const current = event.value
+  if (!current?.slug || !current.title) return []
+
+  return [
+    eventJsonLd(current, locale.value as Locale),
+    breadcrumbJsonLd(
+      [
+        [APP_NAME, ''],
+        [t('common.nav.events'), '/events'],
+        [current.title, `/events/${current.slug}`],
+      ],
+      locale.value as Locale,
+    ),
+  ].filter((document): document is JsonLd => document !== null)
+})
 </script>
 
 <template>

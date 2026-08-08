@@ -266,6 +266,15 @@ The site is locale-routed: every page lives under `/<locale>/…`, and `src/i18n
   touches only the head tags has not really shipped.
 - **Canonical URLs come from `SITE_URL`, never from `window.location`.** Deriving them from the request host makes every alias and preview deployment declare
   itself canonical, which is the duplicate-content problem the tag exists to solve.
+- **Structured data (`src/lib/structuredData.ts`) may only describe what the page displays.** That is Google policy, not style — structured data must represent
+  visible content. Before adding a property, check the view actually renders it.
+- **Omit rather than guess.** A missing property costs a recommendation; a wrong one is a misrepresentation we volunteered, on a site whose imprint says *alle
+  Angaben ohne Gewähr*. `eventJsonLd` returns `null` when a required field is absent, because partial structured data is rejected outright rather than partially
+  used.
+- **Two claims are deliberately not made, and both are legal rather than technical.** Performers are `PerformingGroup`, never `Person` — §7.3 treats artist
+  names as personal data, and asserting personhood machine-readably is gratuitous. The site is a `WebSite`, never an `Organization` — the imprint states a
+  private individual runs it, so the opposite claim would contradict our own legal page.
+- Structured data is the one SEO surface that does **not** wait on prerendering: Googlebot renders JavaScript, so it reads JSON-LD injected after boot.
 
 ## Versioning
 

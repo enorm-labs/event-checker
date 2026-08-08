@@ -11,6 +11,9 @@ import { TAGLINE } from '@/composables/usePageTitle'
 import { tomorrowIso } from '@/lib/format'
 import { useLocalePath } from '@/composables/useLocalePath'
 import { useI18n } from 'vue-i18n'
+import { useStructuredData } from '@/composables/useStructuredData'
+import { websiteJsonLd } from '@/lib/structuredData'
+import type { Locale } from '@/i18n/locales'
 
 const today = useTodayEvents()
 // Upcoming starts tomorrow — today's events live in the "Tonight" section above.
@@ -23,7 +26,11 @@ onMounted(() => {
 
 const localePath = useLocalePath()
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
+
+// Site-level identity, so Search can show the site name rather than the bare domain. Deliberately
+// `WebSite` and not `Organization` — see lib/structuredData.ts.
+useStructuredData(() => websiteJsonLd(locale.value as Locale))
 </script>
 
 <template>
