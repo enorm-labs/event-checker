@@ -11,7 +11,7 @@
 | **Public name**          | **Event Junkie** (domain: `event-junkie.de`)                                                                                                                              |
 | **Internal / repo name** | **Event Checker** (repo, modules, READMEs, ADRs — see the naming rule below)                                                                                              |
 | **Tagline**              | *Can't get enough of Berlin* · DE: *Von Berlin kriegst du nie genug* — the German line is **shipping but not signed off**; see [§8](#8-localisation--the-german-register) |
-| **Positioning line**     | *The event app that Berlin deserves* — **not the tagline**; see below                                                                                                     |
+| **Positioning line**     | *The event app Berlin deserves* — **not the tagline**; see below                                                                                                     |
 | **One-liner**            | Your always-fresh feed of what's on across Berlin's venues — concerts, club nights, festivals, and the odd quiz night.                                                    |
 | **Scope**                | All music, every genre and room size — not just techno. Berlin-only for now. Which *kinds* of event: [EVENT_SCOPE.md](EVENT_SCOPE.md)                                     |
 
@@ -19,7 +19,7 @@
 
 Two lines exist and they do different jobs. Keeping them apart is deliberate — using either in the other's place is how the voice goes muddy.
 
-|                   | *Can't get enough of Berlin*          | *The event app that Berlin deserves*      |
+|                   | *Can't get enough of Berlin*          | *The event app Berlin deserves*           |
 |-------------------|---------------------------------------|-------------------------------------------|
 | **Role**          | Tagline                               | Positioning line                          |
 | **Speaks about**  | the **user** — it flatters them (§3)  | the **product** — what it is trying to be |
@@ -29,9 +29,15 @@ Two lines exist and they do different jobs. Keeping them apart is deliberate —
 The positioning line is **not a second tagline**, and should not appear in the hero, the page title or the OG tags. It reads as a claim rather than a wink, and
 the brand's whole premise (§2) is that the app flatters the user rather than itself — a claim in the hero would undercut the tagline sitting next to it.
 
+**No "that" (decided 2026-08-08).** The line is *"The event app Berlin deserves"*, not *"…the event app **that** Berlin deserves"*. The relative pronoun is
+optional in English when the relative clause relativises the object, and dropping it is what makes the line scan as a claim rather than as a sentence someone
+started. It also lets the Batman cadence it borrows land unaltered — *"the hero Gotham deserves"* has no *that* either, and the half-echo is doing work the
+extra syllable would blunt. **Do not add it back.** (It was written with *that* until this date; if you find that spelling anywhere, it is a leftover.)
+
 **German:** the About page already ships it inside a sentence — *"Weil ich die Event-App bauen wollte, die Berlin verdient."* That works because the line sits
 in prose there. A standalone German form (*"Die Event-App, die Berlin verdient"*) is **not signed off**, and would need the same written-not-translated
-treatment as everything else in [§8](#8-localisation--the-german-register) before it goes anywhere on its own.
+treatment as everything else in [§8](#8-localisation--the-german-register) before it goes anywhere on its own. Note that the omission above does not transfer:
+German has no zero relative pronoun, so *"die"* stays in either form. The two languages simply differ here — that is not a drift between them to be "fixed".
 
 ### Naming rule
 
