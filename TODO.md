@@ -302,6 +302,10 @@ Strategy & sequencing: [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEG
 
 **Open questions — coverage scope:**
 
+Context, and what each one costs to say yes to, is in [docs/EVENT_SCOPE.md §5](docs/EVENT_SCOPE.md). Comedy and theatres are coverage questions in categories
+that already exist; classical and exhibitions each need a model change first; sport is a decision about what the product is. **None of these should be settled
+in an importer PR.**
+
 - [ ] **Question: add classical concerts / orchestras?** e.g. Berliner Symphoniker, RBB Sendesaal, Konzerthaus, Philharmonie. Fits the existing `CONCERT` type,
   but the data shape differs (orchestra/ensemble + conductor + soloists rather than a headliner + support), so the artist model and genre vocabulary need a look
   first.

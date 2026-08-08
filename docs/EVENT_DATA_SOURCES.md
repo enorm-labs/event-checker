@@ -1,7 +1,11 @@
 # Event Data Sources — Berlin
 
 Overview of all venues, clubs, and promoters whose websites are potential sources for importing event data. Sources are grouped by **import status** so the
-remaining work is visible at a glance. The **Comment** column records what matters for building or maintaining an importer — the platform, where the data lives,
+remaining work is visible at a glance.
+
+**This document answers *which venues*. For *which kinds of event*, see [EVENT_SCOPE.md](EVENT_SCOPE.md)** — the standing reference for what is in scope, what
+is deliberately excluded (sport, participation formats, trade fairs, classical) and which coverage questions are still open. Several rows below sit in
+*Blocked* on a scope decision rather than a technical one; that document is where those decisions are recorded. The **Comment** column records what matters for building or maintaining an importer — the platform, where the data lives,
 and the parsing quirks. For an implemented importer, its KDoc and scraper tests are the authoritative field mapping; defects worth repairing live in
 [../TODO.md](../TODO.md).
 

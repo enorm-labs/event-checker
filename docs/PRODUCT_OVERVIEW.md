@@ -17,6 +17,10 @@ brings them together into one fast, filterable, mobile-friendly place — always
 
 Think Resident Advisor, Bandsintown or Songkick — but for **all** of Berlin's music scene, not just the big electronic/ticketed shows.
 
+The one-line scope rule: **if a Berlin venue puts it on a stage in the evening, it is in scope.** What that includes, what is deliberately excluded (sport,
+participation formats, trade fairs, and — for now — classical) and which coverage questions are still open is set out in
+[EVENT_SCOPE.md](EVENT_SCOPE.md).
+
 ## The problem it solves
 
 - **Berlin's live-music scene is huge but scattered.** What's on is spread across dozens of venue and promoter sites, each with its own layout, quirks and gaps.
@@ -61,7 +65,8 @@ is tracked in [TODO.md](../TODO.md).
 
 **Automated data aggregation — Importer**
 
-- **Eight Berlin venues live:** Cassiopeia, Privatclub, Madame Claude, Astra Kulturhaus, Lido, SO36, Roadrunner's Paradise, and Badehaus.
+- **86 Berlin sources live** — clubs, bars, concert halls, open-air spaces, arenas, theatres and a comedy club. The per-venue inventory and its status counts
+  live in [EVENT_DATA_SOURCES.md](EVENT_DATA_SOURCES.md); do not restate the number here, restate the link.
 - **Scheduled imports** with **change detection** (ETag / Last-Modified), **per-host politeness throttling**, deduplication, and **stale-event cleanup**.
 - **Per-source status tracking + retry**, managed via an admin API — imports trigger asynchronously (fire-and-forget) and their status is polled
   (create/enable/trigger/retry sources).
