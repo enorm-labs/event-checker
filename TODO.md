@@ -31,7 +31,9 @@ Rough priority: **Now** → **Next** → grouped backlog → **Someday / Vision*
   `kube-prometheus-stack` + Grafana (same surface as the data dashboard below) or an external free tier. **Alerting must exist before launch, not after the
   first outage**
 - [ ] Fix Dependabot security issues → https://github.com/enorm-labs/event-checker/security/dependabot
-- [ ] Go-live checklist: legal, security, SEO, monitoring, alerting, dashboards, backups, recovery (incl. the restore drill above)
+- [ ] Go-live checklist: legal, security, SEO, monitoring, alerting, dashboards, backups, recovery (incl. the restore drill above). The parts that **cannot be
+  done before there is a deployment** are listed separately in [§At go-live & after](#-at-go-live--after-needs-a-live-deployment) — they are not blocked on
+  effort, they are blocked on a live origin, so they need to be tracked where they will not read as neglected work
 
 ## 🟠 Next
 
@@ -71,9 +73,16 @@ Rough priority: **Now** → **Next** → grouped backlog → **Someday / Vision*
   hotlink vs. omit (see the Legal/Compliance copyright item)
 - [ ] Always show the number of displayed / found events in list views (verify — may already be the case in places)
 - [ ] Make the home page a real entry point into the data — a prominent link to "Browse events", or filtering/searching directly from the home page
-- [ ] Sitemap (still worthwhile for SEO?)
+- [x] Sitemap — generated at build from `LOCALES` × `INDEXABLE_PATHS` with `hreflang` alternates per entry, plus `robots.txt`; served in dev and prod from the
+  same source so they cannot drift. **Static routes only**: the build is deliberately independent of the BFF, so detail routes need a BFF-served sitemap (below)
+- [ ] **BFF-served sitemap for detail routes** — events, venues, artists, promoters. Belongs in the BFF because it holds the data and can leave out events that
+  have already happened; the frontend build cannot enumerate them without giving up its independence from the database
+- [ ] **Per-page head tags from one shared module** — `{ title, description, image, canonical }` derived from a route and its entity, used by the client now and
+  by the meta injector later ([ADR-014](docs/adr/ADR-014_RENDERING_STRATEGY.md) §Decision 3). Closes the missing per-page `og:description` — today every route
+  serves the site-level one. **This half needs no deployment**; the injector that rewrites the served HTML does, and is tracked below
 - [ ] RSS feed for newly imported events
-- [ ] I18N / L10N + translations
+- [x] I18N / L10N + translations — English and German under locale-prefixed routes, per-locale legal pages, locale switcher, `hreflang`, `og:locale` and
+  `schema.org` structured data. See [ADR-013](docs/adr/ADR-013_LOCALISATION.md) and [docs/LOCALISATION_PLAN.md](docs/LOCALISATION_PLAN.md)
 - Note: `GET /artists`, `GET /venues`, `GET /promoters` list endpoints exist and are smoke-tested, but only their `/{slug}` detail counterparts have UI pages
   yet.
 
@@ -314,14 +323,67 @@ Strategy & sequencing: [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEG
 
 ## Legal / Compliance (before going live)
 
-- [ ] Imprint (Impressum)
-- [ ] DSGVO / GDPR
-- [ ] Accessibility review
-- [ ] Display used FOSS / attributions
-- [ ] Link to the GitHub repository
+Built out in [docs/FOOTER_AND_LEGAL_PLAN.md](docs/FOOTER_AND_LEGAL_PLAN.md). The pages exist and are tested; what remains for each is verification that needs a
+real address, a real deployment or a qualified reader — tracked in [§At go-live & after](#-at-go-live--after-needs-a-live-deployment).
+
+- [x] Imprint (Impressum) — § 5 DDG, § 18 (2) MStV, disclaimer and liability clauses, in English and German (German authoritative). **Address is still a
+  placeholder**
+- [x] DSGVO / GDPR — Art. 13 privacy notice against the twelve mandatory items, in both languages, with a unit-test checklist per locale. **Not yet reviewed by
+  a qualified person, and the infrastructure it describes is still `Proposed`**
+- [x] Accessibility review — WCAG 2.1 AA as the stated target: `eslint-plugin-vuejs-accessibility`, an `@axe-core/playwright` sweep over every static route in
+  both locales and both themes, skip link, landmark naming. Two real contrast failures were found and fixed at the tokens
+- [x] Display used FOSS / attributions — generated `/legal/notices` page over 642 components, plus an allow-list gate on both the JVM and npm dependency trees
+- [x] Link to the GitHub repository — header, footer, and the issue/contributing routes
 - [ ] Confirm legality of scraping events and displaying them
 - [ ] Clarify copyright/licensing of event **descriptions** and **images** per source — are we allowed to store/display them? Track a copyright/license status
   per event source (drives the description/image display decision under Frontend & BFF)
+
+## 🚀 At go-live & after (needs a live deployment)
+
+Work that is **not blocked on effort but on a live origin** — a real address, a real deployment, or a public URL something else can fetch. Kept separate so it
+does not sit in the main backlog looking like neglected work, and so nothing here is quietly skipped on launch day.
+
+Ordered by when it becomes possible.
+
+### Blocking the first deploy
+
+- [ ] **Replace the placeholder postal address** — [ADR-012](docs/adr/ADR-012_CLOUD_PLATFORM.md) covers the domain; the address comes from a rented Postflex
+  *ladungsfähige Anschrift*. Update `events-frontend/src/lib/legal.ts`, `CODE_OF_CONDUCT.md` and `SECURITY.md`, then set `CONTACT_DETAILS_ARE_PROVISIONAL =
+  false` **in the same commit** — a unit test fails if the flag and the placeholder ever disagree, which is what stops a false address going live quietly
+- [ ] **Settle the logging decisions** (FOOTER_AND_LEGAL_PLAN §7.5.1): whether Traefik and the nginx container log real client IPs, whether they are truncated,
+  the retention period, and where retention is actually enforced. The privacy notice currently states an *intended* seven days — it must state the configured
+  one
+- [ ] **Re-check the privacy notice against what actually runs**, then set `INFRASTRUCTURE_IS_PROPOSED = false` and bump `LAST_REVIEWED`. Name the real
+  processors, and the transfer mechanism in force for Cloudflare rather than the placeholder sentence
+- [ ] **Legal review of the German privacy notice** — plus the DSGVO-generator cross-check (§7.8) as a second pair of eyes. The drafts are careful and
+  test-covered; neither makes them *reviewed*, and this is the one item on this list no amount of engineering substitutes for
+
+### Per environment, the moment a non-production stage exists
+
+- [ ] **Override `robots.txt` and `sitemap.xml` outside production.** The build emits an allow-all `robots.txt` and a sitemap naming the production origin, so
+  any staging or preview environment serving that build invites indexing — and points crawlers at production while doing it. This is a deployment concern by
+  design, so it has to be solved in the deployment
+
+### Only verifiable once there is a public URL
+
+- [ ] **Google Rich Results Test** on a real event page. The `schema.org` output is verified against Google's documented requirements and by unit and e2e tests
+  — never against Google. This is the one place the structured data could still be wrong in a way nothing in CI catches
+- [ ] **Search Console**: submit the sitemap, confirm the `hreflang` alternates are picked up, and confirm `robots.txt` and `sitemap.xml` are actually served
+  from the origin
+- [ ] **Watch detail-page indexing** — this is the named trigger in [ADR-014](docs/adr/ADR-014_RENDERING_STRATEGY.md) §Decision 4 for reopening full SSR. Late
+  or missing detail pages is the evidence; anything else is anticipation
+- [ ] **Check a real link preview** in Slack, WhatsApp and iMessage. Today every shared URL previews as the generic site title and description — the concrete
+  defect ADR-014 exists to fix. Re-check after the meta injector lands, because this is the only way to know it worked
+- [ ] **Lighthouse / PageSpeed against the live origin**, not a dev server — caching headers and compression are deployment properties and cannot be measured
+  locally
+
+### Once ADR-012 is executed
+
+- [ ] **Build the meta-injection transport** ([ADR-014](docs/adr/ADR-014_RENDERING_STRATEGY.md) §Decision 3): the component that rewrites `<title>`, `og:*`,
+  `twitter:*` and `canonical` per route before the response leaves our infrastructure. Leading candidate is a Cloudflare Worker using `HTMLRewriter`; the
+  alternative is a small k3s sidecar, which costs more operationally and keeps all processing in Germany. **It must fail open** — a slow or failing BFF has to
+  yield the unmodified shell, never an error page. If the Worker is chosen, that is a §7.7 change to raise rather than assume.
+  *(The other half — computing the tags — needs no deployment and is tracked under Frontend & BFF.)*
 
 ## Tooling, AI Agents & Skills
 
