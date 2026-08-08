@@ -1,0 +1,18 @@
+{
+  "notFoundHeading": "{kind} not found",
+  "venue": {
+    "kind": "Venue",
+    "notFound": "That venue isn't in our little black book.",
+    "empty": "No upcoming nights here yet — check back soon."
+  },
+  "artist": {
+    "kind": "Artist",
+    "notFound": "This act isn't on our radar.",
+    "empty": "No dates on the radar yet — check back soon."
+  },
+  "promoter": {
+    "kind": "Promoter",
+    "notFound": "This promoter isn't in our books.",
+    "empty": "Nothing on their calendar yet — check back soon."
+  }
+}

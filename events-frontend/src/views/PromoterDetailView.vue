@@ -8,9 +8,6 @@ import { useEventSearch } from '@/composables/useEvents'
 import { usePromoter } from '@/composables/usePromoter'
 import { useI18n } from 'vue-i18n'
 
-/** Entity label: the eyebrow above the name, the not-found heading, and the placeholder title. */
-const KIND = 'Promoter'
-
 const route = useRoute()
 const slug = computed(() => String(route.params.slug))
 
@@ -38,11 +35,23 @@ watch(slug, reload)
 
 const { t } = useI18n()
 
+/**
+ * Entity label: the eyebrow above the name, the not-found heading, and the placeholder title.
+ *
+ * A `computed` rather than a constant because it has to follow the active locale — the locale can
+ * change without this view remounting, since the switcher only rewrites the URL's locale segment.
+ */
+const kind = computed(() => t('detail.promoter.kind'))
+
 // Title, description and image for this page — the same values the meta injector will need
 // server-side later (ADR-014 §Decision 3). Mirrors the loading / not-found states the view
 // itself renders.
 usePageMeta(() =>
-  promoter.value ? promoterPageMeta(promoter.value) : placeholderPageMeta(notFound.value ? `${KIND} not found` : KIND),
+  promoter.value
+    ? promoterPageMeta(promoter.value)
+    : placeholderPageMeta(
+        notFound.value ? t('detail.notFoundHeading', { kind: kind.value }) : kind.value,
+      ),
 )
 </script>
 
@@ -57,9 +66,9 @@ usePageMeta(() =>
     :name="promoter?.name"
     :not-found="notFound"
     :ready="Boolean(promoter)"
-    empty-text="Nothing on their calendar yet — check back soon."
-    :kind="KIND"
-    not-found-text="This promoter isn't in our books."
+    :empty-text="t('detail.promoter.empty')"
+    :kind="kind"
+    :not-found-text="t('detail.promoter.notFound')"
   >
     <template #meta>
       <a

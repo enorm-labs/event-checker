@@ -36,6 +36,19 @@
     "promoters": "Veranstalter",
     "buyTickets": "Tickets kaufen",
     "eventPage": "Event-Seite",
-    "facebook": "Facebook"
+    "facebook": "Facebook",
+    "kind": "Event",
+    "presale": "Vorverkauf",
+    "boxOffice": "Abendkasse"
+  },
+  "role": {
+    "HEADLINER": "Headliner",
+    "SUPPORT": "Support",
+    "DJ": "DJ"
+  },
+  "status": {
+    "RELOCATED": "Verlegt",
+    "CANCELLED": "Abgesagt",
+    "POSTPONED": "Verschoben"
   }
 }

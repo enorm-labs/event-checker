@@ -1,6 +1,7 @@
 import calendar from './calendar.json'
 import common from './common.json'
 import dateRange from './dateRange.json'
+import detail from './detail.json'
 import errors from './errors.json'
 import eventType from './eventType.json'
 import events from './events.json'
@@ -20,6 +21,7 @@ export default {
   calendar,
   common,
   dateRange,
+  detail,
   errors,
   eventType,
   events,

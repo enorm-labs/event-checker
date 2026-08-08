@@ -6,9 +6,17 @@ import { usePageMeta } from '@/composables/usePageMeta'
 import { placeholderPageMeta, artistPageMeta } from '@/lib/pageMeta'
 import { useArtist } from '@/composables/useArtist'
 import { useEventSearch } from '@/composables/useEvents'
+import { useI18n } from 'vue-i18n'
 
-/** Entity label: the eyebrow above the name, the not-found heading, and the placeholder title. */
-const KIND = 'Artist'
+const { t } = useI18n()
+
+/**
+ * Entity label: the eyebrow above the name, the not-found heading, and the placeholder title.
+ *
+ * A `computed` rather than a constant because it has to follow the active locale — the locale can
+ * change without this view remounting, since the switcher only rewrites the URL's locale segment.
+ */
+const kind = computed(() => t('detail.artist.kind'))
 
 const route = useRoute()
 const slug = computed(() => String(route.params.slug))
@@ -23,7 +31,8 @@ const {
 
 const links = computed(() =>
   [
-    { label: 'Website', url: artist.value?.websiteUrl },
+    // The social labels are brand names and stay as they are; only "Website" is a word.
+    { label: t('common.actions.website'), url: artist.value?.websiteUrl },
     { label: 'Facebook', url: artist.value?.facebookUrl },
     { label: 'Instagram', url: artist.value?.instagramUrl },
     { label: 'YouTube', url: artist.value?.youtubeUrl },
@@ -42,7 +51,11 @@ watch(slug, reload)
 // server-side later (ADR-014 §Decision 3). Mirrors the loading / not-found states the view
 // itself renders.
 usePageMeta(() =>
-  artist.value ? artistPageMeta(artist.value) : placeholderPageMeta(notFound.value ? `${KIND} not found` : KIND),
+  artist.value
+    ? artistPageMeta(artist.value)
+    : placeholderPageMeta(
+        notFound.value ? t('detail.notFoundHeading', { kind: kind.value }) : kind.value,
+      ),
 )
 </script>
 
@@ -57,9 +70,9 @@ usePageMeta(() =>
     :name="artist?.name"
     :not-found="notFound"
     :ready="Boolean(artist)"
-    empty-text="No dates on the radar yet — check back soon."
-    :kind="KIND"
-    not-found-text="This act isn't on our radar."
+    :empty-text="t('detail.artist.empty')"
+    :kind="kind"
+    :not-found-text="t('detail.artist.notFound')"
   >
     <template #meta>
       <div v-if="links.length" class="flex flex-wrap gap-3 text-sm">

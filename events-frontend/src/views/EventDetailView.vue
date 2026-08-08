@@ -26,19 +26,26 @@ const lineup = computed(() =>
   [...(event.value?.lineup ?? [])].sort((a, b) => (a.billingOrder ?? 0) - (b.billingOrder ?? 0)),
 )
 
-const roleLabels: Record<string, string> = {
-  HEADLINER: 'Headliner',
-  SUPPORT: 'Support',
-  DJ: 'DJ',
-}
-
 onMounted(run)
 watch(slug, run)
 
 const localePath = useLocalePath()
 const { formatDate } = useFormat()
 
-const { t, locale } = useI18n()
+const { t, te, locale } = useI18n()
+
+/**
+ * A backend enum's label, falling back to the raw value.
+ *
+ * `ArtistRole` and `EventStatus` live in `events-core`, so the BFF can gain a value in a release
+ * that ships before the frontend — the same reason `humaniseEventType` exists for event types.
+ * Showing `CANCELLED` is poor; showing `events.status.CANCELLED` is a bug report, and that is what
+ * an unguarded lookup renders.
+ */
+function enumLabel(namespace: string, value: string): string {
+  const key = `${namespace}.${value}`
+  return te(key) ? t(key) : value
+}
 
 // Title, description and image for this page. The description leads with the date and venue
 // rather than the promotional blurb, because that is what someone deciding whether to open a link
@@ -49,7 +56,11 @@ const { t, locale } = useI18n()
 usePageMeta(() =>
   event.value
     ? eventPageMeta(event.value, locale.value as Locale)
-    : placeholderPageMeta(notFound.value ? 'Event not found' : 'Event'),
+    : placeholderPageMeta(
+        notFound.value
+          ? t('detail.notFoundHeading', { kind: t('events.detail.kind') })
+          : t('events.detail.kind'),
+      ),
 )
 
 // The rich-result payload: an Event document plus the breadcrumb trail Search renders instead of a
@@ -98,7 +109,7 @@ useStructuredData((): JsonLd[] => {
           <span v-if="event.startTime">· {{ formatTime(event.startTime) }}</span>
           <span v-if="event.venue?.name">· {{ event.venue.name }}</span>
           <BaseBadge v-if="event.status && event.status !== 'SCHEDULED'" variant="destructive">
-            {{ event.status }}
+            {{ enumLabel('events.status', event.status) }}
           </BaseBadge>
           <BaseBadge v-if="event.soldOut" variant="destructive">{{
             t('events.card.soldOut')
@@ -140,7 +151,7 @@ useStructuredData((): JsonLd[] => {
             <div class="flex items-center gap-2 text-xs text-muted-foreground">
               <BaseBadge v-if="entry.stage" variant="outline">{{ entry.stage }}</BaseBadge>
               <span v-if="entry.role">
-                {{ roleLabels[entry.role] ?? entry.role }}
+                {{ enumLabel('events.role', entry.role) }}
               </span>
             </div>
           </li>
@@ -174,10 +185,11 @@ useStructuredData((): JsonLd[] => {
         >
           <SectionLabel>{{ t('events.detail.tickets') }}</SectionLabel>
           <p v-if="formatPrice(event.pricePresale, event.priceCurrency)" class="text-sm">
-            Presale: {{ formatPrice(event.pricePresale, event.priceCurrency) }}
+            {{ t('events.detail.presale') }}: {{ formatPrice(event.pricePresale, event.priceCurrency) }}
           </p>
           <p v-if="formatPrice(event.priceBoxOffice, event.priceCurrency)" class="text-sm">
-            Box office: {{ formatPrice(event.priceBoxOffice, event.priceCurrency) }}
+            {{ t('events.detail.boxOffice') }}:
+            {{ formatPrice(event.priceBoxOffice, event.priceCurrency) }}
           </p>
           <p v-if="event.priceNote" class="text-sm text-muted-foreground">{{ event.priceNote }}</p>
         </div>
