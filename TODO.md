@@ -77,9 +77,11 @@ Rough priority: **Now** → **Next** → grouped backlog → **Someday / Vision*
   same source so they cannot drift. **Static routes only**: the build is deliberately independent of the BFF, so detail routes need a BFF-served sitemap (below)
 - [ ] **BFF-served sitemap for detail routes** — events, venues, artists, promoters. Belongs in the BFF because it holds the data and can leave out events that
   have already happened; the frontend build cannot enumerate them without giving up its independence from the database
-- [ ] **Per-page head tags from one shared module** — `{ title, description, image, canonical }` derived from a route and its entity, used by the client now and
-  by the meta injector later ([ADR-014](docs/adr/ADR-014_RENDERING_STRATEGY.md) §Decision 3). Closes the missing per-page `og:description` — today every route
-  serves the site-level one. **This half needs no deployment**; the injector that rewrites the served HTML does, and is tracked below
+- [x] **Per-page head tags from one shared module** — `src/lib/pageMeta.ts` derives `{ title, description, image }` per entity and `usePageMeta` writes them,
+  so every route now carries its own `description`, `og:*` and `twitter:*` instead of the site-level ones. This is the half of
+  [ADR-014](docs/adr/ADR-014_RENDERING_STRATEGY.md) §Decision 3 that needs no deployment, and it is deliberately the same module the meta injector will call
+  server-side — the two producing different values is the failure that would make a scraper and a visitor see different titles. (`canonical` was already handled
+  separately by `lib/seoTags.ts`.) **The injector itself still needs a deployment** and is tracked below
 - [ ] RSS feed for newly imported events
 - [x] I18N / L10N + translations — English and German under locale-prefixed routes, per-locale legal pages, locale switcher, `hreflang`, `og:locale` and
   `schema.org` structured data. See [ADR-013](docs/adr/ADR-013_LOCALISATION.md) and [docs/LOCALISATION_PLAN.md](docs/LOCALISATION_PLAN.md)
@@ -372,8 +374,9 @@ Ordered by when it becomes possible.
   from the origin
 - [ ] **Watch detail-page indexing** — this is the named trigger in [ADR-014](docs/adr/ADR-014_RENDERING_STRATEGY.md) §Decision 4 for reopening full SSR. Late
   or missing detail pages is the evidence; anything else is anticipation
-- [ ] **Check a real link preview** in Slack, WhatsApp and iMessage. Today every shared URL previews as the generic site title and description — the concrete
-  defect ADR-014 exists to fix. Re-check after the meta injector lands, because this is the only way to know it worked
+- [ ] **Check a real link preview** in Slack, WhatsApp and iMessage. The per-page tags exist in the DOM now, but these scrapers do not run JavaScript, so they
+  still read the site-level ones out of the served HTML — the concrete defect ADR-014 exists to fix, and it only closes when the injector lands. Checking a real
+  preview is the only way to know it worked
 - [ ] **Lighthouse / PageSpeed against the live origin**, not a dev server — caching headers and compression are deployment properties and cannot be measured
   locally
 
