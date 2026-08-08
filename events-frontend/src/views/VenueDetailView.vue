@@ -12,9 +12,6 @@ import { useStructuredData } from '@/composables/useStructuredData'
 import { breadcrumbJsonLd, venueJsonLd, type JsonLd } from '@/lib/structuredData'
 import type { Locale } from '@/i18n/locales'
 
-/** Entity label: the eyebrow above the name, the not-found heading, and the placeholder title. */
-const KIND = 'Venue'
-
 const route = useRoute()
 const slug = computed(() => String(route.params.slug))
 
@@ -44,6 +41,14 @@ watch(slug, reload)
 
 const { t, locale } = useI18n()
 
+/**
+ * Entity label: the eyebrow above the name, the not-found heading, and the placeholder title.
+ *
+ * A `computed` rather than a constant because it has to follow the active locale — the locale can
+ * change without this view remounting, since the switcher only rewrites the URL's locale segment.
+ */
+const kind = computed(() => t('detail.venue.kind'))
+
 // A MusicVenue carries the address and coordinates the page already displays. No rich result rides
 // on it the way it does for events, but it is accurate and it is what ties an event's `location`
 // to a real place. See lib/structuredData.ts.
@@ -68,7 +73,11 @@ useStructuredData((): JsonLd[] => {
 // server-side later (ADR-014 §Decision 3). Mirrors the loading / not-found states the view
 // itself renders.
 usePageMeta(() =>
-  venue.value ? venuePageMeta(venue.value) : placeholderPageMeta(notFound.value ? `${KIND} not found` : KIND),
+  venue.value
+    ? venuePageMeta(venue.value)
+    : placeholderPageMeta(
+        notFound.value ? t('detail.notFoundHeading', { kind: kind.value }) : kind.value,
+      ),
 )
 </script>
 
@@ -83,9 +92,9 @@ usePageMeta(() =>
     :name="venue?.name"
     :not-found="notFound"
     :ready="Boolean(venue)"
-    empty-text="No upcoming nights here yet — check back soon."
-    :kind="KIND"
-    not-found-text="That venue isn't in our little black book."
+    :empty-text="t('detail.venue.empty')"
+    :kind="kind"
+    :not-found-text="t('detail.venue.notFound')"
   >
     <template #meta>
       <p v-if="addressLine" class="text-muted-foreground">{{ addressLine }}</p>

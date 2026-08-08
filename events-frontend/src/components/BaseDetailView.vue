@@ -52,7 +52,9 @@ const { t } = useI18n()
     <p v-if="loading" class="text-sm text-muted-foreground">{{ t('common.states.loading') }}</p>
 
     <div v-else-if="notFound" class="space-y-3">
-      <h1 class="text-2xl font-bold tracking-tight">{{ kind }} not found</h1>
+      <!-- Interpolated rather than concatenated: German puts the negation last ("Location nicht
+           gefunden"), so the two halves cannot be separate strings. -->
+      <h1 class="text-2xl font-bold tracking-tight">{{ t('detail.notFoundHeading', { kind }) }}</h1>
       <p class="text-muted-foreground">{{ notFoundText }}</p>
       <Button as-child variant="outline">
         <RouterLink :to="localePath('/events')">{{ t('common.actions.browseEvents') }}</RouterLink>

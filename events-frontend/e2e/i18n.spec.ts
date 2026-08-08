@@ -239,3 +239,62 @@ test('sets a German document title for each legal route', async ({ page }) => {
     await expect(page).toHaveTitle(title)
   }
 })
+
+/**
+ * Detail-view chrome, which localisation Phase 2 missed.
+ *
+ * The entity label, the empty-feed copy and the not-found copy were English literals passed as
+ * props, so a German visitor met English on three pages. They are catalogue-backed now; these are
+ * the tests that would notice if one drifted back, which is easy because the strings live in the
+ * *calling* view rather than in the shared component that renders them.
+ */
+
+test('a German venue page says it is not found, in German', async ({ page }) => {
+  await page.route('**/api/venues/nope', (route) =>
+    route.fulfill({ status: 404, contentType: 'application/json', body: '{}' }),
+  )
+
+  await page.goto('/de/venues/nope')
+
+  // "Location nicht gefunden" — the negation comes last in German, which is why the heading is one
+  // interpolated message rather than a label concatenated with "not found".
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Location nicht gefunden')
+  await expect(page.getByRole('main')).toContainText('kleinen schwarzen Buch')
+})
+
+test('a German venue page with no upcoming events says so in German', async ({ page }) => {
+  await page.route('**/api/venues/lido', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ slug: 'lido', name: 'Lido', city: 'Berlin' }),
+    }),
+  )
+  await page.route('**/api/events?*', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ content: [], page: 0, size: 50, totalElements: 0, totalPages: 0 }),
+    }),
+  )
+
+  await page.goto('/de/venues/lido')
+
+  await expect(page.getByRole('heading', { level: 1, name: 'Lido' })).toBeVisible()
+  await expect(page.getByRole('main')).toContainText('Hier steht noch nichts an')
+})
+
+test('German detail pages label the entity kind in German', async ({ page }) => {
+  for (const [path, kind] of [
+    ['/de/artists/nope', 'Act'],
+    ['/de/promoters/nope', 'Veranstalter'],
+  ] as const) {
+    await page.route(`**/api${path.replace('/de', '')}`, (route) =>
+      route.fulfill({ status: 404, contentType: 'application/json', body: '{}' }),
+    )
+
+    await page.goto(path)
+
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(`${kind} nicht gefunden`)
+  }
+})
