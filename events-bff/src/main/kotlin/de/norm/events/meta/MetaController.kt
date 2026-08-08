@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController
  *
  * Deliberately not sourced from the GitHub Releases API: that reports the latest *published*
  * release rather than what is deployed, and calling it from the browser would send every visitor's
- * IP address to a US third party. See docs/FOOTER_AND_LEGAL_PLAN.md §4.1.
+ * IP address to a US third party. See docs/LEGAL.md §4.1.
  */
 @RestController
 @RequestMapping("/meta")

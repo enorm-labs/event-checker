@@ -29,7 +29,7 @@ class MetaControllerTest : BaseControllerTest() {
         runBlocking {
             // The reason this endpoint exists rather than publishing /actuator/info: that payload
             // carries build.group / build.artifact / build.name, which are internal names with no
-            // business in a public API (docs/FOOTER_AND_LEGAL_PLAN.md §4.4).
+            // business in a public API (docs/LEGAL.md §4.4).
             webTestClient
                 .get()
                 .uri("/meta")

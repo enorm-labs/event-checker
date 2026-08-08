@@ -447,7 +447,7 @@ cd events-frontend && npm run check:licenses
 - A third gate, [`dependency-review.yml`](./.github/workflows/dependency-review.yml), carries a deny-list applied to *newly introduced* dependencies at PR time.
 - **Do not widen an allow-list to make a build pass.** AGPL, GPL without the Classpath Exception, and source-available licences (SSPL, BUSL, Elastic-2.0) are
   not acceptable for a public network service whose own source is Apache-2.0. AGPL is the one to watch: its § 13 obligation fires on *network interaction*, not
-  distribution. See [docs/FOOTER_AND_LEGAL_PLAN.md §9.2](./docs/FOOTER_AND_LEGAL_PLAN.md).
+  distribution. See [docs/LEGAL.md §9.2](./docs/LEGAL.md).
 
 **Regenerating the notices page.** `events-frontend/src/assets/notices.json` is generated and committed — never hand-edited. Regenerate it whenever
 dependencies change on either side:

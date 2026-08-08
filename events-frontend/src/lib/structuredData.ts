@@ -113,7 +113,7 @@ function offers(event: EventDetail, url: string): JsonLd | undefined {
  *
  * **`PerformingGroup`, not `Person`** — and the reason is not only that most of these are bands.
  * We cannot tell a solo act from a group, and of the two available guesses only one asserts that a
- * named individual is a natural person. FOOTER_AND_LEGAL_PLAN §7.3 treats artist names as personal
+ * named individual is a natural person. LEGAL.md §7.3 treats artist names as personal
  * data precisely because some are; publishing a machine-readable claim about which is gratuitous.
  * Google accepts either type for `performer`.
  */

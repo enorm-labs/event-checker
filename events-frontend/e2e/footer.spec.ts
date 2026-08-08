@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test'
 /**
  * The footer is part of the app shell, so it has to hold up on every route and at every width —
  * including the ~390px viewport that the header already had to be reworked for.
- * See docs/FOOTER_AND_LEGAL_PLAN.md §11, Phase 1.
+ * See docs/LEGAL.md §2.
  */
 
 const routes = ['/', '/events', '/venues', '/calendar', '/about'] as const

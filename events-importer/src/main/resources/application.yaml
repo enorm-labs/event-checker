@@ -24,7 +24,7 @@ spring:
       schema: events
 
 # `info` joins the default `health` so an operator can ask a running importer which build it is —
-# the same rationale as the BFF (docs/FOOTER_AND_LEGAL_PLAN.md §4.4). The importer has no public
+# the same rationale as the BFF (docs/LEGAL.md §4.4). The importer has no public
 # surface and no `/meta` endpoint: nothing user-facing reads its version.
 management:
   endpoints:
@@ -36,7 +36,7 @@ management:
       enabled: true
     git:
       # No git.properties is generated anywhere in this build, by design — see the BFF's
-      # application.yaml and FOOTER_AND_LEGAL_PLAN.md §4.3.
+      # application.yaml and LEGAL.md §4.3.
       enabled: false
 
 # Application configuration for import pipeline, scraping, and scheduling

@@ -2,7 +2,7 @@
 
 > Status: **implemented** — Phases 1–3 on 2026-08-07, Phases 4–5 on 2026-08-08. What remains is not localisation work: rendering, now decided in
 > [ADR-014](adr/ADR-014_RENDERING_STRATEGY.md), and a BFF-served sitemap covering detail routes (§Phase 5).
-> Delivers Phase 7 of [FOOTER_AND_LEGAL_PLAN.md](FOOTER_AND_LEGAL_PLAN.md) §6.2, which agreed the work and recorded the constraints it places on code written
+> Delivers Phase 7 of [LEGAL.md](LEGAL.md) §6.2, which agreed the work and recorded the constraints it places on code written
 > since.
 > Related: [BRANDING.md](BRANDING.md) · [ADR-010 (styling)](adr/ADR-010_FRONTEND_STYLING_FRAMEWORK.md) · [ADR-011 (calendar)](adr/ADR-011_CALENDAR_LIBRARY.md)
 
@@ -23,7 +23,7 @@ strategy, what counts as translatable, and where the locale lives. Measured agai
 *(Measured before Phase 1. The last row proved to be an undercount: the notices and About pages are the same kind of long-form English prose, so Phase 4
 shipped **four** per-locale pages rather than two.)*
 
-The legal pages are the reason this cannot be done casually. [FOOTER_AND_LEGAL_PLAN §6.1](FOOTER_AND_LEGAL_PLAN.md) committed to a hard coupling:
+The legal pages are the reason this cannot be done casually. [LEGAL.md §6.1](LEGAL.md) committed to a hard coupling:
 
 > **German legal pages ship in the same release as German UI, not after.** An English-only imprint and privacy notice on a site that presents itself in German
 > to a German visitor is indefensible — that is the configuration where the Art. 12 GDPR argument turns against us.
@@ -58,7 +58,7 @@ version bump rather than a migration.
 - Each language gets a crawlable URL, which is what makes `hreflang` possible at all.
 - A link someone sends is the language they meant to send. A locale kept only in `localStorage` makes every shared URL a coin flip.
 - It keeps the § 25 TDDDG posture intact: the URL is the source of truth, and any stored locale is only a redirect hint for the bare `/` — still "strictly
-  necessary", still no consent banner. (See FOOTER_AND_LEGAL_PLAN §7.4; the rule there is that *nothing non-essential* may be stored, and a redirect hint for a
+  necessary", still no consent banner. (See LEGAL.md §7.4; the rule there is that *nothing non-essential* may be stored, and a redirect hint for a
   preference the user set is not that.)
 
 Consequences to design for: `/` must redirect to a locale (by `Accept-Language`, falling back to `en`), every existing route gains a prefix, and old unprefixed
@@ -143,7 +143,7 @@ Three pieces cannot be handed to a translator as-is:
 
 - **The tagline.** *"Can't get enough of Berlin"* is a pun on the brand's premise (BRANDING.md §2). A literal German rendering loses it. This needs a German
   line written *from the concept*, and BRANDING.md should record both as equals rather than treating German as a translation of English.
-- **The disclaimer.** FOOTER_AND_LEGAL_PLAN §7.6 already drafts both: *"Alle Angaben ohne Gewähr"* and the English version — deliberately not literal renderings
+- **The disclaimer.** LEGAL.md §7.6 already drafts both: *"Alle Angaben ohne Gewähr"* and the English version — deliberately not literal renderings
   of each other. Use those, do not re-translate.
 - **The beta explanation** on the About page, which is written in the brand voice rather than as neutral prose.
 
@@ -154,10 +154,10 @@ Three pieces cannot be handed to a translator as-is:
 The largest single piece of writing in this phase, and the one with an actual legal standard attached.
 
 - **German becomes the authoritative version** once both exist, stated in one sentence on each page: *"Maßgeblich ist die deutsche Fassung."* The controller,
-  the venue and the supervisory authority are all German (FOOTER_AND_LEGAL_PLAN §6.1).
+  the venue and the supervisory authority are all German (LEGAL.md §6.1).
 - The imprint's § 5 DDG headings have conventional German wording — *Angaben gemäß § 5 DDG*, *Haftung für Inhalte*, *Haftung für Links* — and should use it.
   Inventing phrasing here reads as a translated foreign document, which is the impression a German imprint most needs to avoid.
-- **This is the point at which the DSGVO generator (FOOTER_AND_LEGAL_PLAN §7.8) earns its keep**: it emits both languages from one set of inputs, and the German
+- **This is the point at which the DSGVO generator (LEGAL.md §7.8) earns its keep**: it emits both languages from one set of inputs, and the German
   it produces is the idiom a German reader expects. Run it as a cross-check against the hand-written German before shipping.
 - The provisional banner (`ProvisionalNotice.vue`) and the placeholder-tripwire test both need German copy. The tripwire asserts on the *address*, not on prose,
   so it survives — but check it rather than assume.
@@ -241,7 +241,7 @@ with an English-only imprint or privacy notice.
 > **Register: `du`, including the legal pages** — recorded in [BRANDING.md §8](BRANDING.md) along with the German tagline, which ships but is explicitly still
 > the owner's call.
 >
-> **Two things this phase did not do.** The DSGVO-generator cross-check (§6, FOOTER_AND_LEGAL_PLAN §7.8) has **not** been run — it is a pre-go-live task, and
+> **Two things this phase did not do.** The DSGVO-generator cross-check (§6, LEGAL.md §7.8) has **not** been run — it is a pre-go-live task, and
 > so is a review by a qualified person. A machine-drafted German privacy notice that nobody qualified reads is exactly the artefact §7.8 warns about; the draft
 > being careful does not change that. And the country name moved out of `CONTROLLER` into the message catalogue (`legal.country`), because "Germany" and
 > "Deutschland" are one fact worded twice, unlike the street and city.

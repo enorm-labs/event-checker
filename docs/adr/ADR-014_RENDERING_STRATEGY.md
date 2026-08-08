@@ -206,6 +206,6 @@ exactly as they are.
 - [ADR-012](ADR-012_CLOUD_PLATFORM.md) — the deployment shape, and the dependency behind the second half of Decision 3
 - [ADR-013](ADR-013_LOCALISATION.md) — deferred this decision; its locale-prefixed URLs are what make per-page head tags worth computing
 - [LOCALISATION_PLAN.md](../LOCALISATION_PLAN.md) §Phase 5 — where the sitemap became the primary `hreflang` carrier, and why
-- [FOOTER_AND_LEGAL_PLAN.md](../FOOTER_AND_LEGAL_PLAN.md) §7.7 — the standing check any new processor or edge processing must clear
+- [LEGAL.md](../LEGAL.md) §7.7 — the standing check any new processor or edge processing must clear
 - [Google's rendering delay](https://www.onely.com/blog/googles-rendering-delay-5-seconds/) · [JavaScript SEO in 2026](https://nadiamohamed.me/insights/javascript-seo/) · [crawl priority and render queue](https://seolinkscan.com/blog/javascript-seo-guide-2026)
 - [Cloudflare `HTMLRewriter`](https://developers.cloudflare.com/workers/runtime-apis/html-rewriter/) · [Google Search Central — dynamic rendering](https://developers.google.com/search/docs/crawling-indexing/javascript/dynamic-rendering)

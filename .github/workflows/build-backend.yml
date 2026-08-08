@@ -96,7 +96,7 @@ jobs:
         run: ./gradlew test
 
       # Enforces the runtime-dependency licence policy in config/allowed-licenses.json
-      # (docs/FOOTER_AND_LEGAL_PLAN.md §9.2). Deliberately a separate step rather than wired into
+      # (docs/LEGAL.md §9.2). Deliberately a separate step rather than wired into
       # `check`: the plugin is not configuration-cache compatible, so attaching it to the main
       # build would discard the cache entry on every run. `--no-configuration-cache` keeps the cost
       # contained to this step.

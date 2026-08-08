@@ -246,7 +246,7 @@ The site is locale-routed: every page lives under `/<locale>/…`, and `src/i18n
   *inside* paragraphs, which JSON cannot hold without `v-html` or shattered sentences — and a legal page has to be reviewable as a document. **Editing one
   language version means editing the other in the same change**; facts that must not diverge (address, supervisory authority, review date) come from
   `src/lib/legal.ts`, and `views/legal/__tests__/legalViews.spec.ts` runs the mandatory-element checklist against each language separately.
-- **German is the authoritative version of the legal pages** (FOOTER_AND_LEGAL_PLAN §6.1), and both language versions say so. Do not remove that sentence.
+- **German is the authoritative version of the legal pages** (LEGAL.md §6.1), and both language versions say so. Do not remove that sentence.
 - **`lib/format.ts` stays pure** — its functions take a locale argument. `composables/useFormat.ts` is the thin layer that supplies it from the active i18n
   instance, so unit tests can call the helpers without mounting an app.
 - **`todayIso()`'s `en-CA` is a format, not a language.** It is the shortest way to get `YYYY-MM-DD` out of `Intl`. Making it locale-aware breaks every date
@@ -320,7 +320,7 @@ npm run check:licenses                                     # this project's prod
 `.github/workflows/dependency-review.yml` adds a third gate: a deny-list applied to *newly introduced* dependencies at PR time.
 
 **Do not widen an allow-list to make a build pass.** AGPL, GPL without the Classpath Exception, and source-available licences (SSPL, BUSL, Elastic-2.0) are not
-acceptable — see [docs/FOOTER_AND_LEGAL_PLAN.md §9.2](../docs/FOOTER_AND_LEGAL_PLAN.md). If a licence genuinely belongs on the list, record why in the policy
+acceptable — see [docs/LEGAL.md §9.2](../docs/LEGAL.md). If a licence genuinely belongs on the list, record why in the policy
 file's `_rationale`.
 
 The same guidance is in the [README](../README.md#dependency-licences--open-source-notices) for people not reading this file.
@@ -328,7 +328,7 @@ The same guidance is in the [README](../README.md#dependency-licences--open-sour
 ## Accessibility
 
 **Target: WCAG 2.1 Level AA.** These rules encode what the codebase already does — follow them rather than rediscovering them. Background and the current gap
-list: [docs/FOOTER_AND_LEGAL_PLAN.md §12](../docs/FOOTER_AND_LEGAL_PLAN.md).
+list: [docs/LEGAL.md §12](../docs/LEGAL.md).
 
 - **Every interactive element needs an accessible name.** Icon-only controls carry an `aria-label`. Where a `title` tooltip is also present, derive both from
   **one** `computed` so they cannot drift — see the theme toggle in `App.vue`.

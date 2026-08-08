@@ -13,7 +13,7 @@ java {
 
 // `springBoot { buildInfo }` — which stamps the version and commit this module serves at
 // `GET /meta` and `/actuator/info` — is configured once for every Boot application in the root
-// build. See docs/FOOTER_AND_LEGAL_PLAN.md §4.3.
+// build. See docs/LEGAL.md §4.3.
 
 repositories {
     mavenCentral()

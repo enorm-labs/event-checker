@@ -17,7 +17,7 @@
  *
  * **Before go-live, every published locale needs its legal pages in that language** — an
  * English-only imprint and privacy notice on a site presenting itself in German is the one
- * configuration FOOTER_AND_LEGAL_PLAN §6.1 rules out. Both published locales have them
+ * configuration LEGAL.md §6.1 rules out. Both published locales have them
  * (`ImprintView.de.vue`, `PrivacyView.de.vue`); a third locale would need the same before it
  * could be listed here.
  */

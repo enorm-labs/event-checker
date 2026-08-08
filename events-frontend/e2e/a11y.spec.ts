@@ -3,7 +3,7 @@ import { expect, type Page, test } from '@playwright/test'
 
 /**
  * Automated accessibility sweep — the runtime half of the WCAG 2.1 AA target
- * (docs/FOOTER_AND_LEGAL_PLAN.md §12.3).
+ * (docs/LEGAL.md §12).
  *
  * axe catches what `eslint-plugin-vuejs-accessibility` cannot see from the source: colour
  * contrast against the resolved theme tokens, focus order, landmark structure, and duplicate IDs.

@@ -24,7 +24,7 @@ export default defineConfigWithVueTs(
   vueTsConfigs.recommended,
 
   // Accessibility lint — the static half of the WCAG 2.1 AA target
-  // (docs/FOOTER_AND_LEGAL_PLAN.md §12.3). Catches missing form labels, bad `alt`, redundant
+  // (docs/LEGAL.md §12). Catches missing form labels, bad `alt`, redundant
   // roles and click handlers on non-interactive elements at lint time; the axe sweep in
   // e2e/a11y.spec.ts covers what static analysis cannot see (contrast, focus order, live regions).
   // Do not disable a rule here to make a build pass — fix the markup, or raise it.

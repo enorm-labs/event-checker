@@ -46,7 +46,7 @@ subprojects {
     // `version` is deliberately NOT assigned here: it comes from `version` in gradle.properties,
     // which Gradle applies to every project. Re-adding an assignment would silently override that
     // single source of truth, and the build would stay green while the footer showed a stale
-    // number. See docs/FOOTER_AND_LEGAL_PLAN.md §4.2.
+    // number. See docs/LEGAL.md §4.2.
 
     apply(plugin = "org.jlleitschuh.gradle.ktlint") // Version should be inherited from parent
     apply(plugin = "dev.detekt")
@@ -84,7 +84,7 @@ subprojects {
     // `BuildProperties` bean. The BFF serves it at `GET /meta` (the frontend footer) and both apps
     // expose it at `/actuator/info` (operators) — reading one bean, so the two can never disagree.
     // Configured here rather than per-module so the git plumbing below exists once.
-    // See docs/FOOTER_AND_LEGAL_PLAN.md §4.3.
+    // See docs/LEGAL.md §4.3.
     plugins.withId("org.springframework.boot") {
         configure<SpringBootExtension> {
             buildInfo {
@@ -239,7 +239,7 @@ dependencyCheck {
 // Gradle License Report – collects the licence of every runtime dependency across all three
 // modules and emits JSON that the frontend's /legal/notices page renders. Run
 // `./gradlew generateLicenseReport`, then `npm run generate:notices` in events-frontend to merge
-// it with the npm side. See docs/FOOTER_AND_LEGAL_PLAN.md §9.
+// it with the npm side. See docs/LEGAL.md §9.
 //
 // This is the "Stage 1" tool: it lists and checks, but does not curate or scan source. ORT is the
 // Stage 2 upgrade if policy enforcement beyond an allow-list is ever wanted.

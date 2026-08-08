@@ -2,8 +2,8 @@
 /**
  * Site footer: provenance, project links and the copyright line.
  *
- * Every link here resolves — the plan's own principle is that a footer with dead links is worse
- * than no footer (docs/FOOTER_AND_LEGAL_PLAN.md §11).
+ * Every link here resolves: a footer with dead links is worse
+ * than no footer (docs/LEGAL.md §2).
  *
  * The disclaimer sits here rather than only on a legal page because it is the single most useful
  * sentence for a user of an aggregator, and nobody clicks through to read it (§7.6).

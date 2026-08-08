@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Merges the backend and frontend dependency licence data into one `src/assets/notices.json`,
- * which `/legal/notices` renders. See docs/FOOTER_AND_LEGAL_PLAN.md §9.
+ * which `/legal/notices` renders. See docs/LEGAL.md §9.
  *
  * Run:
  *   ./gradlew generateLicenseReport --no-configuration-cache   # from the repository root
