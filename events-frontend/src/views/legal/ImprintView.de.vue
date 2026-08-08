@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 /**
- * Impressum nach § 5 DDG — die **maßgebliche Fassung** (FOOTER_AND_LEGAL_PLAN §6.1).
+ * Impressum nach § 5 DDG — die **maßgebliche Fassung** (LEGAL.md §6.1).
  *
  * Written in German rather than translated from `ImprintView.en.vue`: the section headings a
  * German reader expects — *Angaben gemäß § 5 DDG*, *Haftung für Inhalte*, *Haftung für Links* —

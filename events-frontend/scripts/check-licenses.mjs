@@ -46,7 +46,7 @@ const violations = []
 for (const [id, info] of Object.entries(packages)) {
   const licenses = licensesOf(info)
   // No metadata at all is a violation, not a pass: an unknown licence is the case most worth
-  // stopping for (docs/FOOTER_AND_LEGAL_PLAN.md §9.2).
+  // stopping for (docs/LEGAL.md §9.2).
   if (licenses.length === 0) {
     violations.push({ id, licenses: ['<none declared>'] })
   } else if (!licenses.some((license) => allowed.has(license))) {
@@ -65,7 +65,7 @@ if (violations.length > 0) {
     '\nDo not widen config/allowed-licenses-npm.json just to make this pass.\n' +
       'AGPL, GPL without the Classpath Exception, and source-available licences (SSPL, BUSL,\n' +
       'Elastic-2.0) are not acceptable for a public network service — see\n' +
-      'docs/FOOTER_AND_LEGAL_PLAN.md §9.2. Replace the dependency, or record the reasoning in\n' +
+      'docs/LEGAL.md §9.2. Replace the dependency, or record the reasoning in\n' +
       "the policy file's `_rationale` if it genuinely belongs on the list.\n",
   )
   process.exit(1)

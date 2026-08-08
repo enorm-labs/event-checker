@@ -82,7 +82,7 @@ const IMPRINT_ELEMENTS: Element[] = [
   },
 ]
 
-// Art. 13 has twelve mandatory elements (docs/FOOTER_AND_LEGAL_PLAN.md §7.2); omitting one is the
+// Art. 13 has twelve mandatory elements (docs/LEGAL.md §7.2); omitting one is the
 // usual defect, and it is invisible without a checklist. This is that checklist, in both languages.
 const PRIVACY_ELEMENTS: Element[] = [
   {

@@ -8,7 +8,7 @@ spring:
 # `info` joins the default `health`, so operators can ask a running instance which build it is.
 # It must NOT be routed through the public ingress — the browser gets `GET /meta` instead, which
 # is a curated, OpenAPI-documented contract rather than a framework-shaped payload
-# (docs/FOOTER_AND_LEGAL_PLAN.md §4.4). Once the Helm chart exists, prefer moving the management
+# (docs/LEGAL.md §4.4). Once the Helm chart exists, prefer moving the management
 # endpoints to their own port (management.server.port) so the split is enforced by the network
 # rather than by an ingress rule that has to stay correct forever.
 management:

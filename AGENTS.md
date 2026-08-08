@@ -37,7 +37,7 @@ The public privacy notice (`/legal/privacy`) and the imprint describe **what thi
 leaves the site stating two different things.
 They are only correct as long as that description matches reality, and the changes that break them do not look like privacy work. **Before merging, check
 whether your change falls into any category below — and if it does, say so explicitly in the PR description and update
-[docs/FOOTER_AND_LEGAL_PLAN.md](docs/FOOTER_AND_LEGAL_PLAN.md) §7 plus the privacy page in the same PR.**
+[docs/LEGAL.md](docs/LEGAL.md) §7 plus the privacy page in the same PR.**
 
 **Infrastructure and operations**
 
@@ -57,7 +57,7 @@ whether your change falls into any category below — and if it does, say so exp
   decision, not an implementation detail. **Escalate rather than implement.**
 - **Any third-party resource loaded by the browser** — a font, script, iframe, map, embed, social widget, or image hotlinked from another host. Each one
   transmits the visitor's IP address to that host. Fonts are self-hosted (`@fontsource-variable/geist`) for exactly this reason; keep it that way.
-- **Any outbound call made from the frontend** to a domain we do not operate. The GitHub API is the tempting one — see FOOTER_AND_LEGAL_PLAN.md §4.1 for why the
+- **Any outbound call made from the frontend** to a domain we do not operate. The GitHub API is the tempting one — see LEGAL.md §4.1 for why the
   footer's version does not come from it.
 - **Accounts, login, sessions, newsletter, contact form, comments, favourites, or notifications** — each introduces user data we do not process at all today,
   and needs its own legal basis, retention period and deletion route.
@@ -373,7 +373,7 @@ Java version is managed via SDKMAN (`.sdkmanrc` pins `java=25.0.2-tem`; run `sdk
   `events-frontend/package.json` mirrors it **by hand**, deliberately without the `-SNAPSHOT` suffix (npm SemVer has no such convention), so the two files are
   intentionally not byte-identical — both move in one commit. A release build overrides the version from the tag (`-Pversion=0.1.0`) rather than editing the
   file. The version the site displays always comes from `GET /meta`, which is stamped from the build — never from `package.json`. See
-  [docs/FOOTER_AND_LEGAL_PLAN.md](docs/FOOTER_AND_LEGAL_PLAN.md) §4.
+  [docs/LEGAL.md](docs/LEGAL.md) §4.
 - **Package structure**: `de.norm.events.<module-name>` — organize by feature/domain, not layer.
 - **Kotlin DSL** for all Gradle build scripts (`build.gradle.kts`).
 - **Kotlin 2.4.10** with **Spring Boot 4.1.0**; plugin versions pinned in `settings.gradle.kts` `pluginManagement`.
@@ -559,7 +559,7 @@ Java version is managed via SDKMAN (`.sdkmanrc` pins `java=25.0.2-tem`; run `sdk
 | ADR: Cloud platform & hosting         | `docs/adr/ADR-012_CLOUD_PLATFORM.md`                                                                      |
 | ADR: Localisation (English + German)  | `docs/adr/ADR-013_LOCALISATION.md`                                                                        |
 | ADR: Rendering strategy (SPA/SSG/SSR) | `docs/adr/ADR-014_RENDERING_STRATEGY.md`                                                                  |
-| Plan: footer, legal pages, versioning | `docs/FOOTER_AND_LEGAL_PLAN.md`                                                                           |
+| Plan: footer, legal pages, versioning | `docs/LEGAL.md`                                                                           |
 | Plan: localisation                    | `docs/LOCALISATION_PLAN.md`                                                                               |
 | Frontend entry point                  | `events-frontend/src/main.ts`                                                                             |
 | IntelliJ HTTP Client requests         | `http/importer/` (admin) and `http/bff/` (public read) `.http` files + shared `http/http-client.env.json` |

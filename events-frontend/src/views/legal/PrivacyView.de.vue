@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 /**
- * Datenschutzerklärung nach Art. 13 DSGVO — die **maßgebliche Fassung** (FOOTER_AND_LEGAL_PLAN
+ * Datenschutzerklärung nach Art. 13 DSGVO — die **maßgebliche Fassung** (LEGAL.md
  * §6.1).
  *
- * Follows the same twelve mandatory items as `PrivacyView.en.vue` (docs/FOOTER_AND_LEGAL_PLAN.md
+ * Follows the same twelve mandatory items as `PrivacyView.en.vue` (docs/LEGAL.md
  * §7.2), section for section, and cites them in German form — *Art. 6 Abs. 1 lit. f DSGVO*, not
  * *Art. 6 (1) (f) GDPR*. The unit test runs the checklist against both languages separately for
  * exactly that reason: a dropped element in one version is invisible from the other.

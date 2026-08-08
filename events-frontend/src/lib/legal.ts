@@ -3,7 +3,7 @@
  *
  * One module because the imprint and the privacy notice must carry **the same** controller
  * details — §5 DDG and Art. 13 (1) (a) GDPR each require them, and two hand-maintained copies
- * would eventually disagree. See docs/FOOTER_AND_LEGAL_PLAN.md §8.3.
+ * would eventually disagree. See docs/LEGAL.md §8.3.
  */
 
 /**
@@ -12,7 +12,7 @@
  * TODO(imprint-address): the postal address and email are placeholders. Replace both with the
  * rented Postflex address and the real role mailbox once `event-junkie.de` is registered, and
  * set {@link CONTACT_DETAILS_ARE_PROVISIONAL} to `false` in the same commit — a unit test holds
- * the two in step. See docs/FOOTER_AND_LEGAL_PLAN.md §8.3.
+ * the two in step. See docs/LEGAL.md §8.3.
  */
 export const CONTROLLER = {
   name: 'Norman Lange',

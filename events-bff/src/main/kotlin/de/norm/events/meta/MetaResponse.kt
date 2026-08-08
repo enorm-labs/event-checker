@@ -9,7 +9,7 @@ import org.springframework.boot.info.BuildProperties
  * Curated rather than reusing `/actuator/info`: that payload is framework-shaped, leaks the Maven
  * `group`/`artifact`/`name`, is not part of the OpenAPI spec the frontend generates its client
  * from, and would require routing the actuator path through the public ingress.
- * See docs/FOOTER_AND_LEGAL_PLAN.md §4.4.
+ * See docs/LEGAL.md §4.4.
  */
 @Schema(description = "Version and commit of the running backend, for the frontend footer")
 data class MetaResponse(

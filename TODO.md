@@ -73,18 +73,11 @@ Rough priority: **Now** → **Next** → grouped backlog → **Someday / Vision*
   hotlink vs. omit (see the Legal/Compliance copyright item)
 - [ ] Always show the number of displayed / found events in list views (verify — may already be the case in places)
 - [ ] Make the home page a real entry point into the data — a prominent link to "Browse events", or filtering/searching directly from the home page
-- [x] Sitemap — generated at build from `LOCALES` × `INDEXABLE_PATHS` with `hreflang` alternates per entry, plus `robots.txt`; served in dev and prod from the
-  same source so they cannot drift. **Static routes only**: the build is deliberately independent of the BFF, so detail routes need a BFF-served sitemap (below)
 - [ ] **BFF-served sitemap for detail routes** — events, venues, artists, promoters. Belongs in the BFF because it holds the data and can leave out events that
-  have already happened; the frontend build cannot enumerate them without giving up its independence from the database
-- [x] **Per-page head tags from one shared module** — `src/lib/pageMeta.ts` derives `{ title, description, image }` per entity and `usePageMeta` writes them,
-  so every route now carries its own `description`, `og:*` and `twitter:*` instead of the site-level ones. This is the half of
-  [ADR-014](docs/adr/ADR-014_RENDERING_STRATEGY.md) §Decision 3 that needs no deployment, and it is deliberately the same module the meta injector will call
-  server-side — the two producing different values is the failure that would make a scraper and a visitor see different titles. (`canonical` was already handled
-  separately by `lib/seoTags.ts`.) **The injector itself still needs a deployment** and is tracked below
+  have already happened; the frontend build cannot enumerate them without giving up its independence from the database. (The static-route sitemap, `robots.txt`,
+  `hreflang`, canonical URLs, per-page head tags and `schema.org` structured data are all built — see [ADR-014](docs/adr/ADR-014_RENDERING_STRATEGY.md) and
+  `events-frontend/AGENTS.md` §SEO surfaces. The remaining SEO work is the meta injector, which needs a deployment and is tracked below.)
 - [ ] RSS feed for newly imported events
-- [x] I18N / L10N + translations — English and German under locale-prefixed routes, per-locale legal pages, locale switcher, `hreflang`, `og:locale` and
-  `schema.org` structured data. See [ADR-013](docs/adr/ADR-013_LOCALISATION.md) and [docs/LOCALISATION_PLAN.md](docs/LOCALISATION_PLAN.md)
 - Note: `GET /artists`, `GET /venues`, `GET /promoters` list endpoints exist and are smoke-tested, but only their `/{slug}` detail counterparts have UI pages
   yet.
 
@@ -325,17 +318,14 @@ Strategy & sequencing: [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEG
 
 ## Legal / Compliance (before going live)
 
-Built out in [docs/FOOTER_AND_LEGAL_PLAN.md](docs/FOOTER_AND_LEGAL_PLAN.md). The pages exist and are tested; what remains for each is verification that needs a
-real address, a real deployment or a qualified reader — tracked in [§At go-live & after](#-at-go-live--after-needs-a-live-deployment).
+**Built and documented in [docs/LEGAL.md](docs/LEGAL.md)** — imprint, privacy notice, FOSS attributions, accessibility target and repo links all shipped, in
+both languages. That document is now the record of what exists and what the rules are; the items that used to sit here are gone rather than ticked, because a
+backlog of finished work is noise.
 
-- [x] Imprint (Impressum) — § 5 DDG, § 18 (2) MStV, disclaimer and liability clauses, in English and German (German authoritative). **Address is still a
-  placeholder**
-- [x] DSGVO / GDPR — Art. 13 privacy notice against the twelve mandatory items, in both languages, with a unit-test checklist per locale. **Not yet reviewed by
-  a qualified person, and the infrastructure it describes is still `Proposed`**
-- [x] Accessibility review — WCAG 2.1 AA as the stated target: `eslint-plugin-vuejs-accessibility`, an `@axe-core/playwright` sweep over every static route in
-  both locales and both themes, skip link, landmark naming. Two real contrast failures were found and fixed at the tokens
-- [x] Display used FOSS / attributions — generated `/legal/notices` page over 642 components, plus an allow-list gate on both the JVM and npm dependency trees
-- [x] Link to the GitHub repository — header, footer, and the issue/contributing routes
+What is genuinely left splits in two: **verification that needs a real address, a real deployment or a qualified reader**, tracked in
+[§At go-live & after](#-at-go-live--after-needs-a-live-deployment) and summarised in [LEGAL.md §14](docs/LEGAL.md) — and the two open questions below, which are
+about the *data* rather than the pages.
+
 - [ ] Confirm legality of scraping events and displaying them
 - [ ] Clarify copyright/licensing of event **descriptions** and **images** per source — are we allowed to store/display them? Track a copyright/license status
   per event source (drives the description/image display decision under Frontend & BFF)
@@ -349,10 +339,18 @@ Ordered by when it becomes possible.
 
 ### Blocking the first deploy
 
+- [ ] **Read every page, in both languages, as a reader rather than as its author.** The legal pages and About especially — they are the longest prose on the
+  site, they were written fastest, and each exists as two independent documents that no test can compare for *meaning*. Look for German that reads as translated
+  English, for claims that are no longer true, and for the `du` register slipping into `Sie`
+- [ ] **Review `CODE_OF_CONDUCT.md`, `CONTRIBUTING.md`, `README.md`, `SECURITY.md` and the issue templates.** These were written alongside the site and have had
+  no second pass. **The concrete defect to fix: `hello@event-junkie.de` and `security@event-junkie.de` do not exist** — the domain is unregistered, so every
+  published reporting route in those files is a dead address, including the Code of Conduct's enforcement contact and the security-disclosure address
+- [ ] **Review and improve the German translations** (`events-frontend/src/i18n/messages/de/`). The key-parity test proves every key exists and is not a copy of
+  the English one; it cannot tell you a translation is *good*. Worth one deliberate pass by someone reading only the German, not comparing it to the English
 - [ ] **Replace the placeholder postal address** — [ADR-012](docs/adr/ADR-012_CLOUD_PLATFORM.md) covers the domain; the address comes from a rented Postflex
   *ladungsfähige Anschrift*. Update `events-frontend/src/lib/legal.ts`, `CODE_OF_CONDUCT.md` and `SECURITY.md`, then set `CONTACT_DETAILS_ARE_PROVISIONAL =
   false` **in the same commit** — a unit test fails if the flag and the placeholder ever disagree, which is what stops a false address going live quietly
-- [ ] **Settle the logging decisions** (FOOTER_AND_LEGAL_PLAN §7.5.1): whether Traefik and the nginx container log real client IPs, whether they are truncated,
+- [ ] **Settle the logging decisions** (LEGAL.md §7.5.1): whether Traefik and the nginx container log real client IPs, whether they are truncated,
   the retention period, and where retention is actually enforced. The privacy notice currently states an *intended* seven days — it must state the configured
   one
 - [ ] **Re-check the privacy notice against what actually runs**, then set `INFRASTRUCTURE_IS_PROPOSED = false` and bump `LAST_REVIEWED`. Name the real
@@ -370,10 +368,15 @@ Ordered by when it becomes possible.
 
 - [ ] **Google Rich Results Test** on a real event page. The `schema.org` output is verified against Google's documented requirements and by unit and e2e tests
   — never against Google. This is the one place the structured data could still be wrong in a way nothing in CI catches
-- [ ] **Search Console**: submit the sitemap, confirm the `hreflang` alternates are picked up, and confirm `robots.txt` and `sitemap.xml` are actually served
-  from the origin
-- [ ] **Watch detail-page indexing** — this is the named trigger in [ADR-014](docs/adr/ADR-014_RENDERING_STRATEGY.md) §Decision 4 for reopening full SSR. Late
-  or missing detail pages is the evidence; anything else is anticipation
+- [ ] **Set the site up in [Google Search Console](https://search.google.com/search-console/)** — verify ownership of `event-junkie.de` (DNS TXT record via
+  Cloudflare is the least fragile method), add **both** locale trees, and submit `sitemap.xml`. Nothing below can be checked until this exists, and it is the
+  only free source of truth for how Google actually sees the site
+- [ ] **Confirm the sitemap and `hreflang` are accepted** — Search Console reports parse errors and unreciprocated `hreflang` pairs explicitly. Also confirm
+  `robots.txt` and `sitemap.xml` are genuinely served from the origin, not just present in `dist/`
+- [ ] **Watch indexing, especially detail pages.** This is the named trigger in [ADR-014](docs/adr/ADR-014_RENDERING_STRATEGY.md) §Decision 4 for reopening full
+  SSR: **detail pages indexed late or not at all is the evidence**, and anything short of that is anticipation. Worth a deliberate check a few weeks after
+  launch rather than a glance on day one — a brand-new site with no inbound links has low crawl priority, so early slowness is expected and proves nothing.
+  Use the URL Inspection tool on one event page to see the rendered HTML Google actually holds
 - [ ] **Check a real link preview** in Slack, WhatsApp and iMessage. The per-page tags exist in the DOM now, but these scrapers do not run JavaScript, so they
   still read the site-level ones out of the served HTML — the concrete defect ADR-014 exists to fix, and it only closes when the injector lands. Checking a real
   preview is the only way to know it worked
@@ -419,7 +422,9 @@ Ordered by when it becomes possible.
   (§ "Naming rule"); if pursued, update BRANDING.md accordingly. Scope: repo name, Gradle modules, packages, DB schema, ADRs, docs.
 - [ ] Clean up KDoc comments across the codebase — drop boilerplate/irrelevant comments, keep the rest meaningful
 - [ ] Generate a Mermaid domain class diagram via Gradle
-- [ ] Community/repo health files: CONTRIBUTING, CODE_OF_CONDUCT, SECURITY, SUPPORT (example: [gitfolio](https://github.com/github-samples/gitfolio))
+- [ ] Community/repo health files — `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md` (Contributor Covenant 3.0), `SECURITY.md`, issue templates and a PR template all
+  exist; **`SUPPORT.md` does not**, and the contact addresses in the existing ones are not registered yet (see the go-live review item).
+  Example: [gitfolio](https://github.com/github-samples/gitfolio)
 - [ ] Repository best-practices pass (follow GitHub docs)
 - [ ] Create a public Roadmap (seed it from the phased roadmap in [docs/VISION_ROADMAP_IDEAS.md](docs/VISION_ROADMAP_IDEAS.md))
 - [ ] Create a template repository (Enterprise + private):

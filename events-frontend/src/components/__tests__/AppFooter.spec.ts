@@ -24,7 +24,7 @@ describe('AppFooter', () => {
 
   it('separates the copyright from the code licence', () => {
     // The two clauses must stay distinct: a bare "© Event Junkie · Apache-2.0" would imply the
-    // event data is ours to license, which it is not (docs/FOOTER_AND_LEGAL_PLAN.md §3).
+    // event data is ours to license, which it is not (docs/LEGAL.md §3).
     const wrapper = mount_()
     expect(wrapper.text()).toContain('© 2026 Event Junkie')
     expect(wrapper.text()).toContain('Code under Apache-2.0')

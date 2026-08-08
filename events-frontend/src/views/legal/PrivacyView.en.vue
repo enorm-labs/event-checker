@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 /**
  * Privacy notice under Art. 13 GDPR — English version. `PrivacyView.de.vue` is the authoritative
- * one (FOOTER_AND_LEGAL_PLAN §6.1); **change both files or neither**, and take shared facts from
+ * one (LEGAL.md §6.1); **change both files or neither**, and take shared facts from
  * `@/lib/legal` rather than typing them twice.
  *
- * Structured against the twelve mandatory items in docs/FOOTER_AND_LEGAL_PLAN.md §7.2 — missing
+ * Structured against the twelve mandatory items in docs/LEGAL.md §7.2 — missing
  * one of them is the usual defect. It deliberately does **not** describe processing that does not
  * happen: no cookie table, no consent withdrawal, no analytics section. A notice describing
  * imaginary processing is as inaccurate as one omitting real processing.

@@ -25,7 +25,7 @@ jobs:
           # Fail on high+ severity to match the OWASP Dependency-Check threshold (CVSS ≥ 7)
           fail-on-severity: high
 
-          # Licence policy (docs/FOOTER_AND_LEGAL_PLAN.md §9.2). A deny-list rather than an
+          # Licence policy (docs/LEGAL.md §9.2). A deny-list rather than an
           # allow-list: an allow-list fails on every unrecognised-but-fine SPDX spelling
           # (`BSD-3-Clause` vs `BSD 3-Clause`, dual licences, `NOASSERTION`), which trains people
           # to bypass the gate. This names the licences that are genuinely incompatible with

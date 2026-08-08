@@ -1,7 +1,7 @@
 {
   "_comment": [
     "Licence allow-list for `./gradlew checkLicense --no-configuration-cache`.",
-    "Policy and reasoning: docs/FOOTER_AND_LEGAL_PLAN.md §9.2.",
+    "Policy and reasoning: docs/LEGAL.md §9.2.",
     "",
     "SCOPE — runtime dependencies only, i.e. what actually ships. Build-tool and test classpaths",
     "are excluded via `licenseReport.configurations` in the root build: nothing on them reaches a",

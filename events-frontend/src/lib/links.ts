@@ -3,7 +3,7 @@
  *
  * One module so the header, the footer and (from Phase 3) the version line cannot drift onto
  * different URLs — the header previously carried its own `REPOSITORY_URL` constant.
- * See docs/FOOTER_AND_LEGAL_PLAN.md §3.
+ * See docs/LEGAL.md §3.
  */
 
 export const REPOSITORY_URL = 'https://github.com/enorm-labs/event-checker'

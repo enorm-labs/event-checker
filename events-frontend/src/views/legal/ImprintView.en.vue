@@ -2,7 +2,7 @@
 /**
  * Provider identification under § 5 DDG, plus the disclaimer — English version.
  *
- * The German version, `ImprintView.de.vue`, is the authoritative one (FOOTER_AND_LEGAL_PLAN
+ * The German version, `ImprintView.de.vue`, is the authoritative one (LEGAL.md
  * §6.1), and this page says so. This one exists because a large part of the audience the site
  * addresses reads English, and Art. 12 (1) GDPR / § 5 DDG are judged against the audience
  * addressed — not because German alone would be insufficient.

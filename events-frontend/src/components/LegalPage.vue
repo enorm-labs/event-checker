@@ -20,7 +20,7 @@ defineProps<{
    * A prop rather than a line typed into each page: it belongs on the imprint and the privacy
    * notice, in *both* languages, which is four places to forget it. Forgetting it is the whole
    * risk — two language versions with no stated precedence is worse than one language.
-   * See docs/FOOTER_AND_LEGAL_PLAN.md §6.1.
+   * See docs/LEGAL.md §6.1.
    */
   showAuthoritativeVersion?: boolean
 }>()

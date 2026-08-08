@@ -5,7 +5,7 @@
 Accepted (2026-08-07)
 
 > Phase 0 of [LOCALISATION_PLAN.md](../LOCALISATION_PLAN.md), which delivers Phase 7 of
-> [FOOTER_AND_LEGAL_PLAN.md](../FOOTER_AND_LEGAL_PLAN.md) §6.2. That document agreed the work and recorded the constraints it has been placing on frontend code
+> [LEGAL.md](../LEGAL.md) §6.2. That document agreed the work and recorded the constraints it has been placing on frontend code
 > since; this ADR settles the decisions that are expensive to reverse, before any of them are baked into routes.
 >
 > Package versions and download figures were checked on **2026-08-07** and should be re-verified if this sits unimplemented for long.
@@ -16,7 +16,7 @@ The site is English-only today. It targets Berlin — an audience that is heavil
 under German law. Two forces make German non-optional rather than a nice-to-have:
 
 1. **Audience.** A Berlin events guide that cannot be read in German excludes a large part of the city it is about.
-2. **Law.** [FOOTER_AND_LEGAL_PLAN §6.1](../FOOTER_AND_LEGAL_PLAN.md) chose English-only legal pages on the explicit condition that *German legal pages ship in
+2. **Law.** [LEGAL.md §6.1](../LEGAL.md) chose English-only legal pages on the explicit condition that *German legal pages ship in
    the same release as German UI*. An English-only imprint and privacy notice on a site presenting itself in German to a German visitor is the configuration
    where the Art. 12 GDPR "clear and plain language" argument turns against us.
 
@@ -96,7 +96,7 @@ Bare `/` redirects to a locale chosen from `Accept-Language`, falling back to `e
 preserve. Every month this waits, the cost rises.
 
 A stored locale preference (`localStorage`) is permitted **only** as a hint for resolving bare `/`. The URL is always the source of truth. This keeps the § 25
-TDDDG posture from [FOOTER_AND_LEGAL_PLAN §7.4](../FOOTER_AND_LEGAL_PLAN.md) intact: a preference the user set themselves is strictly necessary, so no consent
+TDDDG posture from [LEGAL.md §7.4](../LEGAL.md) intact: a preference the user set themselves is strictly necessary, so no consent
 banner — but it must not become the *only* record of the choice.
 
 ### 3. Translate the chrome, not the data
@@ -155,6 +155,6 @@ Stated on each page once both exist: *Maßgeblich ist die deutsche Fassung.* The
 ## References
 
 - [LOCALISATION_PLAN.md](../LOCALISATION_PLAN.md) — the implementation plan this ADR unblocks
-- [FOOTER_AND_LEGAL_PLAN.md](../FOOTER_AND_LEGAL_PLAN.md) §6.1, §6.2, §7.4 — the language and device-storage commitments this inherits
+- [LEGAL.md](../LEGAL.md) §6.1, §6.2, §7.4 — the language and device-storage commitments this inherits
 - [Vue I18n](https://vue-i18n.intlify.dev/) · [`@intlify/unplugin-vue-i18n`](https://www.npmjs.com/package/@intlify/unplugin-vue-i18n)
 - [Google Search Central — managing multi-regional and multilingual sites](https://developers.google.com/search/docs/specialty/international/managing-multi-regional-sites)

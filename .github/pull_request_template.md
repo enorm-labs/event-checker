@@ -22,7 +22,7 @@ widget, an analytics snippet, or anything newly stored on the visitor's device.
 
 - [ ] This change does **not** affect data processing, third-party requests, or storage on the
       visitor's device — **or** it does, and the privacy notice and
-      `docs/FOOTER_AND_LEGAL_PLAN.md` §7 are updated in this PR.
+      `docs/LEGAL.md` §7 are updated in this PR.
 
 ## Accessibility
 

@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test'
 /**
  * The legal pages have to be *reachable*, not merely present: German practice expects the imprint
  * within a couple of clicks from any page, which for this site means the footer on every route.
- * See docs/FOOTER_AND_LEGAL_PLAN.md §6.
+ * See docs/LEGAL.md §6.
  */
 
 test('reaches the imprint in one click from the footer, on any route', async ({ page }) => {
