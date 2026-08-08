@@ -14,7 +14,8 @@
     "//test:a11y": "The axe/WCAG sweep on its own, for iterating on markup without paying for the whole e2e suite. It also runs as part of `test:e2e` — this is a filter, not a second check, so there is nothing extra to wire into CI.",
     "test:a11y": "playwright test a11y.spec.ts",
     "build-only": "vite build",
-    "generate:api": "npx -y openapi-typescript@7 http://localhost:8080/v3/api-docs -o src/api/schema.d.ts",
+    "//generate:api": "Version pinned EXACTLY, and deliberately still `npx` rather than a devDependency. openapi-typescript@7 declares `peer typescript@^5.x` and this project is on TypeScript 6, so installing it locally fails to resolve; npx runs it in isolation with its own TypeScript, which is why it works at all. Pinning the exact version closes the reproducibility half of the problem (an unpinned range can reshape the whole generated file), and the isolation means its TypeScript never enters our tree. Revisit when openapi-typescript widens the peer range. Requires a running BFF — see README.",
+    "generate:api": "npx -y openapi-typescript@7.13.0 http://localhost:8080/v3/api-docs -o src/api/schema.d.ts",
     "generate:notices": "node scripts/generate-notices.mjs",
     "check:licenses": "node scripts/check-licenses.mjs",
     "type-check": "vue-tsc --build",
@@ -46,7 +47,7 @@
     "@intlify/unplugin-vue-i18n": "11.2.4",
     "@playwright/test": "1.62.1",
     "@tsconfig/node24": "24.0.4",
-    "@types/jsdom": "28.0.3",
+    "@types/jsdom": "30.0.0",
     "@types/node": "26.2.0",
     "@vitejs/plugin-vue": "6.0.8",
     "@vitest/coverage-v8": "4.1.10",
@@ -61,7 +62,7 @@
     "eslint-plugin-vue": "10.10.0",
     "eslint-plugin-vuejs-accessibility": "2.5.0",
     "jiti": "2.7.0",
-    "jsdom": "29.1.1",
+    "jsdom": "30.0.1",
     "license-checker-rseidelsohn": "4.4.2",
     "npm-run-all2": "8.0.4",
     "oxfmt": "0.62.0",
@@ -73,6 +74,6 @@
     "vue-tsc": "3.3.9"
   },
   "engines": {
-    "node": ">=22.13.0"
+    "node": ">=24"
   }
 }

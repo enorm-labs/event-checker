@@ -331,14 +331,14 @@ Strategy & sequencing: [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEG
 - [ ] Logging: always attach context (event id, artist id, …)
 - [ ] Checkov scan (if it makes sense)
 - [ ] Infra/tooling update checker beyond Dependabot (Renovate?)
-- [ ] **`notices.json` is platform-dependent, and nothing notices.** `license-checker --production` walks the *installed* tree, which includes esbuild's
-  platform-specific optional binary — so a regeneration on macOS writes `@esbuild/darwin-arm64` and one on Linux CI would write `@esbuild/linux-x64`. That
-  contradicts the documented promise that re-running the generator with unchanged dependencies produces an identical file and an empty diff. Decide which
-  behaviour is wanted (list every platform variant, or drop optional platform binaries — they are not shipped to a browser either way) and enforce it in
-  `events-frontend/scripts/generate-notices.mjs`
+- [x] **`notices.json` was platform-dependent.** `license-checker --production` walks the *installed* tree, so a regeneration on macOS wrote
+  `@esbuild/darwin-arm64` and one on Linux CI would have written `@esbuild/linux-x64` — breaking the generator's own promise that unchanged dependencies produce
+  an identical file. Platform-specific optional binaries are now dropped by `PLATFORM_SPECIFIC` in `events-frontend/scripts/generate-notices.mjs`: they are
+  build-time binaries for one CPU architecture, never shipped to a browser, so never distributed and never needing attribution
 - [ ] **Nothing checks that `notices.json` is current**, which is how it came to be missing `vue-i18n` — a direct production dependency, shipped in the bundle,
   absent from the attribution page for as long as localisation has been in. Regenerating it is a manual step in the `/update-dependencies` skill and easy to
-  skip. A CI check that regenerates and fails on a non-empty diff is the obvious fix, and is blocked on the platform-dependence item above
+  skip. **Now unblocked** by the fix above: a check can regenerate and fail on a non-empty diff without failing for the wrong reason. The one wrinkle left is
+  that the file merges *both* ecosystems, so the check needs Gradle (`generateLicenseReport`) as well as npm — it belongs in the backend workflow, or its own
 - [ ] Review useful security workflows → https://github.com/enorm-labs/event-checker/actions/new?category=security
 - [ ] Dashboard for analysing the data (Superset, Kibana, Grafana, …?) — also the intended surface for the **data-quality metrics/trends** (Pillar 1 exposes
   them via a

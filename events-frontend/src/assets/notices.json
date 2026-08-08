@@ -1,5 +1,5 @@
 {
-  "componentCount": 650,
+  "componentCount": 644,
   "licenses": [
     {
       "license": "MIT",
@@ -210,12 +210,6 @@
           "ecosystem": "frontend"
         },
         {
-          "name": "@esbuild/darwin-arm64",
-          "version": "0.28.1",
-          "url": "https://github.com/evanw/esbuild",
-          "ecosystem": "frontend"
-        },
-        {
           "name": "@eslint-community/eslint-utils",
           "version": "4.10.1",
           "url": "https://github.com/eslint-community/eslint-utils",
@@ -360,12 +354,6 @@
           "ecosystem": "frontend"
         },
         {
-          "name": "@rolldown/binding-darwin-arm64",
-          "version": "1.2.2",
-          "url": "https://github.com/rolldown/rolldown",
-          "ecosystem": "frontend"
-        },
-        {
           "name": "@rolldown/pluginutils",
           "version": "1.0.1",
           "url": "https://github.com/rolldown/plugins",
@@ -379,12 +367,6 @@
         },
         {
           "name": "@tailwindcss/oxide",
-          "version": "4.3.3",
-          "url": "https://github.com/tailwindlabs/tailwindcss",
-          "ecosystem": "frontend"
-        },
-        {
-          "name": "@tailwindcss/oxide-darwin-arm64",
           "version": "4.3.3",
           "url": "https://github.com/tailwindlabs/tailwindcss",
           "ecosystem": "frontend"
@@ -1023,12 +1005,6 @@
           "name": "es-object-atoms",
           "version": "1.1.2",
           "url": "https://github.com/ljharb/es-object-atoms",
-          "ecosystem": "frontend"
-        },
-        {
-          "name": "esbuild",
-          "version": "0.28.1",
-          "url": "https://github.com/evanw/esbuild",
           "ecosystem": "frontend"
         },
         {
@@ -3986,36 +3962,6 @@
       ]
     },
     {
-      "license": "MPL-2.0",
-      "url": "https://www.mozilla.org/MPL/2.0/",
-      "components": [
-        {
-          "name": "lightningcss",
-          "version": "1.32.0",
-          "url": "https://github.com/parcel-bundler/lightningcss",
-          "ecosystem": "frontend"
-        },
-        {
-          "name": "lightningcss",
-          "version": "1.33.0",
-          "url": "https://github.com/parcel-bundler/lightningcss",
-          "ecosystem": "frontend"
-        },
-        {
-          "name": "lightningcss-darwin-arm64",
-          "version": "1.32.0",
-          "url": "https://github.com/parcel-bundler/lightningcss",
-          "ecosystem": "frontend"
-        },
-        {
-          "name": "lightningcss-darwin-arm64",
-          "version": "1.33.0",
-          "url": "https://github.com/parcel-bundler/lightningcss",
-          "ecosystem": "frontend"
-        }
-      ]
-    },
-    {
       "license": "Public Domain",
       "url": null,
       "components": [
@@ -4090,6 +4036,24 @@
           "version": "1.5.34",
           "url": "http://www.qos.ch",
           "ecosystem": "backend"
+        }
+      ]
+    },
+    {
+      "license": "MPL-2.0",
+      "url": "https://www.mozilla.org/MPL/2.0/",
+      "components": [
+        {
+          "name": "lightningcss",
+          "version": "1.32.0",
+          "url": "https://github.com/parcel-bundler/lightningcss",
+          "ecosystem": "frontend"
+        },
+        {
+          "name": "lightningcss",
+          "version": "1.33.0",
+          "url": "https://github.com/parcel-bundler/lightningcss",
+          "ecosystem": "frontend"
         }
       ]
     },
