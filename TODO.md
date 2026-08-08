@@ -315,6 +315,10 @@ Strategy & sequencing: [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEG
   them via a
   `data_quality_snapshot` table for SQL-based BI and Micrometer/Prometheus for Grafana; see [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEGY.md) §4)
 - [ ] Enable agentic workflows (continuous refactoring/docs) → https://github.github.com/gh-aw/
+- [ ] **Opt in to Vite's `configLoader: 'native'`** — the config chain already carries the explicit `.ts` imports the native loader needs
+  (`events-frontend/AGENTS.md` §Config-loader imports), and `vite build --configLoader native` was verified working on Node 24. The only blocker is the engine
+  floor: it fails on Node 22, which has no unflagged type-stripping. **Unblocked once `engines.node` is `>=24`.** Not urgent — the current `bundle` loader works
+  — but doing it deliberately beats being moved by a Vite major
 
 ## Legal / Compliance (before going live)
 
