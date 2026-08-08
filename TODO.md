@@ -90,6 +90,11 @@ Rough priority: **Now** → **Next** → grouped backlog → **Someday / Vision*
   regenerate and fail on a non-empty diff — a JVM in a frontend workflow that currently has none, plus a coupling between the two pipelines. **Deliberately
   deferred until the BFF's public API stops changing daily**; the failure mode and the manual step are documented in `events-frontend/AGENTS.md` §API
   Communication until then
+- [ ] **TypeScript 7 — blocked on `vue-tsc`, not on us.** TS 7 (the native Go port) restructured the package and no longer exports `typescript/lib/tsc`, which
+  `vue-tsc@3.3.9` requires: `npm run type-check` and `npm run build` both die with `ERR_PACKAGE_PATH_NOT_EXPORTED`. There is no newer `vue-tsc` — 3.3.9 is
+  latest — and its peer range (`typescript >=5.0.0`) is simply stale, so npm installs the combination happily and it fails at run time. **Recheck when
+  `@vue/language-tools` ships TS 7 support**; the upgrade itself is a one-line version bump once it does. Related: `openapi-typescript` declares
+  `peer typescript@^5.x`, which is why `generate:api` runs through `npx` in isolation rather than as a devDependency
 - Note: `GET /artists`, `GET /venues`, `GET /promoters` list endpoints exist and are smoke-tested, but only their `/{slug}` detail counterparts have UI pages
   yet.
 
