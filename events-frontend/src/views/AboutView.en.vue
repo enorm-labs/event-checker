@@ -60,7 +60,7 @@ const localePath = useLocalePath()
       <h2 class="text-2xl font-bold tracking-tight">Why this exists</h2>
       <p class="text-muted-foreground">
         Because I wanted to build
-        <strong class="font-medium text-foreground">the event app that Berlin deserves.</strong>
+        <strong class="font-medium text-foreground">the event app Berlin deserves.</strong>
       </p>
       <p class="text-muted-foreground">
         Berlin's scene is enormous and completely scattered. What's on lives across dozens of venue

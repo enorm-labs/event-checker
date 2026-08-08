@@ -11,7 +11,7 @@
 
 Every music event in Berlin, in one filterable feed — collected automatically from the venues' own websites.
 
-> **The event app that Berlin deserves.**
+> **The event app Berlin deserves.**
 
 **Event Junkie** is the public name of the app; **Event Checker** is the internal and repository name. Both refer to the same thing — see the naming rule
 in [BRANDING.md](./docs/BRANDING.md).
