@@ -89,8 +89,12 @@ jobs:
           sarif_file: events-importer/build/reports/detekt/detekt.sarif
           category: detekt-events-importer
 
+      # `-x koverVerify` alongside `-x test`: `koverVerify` is attached to `check` (so a local
+      # `./gradlew build` enforces the coverage floors), but skipping tests means there is no
+      # execution data — every module reports 0% and the rule fails for the wrong reason. The
+      # verification runs for real in the coverage step below, after `test`.
       - name: Build all modules
-        run: ./gradlew build -x test
+        run: ./gradlew build -x test -x koverVerify
 
       - name: Run tests
         run: ./gradlew test
@@ -103,8 +107,10 @@ jobs:
       - name: Check dependency licences
         run: ./gradlew checkLicense --no-configuration-cache
 
-      - name: Generate Kover coverage reports
-        run: ./gradlew koverXmlReport koverLog
+      # `koverVerify` here rather than in the build step, because this runs after `test` and so has
+      # execution data to measure. The per-module floors are in the root build.gradle.kts.
+      - name: Generate Kover coverage reports and verify the floors
+        run: ./gradlew koverXmlReport koverLog koverVerify
 
       - name: Post coverage to Job Summary
         run: |

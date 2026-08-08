@@ -450,6 +450,9 @@ Java version is managed via SDKMAN (`.sdkmanrc` pins `java=25.0.2-tem`; run `sdk
       a test class quietly ceasing to run. **Do not raise a floor in the same PR that pushes the number up**; raise it when a module has held comfortably above
       the next step for a while.
     - **If `koverVerify` fails, write the test.** Lowering the floor is a decision to be argued for in the PR description, not a way to go green.
+    - **`-x test` implies `-x koverVerify`.** Skipping tests leaves no execution data, so every module reports 0% and the rule fails for a reason that has
+      nothing to do with coverage. `build-backend.yml` passes both flags in its build step and runs `koverVerify` in the coverage step instead, after `test`.
+      Any other `build -x test` invocation needs the same treatment.
 - **Kotlin idioms** (per [official coding conventions](https://kotlinlang.org/docs/coding-conventions.html)):
     - **Trailing commas** at declaration sites (constructor params, function params, enum entries, collection literals) — produces cleaner VCS diffs.
     - **Expression bodies** — prefer `fun foo() = expr` over `fun foo() { return expr }` for single-expression functions.
