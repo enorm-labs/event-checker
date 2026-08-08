@@ -1,6 +1,7 @@
 # Plan — Localisation (English + German)
 
-> Status: **Phases 1–4 implemented** (Phases 1–3 on 2026-08-07, Phase 4 on 2026-08-08); Phase 5 still proposal.
+> Status: **implemented** — Phases 1–3 on 2026-08-07, Phases 4–5 on 2026-08-08. What remains is not localisation work: prerendering, and a sitemap covering
+> detail routes once it exists (§Phase 5).
 > Delivers Phase 7 of [FOOTER_AND_LEGAL_PLAN.md](FOOTER_AND_LEGAL_PLAN.md) §6.2, which agreed the work and recorded the constraints it places on code written
 > since.
 > Related: [BRANDING.md](BRANDING.md) · [ADR-010 (styling)](adr/ADR-010_FRONTEND_STYLING_FRAMEWORK.md) · [ADR-011 (calendar)](adr/ADR-011_CALENDAR_LIBRARY.md)
@@ -248,7 +249,33 @@ with an English-only imprint or privacy notice.
 > Original scope: Imprint and privacy in German, the authoritative-version sentence, the generator cross-check, BRANDING.md's German register.
 > **Phases 3 and 4 must be released together** (§1).
 
-**Phase 5 — SEO.** `hreflang` alternates, per-locale `og:locale`, and the sitemap. This compounds with the existing prerendering item: a client-rendered SPA
+**Phase 5 — SEO.** ✅ done (2026-08-08). `hreflang` alternates, canonical URLs, per-locale `og:locale`, a generated `sitemap.xml` and a `robots.txt`.
+>
+> **The sitemap is generated, not written.** `scripts/seoFiles.ts` is a Vite plugin that emits both files from `LOCALES` and `INDEXABLE_PATHS` at build, and
+> serves the same bytes from dev-server middleware so `npm run dev` and `npm run preview` agree. Checking them into `public/` would have made drift possible;
+> deriving them makes it impossible. 16 URLs today — 8 static pages × 2 locales.
+>
+> **The prerendering caveat above turned out to be the design constraint, not a footnote.** Script-injected `hreflang` is unreliable for crawlers, so the
+> `<link>` tags this phase adds do not yet do the job on their own — **the sitemap is the primary annotation** and the head tags are the secondary one that
+> starts working when prerendering lands. That inverts later; until it does, an hreflang change touching only the head tags has not really shipped.
+>
+> **Detail routes are deliberately not in the sitemap.** They are not merely unenumerable at build time — they are client-rendered with no prerendered content,
+> so listing them would point crawlers at an empty shell and spend crawl budget doing it. They join when prerendering exists, most likely from a BFF-served
+> sitemap since the data lives in the database.
+>
+> **Three smaller decisions**, each recorded in `src/lib/seo.ts`: `x-default` points at `/en/…` rather than the unprefixed path, because the latter negotiates
+> `Accept-Language` in JavaScript and Google asks hreflang to name indexable URLs rather than redirects; the canonical URL drops the query string, so
+> `?type=CONCERT` is not indexed as near-duplicate content; and no `lastmod`, `changefreq` or `priority` — Google ignores the latter two, and a build-stamped
+> `lastmod` on every page is a confident claim that happens to be false.
+>
+> **`SITE_URL` is a constant, not an environment variable.** Canonical URLs exist to name *one* address; deriving them from the request host means every alias
+> and preview deployment declares itself canonical. Note that `event-junkie.de` is **not registered yet** and nothing is deployed, so no URL the sitemap emits
+> resolves today.
+>
+> **One hazard this creates**, flagged rather than solved: `robots.txt` allows all crawlers, which is right for the public site and wrong for any staging or
+> preview deployment that serves the same build. Overriding it per environment is a deployment concern and belongs with the go-live checklist.
+>
+> Original scope: `hreflang` alternates, per-locale `og:locale`, and the sitemap. This compounds with the existing prerendering item: a client-rendered SPA
 whose language is only resolved in JavaScript is worse for crawlers than one with no translations at all.
 
 ---

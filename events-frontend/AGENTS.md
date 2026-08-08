@@ -255,6 +255,18 @@ The site is locale-routed: every page lives under `/<locale>/…`, and `src/i18n
   BFF enum can gain a value in a backend release that ships first.
 - Component tests get the i18n plugin automatically via `src/test/setup.ts`; no per-spec wiring needed.
 
+### SEO surfaces
+
+- **Adding a static route means deciding whether it is indexable.** Put it in `INDEXABLE_PATHS` or in `NON_INDEXABLE_PATHS` (`src/lib/seo.ts`) — a unit test
+  compares both against the router and fails on anything unaccounted for, so this cannot be skipped by forgetting.
+- **`sitemap.xml` and `robots.txt` are generated, not files.** `scripts/seoFiles.ts` emits them at build and serves the same bytes from the dev server. Do not
+  add copies under `public/`; they would go stale silently.
+- **The sitemap is the primary `hreflang` carrier, not a duplicate of the head tags.** The `<link>` elements in `lib/seoTags.ts` are written by JavaScript after
+  the router resolves, and script-injected hreflang is unreliable for crawlers. That inverts once prerendering lands; until then, an hreflang change that
+  touches only the head tags has not really shipped.
+- **Canonical URLs come from `SITE_URL`, never from `window.location`.** Deriving them from the request host makes every alias and preview deployment declare
+  itself canonical, which is the duplicate-content problem the tag exists to solve.
+
 ## Versioning
 
 The application version lives in **`version` in the root `gradle.properties`** — that is the single source of truth.

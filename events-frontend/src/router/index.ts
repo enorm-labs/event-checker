@@ -2,7 +2,15 @@ import { createRouter, createWebHistory, type RouteLocationNormalized } from 'vu
 import { h } from 'vue'
 import { RouterView } from 'vue-router'
 import { formatTitle, setPageTitle } from '../composables/usePageTitle'
-import { isLocale, LOCALES, type Locale, rememberLocale, resolveLocale } from '../i18n/locales'
+import {
+  isLocale,
+  LOCALES,
+  type Locale,
+  rememberLocale,
+  resolveLocale,
+  stripLocale,
+} from '../i18n/locales'
+import { updateSeoTags } from '../lib/seoTags'
 import { i18n, setI18nLocale } from '../i18n'
 import { localisedView } from '../views/localisedView'
 import HomeView from '../views/HomeView.vue'
@@ -172,6 +180,10 @@ router.beforeEach((to) => {
 // so their meta is intentionally left unset (falls back to the home title).
 router.afterEach((to) => {
   setPageTitle(formatTitle(to.meta.titleKey ? i18n.global.t(to.meta.titleKey) : null))
+  // Canonical, hreflang and og:locale follow the resolved route rather than the requested one, so
+  // a redirect (`/venues` → `/en/venues`) annotates the destination and never the URL that was
+  // typed. `to.path` excludes the query on purpose — see updateSeoTags.
+  updateSeoTags(localeOf(to), stripLocale(to.path))
 })
 
 export default router
