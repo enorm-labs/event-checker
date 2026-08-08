@@ -71,6 +71,12 @@ Make it comprehensive, discoverable and pleasant. → TODO: **Importer / Data**,
   [EVENT_DATA_SOURCES.md](EVENT_DATA_SOURCES.md); enrich venue metadata.
 - An **admin imports-status dashboard** to watch import health and failures.
 - Venues page with map, a full UX/mobile pass, and SEO surfaces (sitemap, RSS); i18n/l10n.
+  *(Done: i18n/l10n, sitemap, `hreflang`, canonical URLs and `schema.org` structured data — 2026-08-08. RSS and the map remain.)*
+- **Prerendering or SSR — the blocker behind the remaining SEO value.** Every page currently serves an empty `<div id="app">`, so scrapers that do not run
+  JavaScript (Slack, WhatsApp, iMessage, Facebook, LinkedIn) show the generic site title for *every* shared link, including event pages. It also leaves
+  `hreflang` and canonical dependent on Google's deferred render pass, which matters more here than for most sites because events expire. Note the mismatch to
+  design around: static generation suits the eight static pages, but event detail pages change daily and want SSR or edge rendering — probably alongside the
+  ADR-012 platform decision rather than before it. Worth its own ADR.
 - "Missing event / venue" and feedback forms.
 
 ### Phase 3 — Accounts & personalization 👤 _(Expansion stage 1)_

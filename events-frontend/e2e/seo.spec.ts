@@ -107,3 +107,92 @@ test('annotates the destination of a redirect, not the URL that was requested', 
     'https://event-junkie.de/en/venues',
   )
 })
+
+/**
+ * Structured data, in a real browser.
+ *
+ * The unit tests prove the documents are right; these prove they reach the page — through the
+ * async load, the router, and the head. The BFF does not run during e2e, so the event is mocked
+ * the same way the date-format test mocks its feed.
+ */
+
+const EVENT_SLUG = '2026-06-12-lido-test-act'
+
+const EVENT = {
+  slug: EVENT_SLUG,
+  title: 'Test Act',
+  eventType: 'CONCERT',
+  status: 'SCHEDULED',
+  eventDate: '2026-06-12',
+  startTime: '20:00',
+  description: 'A night of something.',
+  ticketUrl: 'https://tickets.test/buy',
+  pricePresale: 38,
+  priceCurrency: 'EUR',
+  venue: { slug: 'lido', name: 'Lido', address: 'Cuvrystr. 7', city: 'Berlin' },
+  lineup: [{ artist: { slug: 'test-act', name: 'Test Act' }, role: 'HEADLINER', billingOrder: 0 }],
+}
+
+/** Every ld+json block on the page, parsed. Fails loudly if any of them is not valid JSON. */
+async function jsonLd(page: import('@playwright/test').Page): Promise<unknown[]> {
+  const blocks = await page.locator('script[type="application/ld+json"]').allTextContents()
+  return blocks.flatMap((block) => {
+    const parsed: unknown = JSON.parse(block)
+    return Array.isArray(parsed) ? parsed : [parsed]
+  })
+}
+
+test('an event page publishes a valid Event document', async ({ page }) => {
+  await page.route(`**/api/events/${EVENT_SLUG}`, (route) =>
+    route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(EVENT) }),
+  )
+
+  await page.goto(`/en/events/${EVENT_SLUG}`)
+  await expect(page.getByRole('heading', { level: 1, name: 'Test Act' })).toBeVisible()
+
+  const documents = (await jsonLd(page)) as Record<string, unknown>[]
+  const event = documents.find((document) => document['@type'] === 'MusicEvent')!
+
+  expect(event).toBeDefined()
+  expect(event.name).toBe('Test Act')
+  // Local time with the summer offset — the value a hardcoded offset would get wrong.
+  expect(event.startDate).toBe('2026-06-12T20:00:00+02:00')
+  expect(event.location).toMatchObject({ '@type': 'Place', name: 'Lido' })
+  expect(event.url).toBe(`https://event-junkie.de/en/events/${EVENT_SLUG}`)
+})
+
+test('an event page publishes a breadcrumb trail alongside it', async ({ page }) => {
+  await page.route(`**/api/events/${EVENT_SLUG}`, (route) =>
+    route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(EVENT) }),
+  )
+
+  await page.goto(`/en/events/${EVENT_SLUG}`)
+  await expect(page.getByRole('heading', { level: 1, name: 'Test Act' })).toBeVisible()
+
+  const documents = (await jsonLd(page)) as Record<string, unknown>[]
+  const crumbs = documents.find((document) => document['@type'] === 'BreadcrumbList')!
+
+  expect(crumbs).toBeDefined()
+  expect(crumbs.itemListElement).toHaveLength(3)
+})
+
+test('the home page identifies the site', async ({ page }) => {
+  await page.goto('/en')
+
+  const documents = (await jsonLd(page)) as Record<string, unknown>[]
+  expect(documents.some((document) => document['@type'] === 'WebSite')).toBe(true)
+  // The imprint says a private individual runs this, not a company. Do not claim otherwise here.
+  expect(documents.some((document) => document['@type'] === 'Organization')).toBe(false)
+})
+
+test('leaves no structured data behind when the view changes', async ({ page }) => {
+  // The home page publishes a WebSite document; the About page has none. A leftover block would
+  // describe the wrong page.
+  await page.goto('/en')
+  expect(await jsonLd(page)).not.toEqual([])
+
+  await page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'About' }).click()
+  await expect(page).toHaveURL(/\/en\/about$/)
+
+  expect(await jsonLd(page)).toEqual([])
+})

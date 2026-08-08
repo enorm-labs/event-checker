@@ -5,6 +5,10 @@ import BaseDetailView from '@/components/BaseDetailView.vue'
 import { useEventSearch } from '@/composables/useEvents'
 import { useVenue } from '@/composables/useVenue'
 import { useI18n } from 'vue-i18n'
+import { APP_NAME } from '@/composables/usePageTitle'
+import { useStructuredData } from '@/composables/useStructuredData'
+import { breadcrumbJsonLd, venueJsonLd, type JsonLd } from '@/lib/structuredData'
+import type { Locale } from '@/i18n/locales'
 
 const route = useRoute()
 const slug = computed(() => String(route.params.slug))
@@ -33,7 +37,27 @@ function reload() {
 onMounted(reload)
 watch(slug, reload)
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
+
+// A MusicVenue carries the address and coordinates the page already displays. No rich result rides
+// on it the way it does for events, but it is accurate and it is what ties an event's `location`
+// to a real place. See lib/structuredData.ts.
+useStructuredData((): JsonLd[] => {
+  const current = venue.value
+  if (!current?.slug || !current.name) return []
+
+  return [
+    venueJsonLd(current, locale.value as Locale),
+    breadcrumbJsonLd(
+      [
+        [APP_NAME, ''],
+        [t('common.nav.venues'), '/venues'],
+        [current.name, `/venues/${current.slug}`],
+      ],
+      locale.value as Locale,
+    ),
+  ].filter((document): document is JsonLd => document !== null)
+})
 </script>
 
 <template>
