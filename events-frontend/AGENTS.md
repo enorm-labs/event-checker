@@ -27,8 +27,17 @@ dev server (`/api` → `http://localhost:8080`).
 - **Vitest** (unit tests, jsdom environment)
 - **Playwright** (end-to-end tests, multi-browser)
 
-**Node version**: `>=22.13.0` (enforced via `engines` in `package.json`; `.nvmrc` pins 24). Node 20 was dropped when `vue-i18n` was adopted — it requires
-Node ≥ 22 and `@intlify/unplugin-vue-i18n` ≥ 22.13. See [ADR-013](../docs/adr/ADR-013_LOCALISATION.md).
+**Node version**: `>=24` (enforced via `engines` in `package.json`; `.nvmrc` and CI both pin 24). The floor has moved twice, and each move was forced by a
+dependency rather than chosen:
+
+- **Node 20 dropped** when `vue-i18n` was adopted — it requires Node ≥ 22 and `@intlify/unplugin-vue-i18n` ≥ 22.13. See
+  [ADR-013](../docs/adr/ADR-013_LOCALISATION.md).
+- **Node 22 dropped** for jsdom 30, which requires `^22.22.2 || ^24.15.0 || >=26`. Raising to 24 rather than `^22.22.2` matches what `.nvmrc` and CI already
+  used, so there is now one number instead of three.
+
+**A stale local Node silently hides dependency updates.** `npm outdated` filters out versions whose `engines` your interpreter does not satisfy — which is
+exactly how jsdom 30 stayed invisible in the report while being available. If a dependency check looks suspiciously quiet, check `node --version` against
+`.nvmrc` first.
 
 This project is **not** a Gradle subproject — it is managed separately via npm and has its own CI workflow
 (`build-frontend.yml`).

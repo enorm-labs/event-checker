@@ -96,6 +96,24 @@ function readBackendComponents() {
   })
 }
 
+/**
+ * Platform-specific optional binaries, which are installed only for the host that runs `npm ci`.
+ *
+ * They must be excluded, and the reason is not tidiness — it is **determinism**. `license-checker`
+ * walks the *installed* tree, so leaving them in makes the generated file depend on the machine
+ * that generated it: `@esbuild/darwin-arm64` on a Mac, `@esbuild/linux-x64` on CI. That breaks this
+ * script's own contract (unchanged dependencies produce an identical file) and, more importantly,
+ * makes a "regenerate and fail on a non-empty diff" CI check impossible — it would fail every run
+ * for a reason that has nothing to do with attribution.
+ *
+ * Dropping them is also the honest answer for a notices page: these are build-time binaries for one
+ * CPU architecture. None of them is shipped to a browser, so none of them is distributed, so none
+ * of them needs attributing here. The cross-platform package that pulls them in (`esbuild` itself)
+ * stays listed.
+ */
+const PLATFORM_SPECIFIC =
+  /[-/](darwin|linux|win32|freebsd|openbsd|android|sunos)-(x64|arm64|arm|ia32|ppc64|ppc64le|s390x|riscv64|loong64)(-(gnu|musl|msvc|eabi|eabihf))?@/
+
 function readFrontendComponents() {
   // `--production` drops devDependencies; `--excludePrivatePackages` drops this app itself.
   const stdout = execFileSync(
@@ -104,24 +122,26 @@ function readFrontendComponents() {
     { cwd: fileURLToPath(new URL('..', import.meta.url)), encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 },
   )
 
-  return Object.entries(JSON.parse(stdout)).map(([id, info]) => {
-    // license-checker keys are `name@version`; the name itself may contain `@` (scoped packages).
-    const at = id.lastIndexOf('@')
-    const raw = Array.isArray(info.licenses) ? info.licenses : [info.licenses]
-    const licences = raw
-      .filter(Boolean)
-      // "(MIT OR Apache-2.0)" is one dual-licence string, not two components.
-      .flatMap((value) => value.replace(/^\(|\)$/g, '').split(/ OR | AND /))
-      .map((value) => normaliseLicence(value.trim()))
+  return Object.entries(JSON.parse(stdout))
+    .filter(([id]) => !PLATFORM_SPECIFIC.test(id))
+    .map(([id, info]) => {
+      // license-checker keys are `name@version`; the name itself may contain `@` (scoped packages).
+      const at = id.lastIndexOf('@')
+      const raw = Array.isArray(info.licenses) ? info.licenses : [info.licenses]
+      const licences = raw
+        .filter(Boolean)
+        // "(MIT OR Apache-2.0)" is one dual-licence string, not two components.
+        .flatMap((value) => value.replace(/^\(|\)$/g, '').split(/ OR | AND /))
+        .map((value) => normaliseLicence(value.trim()))
 
-    return {
-      name: id.slice(0, at),
-      version: id.slice(at + 1) || null,
-      licenses: [...new Set(licences)].sort(),
-      url: info.repository ?? null,
-      ecosystem: 'frontend',
-    }
-  })
+      return {
+        name: id.slice(0, at),
+        version: id.slice(at + 1) || null,
+        licenses: [...new Set(licences)].sort(),
+        url: info.repository ?? null,
+        ecosystem: 'frontend',
+      }
+    })
 }
 
 const components = [...readBackendComponents(), ...readFrontendComponents()].sort((a, b) =>
