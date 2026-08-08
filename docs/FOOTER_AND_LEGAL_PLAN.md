@@ -415,7 +415,20 @@ Routing details:
 - These pages must be **prerendered or at minimum crawlable**. German authorities and courts expect an imprint reachable in two clicks from every page; a
   client-rendered SPA route satisfies "reachable" for humans, but consider prerendering before go-live (already an open item in the SEO backlog).
 
-### 6.1 Language — decision: English first (2026-08-07)
+### 6.1 Language — decision: English first (2026-08-07), German added and authoritative (2026-08-08)
+
+> **Update, 2026-08-08 — the decision below has run its course and its three conditions are met.** German versions of the imprint, the privacy notice, the
+> notices page and the About page shipped in [LOCALISATION_PLAN Phase 4](LOCALISATION_PLAN.md), one release after the German UI rather than never. **German is
+> now the authoritative version**, stated on both legal pages in both languages via a `LegalPage` prop so it cannot be forgotten on one of the four. The
+> reasoning below is kept as written — it is why the English pages exist at all, and they are still the ones most of this site's audience will read.
+>
+> Two conditions attach to *this* update in turn, and neither is closed:
+>
+> - **The DSGVO-generator cross-check (§7.8) has not been run**, nor has a qualified person read the German notice. Both are pre-go-live tasks. A careful draft
+>   is not a reviewed one.
+> - **The consequence recorded at the end of this section — "no German text enters the codebase in this iteration" — is now spent.** German prose is in the
+>   codebase, deliberately, in per-locale components. See `events-frontend/AGENTS.md` §Localisation for the rule that replaces it.
+
 
 The site's UI is English; the legal venue is Germany and the audience is Berlin (heavily international).
 
@@ -1303,6 +1316,10 @@ rule touching both `gradle.properties` and `package.json` (§4.6), a link to `CO
 
 ### Phase 7 (follow-up, separate plan) — localisation → planned in [LOCALISATION_PLAN.md](LOCALISATION_PLAN.md)
 
+> ✅ **Phases 1–4 of that plan shipped (2026-08-07 / 2026-08-08).** The site publishes English and German under locale-prefixed routes, and the legal pages
+> exist in both languages with German authoritative — so §6.1's interim answer is retired exactly as anticipated below. Its Phase 5 (`hreflang`, per-locale
+> `og:locale`, sitemap) is still outstanding.
+
 Full English/German localisation of the site, as agreed in §6.2. Not part of this plan's delivery, but it is the immediate next piece of work and it retires
 §6.1's interim answer: once locales exist, the legal pages are simply two more localised routes and the "which language is authoritative" question becomes a
 statement on the page rather than a routing decision. Expect its own plan document and an ADR covering library, URL strategy, and the translate-the-chrome-not-
@@ -1415,7 +1432,7 @@ Every question this plan opened, and how it was answered. All were settled on 20
 | # | Question                | Decision                                                                                                              | Where   |
 |---|-------------------------|-----------------------------------------------------------------------------------------------------------------------|---------|
 | 1 | Imprint address         | Rent a *ladungsfähige Anschrift* from Postflex, ordered after the domain registration; guarded placeholder until then | §8.3    |
-| 2 | Legal-page language     | English only now; German ships in the same release as the German UI, and becomes authoritative at that point          | §6.1    |
+| 2 | Legal-page language     | English only now; German ships in the same release as the German UI, and becomes authoritative at that point — **done 2026-08-08** | §6.1    |
 | 3 | First public version    | `0.1.0`; `main` carries `0.1.0-SNAPSHOT`; `-SNAPSHOT` renders unlinked                                                | §4.7    |
 | 4 | `package.json` version  | Mirrors the Gradle version, kept in step by hand, without the `-SNAPSHOT` suffix                                      | §4.6    |
 | 5 | Actuator                | Expose `/actuator/info` internally **and** serve `GET /meta` publicly — same bean, different consumers                | §4.4    |

@@ -14,6 +14,15 @@ defineProps<{
   intro?: string
   /** Legal pages state when they were last checked against reality; the notices page does not. */
   showReviewDate?: boolean
+  /**
+   * Renders the sentence naming the German version as the authoritative one.
+   *
+   * A prop rather than a line typed into each page: it belongs on the imprint and the privacy
+   * notice, in *both* languages, which is four places to forget it. Forgetting it is the whole
+   * risk — two language versions with no stated precedence is worse than one language.
+   * See docs/FOOTER_AND_LEGAL_PLAN.md §6.1.
+   */
+  showAuthoritativeVersion?: boolean
 }>()
 
 const { t } = useI18n()
@@ -26,6 +35,9 @@ const { t } = useI18n()
       <p v-if="intro" class="text-muted-foreground">{{ intro }}</p>
       <p v-if="showReviewDate" class="text-sm text-muted-foreground">
         {{ t('legal.lastReviewed') }} <time :datetime="LAST_REVIEWED">{{ LAST_REVIEWED }}</time>
+      </p>
+      <p v-if="showAuthoritativeVersion" class="text-sm text-muted-foreground">
+        {{ t('legal.authoritativeVersion') }}
       </p>
     </header>
 

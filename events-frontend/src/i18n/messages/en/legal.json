@@ -1,5 +1,8 @@
 {
   "lastReviewed": "Last reviewed:",
+  "country": "Germany",
+  "authoritativeVersion": "This page exists in German and English. In case of discrepancies, the German version prevails.",
   "notFinal": "This page is not final.",
-  "englishOnly": "This page is currently available in English only. The German version follows, and will be the authoritative one."
+  "provisionalContact": "The postal address and email address below are placeholders. Real contact details are added before the site goes live.",
+  "provisionalInfrastructure": "Event Junkie is not deployed yet. The hosting and content-delivery providers named here are the ones we intend to use; this page is re-checked against what actually runs before launch."
 }

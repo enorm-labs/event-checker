@@ -68,7 +68,8 @@ Skip the Gradle build for documentation-only or frontend-only changes — it cov
 The pull request template asks two questions that are easy to skip and expensive to miss:
 
 - **Privacy.** Does the change add a third-party request, store something on the visitor's device, or alter what is logged or which provider processes it? If
-  so, the [privacy notice](./events-frontend/src/views/legal/PrivacyView.vue) needs updating in the same PR. The list of triggers is in
+  so, the privacy notice needs updating in the same PR — **both language versions**
+  ([English](./events-frontend/src/views/legal/PrivacyView.en.vue), [German](./events-frontend/src/views/legal/PrivacyView.de.vue)). The list of triggers is in
   [AGENTS.md](./AGENTS.md#privacy--gdpr--re-check-when-infrastructure-or-features-change) — they rarely look like privacy work.
 - **Accessibility.** The project targets WCAG 2.1 AA, and both the linter and an axe sweep enforce it. Do not disable a rule to go green.
 

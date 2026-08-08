@@ -4,6 +4,7 @@ import { RouterView } from 'vue-router'
 import { formatTitle, setPageTitle } from '../composables/usePageTitle'
 import { isLocale, LOCALES, type Locale, rememberLocale, resolveLocale } from '../i18n/locales'
 import { i18n, setI18nLocale } from '../i18n'
+import { localisedView } from '../views/localisedView'
 import HomeView from '../views/HomeView.vue'
 
 declare module 'vue-router' {
@@ -82,6 +83,9 @@ const router = createRouter({
           name: 'promoter',
           component: () => import('../views/PromoterDetailView.vue'),
         },
+        // The four long-form pages have one component per language rather than one component
+        // reading translated prose — see views/localisedView.ts for why, and note that this is the
+        // exception to the rule that user-facing text lives in the message catalogue.
         {
           path: 'about',
           name: 'about',
@@ -89,7 +93,10 @@ const router = createRouter({
           // route level code-splitting
           // this generates a separate chunk (About.[hash].js) for this route
           // which is lazy-loaded when the route is visited.
-          component: () => import('../views/AboutView.vue'),
+          component: localisedView({
+            en: () => import('../views/AboutView.en.vue'),
+            de: () => import('../views/AboutView.de.vue'),
+          }),
         },
         // Legal pages, nested under /legal/* so later additions (accessibility statement, data
         // sources) have an obvious home. Lazy-loaded like every other non-home route: they are read
@@ -98,19 +105,28 @@ const router = createRouter({
           path: 'legal/imprint',
           name: 'imprint',
           meta: { titleKey: 'pageTitle.imprint' },
-          component: () => import('../views/legal/ImprintView.vue'),
+          component: localisedView({
+            en: () => import('../views/legal/ImprintView.en.vue'),
+            de: () => import('../views/legal/ImprintView.de.vue'),
+          }),
         },
         {
           path: 'legal/privacy',
           name: 'privacy',
           meta: { titleKey: 'pageTitle.privacy' },
-          component: () => import('../views/legal/PrivacyView.vue'),
+          component: localisedView({
+            en: () => import('../views/legal/PrivacyView.en.vue'),
+            de: () => import('../views/legal/PrivacyView.de.vue'),
+          }),
         },
         {
           path: 'legal/notices',
           name: 'notices',
           meta: { titleKey: 'pageTitle.notices' },
-          component: () => import('../views/legal/NoticesView.vue'),
+          component: localisedView({
+            en: () => import('../views/legal/NoticesView.en.vue'),
+            de: () => import('../views/legal/NoticesView.de.vue'),
+          }),
         },
       ],
     },

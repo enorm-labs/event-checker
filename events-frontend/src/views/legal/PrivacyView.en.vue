@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 /**
- * Privacy notice under Art. 13 GDPR.
+ * Privacy notice under Art. 13 GDPR — English version. `PrivacyView.de.vue` is the authoritative
+ * one (FOOTER_AND_LEGAL_PLAN §6.1); **change both files or neither**, and take shared facts from
+ * `@/lib/legal` rather than typing them twice.
  *
  * Structured against the twelve mandatory items in docs/FOOTER_AND_LEGAL_PLAN.md §7.2 — missing
  * one of them is the usual defect. It deliberately does **not** describe processing that does not
@@ -11,14 +13,19 @@
  * infrastructure that does not exist yet, so the intent is stated and flagged as provisional
  * rather than invented.
  */
+import { useI18n } from 'vue-i18n'
+
 import LegalPage from '@/components/LegalPage.vue'
 import ProvisionalNotice from '@/components/ProvisionalNotice.vue'
 import { CONTROLLER, SUPERVISORY_AUTHORITY } from '@/lib/legal'
+
+const { t } = useI18n()
 </script>
 
 <template>
   <LegalPage
     intro="What data Event Junkie processes, why, and what you can do about it."
+    show-authoritative-version
     show-review-date
     title="Privacy"
   >
@@ -41,7 +48,7 @@ import { CONTROLLER, SUPERVISORY_AUTHORITY } from '@/lib/legal'
       <p>{{ CONTROLLER.name }}</p>
       <p>{{ CONTROLLER.street }}</p>
       <p>{{ CONTROLLER.city }}</p>
-      <p>{{ CONTROLLER.country }}</p>
+      <p>{{ t('legal.country') }}</p>
       <p>
         Email:
         <a :href="`mailto:${CONTROLLER.email}`">{{ CONTROLLER.email }}</a>
