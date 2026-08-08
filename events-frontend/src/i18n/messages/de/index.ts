@@ -7,6 +7,7 @@ import events from './events.json'
 import footer from './footer.json'
 import home from './home.json'
 import legal from './legal.json'
+import pageDescription from './pageDescription.json'
 import pageTitle from './pageTitle.json'
 import venues from './venues.json'
 
@@ -25,6 +26,7 @@ export default {
   footer,
   home,
   legal,
+  pageDescription,
   pageTitle,
   venues,
 }

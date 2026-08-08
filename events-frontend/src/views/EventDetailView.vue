@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button'
 import BaseBadge from '@/components/BaseBadge.vue'
 import SectionLabel from '@/components/SectionLabel.vue'
 import { useEvent } from '@/composables/useEvent'
-import { APP_NAME, usePageTitle } from '@/composables/usePageTitle'
+import { usePageMeta } from '@/composables/usePageMeta'
+import { APP_NAME, eventPageMeta, placeholderPageMeta } from '@/lib/pageMeta'
 import { useStructuredData } from '@/composables/useStructuredData'
 import { breadcrumbJsonLd, eventJsonLd, type JsonLd } from '@/lib/structuredData'
 import type { Locale } from '@/i18n/locales'
@@ -19,8 +20,7 @@ const slug = computed(() => String(route.params.slug))
 
 const { data: event, error, notFound, loading, run } = useEvent(() => slug.value)
 
-usePageTitle(() => (notFound.value ? 'Event not found' : (event.value?.title ?? 'Event')))
-
+// Title, description and image for this page. The description leads with the date and venue
 // Lineup arrives in billing order already, but sort defensively so headliners stay first.
 const lineup = computed(() =>
   [...(event.value?.lineup ?? [])].sort((a, b) => (a.billingOrder ?? 0) - (b.billingOrder ?? 0)),
@@ -39,6 +39,18 @@ const localePath = useLocalePath()
 const { formatDate } = useFormat()
 
 const { t, locale } = useI18n()
+
+// Title, description and image for this page. The description leads with the date and venue
+// rather than the promotional blurb, because that is what someone deciding whether to open a link
+// in a group chat actually wants — see lib/pageMeta.ts.
+//
+// Below `useI18n()` on purpose: `watchEffect` runs its effect immediately, so a getter reading
+// `locale` from above this line would hit the temporal dead zone at setup rather than at render.
+usePageMeta(() =>
+  event.value
+    ? eventPageMeta(event.value, locale.value as Locale)
+    : placeholderPageMeta(notFound.value ? 'Event not found' : 'Event'),
+)
 
 // The rich-result payload: an Event document plus the breadcrumb trail Search renders instead of a
 // bare URL. `eventJsonLd` returns null when Google's required fields are missing, which is why

@@ -2,13 +2,18 @@
 import { computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import BaseDetailView from '@/components/BaseDetailView.vue'
+import { usePageMeta } from '@/composables/usePageMeta'
+import { placeholderPageMeta, venuePageMeta } from '@/lib/pageMeta'
 import { useEventSearch } from '@/composables/useEvents'
 import { useVenue } from '@/composables/useVenue'
 import { useI18n } from 'vue-i18n'
-import { APP_NAME } from '@/composables/usePageTitle'
+import { APP_NAME } from '@/lib/pageMeta'
 import { useStructuredData } from '@/composables/useStructuredData'
 import { breadcrumbJsonLd, venueJsonLd, type JsonLd } from '@/lib/structuredData'
 import type { Locale } from '@/i18n/locales'
+
+/** Entity label: the eyebrow above the name, the not-found heading, and the placeholder title. */
+const KIND = 'Venue'
 
 const route = useRoute()
 const slug = computed(() => String(route.params.slug))
@@ -58,6 +63,13 @@ useStructuredData((): JsonLd[] => {
     ),
   ].filter((document): document is JsonLd => document !== null)
 })
+
+// Title, description and image for this page — the same values the meta injector will need
+// server-side later (ADR-014 §Decision 3). Mirrors the loading / not-found states the view
+// itself renders.
+usePageMeta(() =>
+  venue.value ? venuePageMeta(venue.value) : placeholderPageMeta(notFound.value ? `${KIND} not found` : KIND),
+)
 </script>
 
 <template>
@@ -72,7 +84,7 @@ useStructuredData((): JsonLd[] => {
     :not-found="notFound"
     :ready="Boolean(venue)"
     empty-text="No upcoming nights here yet — check back soon."
-    kind="Venue"
+    :kind="KIND"
     not-found-text="That venue isn't in our little black book."
   >
     <template #meta>

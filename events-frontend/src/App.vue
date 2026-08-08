@@ -9,7 +9,7 @@ import BaseBadge from '@/components/BaseBadge.vue'
 import BrandLogo from '@/components/BrandLogo.vue'
 import GitHubMark from '@/components/GitHubMark.vue'
 import LocaleSwitcher from '@/components/LocaleSwitcher.vue'
-import { pageTitle } from '@/composables/usePageTitle'
+import { pageTitle } from '@/composables/usePageMeta'
 import { REPOSITORY_URL } from '@/lib/links'
 import { useLocalePath } from '@/composables/useLocalePath'
 

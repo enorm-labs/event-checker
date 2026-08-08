@@ -4,7 +4,6 @@ import type { EventPage } from '@/api/types'
 import { Button } from '@/components/ui/button'
 import EventCard from '@/components/EventCard.vue'
 import SectionLabel from '@/components/SectionLabel.vue'
-import { usePageTitle } from '@/composables/usePageTitle'
 import { useLocalePath } from '@/composables/useLocalePath'
 import { useI18n } from 'vue-i18n'
 
@@ -17,7 +16,7 @@ import { useI18n } from 'vue-i18n'
  * - `meta` — entity-specific header metadata rendered under the name (links, address, …).
  * - default — optional content between the header and the events feed (e.g. a description).
  */
-const props = defineProps<{
+defineProps<{
   /** Entity kind label, e.g. "Artist" — shown above the name and in the not-found heading. */
   kind: string
   /** Entity fetch state (from `useAsync`). */
@@ -39,7 +38,9 @@ const props = defineProps<{
   emptyText: string
 }>()
 
-usePageTitle(() => (props.notFound ? `${props.kind} not found` : (props.name ?? props.kind)))
+// The document title is *not* set here. Each detail view owns its own page meta, because the
+// description and image come from its entity and this component only ever sees a name — see
+// lib/pageMeta.ts and the `usePageMeta` call in each view.
 
 const localePath = useLocalePath()
 
