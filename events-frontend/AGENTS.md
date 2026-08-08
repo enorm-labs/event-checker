@@ -88,6 +88,35 @@ events-frontend/
 - **Path alias** — use `@/` to reference `src/` (configured in `vite.config.ts` and `tsconfig.app.json`).
 - **No semicolons** — the project uses oxfmt which omits semicolons (consistent with current codebase style).
 - **Single quotes** for string literals (enforced by formatter).
+- **No file extensions on imports** — Vite resolves them. Four files are the deliberate exception; see below.
+
+#### Config-loader imports (the `.ts` exception)
+
+Four imports carry an explicit `.ts` extension, against the rule above:
+
+| File                  | Import                  |
+|-----------------------|-------------------------|
+| `vite.config.ts`      | `./scripts/seoFiles.ts` |
+| `vitest.config.ts`    | `./vite.config.ts`      |
+| `scripts/seoFiles.ts` | `../src/lib/seo.ts`     |
+| `src/lib/seo.ts`      | `../i18n/locales.ts`    |
+
+Vite's config loader is moving from bundling the config (`configLoader: 'bundle'`, today's default) to handing it
+to the Node runtime (`configLoader: 'native'`, the announced future default). The native loader uses Node's ESM
+resolver, where a specifier means exactly what it says — no extension inference. The requirement is *transitive*,
+so it propagates down the whole import chain reachable from a config file, which is how it reaches into `src/`.
+
+`npm run dev` warned about each of these until they were fixed. Two consequences worth knowing:
+
+- **Keep the chain short.** Every module `vite.config.ts` can reach inherits this constraint. `src/lib/seo.ts` is
+  the only `src/` module in it, and that is worth keeping true — it is why the module is documented as free of
+  browser globals at module scope.
+- **`allowImportingTsExtensions`** is what lets TypeScript accept them. `tsconfig.app.json` inherits it from
+  `@vue/tsconfig`; `tsconfig.node.json` sets it explicitly. It requires `noEmit`, which both projects have.
+
+The project still runs on the default `bundle` loader — this is compatibility work, not an opt-in. `vite build
+--configLoader native` was verified to work on Node 24 (`.nvmrc`); it fails on Node 22, which lacks unflagged
+type-stripping, so do not switch the default until the engine floor moves.
 
 ### Component Conventions
 

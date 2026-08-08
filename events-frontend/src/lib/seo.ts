@@ -1,7 +1,8 @@
-// Relative, not the `@` alias: `vite.config.ts` imports this module through scripts/seoFiles.ts,
-// and esbuild compiles the config before Vite's `resolve.alias` exists. Same reason the router
-// uses relative imports.
-import { DEFAULT_LOCALE, type Locale, LOCALES } from '../i18n/locales'
+// Relative and extension-bearing, unlike the rest of `src/`: `vite.config.ts` imports this module
+// through scripts/seoFiles.ts, so it is resolved before Vite's `resolve.alias` exists (hence no `@`
+// alias) and, under `configLoader: 'native'`, by Node's ESM resolver (hence the explicit `.ts`).
+// See the note in vite.config.ts. Same reason the router uses relative imports.
+import { DEFAULT_LOCALE, type Locale, LOCALES } from '../i18n/locales.ts'
 
 /**
  * The facts every SEO surface needs, in one place: the canonical origin, which pages are worth

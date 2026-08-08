@@ -1,6 +1,8 @@
 import { fileURLToPath } from 'node:url'
 import { configDefaults, defineConfig, mergeConfig } from 'vitest/config'
-import viteConfig from './vite.config'
+// Explicit `.ts` — this is a Vite config file too, so the same `configLoader: 'native'` rule
+// applies. See the note in vite.config.ts.
+import viteConfig from './vite.config.ts'
 
 export default mergeConfig(
   viteConfig,

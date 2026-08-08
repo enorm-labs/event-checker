@@ -16,6 +16,11 @@
     // Bundler mode provides a smoother developer experience.
     "module": "preserve",
     "moduleResolution": "bundler",
+    // `vite.config.ts` and the helpers it pulls in import each other with an explicit `.ts`, because
+    // Vite's `configLoader: 'native'` resolves them through Node's ESM resolver. Safe here because
+    // this project emits nothing (`noEmit` below). `tsconfig.app.json` gets the same setting from
+    // `@vue/tsconfig`, which is why only this one needs it spelled out.
+    "allowImportingTsExtensions": true,
     // Include Node.js types and avoid accidentally including other `@types/*` packages.
     "types": ["node"],
     // Disable emitting output during `vue-tsc --build`, which is used for type-checking only.
