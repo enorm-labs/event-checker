@@ -38,7 +38,10 @@ const LICENCE_ALIASES = new Map([
   ['BSD Zero Clause License', '0BSD'],
   ['Eclipse Public License - v 2.0', 'EPL-2.0'],
   ['Eclipse Distribution License - v 1.0', 'EDL-1.0'],
-  ['GNU GENERAL PUBLIC LICENSE, Version 2 + Classpath Exception', 'GPL-2.0-with-classpath-exception'],
+  [
+    'GNU GENERAL PUBLIC LICENSE, Version 2 + Classpath Exception',
+    'GPL-2.0-with-classpath-exception',
+  ],
   ['GNU LESSER GENERAL PUBLIC LICENSE, Version 2.1', 'LGPL-2.1'],
   ['Creative Commons Legal Code', 'CC0-1.0'],
   ['PUBLIC DOMAIN', 'Public Domain'],
@@ -119,7 +122,11 @@ function readFrontendComponents() {
   const stdout = execFileSync(
     'npx',
     ['license-checker-rseidelsohn', '--production', '--json', '--excludePrivatePackages'],
-    { cwd: fileURLToPath(new URL('..', import.meta.url)), encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 },
+    {
+      cwd: fileURLToPath(new URL('..', import.meta.url)),
+      encoding: 'utf8',
+      maxBuffer: 64 * 1024 * 1024,
+    },
   )
 
   return Object.entries(JSON.parse(stdout))
@@ -175,7 +182,9 @@ const notices = {
       components: comps.sort((a, b) => a.name.localeCompare(b.name)),
     }))
     // Most-used licence first; it is what a reader is most likely looking for.
-    .sort((a, b) => b.components.length - a.components.length || a.license.localeCompare(b.license)),
+    .sort(
+      (a, b) => b.components.length - a.components.length || a.license.localeCompare(b.license),
+    ),
 }
 
 writeFileSync(OUTPUT, `${JSON.stringify(notices, null, 2)}\n`)
@@ -183,5 +192,7 @@ writeFileSync(OUTPUT, `${JSON.stringify(notices, null, 2)}\n`)
 const unknown = notices.licenses.find((group) => group.license === 'Unknown')
 console.log(
   `Wrote ${OUTPUT}\n  ${notices.componentCount} components, ${notices.licenses.length} licences` +
-    (unknown ? `\n  WARNING: ${unknown.components.length} component(s) with no licence metadata` : ''),
+    (unknown
+      ? `\n  WARNING: ${unknown.components.length} component(s) with no licence metadata`
+      : ''),
 )

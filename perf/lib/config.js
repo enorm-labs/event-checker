@@ -24,15 +24,15 @@ export const BASE_URL = (__ENV.BFF_HOST || 'http://localhost:8080').replace(/\/$
  * and treat that as a deliberate act rather than raising them whenever a run goes red.
  */
 export const THRESHOLD_MS = {
-  /** Single-row lookups by slug. Indexed, small payload; anything else is a regression. */
-  detail: Number(__ENV.THRESHOLD_DETAIL_MS || 300),
-  /** Paged list endpoints. A join and a count, so meaningfully slower than a detail read. */
-  list: Number(__ENV.THRESHOLD_LIST_MS || 600),
-  /**
-   * The calendar range query. The heaviest read in the API: up to 92 days of events with their
-   * venues, unpaged, in one response.
-   */
-  calendar: Number(__ENV.THRESHOLD_CALENDAR_MS || 1200),
+    /** Single-row lookups by slug. Indexed, small payload; anything else is a regression. */
+    detail: Number(__ENV.THRESHOLD_DETAIL_MS || 300),
+    /** Paged list endpoints. A join and a count, so meaningfully slower than a detail read. */
+    list: Number(__ENV.THRESHOLD_LIST_MS || 600),
+    /**
+     * The calendar range query. The heaviest read in the API: up to 92 days of events with their
+     * venues, unpaged, in one response.
+     */
+    calendar: Number(__ENV.THRESHOLD_CALENDAR_MS || 1200),
 }
 
 /**
@@ -43,20 +43,20 @@ export const THRESHOLD_MS = {
  * Anything above 1% fails the run.
  */
 export function baseThresholds() {
-  return {
-    http_req_failed: ['rate<0.01'],
-    checks: ['rate>0.99'],
-    // Tagged per endpoint group in endpoints.js, so a slow calendar query cannot hide behind fast
-    // detail reads in an aggregate p95 — which is exactly what an overall threshold would let it do.
-    'http_req_duration{group:detail}': [`p(95)<${THRESHOLD_MS.detail}`],
-    'http_req_duration{group:list}': [`p(95)<${THRESHOLD_MS.list}`],
-    'http_req_duration{group:calendar}': [`p(95)<${THRESHOLD_MS.calendar}`],
-  }
+    return {
+        http_req_failed: ['rate<0.01'],
+        checks: ['rate>0.99'],
+        // Tagged per endpoint group in endpoints.js, so a slow calendar query cannot hide behind fast
+        // detail reads in an aggregate p95 — which is exactly what an overall threshold would let it do.
+        'http_req_duration{group:detail}': [`p(95)<${THRESHOLD_MS.detail}`],
+        'http_req_duration{group:list}': [`p(95)<${THRESHOLD_MS.list}`],
+        'http_req_duration{group:calendar}': [`p(95)<${THRESHOLD_MS.calendar}`],
+    }
 }
 
 /** ISO date `days` from today, as the API expects it (`YYYY-MM-DD`). */
 export function isoDate(days = 0) {
-  const date = new Date()
-  date.setDate(date.getDate() + days)
-  return date.toISOString().slice(0, 10)
+    const date = new Date()
+    date.setDate(date.getDate() + days)
+    return date.toISOString().slice(0, 10)
 }

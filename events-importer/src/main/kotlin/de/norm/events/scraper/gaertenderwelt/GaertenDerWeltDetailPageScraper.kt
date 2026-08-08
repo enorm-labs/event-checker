@@ -5,6 +5,7 @@ import de.norm.events.scraper.ScrapedEvent
 import de.norm.events.scraper.UNRESOLVED_EVENT_DATE
 import de.norm.events.scraper.attrAt
 import de.norm.events.scraper.detectFree
+import de.norm.events.scraper.gaertenderwelt.GaertenDerWeltDetailPageScraper.Companion.FIELD_LABELS
 import de.norm.events.scraper.hrefAt
 import de.norm.events.scraper.parsePriceValue
 import de.norm.events.scraper.resolveUrl

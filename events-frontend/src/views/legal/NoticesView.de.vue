@@ -30,12 +30,13 @@ const { componentCount, groups, openGroups, toggle, versionSuffix } = useNotices
         sich Abhängigkeiten ändern.
       </p>
       <p>
-        Zwei Einschränkungen, damit die Liste nicht für mehr gehalten wird, als sie ist. Sie erfasst,
+        Zwei Einschränkungen, damit die Liste nicht für mehr gehalten wird, als sie ist. Sie
+        erfasst,
         <em>wovon</em> das Projekt abhängt, und das ist mehr als das, was an deinen Browser
         ausgeliefert wird: Beim Bundling fällt ein guter Teil davon weg. Und sie nennt die Lizenz
         jeder Komponente, gibt aber weder den vollständigen Lizenztext noch eine mitgelieferte
-        <code>NOTICE</code>-Datei wieder — beides liegt den Paketen selbst bei, unter den Quell-Links
-        weiter unten.
+        <code>NOTICE</code>-Datei wieder — beides liegt den Paketen selbst bei, unter den
+        Quell-Links weiter unten.
       </p>
     </section>
 

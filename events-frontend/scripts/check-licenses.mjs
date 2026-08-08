@@ -38,7 +38,11 @@ function licensesOf(info) {
   const raw = Array.isArray(info.licenses) ? info.licenses : [info.licenses]
   return raw
     .filter(Boolean)
-    .flatMap((value) => String(value).replace(/^\(|\)$/g, '').split(/ OR | AND /))
+    .flatMap((value) =>
+      String(value)
+        .replace(/^\(|\)$/g, '')
+        .split(/ OR | AND /),
+    )
     .map((value) => value.trim())
 }
 
@@ -57,7 +61,9 @@ for (const [id, info] of Object.entries(packages)) {
 const checked = Object.keys(packages).length
 
 if (violations.length > 0) {
-  console.error(`\n${violations.length} of ${checked} production packages have a disallowed licence:\n`)
+  console.error(
+    `\n${violations.length} of ${checked} production packages have a disallowed licence:\n`,
+  )
   for (const { id, licenses } of violations) {
     console.error(`  ${id}\n    ${licenses.join(', ')}`)
   }

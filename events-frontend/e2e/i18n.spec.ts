@@ -86,7 +86,10 @@ test('the locale switcher keeps you on the same page', async ({ page }) => {
   // the switcher rewrites only the locale segment.
   await page.goto('/en/venues')
 
-  await page.getByRole('navigation', { name: 'Language' }).getByRole('link', { name: 'Deutsch' }).click()
+  await page
+    .getByRole('navigation', { name: 'Language' })
+    .getByRole('link', { name: 'Deutsch' })
+    .click()
 
   await expect(page).toHaveURL(/\/de\/venues$/)
   await expect(page.getByRole('heading', { level: 1, name: 'Locations' })).toBeVisible()
@@ -98,7 +101,10 @@ test('the switcher marks the active language and offers real links', async ({ pa
 
   // Real hrefs, not JS handlers: middle-click, "copy link" and crawlers all depend on them.
   await expect(switcher.getByRole('link', { name: 'English' })).toHaveAttribute('href', '/en/about')
-  await expect(switcher.getByRole('link', { name: 'Deutsch' })).toHaveAttribute('aria-current', 'true')
+  await expect(switcher.getByRole('link', { name: 'Deutsch' })).toHaveAttribute(
+    'aria-current',
+    'true',
+  )
 })
 
 test('dates render in the locale format', async ({ page }) => {
@@ -108,7 +114,12 @@ test('dates render in the locale format', async ({ page }) => {
       status: 200,
       contentType: 'application/json',
       body: JSON.stringify([
-        { slug: 'x', title: 'Test Event', eventDate: '2026-06-12', venue: { slug: 'v', name: 'V' } },
+        {
+          slug: 'x',
+          title: 'Test Event',
+          eventDate: '2026-06-12',
+          venue: { slug: 'v', name: 'V' },
+        },
       ]),
     }),
   )
@@ -143,7 +154,9 @@ test('the header switcher adds no second Language landmark', async ({ page }) =>
   await page.goto('/en')
 
   await expect(page.getByRole('navigation', { name: 'Language' })).toHaveCount(1)
-  await expect(page.getByRole('contentinfo').getByRole('navigation', { name: 'Language' })).toHaveCount(1)
+  await expect(
+    page.getByRole('contentinfo').getByRole('navigation', { name: 'Language' }),
+  ).toHaveCount(1)
 })
 
 test('both switchers mark the active language', async ({ page }) => {
@@ -153,8 +166,14 @@ test('both switchers mark the active language', async ({ page }) => {
   // hears a German landmark list. Selectors addressing landmarks by name are locale-dependent —
   // which is why the other suites are pinned to /en.
   const header = page.getByRole('navigation', { name: 'Haupt' })
-  await expect(header.getByRole('link', { name: 'Deutsch' })).toHaveAttribute('aria-current', 'true')
-  await expect(header.getByRole('link', { name: 'English' })).not.toHaveAttribute('aria-current', 'true')
+  await expect(header.getByRole('link', { name: 'Deutsch' })).toHaveAttribute(
+    'aria-current',
+    'true',
+  )
+  await expect(header.getByRole('link', { name: 'English' })).not.toHaveAttribute(
+    'aria-current',
+    'true',
+  )
 })
 
 /**

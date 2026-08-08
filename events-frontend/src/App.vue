@@ -88,7 +88,7 @@ const localePath = useLocalePath()
         :aria-label="t('common.nav.label')"
         class="mx-auto flex max-w-5xl flex-wrap items-center gap-x-4 gap-y-3 p-4 text-sm font-medium sm:flex-nowrap sm:gap-6"
       >
-        <RouterLink class="rounded-sm transition-opacity hover:opacity-80" :to="localePath('/')">
+        <RouterLink :to="localePath('/')" class="rounded-sm transition-opacity hover:opacity-80">
           <BrandLogo />
         </RouterLink>
 
@@ -98,8 +98,8 @@ const localePath = useLocalePath()
         <RouterLink
           :aria-label="betaLabel"
           :title="betaLabel"
-          class="mr-2 rounded-full transition-opacity hover:opacity-80"
           :to="localePath('/about#beta')"
+          class="mr-2 rounded-full transition-opacity hover:opacity-80"
         >
           <BaseBadge variant="outline">{{ t('common.nav.beta') }}</BaseBadge>
         </RouterLink>
@@ -109,26 +109,26 @@ const localePath = useLocalePath()
              pins this order so it cannot drift back unnoticed. -->
         <div class="order-last flex w-full items-center gap-4 sm:order-none sm:w-auto sm:gap-6">
           <RouterLink
-            class="text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
             :to="localePath('/events')"
+            class="text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
           >
             {{ t('common.nav.events') }}
           </RouterLink>
           <RouterLink
-            class="text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
             :to="localePath('/calendar')"
+            class="text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
           >
             {{ t('common.nav.calendar') }}
           </RouterLink>
           <RouterLink
-            class="text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
             :to="localePath('/venues')"
+            class="text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
           >
             {{ t('common.nav.venues') }}
           </RouterLink>
           <RouterLink
-            class="text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
             :to="localePath('/about')"
+            class="text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
           >
             {{ t('common.nav.about') }}
           </RouterLink>
@@ -139,13 +139,13 @@ const localePath = useLocalePath()
           <!-- `title` is the hover tooltip only; `aria-label` still supplies the accessible name
                (it wins over `title`), so the two stay in sync deliberately. -->
           <Button
-            :href="REPOSITORY_URL"
             :aria-label="t('common.nav.sourceOnGitHub')"
+            :href="REPOSITORY_URL"
+            :title="t('common.nav.sourceOnGitHub')"
             as="a"
             rel="noopener"
             size="icon"
             target="_blank"
-            :title="t('common.nav.sourceOnGitHub')"
             variant="outline"
           >
             <GitHubMark />

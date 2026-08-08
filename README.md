@@ -13,8 +13,8 @@ Every music event in Berlin, in one filterable feed — collected automatically 
 
 > **The event app that Berlin deserves.**
 
-**Event Junkie** is the public name of the app; **Event Checker** is the internal and repository name. Both refer to
-the same thing — see the naming rule in [BRANDING.md](./docs/BRANDING.md).
+**Event Junkie** is the public name of the app; **Event Checker** is the internal and repository name. Both refer to the same thing — see the naming rule
+in [BRANDING.md](./docs/BRANDING.md).
 
 ## Contents
 
@@ -33,19 +33,18 @@ the same thing — see the naming rule in [BRANDING.md](./docs/BRANDING.md).
 
 ## Background
 
-Berlin's scene is enormous and completely scattered. What's on lives across dozens of venue and promoter websites,
-each with its own layout and its own gaps, so answering something as ordinary as *what's on near me this weekend, in
-my genre, that I can afford?* means a dozen browser tabs and a lot of guessing.
+Berlin's scene is enormous and completely scattered. What's on lives across dozens of venue and promoter websites, each with its own layout and its own gaps, so
+answering something as ordinary as *what's on near me this weekend, in my genre, that I can afford?* means a dozen browser tabs and a lot of guessing.
 
-The existing options each solve a slice of it. Resident Advisor is excellent at electronic music and only that.
-Bandsintown and Songkick follow *artists* — no help when you want to know what is happening on Thursday. Ticketing
-sites list what they sell, which quietly excludes free entry, door-only nights and the small rooms.
+The existing options each solve a slice of it. Resident Advisor is excellent at electronic music and only that. Bandsintown and Songkick follow *artists* — no
+help when you want to know what is happening on Thursday. Ticketing sites list what they sell, which quietly excludes free entry, door-only nights and the small
+rooms.
 
-Event Junkie is the thing none of them tries to be: **one feed for all of it** — every kind of venue, every genre,
-free and ticketed alike, always linking back to the venue's own page for tickets and the final word.
+Event Junkie is the thing none of them tries to be: **one feed for all of it** — every kind of venue, every genre, free and ticketed alike, always linking back
+to the venue's own page for tickets and the final word.
 
-The scope rule, in one line: **if a Berlin venue puts it on a stage in the evening, it is in scope.** What that
-includes, what is deliberately excluded and which coverage questions are still open is in
+The scope rule, in one line: **if a Berlin venue puts it on a stage in the evening, it is in scope.** What that includes, what is deliberately excluded and
+which coverage questions are still open is in
 [EVENT_SCOPE.md](./docs/EVENT_SCOPE.md). What the product is and does today is in
 [PRODUCT_OVERVIEW.md](./docs/PRODUCT_OVERVIEW.md); where it is headed is in
 [VISION_ROADMAP_IDEAS.md](./docs/VISION_ROADMAP_IDEAS.md).
@@ -54,13 +53,11 @@ includes, what is deliberately excluded and which coverage questions are still o
 
 🚧 **In development — not deployed anywhere yet.**
 
-The product works end-to-end locally: 86 Berlin sources are imported on a schedule, and the frontend, BFF and
-importer all run. What is missing is a public deployment, and the hosting, domain, auth and legal work that goes
-with it — tracked in [TODO.md](./TODO.md).
+The product works end-to-end locally: 86 Berlin sources are imported on a schedule, and the frontend, BFF and importer all run. What is missing is a public
+deployment, and the hosting, domain, auth and legal work that goes with it — tracked in [TODO.md](./TODO.md).
 
-One consequence worth knowing before you build on this: **the database schema is still evolving and offers no
-migration compatibility between versions.** All schema changes are consolidated into a single initial migration
-(`V001`) until the first production release.
+One consequence worth knowing before you build on this: **the database schema is still evolving and offers no migration compatibility between versions.** All
+schema changes are consolidated into a single initial migration (`V001`) until the first production release.
 
 ## Built with AI
 
@@ -68,17 +65,16 @@ Most of the code in this repository was written by AI coding agents (primarily
 [Claude Code](https://claude.com/claude-code)), working from the prompts and skills in
 [`.github/prompts/`](./.github/prompts) and the conventions in [AGENTS.md](./AGENTS.md).
 
-The vision, the product ideas, the architecture decisions and the priorities are mine. The agents implement against
-them; every change goes through review before it lands.
+The vision, the product ideas, the architecture decisions and the priorities are mine. The agents implement against them; every change goes through review
+before it lands.
 
-This is also *why* the project exists. It is a real application with real constraints, which turns out to be the
-only honest way to find out what this way of working is genuinely good at and where it still needs a human paying
-attention.
+This is also *why* the project exists. It is a real application with real constraints, which turns out to be the only honest way to find out what this way of
+working is genuinely good at and where it still needs a human paying attention.
 
 ## Install
 
-Prerequisites: a JDK (see [`.sdkmanrc`](./.sdkmanrc), managed with [SDKMAN](https://sdkman.io/)), Docker, and
-Node.js (see [`.nvmrc`](./events-frontend/.nvmrc)) if you want the frontend.
+Prerequisites: a JDK (see [`.sdkmanrc`](./.sdkmanrc), managed with [SDKMAN](https://sdkman.io/)), Docker, and Node.js (see [`.nvmrc`](./events-frontend/.nvmrc))
+if you want the frontend.
 
 ```bash
 git clone git@github.com:enorm-labs/event-checker.git
@@ -89,8 +85,7 @@ brew install pre-commit && pre-commit install    # gitleaks hook — before your
 ./gradlew clean build                     # compile, test, lint, coverage
 ```
 
-Postgres is started for you by the Gradle `bootRun` tasks via Spring Boot's Docker Compose support — there is no
-separate database setup step.
+Postgres is started for you by the Gradle `bootRun` tasks via Spring Boot's Docker Compose support — there is no separate database setup step.
 
 Full details, including the frontend, are in [docs/DEVELOPMENT.md](./docs/DEVELOPMENT.md).
 
@@ -120,16 +115,16 @@ scripts/dev-env.sh import <slug>    # import one source, polling until it settle
 
 ## Architecture
 
-| Component | What it is |
-|---|---|
-| [`events-frontend`](./events-frontend) | Vue 3 SPA — the public site |
-| [`events-bff`](./events-bff) | Backend-for-frontend: Kotlin, Spring Boot, WebFlux, R2DBC. Public **read** API |
+| Component                              | What it is                                                                                                                      |
+|----------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|
+| [`events-frontend`](./events-frontend) | Vue 3 SPA — the public site                                                                                                     |
+| [`events-bff`](./events-bff)           | Backend-for-frontend: Kotlin, Spring Boot, WebFlux, R2DBC. Public **read** API                                                  |
 | [`events-importer`](./events-importer) | Scrapers and scheduling: Kotlin, Spring Boot, Spring Modulith. **Write** side, plus an admin API that is never exposed publicly |
-| [`events-core`](./events-core) | Shared domain model consumed by both services |
-| PostgreSQL | The database. Flyway migrations are owned by the importer |
+| [`events-core`](./events-core)         | Shared domain model consumed by both services                                                                                   |
+| PostgreSQL                             | The database. Flyway migrations are owned by the importer                                                                       |
 
-Considered and not adopted yet: Elasticsearch, a management frontend, an Android app, an MCP server. The reasoning
-behind the choices that *were* made lives in the [ADRs](./docs/adr).
+Considered and not adopted yet: Elasticsearch, a management frontend, an Android app, an MCP server. The reasoning behind the choices that *were* made lives in
+the [ADRs](./docs/adr).
 
 ## API
 
@@ -144,38 +139,37 @@ The OpenAPI document is at `/v3/api-docs` on each port. Request files for both s
 
 ## Documentation
 
-| Document | What it covers |
-|---|---|
-| [AGENTS.md](./AGENTS.md) | **The conventions every change is held to.** Written for AI agents, but it is simply this project's conventions written down, and it is the most complete document here |
-| [docs/DEVELOPMENT.md](./docs/DEVELOPMENT.md) | Building, running, quality checks, dependencies |
-| [docs/WORKTREES.md](./docs/WORKTREES.md) | Running two sessions or two agents in parallel |
-| [docs/PRODUCT_OVERVIEW.md](./docs/PRODUCT_OVERVIEW.md) | What Event Junkie is and does today |
-| [docs/EVENT_SCOPE.md](./docs/EVENT_SCOPE.md) | Which kinds of event belong here, and which don't |
-| [docs/EVENT_DATA_SOURCES.md](./docs/EVENT_DATA_SOURCES.md) | Every venue source and its import status |
-| [docs/DATA_MODEL.md](./docs/DATA_MODEL.md) | The domain model and schema |
-| [docs/DATA_QUALITY_STRATEGY.md](./docs/DATA_QUALITY_STRATEGY.md) | How the data is kept honest |
-| [docs/BRANDING.md](./docs/BRANDING.md) | Name, voice, visual direction |
-| [docs/LEGAL.md](./docs/LEGAL.md) | Licensing, privacy, accessibility, scraping obligations |
-| [docs/VISION_ROADMAP_IDEAS.md](./docs/VISION_ROADMAP_IDEAS.md) | Where this is going |
-| [docs/adr/](./docs/adr) | Architecture decisions, with the reasoning |
-| [TODO.md](./TODO.md) | The actionable backlog |
-| [perf/README.md](./perf/README.md) | Performance testing with k6 |
+| Document                                                         | What it covers                                                                                                                                                          |
+|------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [AGENTS.md](./AGENTS.md)                                         | **The conventions every change is held to.** Written for AI agents, but it is simply this project's conventions written down, and it is the most complete document here |
+| [docs/DEVELOPMENT.md](./docs/DEVELOPMENT.md)                     | Building, running, quality checks, dependencies                                                                                                                         |
+| [docs/WORKTREES.md](./docs/WORKTREES.md)                         | Running two sessions or two agents in parallel                                                                                                                          |
+| [docs/PRODUCT_OVERVIEW.md](./docs/PRODUCT_OVERVIEW.md)           | What Event Junkie is and does today                                                                                                                                     |
+| [docs/EVENT_SCOPE.md](./docs/EVENT_SCOPE.md)                     | Which kinds of event belong here, and which don't                                                                                                                       |
+| [docs/EVENT_DATA_SOURCES.md](./docs/EVENT_DATA_SOURCES.md)       | Every venue source and its import status                                                                                                                                |
+| [docs/DATA_MODEL.md](./docs/DATA_MODEL.md)                       | The domain model and schema                                                                                                                                             |
+| [docs/DATA_QUALITY_STRATEGY.md](./docs/DATA_QUALITY_STRATEGY.md) | How the data is kept honest                                                                                                                                             |
+| [docs/BRANDING.md](./docs/BRANDING.md)                           | Name, voice, visual direction                                                                                                                                           |
+| [docs/LEGAL.md](./docs/LEGAL.md)                                 | Licensing, privacy, accessibility, scraping obligations                                                                                                                 |
+| [docs/VISION_ROADMAP_IDEAS.md](./docs/VISION_ROADMAP_IDEAS.md)   | Where this is going                                                                                                                                                     |
+| [docs/adr/](./docs/adr)                                          | Architecture decisions, with the reasoning                                                                                                                              |
+| [TODO.md](./TODO.md)                                             | The actionable backlog                                                                                                                                                  |
+| [perf/README.md](./perf/README.md)                               | Performance testing with k6                                                                                                                                             |
 
 ## Contributing
 
 Contributions are welcome. Full guide: [CONTRIBUTING.md](./CONTRIBUTING.md). Taking part means agreeing to the
 [Code of Conduct](./CODE_OF_CONDUCT.md).
 
-**The most valuable contribution is not code.** Event data is read automatically from venue websites, so a
-redesigned programme page can leave us quietly wrong for weeks. Nobody notices that faster than somebody who went to
-the show.
+**The most valuable contribution is not code.** Event data is read automatically from venue websites, so a redesigned programme page can leave us quietly wrong
+for weeks. Nobody notices that faster than somebody who went to the show.
 
 - [Wrong or missing event data](https://github.com/enorm-labs/event-checker/issues/new?template=wrong-event-data.yml)
 - [Suggest a venue](https://github.com/enorm-labs/event-checker/issues/new?template=new-venue.yml)
 - [Bug in the site or API](https://github.com/enorm-labs/event-checker/issues/new?template=bug.yml)
 
-Questions and product ideas go to [Discussions](https://github.com/enorm-labs/event-checker/discussions). Security
-problems go through [private disclosure](./SECURITY.md), never a public issue.
+Questions and product ideas go to [Discussions](https://github.com/enorm-labs/event-checker/discussions). Security problems go
+through [private disclosure](./SECURITY.md), never a public issue.
 
 ### Quick start: your first pull request
 
@@ -201,15 +195,12 @@ gh pr create --base main
 
 Four things that catch people out:
 
-- **Open an issue first** for anything beyond a small fix. Not bureaucracy — this project has a strong opinion about
-  how importers, modules and the data model fit together, and a PR that cuts across it is painful to review and
-  disheartening to receive back.
+- **Open an issue first** for anything beyond a small fix. Not bureaucracy — this project has a strong opinion about how importers, modules and the data model
+  fit together, and a PR that cuts across it is painful to review and disheartening to receive back.
 - **Rebase, never merge `main` in.** PRs are merged with "Rebase and merge", which a merge commit blocks.
-- **The PR template asks about privacy and accessibility.** Both are easy to skip and expensive to miss. If your
-  change adds a third-party request, stores something on the visitor's device or alters what is logged, the privacy
-  notice needs updating in the same PR — **in both languages**.
-- **Reformatting is intentional.** If `ktlintFormat` or `npm run format` rewrites a file, leave it; do not revert it
-  as noise.
+- **The PR template asks about privacy and accessibility.** Both are easy to skip and expensive to miss. If your change adds a third-party request, stores
+  something on the visitor's device or alters what is logged, the privacy notice needs updating in the same PR — **in both languages**.
+- **Reformatting is intentional.** If `ktlintFormat` or `npm run format` rewrites a file, leave it; do not revert it as noise.
 
 ## Support
 
@@ -224,7 +215,7 @@ Norman Lange ([@enorm-labs](https://github.com/enorm-labs)). This is a single-ma
 
 [Apache-2.0](./LICENSE) © Norman Lange.
 
-Contributions are accepted under the same licence. There is no CLA — opening a pull request is taken as agreeing
-that your contribution may be distributed under it. Third-party dependency licences are published at
+Contributions are accepted under the same licence. There is no CLA — opening a pull request is taken as agreeing that your contribution may be distributed under
+it. Third-party dependency licences are published at
 `/legal/notices` and enforced by a policy in [`config/`](./config); see
 [docs/DEVELOPMENT.md](./docs/DEVELOPMENT.md#licences-and-open-source-notices).

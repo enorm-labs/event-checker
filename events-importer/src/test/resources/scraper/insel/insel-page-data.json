@@ -1,1 +1,182 @@
-{"componentChunkName":"component---src-pages-index-js","path":"/","result":{"data":{"datoCmsCulture":{"about":"<p><strong>Der Inselgarten ist bei gutem Wetter, für Kulturveranstaltungen und am Wochenende geöffnet. Eine breite Getränkeauswahl, regionale Speisen, Sonne mit Spreeblick.&nbsp;</strong></p>","aboutHeader":"Kulturveranstaltungen, Biergarten & Eventlocation","culture":"<p>Kultur findet bei uns ganzjährig drin und draußen statt. Folgt uns auf Instagram, Facebook und direkt hier für aktuelle Infos über kommende Veranstaltungen!</p>","cultureHeader":"Kultur auf der Insel","kuenstler":"<p>Anfragen von Veranstalter:innen bitte an <a href=\"mailto:kontakt@kulturalarm.com\">kontakt@kulturalarm.com!</a></p>","kuenstlerHeader":"Kultur Booking","winterMode":false,"winterSlideshow":[{"header":"Winterzauber auf der Insel","description":"Es war ein großartiger Sommer mit euch!\nWir begrüßen euch weiterhin am Wochenende Samstag und Sonntag von 11-18 Uhr!","primaryColor":{"hex":"#617688"},"secondaryColor":{"hex":"#394858"},"luminance":null,"image":{"fluid":{"aspectRatio":1,"src":"https://www.datocms-assets.com/11551/1656572397-02.jpg?auto=compress%2Cformat&crop=edges&fit=crop&fm=jpg&h=900&w=900","srcSet":"https://www.datocms-assets.com/11551/1656572397-02.jpg?auto=compress%2Cformat&crop=edges&dpr=0.25&fit=crop&fm=jpg&h=900&w=900 225w,\nhttps://www.datocms-assets.com/11551/1656572397-02.jpg?auto=compress%2Cformat&crop=edges&dpr=0.5&fit=crop&fm=jpg&h=900&w=900 450w,\nhttps://www.datocms-assets.com/11551/1656572397-02.jpg?auto=compress%2Cformat&crop=edges&dpr=1&fit=crop&fm=jpg&h=900&w=900 900w","sizes":"(max-width: 900px) 100vw, 900px"}}},{"header":"Kultur & Events","description":"Die Insel ist mehr als nur ein Biergarten.\nHier findest Du Bretter, die die Welt bedeuten. Aktuelle Termine stehen im Kalender.","primaryColor":{"hex":"#617688"},"secondaryColor":{"hex":"#394858"},"luminance":null,"image":{"fluid":{"aspectRatio":1,"src":"https://www.datocms-assets.com/11551/1647632678-1564566683-544.jpg?auto=compress%2Cformat&crop=edges&fit=crop&fm=jpg&h=900&w=900","srcSet":"https://www.datocms-assets.com/11551/1647632678-1564566683-544.jpg?auto=compress%2Cformat&crop=edges&dpr=0.25&fit=crop&fm=jpg&h=900&w=900 225w,\nhttps://www.datocms-assets.com/11551/1647632678-1564566683-544.jpg?auto=compress%2Cformat&crop=edges&dpr=0.5&fit=crop&fm=jpg&h=900&w=900 450w,\nhttps://www.datocms-assets.com/11551/1647632678-1564566683-544.jpg?auto=compress%2Cformat&crop=edges&dpr=1&fit=crop&fm=jpg&h=900&w=900 900w","sizes":"(max-width: 900px) 100vw, 900px"}}},{"header":"Eine Insel nur für Dich","description":"Die Insel kann man auch mieten.\nDer wohl schönste Ort für Hochzeiten, Geburtstage und Firmenfeiern.","primaryColor":{"hex":"#617688"},"secondaryColor":{"hex":"#394858"},"luminance":null,"image":{"fluid":{"aspectRatio":1,"src":"https://www.datocms-assets.com/11551/1647632605-image-result-for-insel-der-jugend-berlin-bridge-deck-2.jpeg?auto=compress%2Cformat&crop=edges&fit=crop&fm=jpg&h=900&w=900","srcSet":"https://www.datocms-assets.com/11551/1647632605-image-result-for-insel-der-jugend-berlin-bridge-deck-2.jpeg?auto=compress%2Cformat&crop=edges&dpr=0.25&fit=crop&fm=jpg&h=900&w=900 225w,\nhttps://www.datocms-assets.com/11551/1647632605-image-result-for-insel-der-jugend-berlin-bridge-deck-2.jpeg?auto=compress%2Cformat&crop=edges&dpr=0.5&fit=crop&fm=jpg&h=900&w=900 450w,\nhttps://www.datocms-assets.com/11551/1647632605-image-result-for-insel-der-jugend-berlin-bridge-deck-2.jpeg?auto=compress%2Cformat&crop=edges&dpr=1&fit=crop&fm=jpg&h=900&w=900 900w","sizes":"(max-width: 900px) 100vw, 900px"}}},{"header":"Deine Bühne","description":"Du und Deine Band suchen ein einmaliges Ambiente? Ihr wollt Theater machen oder auf der Bühne improvisieren? Dann meldet euch! ","primaryColor":{"hex":"#617688"},"secondaryColor":{"hex":"#394858"},"luminance":null,"image":{"fluid":{"aspectRatio":1,"src":"https://www.datocms-assets.com/11551/1651682779-1647632685-img0090-min.jpg?auto=compress%2Cformat&crop=edges&fit=crop&fm=jpg&h=900&w=900","srcSet":"https://www.datocms-assets.com/11551/1651682779-1647632685-img0090-min.jpg?auto=compress%2Cformat&crop=edges&dpr=0.25&fit=crop&fm=jpg&h=900&w=900 225w,\nhttps://www.datocms-assets.com/11551/1651682779-1647632685-img0090-min.jpg?auto=compress%2Cformat&crop=edges&dpr=0.5&fit=crop&fm=jpg&h=900&w=900 450w,\nhttps://www.datocms-assets.com/11551/1651682779-1647632685-img0090-min.jpg?auto=compress%2Cformat&crop=edges&dpr=1&fit=crop&fm=jpg&h=900&w=900 900w","sizes":"(max-width: 900px) 100vw, 900px"}}}],"slideshow":[{"header":"Inselgarten","description":"Rund um die Woche ab 12 Uhr geöffnet. Kultur, Drinks, Snacks und Entspannung direkt am Wasser!","primaryColor":{"hex":"#5287b1"},"secondaryColor":{"hex":"#28425b"},"luminance":null,"image":{"fluid":{"aspectRatio":1,"src":"https://www.datocms-assets.com/11551/1656572397-02.jpg?auto=compress%2Cformat&crop=edges&fit=crop&fm=jpg&h=1500&w=1500","srcSet":"https://www.datocms-assets.com/11551/1656572397-02.jpg?auto=compress%2Cformat&crop=edges&dpr=0.25&fit=crop&fm=jpg&h=1500&w=1500 375w,\nhttps://www.datocms-assets.com/11551/1656572397-02.jpg?auto=compress%2Cformat&crop=edges&dpr=0.5&fit=crop&fm=jpg&h=1500&w=1500 750w,\nhttps://www.datocms-assets.com/11551/1656572397-02.jpg?auto=compress%2Cformat&crop=edges&dpr=1&fit=crop&fm=jpg&h=1500&w=1500 1500w","sizes":"(max-width: 1500px) 100vw, 1500px"}}},{"header":"Archiv","description":"Hier findet ihr Bilder und Videos vergangener Kulturveranstaltungen.","primaryColor":{"hex":"#7547a2"},"secondaryColor":{"hex":"#7547a2"},"luminance":null,"image":{"fluid":{"aspectRatio":1,"src":"https://www.datocms-assets.com/11551/1684321784-img_5761-min.jpg?auto=compress%2Cformat&crop=edges&fit=crop&fm=jpg&h=1500&w=1500","srcSet":"https://www.datocms-assets.com/11551/1684321784-img_5761-min.jpg?auto=compress%2Cformat&crop=edges&dpr=0.25&fit=crop&fm=jpg&h=1500&w=1500 375w,\nhttps://www.datocms-assets.com/11551/1684321784-img_5761-min.jpg?auto=compress%2Cformat&crop=edges&dpr=0.5&fit=crop&fm=jpg&h=1500&w=1500 750w,\nhttps://www.datocms-assets.com/11551/1684321784-img_5761-min.jpg?auto=compress%2Cformat&crop=edges&dpr=1&fit=crop&fm=jpg&h=1500&w=1500 1500w","sizes":"(max-width: 1500px) 100vw, 1500px"}}},{"header":"Eine Insel nur für Dich","description":"Ein wunderschöner Ort für Kulturveranstaltungen, Hochzeiten, Weihnachtsfeiern oder Geburtstage am Wasser.\nSchickt uns eine Mietanfrage!","primaryColor":{"hex":"#115a76"},"secondaryColor":{"hex":"#156c39"},"luminance":null,"image":{"fluid":{"aspectRatio":1,"src":"https://www.datocms-assets.com/11551/1678379558-inselgarten2.jpg?auto=compress%2Cformat&crop=edges&fit=crop&fm=jpg&h=1500&w=1500","srcSet":"https://www.datocms-assets.com/11551/1678379558-inselgarten2.jpg?auto=compress%2Cformat&crop=edges&dpr=0.25&fit=crop&fm=jpg&h=1500&w=1500 375w,\nhttps://www.datocms-assets.com/11551/1678379558-inselgarten2.jpg?auto=compress%2Cformat&crop=edges&dpr=0.5&fit=crop&fm=jpg&h=1500&w=1500 750w,\nhttps://www.datocms-assets.com/11551/1678379558-inselgarten2.jpg?auto=compress%2Cformat&crop=edges&dpr=1&fit=crop&fm=jpg&h=1500&w=1500 1500w","sizes":"(max-width: 1500px) 100vw, 1500px"}}},{"header":"Jobs","description":"Wir suchen ab sofort Barkräfte und Abend-Dienstleitung! Bewerbungen bitte an job@inselberlin.de!","primaryColor":{"hex":"#0b78a2"},"secondaryColor":{"hex":"#0cb2b8"},"luminance":null,"image":{"fluid":{"aspectRatio":1,"src":"https://www.datocms-assets.com/11551/1678378685-img_4556_klein.jpg?auto=compress%2Cformat&crop=edges&fit=crop&fm=jpg&h=1500&w=1500","srcSet":"https://www.datocms-assets.com/11551/1678378685-img_4556_klein.jpg?auto=compress%2Cformat&crop=edges&dpr=0.25&fit=crop&fm=jpg&h=1500&w=1500 375w,\nhttps://www.datocms-assets.com/11551/1678378685-img_4556_klein.jpg?auto=compress%2Cformat&crop=edges&dpr=0.5&fit=crop&fm=jpg&h=1500&w=1500 750w,\nhttps://www.datocms-assets.com/11551/1678378685-img_4556_klein.jpg?auto=compress%2Cformat&crop=edges&dpr=1&fit=crop&fm=jpg&h=1500&w=1500 1500w","sizes":"(max-width: 1500px) 100vw, 1500px"}}}]}},"pageContext":{}},"staticQueryHashes":["2282490745","3497155224","3794147887","689600368","880886855","999761518"]}
+{
+    "componentChunkName": "component---src-pages-index-js",
+    "path": "/",
+    "result": {
+        "data": {
+            "datoCmsCulture": {
+                "about": "<p><strong>Der Inselgarten ist bei gutem Wetter, für Kulturveranstaltungen und am Wochenende geöffnet. Eine breite Getränkeauswahl, regionale Speisen, Sonne mit Spreeblick.&nbsp;</strong></p>",
+                "aboutHeader": "Kulturveranstaltungen, Biergarten & Eventlocation",
+                "culture": "<p>Kultur findet bei uns ganzjährig drin und draußen statt. Folgt uns auf Instagram, Facebook und direkt hier für aktuelle Infos über kommende Veranstaltungen!</p>",
+                "cultureHeader": "Kultur auf der Insel",
+                "kuenstler": "<p>Anfragen von Veranstalter:innen bitte an <a href=\"mailto:kontakt@kulturalarm.com\">kontakt@kulturalarm.com!</a></p>",
+                "kuenstlerHeader": "Kultur Booking",
+                "winterMode": false,
+                "winterSlideshow": [
+                    {
+                        "header": "Winterzauber auf der Insel",
+                        "description": "Es war ein großartiger Sommer mit euch!\nWir begrüßen euch weiterhin am Wochenende Samstag und Sonntag von 11-18 Uhr!",
+                        "primaryColor": {
+                            "hex": "#617688"
+                        },
+                        "secondaryColor": {
+                            "hex": "#394858"
+                        },
+                        "luminance": null,
+                        "image": {
+                            "fluid": {
+                                "aspectRatio": 1,
+                                "src": "https://www.datocms-assets.com/11551/1656572397-02.jpg?auto=compress%2Cformat&crop=edges&fit=crop&fm=jpg&h=900&w=900",
+                                "srcSet": "https://www.datocms-assets.com/11551/1656572397-02.jpg?auto=compress%2Cformat&crop=edges&dpr=0.25&fit=crop&fm=jpg&h=900&w=900 225w,\nhttps://www.datocms-assets.com/11551/1656572397-02.jpg?auto=compress%2Cformat&crop=edges&dpr=0.5&fit=crop&fm=jpg&h=900&w=900 450w,\nhttps://www.datocms-assets.com/11551/1656572397-02.jpg?auto=compress%2Cformat&crop=edges&dpr=1&fit=crop&fm=jpg&h=900&w=900 900w",
+                                "sizes": "(max-width: 900px) 100vw, 900px"
+                            }
+                        }
+                    },
+                    {
+                        "header": "Kultur & Events",
+                        "description": "Die Insel ist mehr als nur ein Biergarten.\nHier findest Du Bretter, die die Welt bedeuten. Aktuelle Termine stehen im Kalender.",
+                        "primaryColor": {
+                            "hex": "#617688"
+                        },
+                        "secondaryColor": {
+                            "hex": "#394858"
+                        },
+                        "luminance": null,
+                        "image": {
+                            "fluid": {
+                                "aspectRatio": 1,
+                                "src": "https://www.datocms-assets.com/11551/1647632678-1564566683-544.jpg?auto=compress%2Cformat&crop=edges&fit=crop&fm=jpg&h=900&w=900",
+                                "srcSet": "https://www.datocms-assets.com/11551/1647632678-1564566683-544.jpg?auto=compress%2Cformat&crop=edges&dpr=0.25&fit=crop&fm=jpg&h=900&w=900 225w,\nhttps://www.datocms-assets.com/11551/1647632678-1564566683-544.jpg?auto=compress%2Cformat&crop=edges&dpr=0.5&fit=crop&fm=jpg&h=900&w=900 450w,\nhttps://www.datocms-assets.com/11551/1647632678-1564566683-544.jpg?auto=compress%2Cformat&crop=edges&dpr=1&fit=crop&fm=jpg&h=900&w=900 900w",
+                                "sizes": "(max-width: 900px) 100vw, 900px"
+                            }
+                        }
+                    },
+                    {
+                        "header": "Eine Insel nur für Dich",
+                        "description": "Die Insel kann man auch mieten.\nDer wohl schönste Ort für Hochzeiten, Geburtstage und Firmenfeiern.",
+                        "primaryColor": {
+                            "hex": "#617688"
+                        },
+                        "secondaryColor": {
+                            "hex": "#394858"
+                        },
+                        "luminance": null,
+                        "image": {
+                            "fluid": {
+                                "aspectRatio": 1,
+                                "src": "https://www.datocms-assets.com/11551/1647632605-image-result-for-insel-der-jugend-berlin-bridge-deck-2.jpeg?auto=compress%2Cformat&crop=edges&fit=crop&fm=jpg&h=900&w=900",
+                                "srcSet": "https://www.datocms-assets.com/11551/1647632605-image-result-for-insel-der-jugend-berlin-bridge-deck-2.jpeg?auto=compress%2Cformat&crop=edges&dpr=0.25&fit=crop&fm=jpg&h=900&w=900 225w,\nhttps://www.datocms-assets.com/11551/1647632605-image-result-for-insel-der-jugend-berlin-bridge-deck-2.jpeg?auto=compress%2Cformat&crop=edges&dpr=0.5&fit=crop&fm=jpg&h=900&w=900 450w,\nhttps://www.datocms-assets.com/11551/1647632605-image-result-for-insel-der-jugend-berlin-bridge-deck-2.jpeg?auto=compress%2Cformat&crop=edges&dpr=1&fit=crop&fm=jpg&h=900&w=900 900w",
+                                "sizes": "(max-width: 900px) 100vw, 900px"
+                            }
+                        }
+                    },
+                    {
+                        "header": "Deine Bühne",
+                        "description": "Du und Deine Band suchen ein einmaliges Ambiente? Ihr wollt Theater machen oder auf der Bühne improvisieren? Dann meldet euch! ",
+                        "primaryColor": {
+                            "hex": "#617688"
+                        },
+                        "secondaryColor": {
+                            "hex": "#394858"
+                        },
+                        "luminance": null,
+                        "image": {
+                            "fluid": {
+                                "aspectRatio": 1,
+                                "src": "https://www.datocms-assets.com/11551/1651682779-1647632685-img0090-min.jpg?auto=compress%2Cformat&crop=edges&fit=crop&fm=jpg&h=900&w=900",
+                                "srcSet": "https://www.datocms-assets.com/11551/1651682779-1647632685-img0090-min.jpg?auto=compress%2Cformat&crop=edges&dpr=0.25&fit=crop&fm=jpg&h=900&w=900 225w,\nhttps://www.datocms-assets.com/11551/1651682779-1647632685-img0090-min.jpg?auto=compress%2Cformat&crop=edges&dpr=0.5&fit=crop&fm=jpg&h=900&w=900 450w,\nhttps://www.datocms-assets.com/11551/1651682779-1647632685-img0090-min.jpg?auto=compress%2Cformat&crop=edges&dpr=1&fit=crop&fm=jpg&h=900&w=900 900w",
+                                "sizes": "(max-width: 900px) 100vw, 900px"
+                            }
+                        }
+                    }
+                ],
+                "slideshow": [
+                    {
+                        "header": "Inselgarten",
+                        "description": "Rund um die Woche ab 12 Uhr geöffnet. Kultur, Drinks, Snacks und Entspannung direkt am Wasser!",
+                        "primaryColor": {
+                            "hex": "#5287b1"
+                        },
+                        "secondaryColor": {
+                            "hex": "#28425b"
+                        },
+                        "luminance": null,
+                        "image": {
+                            "fluid": {
+                                "aspectRatio": 1,
+                                "src": "https://www.datocms-assets.com/11551/1656572397-02.jpg?auto=compress%2Cformat&crop=edges&fit=crop&fm=jpg&h=1500&w=1500",
+                                "srcSet": "https://www.datocms-assets.com/11551/1656572397-02.jpg?auto=compress%2Cformat&crop=edges&dpr=0.25&fit=crop&fm=jpg&h=1500&w=1500 375w,\nhttps://www.datocms-assets.com/11551/1656572397-02.jpg?auto=compress%2Cformat&crop=edges&dpr=0.5&fit=crop&fm=jpg&h=1500&w=1500 750w,\nhttps://www.datocms-assets.com/11551/1656572397-02.jpg?auto=compress%2Cformat&crop=edges&dpr=1&fit=crop&fm=jpg&h=1500&w=1500 1500w",
+                                "sizes": "(max-width: 1500px) 100vw, 1500px"
+                            }
+                        }
+                    },
+                    {
+                        "header": "Archiv",
+                        "description": "Hier findet ihr Bilder und Videos vergangener Kulturveranstaltungen.",
+                        "primaryColor": {
+                            "hex": "#7547a2"
+                        },
+                        "secondaryColor": {
+                            "hex": "#7547a2"
+                        },
+                        "luminance": null,
+                        "image": {
+                            "fluid": {
+                                "aspectRatio": 1,
+                                "src": "https://www.datocms-assets.com/11551/1684321784-img_5761-min.jpg?auto=compress%2Cformat&crop=edges&fit=crop&fm=jpg&h=1500&w=1500",
+                                "srcSet": "https://www.datocms-assets.com/11551/1684321784-img_5761-min.jpg?auto=compress%2Cformat&crop=edges&dpr=0.25&fit=crop&fm=jpg&h=1500&w=1500 375w,\nhttps://www.datocms-assets.com/11551/1684321784-img_5761-min.jpg?auto=compress%2Cformat&crop=edges&dpr=0.5&fit=crop&fm=jpg&h=1500&w=1500 750w,\nhttps://www.datocms-assets.com/11551/1684321784-img_5761-min.jpg?auto=compress%2Cformat&crop=edges&dpr=1&fit=crop&fm=jpg&h=1500&w=1500 1500w",
+                                "sizes": "(max-width: 1500px) 100vw, 1500px"
+                            }
+                        }
+                    },
+                    {
+                        "header": "Eine Insel nur für Dich",
+                        "description": "Ein wunderschöner Ort für Kulturveranstaltungen, Hochzeiten, Weihnachtsfeiern oder Geburtstage am Wasser.\nSchickt uns eine Mietanfrage!",
+                        "primaryColor": {
+                            "hex": "#115a76"
+                        },
+                        "secondaryColor": {
+                            "hex": "#156c39"
+                        },
+                        "luminance": null,
+                        "image": {
+                            "fluid": {
+                                "aspectRatio": 1,
+                                "src": "https://www.datocms-assets.com/11551/1678379558-inselgarten2.jpg?auto=compress%2Cformat&crop=edges&fit=crop&fm=jpg&h=1500&w=1500",
+                                "srcSet": "https://www.datocms-assets.com/11551/1678379558-inselgarten2.jpg?auto=compress%2Cformat&crop=edges&dpr=0.25&fit=crop&fm=jpg&h=1500&w=1500 375w,\nhttps://www.datocms-assets.com/11551/1678379558-inselgarten2.jpg?auto=compress%2Cformat&crop=edges&dpr=0.5&fit=crop&fm=jpg&h=1500&w=1500 750w,\nhttps://www.datocms-assets.com/11551/1678379558-inselgarten2.jpg?auto=compress%2Cformat&crop=edges&dpr=1&fit=crop&fm=jpg&h=1500&w=1500 1500w",
+                                "sizes": "(max-width: 1500px) 100vw, 1500px"
+                            }
+                        }
+                    },
+                    {
+                        "header": "Jobs",
+                        "description": "Wir suchen ab sofort Barkräfte und Abend-Dienstleitung! Bewerbungen bitte an job@inselberlin.de!",
+                        "primaryColor": {
+                            "hex": "#0b78a2"
+                        },
+                        "secondaryColor": {
+                            "hex": "#0cb2b8"
+                        },
+                        "luminance": null,
+                        "image": {
+                            "fluid": {
+                                "aspectRatio": 1,
+                                "src": "https://www.datocms-assets.com/11551/1678378685-img_4556_klein.jpg?auto=compress%2Cformat&crop=edges&fit=crop&fm=jpg&h=1500&w=1500",
+                                "srcSet": "https://www.datocms-assets.com/11551/1678378685-img_4556_klein.jpg?auto=compress%2Cformat&crop=edges&dpr=0.25&fit=crop&fm=jpg&h=1500&w=1500 375w,\nhttps://www.datocms-assets.com/11551/1678378685-img_4556_klein.jpg?auto=compress%2Cformat&crop=edges&dpr=0.5&fit=crop&fm=jpg&h=1500&w=1500 750w,\nhttps://www.datocms-assets.com/11551/1678378685-img_4556_klein.jpg?auto=compress%2Cformat&crop=edges&dpr=1&fit=crop&fm=jpg&h=1500&w=1500 1500w",
+                                "sizes": "(max-width: 1500px) 100vw, 1500px"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        "pageContext": {}
+    },
+    "staticQueryHashes": [
+        "2282490745",
+        "3497155224",
+        "3794147887",
+        "689600368",
+        "880886855",
+        "999761518"
+    ]
+}

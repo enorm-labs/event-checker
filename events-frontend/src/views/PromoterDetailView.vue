@@ -57,18 +57,18 @@ usePageMeta(() =>
 
 <template>
   <BaseDetailView
+    :empty-text="t('detail.promoter.empty')"
     :error="error"
     :events="events"
     :events-error="eventsError"
     :events-loading="eventsLoading"
     :image-url="promoter?.imageUrl"
+    :kind="kind"
     :loading="loading"
     :name="promoter?.name"
     :not-found="notFound"
-    :ready="Boolean(promoter)"
-    :empty-text="t('detail.promoter.empty')"
-    :kind="kind"
     :not-found-text="t('detail.promoter.notFound')"
+    :ready="Boolean(promoter)"
   >
     <template #meta>
       <a

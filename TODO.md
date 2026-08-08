@@ -18,8 +18,9 @@ Rough priority: **Now** → **Next** → grouped backlog → **Someday / Vision*
 - [ ] Register the domain **event-junkie.de** (ADR-012 puts Cloudflare in front for DNS/TLS/CDN/rate limiting on the free plan)
 - [ ] Infrastructure as code (Terraform / OpenTofu) — provision the cloud environment reproducibly instead of by hand. Per ADR-012: the `hetznercloud/hcloud`
   provider for servers, networks, firewalls and volumes, with state in Hetzner Object Storage (S3 API) or Terraform Cloud
-- [ ] Write the Helm chart — `events-bff` (N replicas), `events-importer` (**`replicas: 1`, `strategy: Recreate`** so a rolling deploy never runs two schedulers,
-  per ADR-008) and the frontend, behind one ingress that routes `/` → frontend and `/api` → BFF and **does not route the importer's admin API publicly**
+- [ ] Write the Helm chart — `events-bff` (N replicas), `events-importer` (**`replicas: 1`, `strategy: Recreate`** so a rolling deploy never runs two
+  schedulers, per ADR-008) and the frontend, behind one ingress that routes `/` → frontend and `/api` → BFF and **does not route the importer's admin API
+  publicly**
 - [ ] Create release + deploy workflows (CI/CD) — note ADR-012's known step down: GitHub Actions cannot use OIDC against Hetzner, so deploys authenticate with a
   scoped kubeconfig or deploy key held as a repository secret, rotated deliberately
 - [ ] A non-public test/staging stage, separate from production — ADR-012 treats its cost as a first-class criterion and budgets ~€7/month for it on Hetzner
@@ -50,8 +51,8 @@ Rough priority: **Now** → **Next** → grouped backlog → **Someday / Vision*
 
 - [ ] Full frontend UX pass — what's missing / improvable? (cross-check the vision + branding docs)
 - [ ] **Fix `heading-order` on the list pages** — `/events` and `/venues` go `h1` → `h3`, because `EventCard` / `VenueCard` render an `h3`, which is correct on
-  the home page where an `h2` section heading sits above them. Needs a decision about the shared card component (a `level` prop, or a visually-hidden `h2` on the
-  list pages), not a local edit. Surfaced by the informational axe `best-practice` pass, which reports it without gating on it
+  the home page where an `h2` section heading sits above them. Needs a decision about the shared card component (a `level` prop, or a visually-hidden `h2` on
+  the list pages), not a local edit. Surfaced by the informational axe `best-practice` pass, which reports it without gating on it
 - [ ] **Manual accessibility passes before go-live** — a keyboard-only walkthrough and a screen-reader pass. axe reliably finds roughly a third of WCAG issues,
   so the two automated checks cannot certify WCAG 2.1 AA no matter how thorough they get. Required if a conformance statement is ever wanted for the live site
   (LEGAL.md §12)
@@ -131,10 +132,10 @@ scraper's own KDoc instead, so only what should actually be *repaired* is listed
 - [ ] **A concert-series name appended to a title with an en dash stays on the act.** silent green bills three autumn shows as `Current 93 – Sonic Morgue`,
   `Current 93 – Sonic Morgue – Zusatzshow` and `Anja Huwe / Xmal Deutschland – Sonic Morgue`: `Sonic Morgue` is the series and `Zusatzshow` marks the extra
   date, but `splitHeadlinerTitle` cuts only on `/`, `+` and conjunctions, and `stripArtistSuffix` recognises a ` - ` tail only when it names a tour, a year or a
-  release — so both tails are stored as part of the performer and will never resolve to the plain `Current 93` / `Xmal Deutschland` imported from another
-  house. Neither an en-dash split nor a blanket tail strip is safe on its own (an act may legitimately carry either), so this needs the series names
-  themselves — the same curated-vocabulary question as `NON_ARTIST_NAMES` below. Morphine Raum bills its whole programme this way and shows the shape at its
-  worst: `Raphael Rogiński – Qırım` and `Alister Spence – Within Without` fuse the album onto the act (3 of 11 events), and where the tail is a *member list*
+  release — so both tails are stored as part of the performer and will never resolve to the plain `Current 93` / `Xmal Deutschland` imported from another house.
+  Neither an en-dash split nor a blanket tail strip is safe on its own (an act may legitimately carry either), so this needs the series names themselves — the
+  same curated-vocabulary question as `NON_ARTIST_NAMES` below. Morphine Raum bills its whole programme this way and shows the shape at its worst:
+  `Raphael Rogiński – Qırım` and `Alister Spence – Within Without` fuse the album onto the act (3 of 11 events), and where the tail is a *member list*
   the conjunction split then fires inside it — `PICI - Clémence Manachère & Polina Pohozha` becomes `Pici - Clémence Manachère` plus `Polina Pohozha`, so the
   first artist row is neither the duo nor either member.
 - [ ] **A venue's seating information has nowhere to go.** Kulturhaus Peter Edel badges every one of its 39 events with two facts a ticket buyer decides on —
@@ -145,10 +146,11 @@ scraper's own KDoc instead, so only what should actually be *repaired* is listed
 - [ ] **Promoter display names lose genuine acronyms.** `PromoterNormalizer.deshout` is a bare title-caser, without the `ACRONYMS` / short-initialism guards
   `ArtistNormalizer` already has, so `TV Noir` → `Tv Noir` and `Bossa FM` → `Bossa Fm`. Share one de-shout between the two normalizers. Same change should fold
   Zitadelle's `tip Berlin` / `Tip` onto one spelling via `NAME_CORRECTIONS`. Display-only — slugs are case-insensitive and unaffected — but existing rows keep
-  their casing until re-created. The two steps compound where the descriptor strip runs first: Gärten der Welt's `HB Music` loses `Music` and is then
-  de-shouted to the unreadable `Hb`, which no longer names anything.
+  their casing until re-created. The two steps compound where the descriptor strip runs first: Gärten der Welt's `HB Music` loses `Music` and is then de-shouted
+  to the unreadable `Hb`, which no longer names anything.
 - [ ] **A `feat.` co-bill is stored as one artist.** `splitHeadlinerTitle` cuts a title on `/`, `+` and conjunctions, and `ROLE_LABEL_PREFIX` recognises
-  `feat.` only where it *opens* a segment — so Gärten der Welt's `Stereoact: Ich liebe das Leben Party 2027 feat. Lena Marie Engel` becomes a single 63-character
+  `feat.` only where it *opens* a segment — so Gärten der Welt's `Stereoact: Ich liebe das Leben Party 2027 feat. Lena Marie Engel` becomes a single
+  63-character
   "artist" instead of `Stereoact` plus a guest. The marker is already spelled out in `ROLE_LABEL_PREFIX`; splitting on it mid-title (guest → `SUPPORT`) is the
   fix. Cross-cutting, so it needs a `--full` re-seed and a diff.
 - [ ] **An event name minted as a headliner because the venue typed the night `CONCERT`.** `buildArtistsForEventType` trusts a `CONCERT` category to mean the
@@ -162,9 +164,9 @@ scraper's own KDoc instead, so only what should actually be *repaired* is listed
 - [ ] **Arcanoa's recurring open stage becomes two artists and two slugs.** The venue hand-types its Monday night both `ARCANOA-Open Stage` and
   `ARCANOA- Open Stage`; only the second has a dash the parser pads, so the two normalize differently. Collapse the whitespace around the dash before
   normalizing.
-- [ ] **gART.n drops the guests named in a `<sup>` cast line.** `GartnOverviewPageScraper.billingLines` discards a lineup line built only from a `<sup>`, because
-  such a line annotates the line above it rather than billing an act — but the venue uses it to name that slot's cast
-  (`Live Podcast "Heisse Platten"` / `mit Judith van Waterkant und Ruede Hagelstein`), so Ruede Hagelstein is stored nowhere. Reading a `mit …` / `w/ …`
+- [ ] **gART.n drops the guests named in a `<sup>` cast line.** `GartnOverviewPageScraper.billingLines` discards a lineup line built only from a `<sup>`,
+  because such a line annotates the line above it rather than billing an act — but the venue uses it to name that slot's cast (`Live Podcast "Heisse Platten"` /
+  `mit Judith van Waterkant und Ruede Hagelstein`), so Ruede Hagelstein is stored nowhere. Reading a `mit …` / `w/ …`
   annotation as a cast line and splitting it via `splitSegmentOnConjunctions` would recover it; the split needs the conjunction guardrails, since an act name
   may legitimately contain `und`.
 - [ ] **The screening keyword misses German compounds.** `SCREENING_TITLE_WORD_PATTERN` (`EventTypeMapping.kt`) anchors on `\bkino\b` to protect real act names
@@ -198,8 +200,8 @@ scraper's own KDoc instead, so only what should actually be *repaired* is listed
 - [ ] **There is no event end time.** Kater publishes a full `Sa. 01.08 22:00 — So. 02.08 10:00` span and Heideglühen a "bis Sonntag, 6 Uhr" tail; both are kept
   as prose because the model stores only a start. The same missing field is why the late-night drop above needs a start-time heuristic instead of simply asking
   whether the event has ended.
-- [ ] **Eschschloraque's doors/start split is published in prose and dropped.** The venue's date field carries one time, which the importer stores as the start —
-  but where a night actually has two, only the description says so: the Buletten Bingo openair writes `Einlass: 19:00` / `Beginn: 19:30` (and again as
+- [ ] **Eschschloraque's doors/start split is published in prose and dropped.** The venue's date field carries one time, which the importer stores as the
+  start — but where a night actually has two, only the description says so: the Buletten Bingo openair writes `Einlass: 19:00` / `Beginn: 19:30` (and again as
   `Doors:` / `Starts:` in its English half), and the MissVergnügen anniversary `DJs ab 21 Uhr, Showtime ab 22 Uhr`. So the stored 19:00 is really the doors time
   and the 19:30 start is lost, on 2 of 6 events at capture. Reading the labelled pair out of the description and letting `orderDoorsBeforeStart` place them is
   the fix; it needs a decision first on whether prose may override the venue's own structured date field, and the unlabelled `ab … Uhr` / `Showtime` phrasing
@@ -249,8 +251,8 @@ Strategy & sequencing: [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEG
 - [ ] Scrape events in multiple languages (English + German) where the source offers it (e.g. Berghain) — first audit which event sources are actually
   multi-language
 - [ ] Update importers to scrape/parse **all** available events via the site's navigation/pagination (not just the first page). migas is the cheapest concrete
-  case and the one that needs new plumbing: its "Load More" button POSTs `action=load_events&paged=<n>` to `wp-admin/admin-ajax.php` and returns the same
-  markup fragment (a GET ignores `paged`), while the button's `data-pages` states the total page count up front — so the loop is bounded and terminating, but
+  case and the one that needs new plumbing: its "Load More" button POSTs `action=load_events&paged=<n>` to `wp-admin/admin-ajax.php` and returns the same markup
+  fragment (a GET ignores `paged`), while the button's `data-pages` states the total page count up front — so the loop is bounded and terminating, but
   `HtmlFetcher` is GET-only and would need a form-POST fetch first. 10 of 12 upcoming events at capture.
 - [ ] Review events typed `OTHER` — should we add new values to the event-type enum? Four formats have no type of their own today and are filed under a
   neighbour: comedy (Cosmic Comedy's whole 57-event programme reads as `SHOW`), dance and theatre (Theater im Delphi's `Tanz`/`Theater`, the AEG venues'
@@ -313,13 +315,13 @@ importer PR.**
   `AegOverviewPageScraper.isSport` and Velomax's type map **are** this decision's implementation — the Velomax halls drop 32 of 85 listed entries and Uber Arena
   40 of 128 rather than burying their concerts under `OTHER`. Reopening this means reopening that code, not just a doc.
 - [ ] **Deferred — classical concerts / orchestras (wanted, blocked on the artist model).** Berliner Symphoniker, RBB Sendesaal, Konzerthaus, Philharmonie. Fits
-  the existing `CONCERT` type, but the data shape differs — orchestra/ensemble + conductor + soloists rather than headliner + support — so **`ArtistRole` and the
-  genre vocabulary must be extended first**, with an ADR. Do **not** import an orchestral house by flattening it into headliner-plus-support; the data would be
-  wrong in a way that is expensive to unpick. RBB Sendesaal's scraping is already solved (server-rendered ROC calendar, `.ConcertListItem-location` is the only
-  filter needed) and it stays in Blocked purely on this.
+  the existing `CONCERT` type, but the data shape differs — orchestra/ensemble + conductor + soloists rather than headliner + support — so **`ArtistRole` and
+  the genre vocabulary must be extended first**, with an ADR. Do **not** import an orchestral house by flattening it into headliner-plus-support; the data would
+  be wrong in a way that is expensive to unpick. RBB Sendesaal's scraping is already solved (server-rendered ROC calendar, `.ConcertListItem-location` is the
+  only filter needed) and it stays in Blocked purely on this.
 - [ ] **Deferred — exhibitions as first-class runs (blocked on the time model).** A run of weeks/months rather than a start time on one evening needs a date
-  range in the schema plus a display decision. Note the related honesty gap: `EXHIBITION` today means an *opening* (a `vernissage` has a start time), not a run
-  — see EVENT_SCOPE.md §2.
+  range in the schema plus a display decision. Note the related honesty gap: `EXHIBITION` today means an *opening* (a `vernissage` has a start time), not a
+  run — see EVENT_SCOPE.md §2.
 
 **Actionable now that comedy and theatres are settled:**
 
@@ -346,8 +348,8 @@ importer PR.**
 - [ ] **Re-derive `perf/load.js`'s session weights from real traffic.** They are currently 55% events list / 25% calendar / 20% venues — a considered guess,
   labelled as one in the script. A load test's p95 only describes traffic that could actually occur, so a wrong mix produces a confident number about a session
   nobody has. Needs analytics or access logs, so it is blocked on a deployment
-- [ ] **Automate the k6 runs**, once there is somewhere worth pointing them. Deliberately deferred — a GitHub runner is too noisy to baseline against, and a
-  CI run against an empty database would only re-assert what the Testcontainers tests already cover with real data. Two follow-ups, in order:
+- [ ] **Automate the k6 runs**, once there is somewhere worth pointing them. Deliberately deferred — a GitHub runner is too noisy to baseline against, and a CI
+  run against an empty database would only re-assert what the Testcontainers tests already cover with real data. Two follow-ups, in order:
     1. Point `perf/smoke.js` and `perf/load.js` at **staging** from a scheduled workflow, once staging exists (blocked on ADR-012)
     2. Store the results over time rather than gating on a threshold — a p95 that has drifted 40% over two months is the signal; a single red build is not.
        Prometheus remote-write into the monitoring stack above is the natural home. See [perf/README.md](perf/README.md) §Why there is no CI workflow (yet)
@@ -369,8 +371,8 @@ importer PR.**
 - [ ] Enable agentic workflows (continuous refactoring/docs) → https://github.github.com/gh-aw/
 - [ ] **Opt in to Vite's `configLoader: 'native'`** — the config chain already carries the explicit `.ts` imports the native loader needs
   (`events-frontend/AGENTS.md` §Config-loader imports), and `vite build --configLoader native` was verified working on Node 24. The only blocker is the engine
-  floor: it fails on Node 22, which has no unflagged type-stripping. **Unblocked once `engines.node` is `>=24`.** Not urgent — the current `bundle` loader works
-  — but doing it deliberately beats being moved by a Vite major
+  floor: it fails on Node 22, which has no unflagged type-stripping. **Unblocked once `engines.node` is `>=24`.** Not urgent — the current `bundle` loader
+  works — but doing it deliberately beats being moved by a Vite major
 
 ## Legal / Compliance (before going live)
 
@@ -415,9 +417,8 @@ Ordered by when it becomes possible.
 - [ ] **Give backup retention its own line in the privacy notice.** It is a separate period from log retention, and the two interact: if logs on disk are
   captured by `wal-g` snapshots, the effective log retention is the **backup** window, not the rotation one. Check this against the final design rather than
   assuming it — assuming it is how a notice ends up stating a period the system does not honour
-- [ ] **Settle the logging decisions** (LEGAL.md §7.5.1): whether Traefik and the nginx container log real client IPs, whether they are truncated,
-  the retention period, and where retention is actually enforced. The privacy notice currently states an *intended* seven days — it must state the configured
-  one
+- [ ] **Settle the logging decisions** (LEGAL.md §7.5.1): whether Traefik and the nginx container log real client IPs, whether they are truncated, the retention
+  period, and where retention is actually enforced. The privacy notice currently states an *intended* seven days — it must state the configured one
 - [ ] **Re-check the privacy notice against what actually runs**, then set `INFRASTRUCTURE_IS_PROPOSED = false` and bump `LAST_REVIEWED`. Name the real
   processors, and the transfer mechanism in force for Cloudflare rather than the placeholder sentence
 - [ ] **Legal review of the German privacy notice** — plus the DSGVO-generator cross-check (§7.8) as a second pair of eyes. The drafts are careful and
@@ -431,8 +432,8 @@ Ordered by when it becomes possible.
 
 ### Only verifiable once there is a public URL
 
-- [ ] **Google Rich Results Test** on a real event page. The `schema.org` output is verified against Google's documented requirements and by unit and e2e tests
-  — never against Google. This is the one place the structured data could still be wrong in a way nothing in CI catches
+- [ ] **Google Rich Results Test** on a real event page. The `schema.org` output is verified against Google's documented requirements and by unit and e2e
+  tests — never against Google. This is the one place the structured data could still be wrong in a way nothing in CI catches
 - [ ] **Set the site up in [Google Search Console](https://search.google.com/search-console/)** — verify ownership of `event-junkie.de` (DNS TXT record via
   Cloudflare is the least fragile method), add **both** locale trees, and submit `sitemap.xml`. Nothing below can be checked until this exists, and it is the
   only free source of truth for how Google actually sees the site
@@ -440,8 +441,8 @@ Ordered by when it becomes possible.
   `robots.txt` and `sitemap.xml` are genuinely served from the origin, not just present in `dist/`
 - [ ] **Watch indexing, especially detail pages.** This is the named trigger in [ADR-014](docs/adr/ADR-014_RENDERING_STRATEGY.md) §Decision 4 for reopening full
   SSR: **detail pages indexed late or not at all is the evidence**, and anything short of that is anticipation. Worth a deliberate check a few weeks after
-  launch rather than a glance on day one — a brand-new site with no inbound links has low crawl priority, so early slowness is expected and proves nothing.
-  Use the URL Inspection tool on one event page to see the rendered HTML Google actually holds
+  launch rather than a glance on day one — a brand-new site with no inbound links has low crawl priority, so early slowness is expected and proves nothing. Use
+  the URL Inspection tool on one event page to see the rendered HTML Google actually holds
 - [ ] **Check a real link preview** in Slack, WhatsApp and iMessage. The per-page tags exist in the DOM now, but these scrapers do not run JavaScript, so they
   still read the site-level ones out of the served HTML — the concrete defect ADR-014 exists to fix, and it only closes when the injector lands. Checking a real
   preview is the only way to know it worked
@@ -453,8 +454,8 @@ Ordered by when it becomes possible.
 - [ ] **Build the meta-injection transport** ([ADR-014](docs/adr/ADR-014_RENDERING_STRATEGY.md) §Decision 3): the component that rewrites `<title>`, `og:*`,
   `twitter:*` and `canonical` per route before the response leaves our infrastructure. Leading candidate is a Cloudflare Worker using `HTMLRewriter`; the
   alternative is a small k3s sidecar, which costs more operationally and keeps all processing in Germany. **It must fail open** — a slow or failing BFF has to
-  yield the unmodified shell, never an error page. If the Worker is chosen, that is a §7.7 change to raise rather than assume.
-  *(The other half — computing the tags — needs no deployment and is tracked under Frontend & BFF.)*
+  yield the unmodified shell, never an error page. If the Worker is chosen, that is a §7.7 change to raise rather than assume. *(The other half — computing the
+  tags — needs no deployment and is tracked under Frontend & BFF.)*
 
 ### Deferred deliberately — decided, not forgotten
 

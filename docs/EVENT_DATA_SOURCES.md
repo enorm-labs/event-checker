@@ -4,9 +4,10 @@ Overview of all venues, clubs, and promoters whose websites are potential source
 remaining work is visible at a glance.
 
 **This document answers *which venues*. For *which kinds of event*, see [EVENT_SCOPE.md](EVENT_SCOPE.md)** — the standing reference for what is in scope, what
-is deliberately excluded (sport, participation formats, trade fairs, classical) and which coverage questions are still open. Several rows below sit in
-*Blocked* on a scope decision rather than a technical one; that document is where those decisions are recorded. The **Comment** column records what matters for building or maintaining an importer — the platform, where the data lives,
-and the parsing quirks. For an implemented importer, its KDoc and scraper tests are the authoritative field mapping; defects worth repairing live in
+is deliberately excluded (sport, participation formats, trade fairs, classical) and which coverage questions are still open. Several rows below sit in *Blocked*
+on a scope decision rather than a technical one; that document is where those decisions are recorded. The **Comment** column records what matters for building
+or maintaining an importer — the platform, where the data lives, and the parsing quirks. For an implemented importer, its KDoc and scraper tests are the
+authoritative field mapping; defects worth repairing live in
 [../TODO.md](../TODO.md).
 
 | Status                              | Meaning                                                                              | Count |
@@ -20,94 +21,94 @@ and the parsing quirks. For an implemented importer, its KDoc and scraper tests 
 
 ## ✅ Imported
 
-| Name                        | URL                                                         | Type         | Comment                                               |
-|-----------------------------|-------------------------------------------------------------|--------------|-------------------------------------------------------|
-| ÆDEN                        | https://aedenberlin.com/                                    | Techno Club  | WordPress; /events → month pages; no prices           |
-| Admiralspalast              | https://www.admiralspalast.theater/                         | Theater      | Contao; one event per performance row; no prices      |
-| Alte Kantine Kulturbrauerei | https://alte-kantine.eu/                                    | Concert Hall |                                                       |
-| AMT                         | https://www.club-amt.berlin                                 | Techno Club  | Webflow; /events → month pages                        |
-| Arcanoa                     | https://www.ssi-media.com/arcanoa/veranst.htm               | Bar          | 1990s HTML; title/date only; year from weekday        |
-| arkaoda                     | https://berlin.arkaoda.com/?/default/program                | Bar          | PHP router; only "Konser" typed; RA link in prose     |
-| Astra Kulturhaus            | https://www.astra-berlin.de/                                | Concert Hall | schema.org `MusicEvent`; presale + door prices        |
-| Badehaus                    | https://badehaus-berlin.com/                                | Club         | "AUSVERKAUFT"/"VERLEGT" labels; ticket + FB links     |
-| Bar jeder Vernunft          | https://www.bar-jeder-vernunft.de/de/programm/kalender.html | Bar          | Neos; per-date JSON-LD; one show page per run         |
-| Berghain / Panorama Bar     | https://www.berghain.berlin/de/program/                     | Techno Club  | Server-rendered; list + detail                        |
-| Bi Nuu                      | https://binuu.de/                                           | Club         | No genre or prices on site; only via ticket link      |
-| Cassiopeia                  | https://cassiopeia-berlin.de/                               | Club         | Webflow; genre tags, sold-out / cancelled badges      |
-| Clash Club                  | https://clash-berlin.de/                                    | Club         | WordPress; sparse — no times, prices or text          |
-| Club der Visionäre          | https://clubdervisionaere.com/programm                      | Techno Club  | WordPress; one listing, 3 rooms by CSS class          |
-| Club OST                    | https://clubost.de/                                         | Techno Club  | Django; homepage is the programme; RA tickets         |
-| Colosseum                   | https://www.colosseumberlin.com/event                       | Concert Hall | Wix Events warmup JSON; external shops feign sold-out |
-| Columbia Theater            | https://columbia-theater.de/                                | Concert Hall | WordPress; date in slug; status via `data-*` flag     |
-| Columbiahalle               | https://www.columbiahalle.berlin/veranstaltungen.html       | Concert Hall | Contao; one page, month headings carry the year       |
-| Cosmic Comedy Club          | https://comedyclubberlin.com/wp-json/tribe/events/v1/events | Comedy Club  | The Events Calendar REST API; cursor-paged; no prices |
-| Crack Bellmer               | https://www.crackbellmer.de/program/this-month              | Bar          | Webflow; month tabs filter one list; no prices        |
-| Der Weiße Hase              | https://derweissehase.club/events                           | Club         | Contao; invalid `<p>` nesting; RA ticket links        |
-| Duncker Club                | https://www.dunckerclub.de/                                 | Club         |                                                       |
-| Eschschloraque Rümschrümp   | https://www.eschschloraque.de/                              | Bar          | Drupal 7; front page = full nodes; RDFa datetimes     |
-| Festsaal Kreuzberg          | https://festsaal-kreuzberg.de/de                            | Concert Hall | Nuxt/Wagtail SSR; `ld+json` empty; no prices          |
-| Frannz Club                 | https://frannz.eu/                                          | Club         |                                                       |
-| gART.n                      | https://www.gartn.xyz/                                      | Techno Club  | Carrd one-pager; year from weekday; no prices         |
-| Gärten der Welt             | https://www.gaertenderwelt.de/events/veranstaltungen/       | Open Air     | TYPO3 events2; paged; park activities excluded        |
-| Golden Gate                 | https://goldengate-berlin.de/                               | Techno Club  | Elementor; current Thu–Sat block only; door-only      |
-| Gretchen                    | https://www.gretchen-club.de/                               | Club         |                                                       |
-| Havanna                     | https://www.havanna-berlin.de/                              | Club         | Undated weekly nights; occurrences derived            |
-| Heideglühen                 | https://heidegluehen.berlin/monatsvorschau/                 | Techno Club  | One month at a time; DJ lineup on /aktuell/           |
-| Heimathafen Neukölln        | https://heimathafen-neukoelln.de/                           | Concert Hall | WP REST + ACF; one post, many dated performances      |
-| Hole 44                     | https://hole-berlin.de/                                     | Concert Hall | Events-Manager; "Abgesagt!" / "VERLEGT!" labels       |
-| Humboldthain Club           | https://www.humboldthain.com/                               | Techno Club  | Elfsight widget API; weekly night expanded            |
-| Huxleys Neue Welt           | https://huxleysneuewelt.de/events                           | Concert Hall | Events-Manager; ISO slug date; genre/promoter tags    |
-| Junction Bar                | https://www.junction-bar.de/                                | Bar          | Static monthly pages; show times vary by weekday      |
-| Kantine am Berghain         | https://www.berghain.berlin/de/program/kantine-am-berghain/ | Concert Hall | Shares BERGHAIN importer                              |
-| Kater                       | https://www.katerclub.de/                                   | Techno Club  | Homepage programme; ___ floor rules mark lineups      |
-| Klunkerkranich              | https://klunkerkranich.org/events/                          | Bar          | WordPress; ISO date in slug; ~10-day horizon          |
-| Kulturhaus Insel Berlin     | https://www.inselberlin.de/                                 | Concert Hall | Gatsby static-query JSON; times in the blurb          |
-| Kulturhaus Peter Edel       | https://www.peteredel.de/events/                            | Concert Hall | Umbraco grid; month heading carries the year          |
-| LARK                        | https://larkberlin.com/events/                              | Club         | WP REST + ACF; post date is the event date            |
-| Lido                        | https://www.lido-berlin.de/                                 | Concert Hall | Clean slugs; doors + start; "Ausverkauft" badge       |
-| Loge                        | https://www.loge-berlin.org/                                | Club         | Wix; tickets on-site; support via "+" in title        |
-| MAAYA                       | https://maaya.de/                                           | Club         | Elementor home page; every time written "pm"          |
-| Madame Claude               | https://madameclaude.de/                                    | Bar          | WordPress `event` REST API (ACF)                      |
-| Matrix Club Berlin          | https://www.matrix-berlin.de/                               | Club         | WordPress; month pages walked; DJs + door prices      |
-| Max-Schmeling-Halle         | https://www.velomax.de/events                               | Arena        | Shared VELOMAX listing; no sport imported             |
-| Maxxim Club                 | https://www.maxxim-berlin.de/partys                         | Club         | Wix Events warmup JSON; UTC dates; prices inline      |
-| Metropol                    | https://metropol-berlin.de/events                           | Concert Hall | Events-Manager list + detail; no prices; "Verlegt"    |
-| migas                       | https://migas.berlin/program/                               | Bar          | WordPress; per-event modal; lazy imgs; page 1 only    |
-| Mikropol                    | https://mikropol-berlin.de/                                 | Club         | Events-Manager list + detail; "verlegt in den …"      |
-| Modus Berlin                | https://modus-berlin.de/events                              | Club         | List + detail; rendered date wins over stale slug     |
-| Monarch                     | https://www.kottimonarch.de/                                | Bar          | PHP /programm.php; type + status inline in title      |
-| Monster Ronson's Ichiban Karaoke | https://www.karaokemonster.de/                         | Bar          | Webflow; ~12-day window; banded prices; closure cards |
-| Morphine Raum               | http://www.morphinerecords.com/events                       | Club         | Hand-coded Kirby; ARCHIVE row skipped; price ranges   |
-| MS Hoppetosse               | https://hoppetosse.berlin/                                  | Techno Club  | Shares the CdV listing; winter location only          |
-| Neue Zukunft                | https://neue-zukunft.org/                                   | Club         | Elfsight Event Calendar widget API                    |
-| OHM                         | https://ohmberlin.com/                                      | Techno Club  | Year-less dd/MM; only 1–3 nights listed at a time     |
-| Panke Culture               | https://www.pankeculture.com/programme/                     | Club         | WordPress/Divi; upcoming list only; no event pages    |
-| Parkbühne Wuhlheide         | https://www.wuhlheide.de/programm                           | Open Air     | October CMS; ISO date in URL; seasonal, sold-out      |
-| Privatclub                  | https://privatclub-berlin.de/                               | Club         | Rich detail pages; genre, presale + AK prices         |
-| Quasimodo                   | https://quasimodo.club/events                               | Club         | Events-Manager; .club domain; genre tags + prices     |
-| Renate                      | https://www.renate.cc/                                      | Techno Club  | Homepage programme; per-floor lineups, no times       |
-| Ritter Butzke               | https://club.ritterbutzke.com/events                        | Techno Club  | Modus codebase, own template; stale slug dates        |
-| Roadrunner's Paradise       | http://www.roadrunners-paradise.de/                         | Bar          | Retro HTML; rich data; year missing on some dates     |
-| Säälchen                    | https://www.holzmarkt.com/kalender                          | Concert Hall | Drupal; shared calendar filtered by location          |
-| Schokoladen                 | https://www.schokoladen-mitte.de/                           | Club         | Laravel; anchor-based events; genre inside title      |
-| silent green                | https://www.silent-green.net/programm                       | Concert Hall | TYPO3 news; month walk; a run listed per open day     |
-| SO36                        | https://www.so36.com/tickets                                | Club         | Cookie wall bypassed via Ticket-Toaster shop          |
-| Soda Club                   | https://www.soda-berlin.de/events                           | Club         | disco2app CMS; `MusicEvent` JSON-LD on details        |
-| Sonnenraum                  | https://clubdervisionaere.com/programm                      | Club         | Shares the CdV listing; Monday live residency         |
-| Supamolly                   | https://www.supamolly.de/?p=programm                        | Club         | Retro PHP; row id is the date stamp; no prices        |
-| Tempodrom                   | https://www.tempodrom.de/programm-und-tickets/              | Concert Hall | schema.org `Event` JSON-LD; whole programme           |
-| Theater im Delphi           | https://theater-im-delphi.de/programm/                      | Concert Hall | One row per performance; prices only in a leak        |
-| Tresor                      | https://tresorberlin.com/club/events/                       | Techno Club  | WordPress; floor-grouped lineup; detail pages         |
-| Uber Arena                  | https://www.uber-arena.de/events/all                        | Arena        | AEG CMS; list + detail; no sport imported             |
-| Uber Eats Music Hall        | https://www.uber-eats-music-hall.de/events/all              | Concert Hall | Shares the Uber Arena parsers; month names, no cats   |
-| UFO im Velodrom             | https://www.velomax.de/events                               | Concert Hall | Shares the VELOMAX listing                            |
-| Urania                      | https://www.urania.de/kalender/                             | Concert Hall | One house; no source attributes an event to a hall    |
-| Urban Spree                 | https://www.urbanspree.com/program/                         | Club         | MODX; listing descending + paginated; walks pages     |
-| Velodrom                    | https://www.velomax.de/events                               | Arena        | Shares the VELOMAX listing; Microdata details         |
-| VOID Club                   | https://www.void-club.de/                                   | Techno Club  | Hand-coded Bootstrap; year from weekday; 2 rooms      |
-| Wild at Heart               | https://www.wildatheartberlin.de/                           | Bar          | Retro frameset; concerts.php; year from weekday       |
-| Zenner                      | https://zenner.berlin/programm                              | Club         | Gatsby/Sanity page-data JSON; UTC dates; archive      |
-| Zitadelle                   | https://citadel-music-festival.de/events                    | Open Air     | Festival site; WordPress/EM; summer season only       |
+| Name                             | URL                                                         | Type         | Comment                                               |
+|----------------------------------|-------------------------------------------------------------|--------------|-------------------------------------------------------|
+| ÆDEN                             | https://aedenberlin.com/                                    | Techno Club  | WordPress; /events → month pages; no prices           |
+| Admiralspalast                   | https://www.admiralspalast.theater/                         | Theater      | Contao; one event per performance row; no prices      |
+| Alte Kantine Kulturbrauerei      | https://alte-kantine.eu/                                    | Concert Hall |                                                       |
+| AMT                              | https://www.club-amt.berlin                                 | Techno Club  | Webflow; /events → month pages                        |
+| Arcanoa                          | https://www.ssi-media.com/arcanoa/veranst.htm               | Bar          | 1990s HTML; title/date only; year from weekday        |
+| arkaoda                          | https://berlin.arkaoda.com/?/default/program                | Bar          | PHP router; only "Konser" typed; RA link in prose     |
+| Astra Kulturhaus                 | https://www.astra-berlin.de/                                | Concert Hall | schema.org `MusicEvent`; presale + door prices        |
+| Badehaus                         | https://badehaus-berlin.com/                                | Club         | "AUSVERKAUFT"/"VERLEGT" labels; ticket + FB links     |
+| Bar jeder Vernunft               | https://www.bar-jeder-vernunft.de/de/programm/kalender.html | Bar          | Neos; per-date JSON-LD; one show page per run         |
+| Berghain / Panorama Bar          | https://www.berghain.berlin/de/program/                     | Techno Club  | Server-rendered; list + detail                        |
+| Bi Nuu                           | https://binuu.de/                                           | Club         | No genre or prices on site; only via ticket link      |
+| Cassiopeia                       | https://cassiopeia-berlin.de/                               | Club         | Webflow; genre tags, sold-out / cancelled badges      |
+| Clash Club                       | https://clash-berlin.de/                                    | Club         | WordPress; sparse — no times, prices or text          |
+| Club der Visionäre               | https://clubdervisionaere.com/programm                      | Techno Club  | WordPress; one listing, 3 rooms by CSS class          |
+| Club OST                         | https://clubost.de/                                         | Techno Club  | Django; homepage is the programme; RA tickets         |
+| Colosseum                        | https://www.colosseumberlin.com/event                       | Concert Hall | Wix Events warmup JSON; external shops feign sold-out |
+| Columbia Theater                 | https://columbia-theater.de/                                | Concert Hall | WordPress; date in slug; status via `data-*` flag     |
+| Columbiahalle                    | https://www.columbiahalle.berlin/veranstaltungen.html       | Concert Hall | Contao; one page, month headings carry the year       |
+| Cosmic Comedy Club               | https://comedyclubberlin.com/wp-json/tribe/events/v1/events | Comedy Club  | The Events Calendar REST API; cursor-paged; no prices |
+| Crack Bellmer                    | https://www.crackbellmer.de/program/this-month              | Bar          | Webflow; month tabs filter one list; no prices        |
+| Der Weiße Hase                   | https://derweissehase.club/events                           | Club         | Contao; invalid `<p>` nesting; RA ticket links        |
+| Duncker Club                     | https://www.dunckerclub.de/                                 | Club         |                                                       |
+| Eschschloraque Rümschrümp        | https://www.eschschloraque.de/                              | Bar          | Drupal 7; front page = full nodes; RDFa datetimes     |
+| Festsaal Kreuzberg               | https://festsaal-kreuzberg.de/de                            | Concert Hall | Nuxt/Wagtail SSR; `ld+json` empty; no prices          |
+| Frannz Club                      | https://frannz.eu/                                          | Club         |                                                       |
+| gART.n                           | https://www.gartn.xyz/                                      | Techno Club  | Carrd one-pager; year from weekday; no prices         |
+| Gärten der Welt                  | https://www.gaertenderwelt.de/events/veranstaltungen/       | Open Air     | TYPO3 events2; paged; park activities excluded        |
+| Golden Gate                      | https://goldengate-berlin.de/                               | Techno Club  | Elementor; current Thu–Sat block only; door-only      |
+| Gretchen                         | https://www.gretchen-club.de/                               | Club         |                                                       |
+| Havanna                          | https://www.havanna-berlin.de/                              | Club         | Undated weekly nights; occurrences derived            |
+| Heideglühen                      | https://heidegluehen.berlin/monatsvorschau/                 | Techno Club  | One month at a time; DJ lineup on /aktuell/           |
+| Heimathafen Neukölln             | https://heimathafen-neukoelln.de/                           | Concert Hall | WP REST + ACF; one post, many dated performances      |
+| Hole 44                          | https://hole-berlin.de/                                     | Concert Hall | Events-Manager; "Abgesagt!" / "VERLEGT!" labels       |
+| Humboldthain Club                | https://www.humboldthain.com/                               | Techno Club  | Elfsight widget API; weekly night expanded            |
+| Huxleys Neue Welt                | https://huxleysneuewelt.de/events                           | Concert Hall | Events-Manager; ISO slug date; genre/promoter tags    |
+| Junction Bar                     | https://www.junction-bar.de/                                | Bar          | Static monthly pages; show times vary by weekday      |
+| Kantine am Berghain              | https://www.berghain.berlin/de/program/kantine-am-berghain/ | Concert Hall | Shares BERGHAIN importer                              |
+| Kater                            | https://www.katerclub.de/                                   | Techno Club  | Homepage programme; ___ floor rules mark lineups      |
+| Klunkerkranich                   | https://klunkerkranich.org/events/                          | Bar          | WordPress; ISO date in slug; ~10-day horizon          |
+| Kulturhaus Insel Berlin          | https://www.inselberlin.de/                                 | Concert Hall | Gatsby static-query JSON; times in the blurb          |
+| Kulturhaus Peter Edel            | https://www.peteredel.de/events/                            | Concert Hall | Umbraco grid; month heading carries the year          |
+| LARK                             | https://larkberlin.com/events/                              | Club         | WP REST + ACF; post date is the event date            |
+| Lido                             | https://www.lido-berlin.de/                                 | Concert Hall | Clean slugs; doors + start; "Ausverkauft" badge       |
+| Loge                             | https://www.loge-berlin.org/                                | Club         | Wix; tickets on-site; support via "+" in title        |
+| MAAYA                            | https://maaya.de/                                           | Club         | Elementor home page; every time written "pm"          |
+| Madame Claude                    | https://madameclaude.de/                                    | Bar          | WordPress `event` REST API (ACF)                      |
+| Matrix Club Berlin               | https://www.matrix-berlin.de/                               | Club         | WordPress; month pages walked; DJs + door prices      |
+| Max-Schmeling-Halle              | https://www.velomax.de/events                               | Arena        | Shared VELOMAX listing; no sport imported             |
+| Maxxim Club                      | https://www.maxxim-berlin.de/partys                         | Club         | Wix Events warmup JSON; UTC dates; prices inline      |
+| Metropol                         | https://metropol-berlin.de/events                           | Concert Hall | Events-Manager list + detail; no prices; "Verlegt"    |
+| migas                            | https://migas.berlin/program/                               | Bar          | WordPress; per-event modal; lazy imgs; page 1 only    |
+| Mikropol                         | https://mikropol-berlin.de/                                 | Club         | Events-Manager list + detail; "verlegt in den …"      |
+| Modus Berlin                     | https://modus-berlin.de/events                              | Club         | List + detail; rendered date wins over stale slug     |
+| Monarch                          | https://www.kottimonarch.de/                                | Bar          | PHP /programm.php; type + status inline in title      |
+| Monster Ronson's Ichiban Karaoke | https://www.karaokemonster.de/                              | Bar          | Webflow; ~12-day window; banded prices; closure cards |
+| Morphine Raum                    | http://www.morphinerecords.com/events                       | Club         | Hand-coded Kirby; ARCHIVE row skipped; price ranges   |
+| MS Hoppetosse                    | https://hoppetosse.berlin/                                  | Techno Club  | Shares the CdV listing; winter location only          |
+| Neue Zukunft                     | https://neue-zukunft.org/                                   | Club         | Elfsight Event Calendar widget API                    |
+| OHM                              | https://ohmberlin.com/                                      | Techno Club  | Year-less dd/MM; only 1–3 nights listed at a time     |
+| Panke Culture                    | https://www.pankeculture.com/programme/                     | Club         | WordPress/Divi; upcoming list only; no event pages    |
+| Parkbühne Wuhlheide              | https://www.wuhlheide.de/programm                           | Open Air     | October CMS; ISO date in URL; seasonal, sold-out      |
+| Privatclub                       | https://privatclub-berlin.de/                               | Club         | Rich detail pages; genre, presale + AK prices         |
+| Quasimodo                        | https://quasimodo.club/events                               | Club         | Events-Manager; .club domain; genre tags + prices     |
+| Renate                           | https://www.renate.cc/                                      | Techno Club  | Homepage programme; per-floor lineups, no times       |
+| Ritter Butzke                    | https://club.ritterbutzke.com/events                        | Techno Club  | Modus codebase, own template; stale slug dates        |
+| Roadrunner's Paradise            | http://www.roadrunners-paradise.de/                         | Bar          | Retro HTML; rich data; year missing on some dates     |
+| Säälchen                         | https://www.holzmarkt.com/kalender                          | Concert Hall | Drupal; shared calendar filtered by location          |
+| Schokoladen                      | https://www.schokoladen-mitte.de/                           | Club         | Laravel; anchor-based events; genre inside title      |
+| silent green                     | https://www.silent-green.net/programm                       | Concert Hall | TYPO3 news; month walk; a run listed per open day     |
+| SO36                             | https://www.so36.com/tickets                                | Club         | Cookie wall bypassed via Ticket-Toaster shop          |
+| Soda Club                        | https://www.soda-berlin.de/events                           | Club         | disco2app CMS; `MusicEvent` JSON-LD on details        |
+| Sonnenraum                       | https://clubdervisionaere.com/programm                      | Club         | Shares the CdV listing; Monday live residency         |
+| Supamolly                        | https://www.supamolly.de/?p=programm                        | Club         | Retro PHP; row id is the date stamp; no prices        |
+| Tempodrom                        | https://www.tempodrom.de/programm-und-tickets/              | Concert Hall | schema.org `Event` JSON-LD; whole programme           |
+| Theater im Delphi                | https://theater-im-delphi.de/programm/                      | Concert Hall | One row per performance; prices only in a leak        |
+| Tresor                           | https://tresorberlin.com/club/events/                       | Techno Club  | WordPress; floor-grouped lineup; detail pages         |
+| Uber Arena                       | https://www.uber-arena.de/events/all                        | Arena        | AEG CMS; list + detail; no sport imported             |
+| Uber Eats Music Hall             | https://www.uber-eats-music-hall.de/events/all              | Concert Hall | Shares the Uber Arena parsers; month names, no cats   |
+| UFO im Velodrom                  | https://www.velomax.de/events                               | Concert Hall | Shares the VELOMAX listing                            |
+| Urania                           | https://www.urania.de/kalender/                             | Concert Hall | One house; no source attributes an event to a hall    |
+| Urban Spree                      | https://www.urbanspree.com/program/                         | Club         | MODX; listing descending + paginated; walks pages     |
+| Velodrom                         | https://www.velomax.de/events                               | Arena        | Shares the VELOMAX listing; Microdata details         |
+| VOID Club                        | https://www.void-club.de/                                   | Techno Club  | Hand-coded Bootstrap; year from weekday; 2 rooms      |
+| Wild at Heart                    | https://www.wildatheartberlin.de/                           | Bar          | Retro frameset; concerts.php; year from weekday       |
+| Zenner                           | https://zenner.berlin/programm                              | Club         | Gatsby/Sanity page-data JSON; UTC dates; archive      |
+| Zitadelle                        | https://citadel-music-festival.de/events                    | Open Air     | Festival site; WordPress/EM; summer season only       |
 
 85 importer classes cover 86 sources: only Kantine am Berghain has no class of its own, sharing the Berghain importer outright. Three other groups share a
 *listing and parser* while keeping one thin `@Component` per venue, so they do not reduce the count — Club der Visionäre, Sonnenraum and MS Hoppetosse; the
@@ -131,11 +132,11 @@ batch — Kulturhaus Peter Edel, Colosseum and Gärten der Welt — carried no R
 Konzerte. In the other direction, DNA. CLUB's 23 RA events appear nowhere in the venue's own calendar. Weight a promoter mention at least as heavily as an RA
 count when the next batch is prioritised.
 
-| Name                             | URL                                                   | Type         | Priority | Comment                                                       |
-|----------------------------------|-------------------------------------------------------|--------------|----------|---------------------------------------------------------------|
-| Fitzroy                          | https://fitzroy-berlin.de/events/                     | Club         | Medium   | WP REST `event` + ACF — the Madame Claude / LARK codebase     |
-| KAOS Berlin                      | https://kaosberlin.de/veranstaltungen/                | Techno Club  | Low      | The Events Calendar REST API, as Cosmic Comedy; 4 upcoming    |
-| DSTRKT Club Berlin               | https://www.dstrkt.de/                                | Club         | Low      | Wix one-pager; 2 dated events, which is the whole programme   |
+| Name               | URL                                    | Type        | Priority | Comment                                                     |
+|--------------------|----------------------------------------|-------------|----------|-------------------------------------------------------------|
+| Fitzroy            | https://fitzroy-berlin.de/events/      | Club        | Medium   | WP REST `event` + ACF — the Madame Claude / LARK codebase   |
+| KAOS Berlin        | https://kaosberlin.de/veranstaltungen/ | Techno Club | Low      | The Events Calendar REST API, as Cosmic Comedy; 4 upcoming  |
+| DSTRKT Club Berlin | https://www.dstrkt.de/                 | Club        | Low      | Wix one-pager; 2 dated events, which is the whole programme |
 
 One of these needs a decision made once, not per event. **Fitzroy** is on its summer break: the ACF API holds a dense July programme and resumes on 12
 September, so only 2 events are upcoming today and a fixture captured now would be unrepresentative — scaffold it in September, when the listing is
@@ -162,8 +163,8 @@ per [ADR-007](adr/ADR-007_WEB_SCRAPING_STRATEGY.md)), or applying the Havanna-st
 back here as of 4 August — **not on scraping, which works, but on scope**: it is an orchestral house. As of 2026-08-08 that question has an answer, and the
 answer is *not yet*: classical is **wanted but deferred** until `ArtistRole` and the genre vocabulary can represent an orchestra with a conductor and soloists
 ([EVENT_SCOPE.md §5](EVENT_SCOPE.md)). Importing it before then would mean flattening its programme into headliner-plus-support, which is wrong in a way that is
-expensive to unpick later — so it stays here on purpose, not through neglect.
-Answer that question and the importer is a short job; the ROC calendar is server-rendered and attributes each concert to a venue, so
+expensive to unpick later — so it stays here on purpose, not through neglect. Answer that question and the importer is a short job; the ROC calendar is
+server-rendered and attributes each concert to a venue, so
 `.ConcertListItem-location` is the only filter needed. Five entries had their blocker *change* without unblocking, which is worth knowing before anyone spends
 effort on them:
 
@@ -216,20 +217,20 @@ the RA sweep, so the outcome is unsurprising, but the failure modes are worth na
   behind.
 - **Four recorded domains have died since the sweep.** `bredouille-bar.com` no longer resolves, `tausendberlin.de` is parked and for sale,
   `kulturbrauerei-berlin.de` answers 523 from Cloudflare, and Wendel's `nstp.de` serves plain HTTP only — its TLS handshake fails outright.
-- **A site is not a listing.** 8MM, YSY, FOUND, Golden Flamingo, Coco Boule, Atelier Rooftop, Emma Pea and Beach Neukölln all render fine and publish no
-  events; Marmorbar's Wix Events widget says "No events at the moment" in as many words, and Funkhaus Berlin's EVENTS page is an archive that stops in 2019.
+- **A site is not a listing.** 8MM, YSY, FOUND, Golden Flamingo, Coco Boule, Atelier Rooftop, Emma Pea and Beach Neukölln all render fine and publish no events;
+  Marmorbar's Wix Events widget says "No events at the moment" in as many words, and Funkhaus Berlin's EVENTS page is an archive that stops in 2019.
 - **Two listings are simply behind.** The Door Club's weekly grid ends on 1 August and Backsteinboot's Cargo programme still shows July, while both have August
   dates on RA. Both are well-structured and worth re-checking rather than rewriting.
-- **Three calendars describe something other than a programme.** KINDL renders tours and exhibition openings, Genezarethkirche a parish calendar of services
-  and choir rehearsals, and Spielbank Berlin casino promotions — the Hamburger Bahnhof result, three times over. **DNA. CLUB** is the same shape with an extra
+- **Three calendars describe something other than a programme.** KINDL renders tours and exhibition openings, Genezarethkirche a parish calendar of services and
+  choir rehearsals, and Spielbank Berlin casino promotions — the Hamburger Bahnhof result, three times over. **DNA. CLUB** is the same shape with an extra
   twist: its events do live in a machine-readable Elfsight calendar, the format already imported for Neue Zukunft and Humboldthain, but that calendar spans 28
   locations including hotels and other clubs, and holds dance classes and workshops rather than the 23 club nights RA lists for the venue.
 - **Birgit & Bier and Œlgarten publish only undated weekly series** — "Every Thursday Morgan's Dragshow", a Sangria Friday running July to September with an
   empty occurrence list. That is the Paloma problem, and the Havanna-style derived occurrence is what would fix it.
 
 Two side findings. **Minimal Bar** — the venue this document called the sharpest argument for importing RA — does have an operator site after all,
-`birgit.club/minimal`, but it carries a stale Christmas note and no programme, so the row stands. And **Rough Trade** answers 403 to curl while serving the
-same page to other clients, so its blocker is the empty Next.js payload rather than the WAF; a 403 is still not evidence that a site is unscrapable.
+`birgit.club/minimal`, but it carries a stale Christmas note and no programme, so the row stands. And **Rough Trade** answers 403 to curl while serving the same
+page to other clients, so its blocker is the empty Next.js payload rather than the WAF; a 403 is still not evidence that a site is unscrapable.
 
 | Name                             | URL                                            | Type         | Blocker                                                   | Unblocked by               |
 |----------------------------------|------------------------------------------------|--------------|-----------------------------------------------------------|----------------------------|
@@ -329,8 +330,8 @@ New candidates land here first: check for a server-rendered programme, then move
 **Empty as of 5 August 2026.** The 4 August sweep put 70 candidates here; the same day's analysis moved out the 22 with the highest RA event counts and a real
 own website (9 to [Ready](#-ready-to-implement), 13 to [Blocked](#-blocked--deferred), a 41 % hit rate), and the 5 August analysis cleared the remaining 48 —
 the rows whose recorded URL was an Instagram or Facebook page, or none at all — at 10 to [Ready](#-ready-to-implement) and 38 to
-[Blocked](#-blocked--deferred). Where no own domain was recorded, one was searched for before the row was filed; the twelve sites that turned up are recorded
-on whichever row they belong to. Types were corrected against each venue's own site as it was opened, so the RA-derived guesses this table used to carry are gone.
+[Blocked](#-blocked--deferred). Where no own domain was recorded, one was searched for before the row was filed; the twelve sites that turned up are recorded on
+whichever row they belong to. Types were corrected against each venue's own site as it was opened, so the RA-derived guesses this table used to carry are gone.
 
 Where the 70 came from, and what was deliberately left out:
 

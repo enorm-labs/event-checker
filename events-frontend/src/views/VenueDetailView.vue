@@ -3,13 +3,12 @@ import { computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import BaseDetailView from '@/components/BaseDetailView.vue'
 import { usePageMeta } from '@/composables/usePageMeta'
-import { placeholderPageMeta, venuePageMeta } from '@/lib/pageMeta'
+import { APP_NAME, placeholderPageMeta, venuePageMeta } from '@/lib/pageMeta'
 import { useEventSearch } from '@/composables/useEvents'
 import { useVenue } from '@/composables/useVenue'
 import { useI18n } from 'vue-i18n'
-import { APP_NAME } from '@/lib/pageMeta'
 import { useStructuredData } from '@/composables/useStructuredData'
-import { breadcrumbJsonLd, venueJsonLd, type JsonLd } from '@/lib/structuredData'
+import { breadcrumbJsonLd, type JsonLd, venueJsonLd } from '@/lib/structuredData'
 import type { Locale } from '@/i18n/locales'
 
 const route = useRoute()
@@ -83,18 +82,18 @@ usePageMeta(() =>
 
 <template>
   <BaseDetailView
+    :empty-text="t('detail.venue.empty')"
     :error="error"
     :events="events"
     :events-error="eventsError"
     :events-loading="eventsLoading"
     :image-url="venue?.imageUrl"
+    :kind="kind"
     :loading="loading"
     :name="venue?.name"
     :not-found="notFound"
-    :ready="Boolean(venue)"
-    :empty-text="t('detail.venue.empty')"
-    :kind="kind"
     :not-found-text="t('detail.venue.notFound')"
+    :ready="Boolean(venue)"
   >
     <template #meta>
       <p v-if="addressLine" class="text-muted-foreground">{{ addressLine }}</p>

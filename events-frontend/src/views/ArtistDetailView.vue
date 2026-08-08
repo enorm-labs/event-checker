@@ -3,7 +3,7 @@ import { computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import BaseDetailView from '@/components/BaseDetailView.vue'
 import { usePageMeta } from '@/composables/usePageMeta'
-import { placeholderPageMeta, artistPageMeta } from '@/lib/pageMeta'
+import { artistPageMeta, placeholderPageMeta } from '@/lib/pageMeta'
 import { useArtist } from '@/composables/useArtist'
 import { useEventSearch } from '@/composables/useEvents'
 import { useI18n } from 'vue-i18n'
@@ -61,18 +61,18 @@ usePageMeta(() =>
 
 <template>
   <BaseDetailView
+    :empty-text="t('detail.artist.empty')"
     :error="error"
     :events="events"
     :events-error="eventsError"
     :events-loading="eventsLoading"
     :image-url="artist?.imageUrl"
+    :kind="kind"
     :loading="loading"
     :name="artist?.name"
     :not-found="notFound"
-    :ready="Boolean(artist)"
-    :empty-text="t('detail.artist.empty')"
-    :kind="kind"
     :not-found-text="t('detail.artist.notFound')"
+    :ready="Boolean(artist)"
   >
     <template #meta>
       <div v-if="links.length" class="flex flex-wrap gap-3 text-sm">

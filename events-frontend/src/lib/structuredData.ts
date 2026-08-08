@@ -121,9 +121,7 @@ function performers(event: EventDetail): JsonLd[] | undefined {
   const names = (event.lineup ?? [])
     .map((entry) => entry.artist?.name)
     .filter((name): name is string => Boolean(name))
-  return names.length
-    ? names.map((name) => ({ '@type': 'PerformingGroup', name }))
-    : undefined
+  return names.length ? names.map((name) => ({ '@type': 'PerformingGroup', name })) : undefined
 }
 
 /** The venue, as a `Place` with a postal address — Google requires both for an event. */

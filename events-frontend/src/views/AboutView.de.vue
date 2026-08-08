@@ -22,8 +22,8 @@ const localePath = useLocalePath()
       gelegentlichen Kneipenquiz.
     </p>
     <p class="text-muted-foreground">
-      Verschaff dir einen Überblick, filtere nach Genre oder Art, um deine Szene zu finden, und öffne
-      den Kalender, um deine Woche zu planen. Jedes Event führt weiter zu seiner Location, zum
+      Verschaff dir einen Überblick, filtere nach Genre oder Art, um deine Szene zu finden, und
+      öffne den Kalender, um deine Woche zu planen. Jedes Event führt weiter zu seiner Location, zum
       Line-up und zu den Künstlerinnen und Künstlern — damit du in die Details gehen kannst und die
       Nächte nicht verpasst, bei denen es sich lohnt aufzutauchen.
     </p>
@@ -35,11 +35,13 @@ const localePath = useLocalePath()
     <section class="space-y-4 pt-4">
       <h2 class="text-2xl font-bold tracking-tight">Was du hier findest</h2>
       <p class="text-muted-foreground">
-        Die Regel ist einfach: <strong class="font-medium text-foreground">Was in Berlin abends auf
-          einer Bühne stattfindet, gehört hierher.</strong> Nicht nur Livemusik, und ganz sicher
-        nicht nur Techno. Den größten Teil machen Konzerte und Clubnächte aus, dazu Partys,
-        Festivals, Bühnenshows und Kabarett, Lesungen und Spoken Word, Filmvorführungen und
-        Open-Air-Kino, Ausstellungseröffnungen und ab und zu ein Kneipenquiz.
+        Die Regel ist einfach:
+        <strong class="font-medium text-foreground"
+          >Was in Berlin abends auf einer Bühne stattfindet, gehört hierher.</strong
+        >
+        Nicht nur Livemusik, und ganz sicher nicht nur Techno. Den größten Teil machen Konzerte und
+        Clubnächte aus, dazu Partys, Festivals, Bühnenshows und Kabarett, Lesungen und Spoken Word,
+        Filmvorführungen und Open-Air-Kino, Ausstellungseröffnungen und ab und zu ein Kneipenquiz.
       </p>
       <p class="text-muted-foreground">
         Wenn eine Location selbst sagt, was für ein Abend das ist, übernehmen wir das, statt es
@@ -62,15 +64,20 @@ const localePath = useLocalePath()
       <h2 class="text-2xl font-bold tracking-tight">Warum es das gibt</h2>
       <p class="text-muted-foreground">
         Weil ich
-        <strong class="font-medium text-foreground">die Event-App bauen wollte, die Berlin
-          verdient.</strong>
+        <strong class="font-medium text-foreground"
+          >die Event-App bauen wollte, die Berlin verdient.</strong
+        >
       </p>
       <p class="text-muted-foreground">
         Berlins Szene ist riesig und völlig verstreut. Was läuft, steht auf Dutzenden Websites von
         Locations und Veranstaltern, jede mit eigenem Layout und eigenen Lücken. Eine so gewöhnliche
-        Frage wie <em>was läuft dieses Wochenende in meiner Nähe, in meinem Genre, das ich mir
-          leisten kann?</em> bedeutet ein Dutzend Browser-Tabs und viel Raten. Die Informationen
-        existieren — sie stehen nur nirgends so, dass man sie auf einmal ansehen könnte.
+        Frage wie
+        <em
+          >was läuft dieses Wochenende in meiner Nähe, in meinem Genre, das ich mir leisten
+          kann?</em
+        >
+        bedeutet ein Dutzend Browser-Tabs und viel Raten. Die Informationen existieren — sie stehen
+        nur nirgends so, dass man sie auf einmal ansehen könnte.
       </p>
       <p class="text-muted-foreground">
         Die vorhandenen Angebote lösen jeweils ein Stück davon.
@@ -141,7 +148,9 @@ const localePath = useLocalePath()
         <strong class="font-medium text-foreground">Die Abdeckung ist unvollständig.</strong> Neue
         Locations kommen nach und nach dazu; ein ruhiger Abend auf Event Junkie ist also nicht immer
         ein ruhiger Abend in Berlin.
-        <strong class="font-medium text-foreground">Details können falsch oder veraltet sein.</strong>
+        <strong class="font-medium text-foreground"
+          >Details können falsch oder veraltet sein.</strong
+        >
         Events werden automatisch von den Websites der Locations gelesen; wenn eine Show verlegt
         wird, ausverkauft ist oder ausfällt, erfahren wir das beim nächsten Durchlauf, nicht sofort.
         Frag im Zweifel bei der Location nach, bevor du losziehst.
@@ -150,11 +159,11 @@ const localePath = useLocalePath()
       </p>
       <p class="text-muted-foreground">
         Was beta <em>nicht</em> heißt: Nichts hier ist eine Testphase, für die du später zur Kasse
-        gebeten wirst, es werden keine Daten über dich verkauft oder weitergegeben, und nichts trackt
-        dich — siehe die
+        gebeten wirst, es werden keine Daten über dich verkauft oder weitergegeben, und nichts
+        trackt dich — siehe die
         <RouterLink
-          class="text-foreground underline underline-offset-4"
           :to="localePath('/legal/privacy')"
+          class="text-foreground underline underline-offset-4"
         >
           Datenschutzseite
         </RouterLink>

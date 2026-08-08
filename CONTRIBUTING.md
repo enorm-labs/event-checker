@@ -49,7 +49,8 @@ A few that catch people out:
 
 This is the most likely contribution, and the most structured. Read [ADR-007 Web Scraping Strategy](./docs/adr/ADR-007_WEB_SCRAPING_STRATEGY.md) in full first —
 it covers selector strategy and scraping ethics, both of which matter more than the code. Then check the venue's row in
-[docs/EVENT_DATA_SOURCES.md](./docs/EVENT_DATA_SOURCES.md), and copy the closest existing importer under `events-importer/src/main/kotlin/de/norm/events/scraper/`:
+[docs/EVENT_DATA_SOURCES.md](./docs/EVENT_DATA_SOURCES.md), and copy the closest existing importer under
+`events-importer/src/main/kotlin/de/norm/events/scraper/`:
 a JSON feed if the venue has one (always prefer it), otherwise a single-page or two-page HTML importer.
 
 Tests use a **captured HTML snapshot** rather than the live site, so the suite is deterministic and does not hammer a venue's server on every run.
@@ -85,6 +86,6 @@ source-available licences (SSPL, BUSL, Elastic) are not acceptable for a public 
 
 ## Built with AI
 
-Most of the code here was written by AI coding agents working from the prompts in [`.github/prompts/`](./.github/prompts) and the conventions in `AGENTS.md`. You
-are welcome to work the same way, and equally welcome not to. Either way the standard is the same: you are responsible for what you open a PR with, and
+Most of the code here was written by AI coding agents working from the prompts in [`.github/prompts/`](./.github/prompts) and the conventions in `AGENTS.md`.
+You are welcome to work the same way, and equally welcome not to. Either way the standard is the same: you are responsible for what you open a PR with, and
 "the agent wrote it" is not an answer to a review comment.

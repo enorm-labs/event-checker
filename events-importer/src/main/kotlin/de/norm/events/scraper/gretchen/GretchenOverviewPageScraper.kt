@@ -5,6 +5,7 @@ import de.norm.events.scraper.EventSource
 import de.norm.events.scraper.ScrapedArtist
 import de.norm.events.scraper.ScrapedEvent
 import de.norm.events.scraper.gretchen.GretchenOverviewPageScraper.Companion.COLLAB_SEPARATOR
+import de.norm.events.scraper.gretchen.GretchenOverviewPageScraper.Companion.DROP_LINE_PATTERN
 import de.norm.events.scraper.gretchen.GretchenOverviewPageScraper.Companion.PARTY_TITLE_KEYWORDS
 import de.norm.events.scraper.gretchen.GretchenOverviewPageScraper.Companion.PRESENTS_PREFIX
 import de.norm.events.scraper.gretchen.GretchenOverviewPageScraper.Companion.RESIDUAL_DASH

@@ -20,13 +20,13 @@ rewritten from a proposal into a description.
 
 **Operational rules are not repeated here.** They live where the person changing the code will actually see them:
 
-| Rule | Where it lives |
-|---|---|
-| Privacy/GDPR re-check triggers | [`AGENTS.md` §Privacy & GDPR](../AGENTS.md) |
+| Rule                                                  | Where it lives                                                                                        |
+|-------------------------------------------------------|-------------------------------------------------------------------------------------------------------|
+| Privacy/GDPR re-check triggers                        | [`AGENTS.md` §Privacy & GDPR](../AGENTS.md)                                                           |
 | Version in `gradle.properties`, `package.json` mirror | [`AGENTS.md` §Versioning](../AGENTS.md) · [`events-frontend/AGENTS.md`](../events-frontend/AGENTS.md) |
-| Accessibility rules | [`events-frontend/AGENTS.md` §Accessibility](../events-frontend/AGENTS.md) |
-| Localisation and SEO rules | [`events-frontend/AGENTS.md`](../events-frontend/AGENTS.md) |
-| Open-source notice generation | [`events-frontend/AGENTS.md` §Open-source notices](../events-frontend/AGENTS.md) |
+| Accessibility rules                                   | [`events-frontend/AGENTS.md` §Accessibility](../events-frontend/AGENTS.md)                            |
+| Localisation and SEO rules                            | [`events-frontend/AGENTS.md`](../events-frontend/AGENTS.md)                                           |
+| Open-source notice generation                         | [`events-frontend/AGENTS.md` §Open-source notices](../events-frontend/AGENTS.md)                      |
 
 ## 2. The footer and the legal pages, as built
 
@@ -34,14 +34,14 @@ The footer appears on every route (`AppFooter.vue`) and carries: the brand line 
 contributing, changelog), a **Legal** column (imprint, privacy, open-source notices), the copyright and licence line (§3), and the version (§4).
 
 Legal content lives under `/{locale}/legal/*` — `imprint`, `privacy`, `notices` — nested so later additions (an accessibility statement, a data-sources page)
-have an obvious home. Each of the four long-form pages, including About, is a **separate component per language** rather than translated strings: a legal page is
-a document, reviewed as a document, possibly by someone who does not read Vue. The reasoning is recorded in `views/localisedView.ts`, and the rule that follows
-from it — *edit both language versions or neither* — in `events-frontend/AGENTS.md`.
+have an obvious home. Each of the four long-form pages, including About, is a **separate component per language** rather than translated strings: a legal page
+is a document, reviewed as a document, possibly by someone who does not read Vue. The reasoning is recorded in `views/localisedView.ts`, and the rule that
+follows from it — *edit both language versions or neither* — in `events-frontend/AGENTS.md`.
 
 German practice expects the imprint within a couple of clicks from any page, which the footer satisfies; an e2e test holds that property.
 
-**Deliberately not in the footer:** a language switcher duplicate (the header and footer each carry one, with distinct landmark names), social icons for accounts
-that do not exist, and a newsletter signup — which would introduce user data the site does not otherwise process.
+**Deliberately not in the footer:** a language switcher duplicate (the header and footer each carry one, with distinct landmark names), social icons for
+accounts that do not exist, and a newsletter signup — which would introduce user data the site does not otherwise process.
 
 ## 3. Copyright and licence line
 
@@ -104,8 +104,8 @@ its legal pages in the same release.
 
 ### 6.2 Localisation
 
-Delivered; see [ADR-013](adr/ADR-013_LOCALISATION.md). Locale-prefixed routes, per-locale legal pages, a
-switcher in both header and footer, `hreflang`, `og:locale` and structured data.
+Delivered; see [ADR-013](adr/ADR-013_LOCALISATION.md). Locale-prefixed routes, per-locale legal pages, a switcher in both header and footer, `hreflang`,
+`og:locale` and structured data.
 
 ## 7. GDPR / DSGVO
 
@@ -133,8 +133,8 @@ one asserts that a named individual is a natural person.
 
 ### 7.4 Device storage — `localStorage`, not just cookies
 
-The site sets **no cookies**. It stores a `theme` key and a locale hint. § 25 TDDDG covers *storage on terminal equipment*, not cookies specifically — both items
-are strictly necessary for a setting the visitor chose, so § 25 (2) 2 applies and **no consent banner is required**.
+The site sets **no cookies**. It stores a `theme` key and a locale hint. § 25 TDDDG covers *storage on terminal equipment*, not cookies specifically — both
+items are strictly necessary for a setting the visitor chose, so § 25 (2) 2 applies and **no consent banner is required**.
 
 That is a property worth defending deliberately: the first non-essential stored item makes a banner mandatory. It is a product decision, not an implementation
 detail — escalate rather than implement.
@@ -162,8 +162,8 @@ What is already settled and must not drift:
 
 Two registers, deliberately not literal translations of each other:
 
-- **Footer** (brand voice): *"Event data is aggregated from public sources and provided without warranty — always check with the venue before you go."* /
-  *"Die Event-Daten stammen aus öffentlichen Quellen — alle Angaben ohne Gewähr. Frag im Zweifel bei der Location nach, bevor du losziehst."*
+- **Footer** (brand voice): *"Event data is aggregated from public sources and provided without warranty — always check with the venue before you go."* / *"Die
+  Event-Daten stammen aus öffentlichen Quellen — alle Angaben ohne Gewähr. Frag im Zweifel bei der Location nach, bevor du losziehst."*
 - **Imprint** (formal): *"…provided without warranty as to accuracy, completeness or timeliness."* / *"Alle Angaben erfolgen ohne Gewähr für Richtigkeit,
   Vollständigkeit und Aktualität."*
 
@@ -180,8 +180,8 @@ The review date on the privacy page (`LAST_REVIEWED` in `lib/legal.ts`) is the v
 ### 7.8 DSGVO generator — as a cross-check, not a source
 
 Running the German notice past a generator such as [datenschutz-generator.de](https://datenschutz-generator.de/) is worthwhile *as a second opinion*, because
-the German it produces is the idiom a German reader expects. It is **not** a substitute for the notice being written from what the system does — generators
-emit boilerplate for processing you do not perform, which §7.2 rules out. Not yet done (§14).
+the German it produces is the idiom a German reader expects. It is **not** a substitute for the notice being written from what the system does — generators emit
+boilerplate for processing you do not perform, which §7.2 rules out. Not yet done (§14).
 
 ## 8. Imprint (§ 5 DDG)
 
@@ -199,8 +199,8 @@ and no participation in consumer arbitration.
 
 There is no way around this by omitting the imprint — Art. 13 GDPR requires the controller's identity and contact details in the privacy notice regardless.
 
-Until then the address is a **guarded placeholder**: `CONTACT_DETAILS_ARE_PROVISIONAL` in `lib/legal.ts` is `true`, a banner says so on the page, and a unit test
-fails if the flag and the placeholder ever disagree. That guard is what stops a false address going live quietly.
+Until then the address is a **guarded placeholder**: `CONTACT_DETAILS_ARE_PROVISIONAL` in `lib/legal.ts` is `true`, a banner says so on the page, and a unit
+test fails if the flag and the placeholder ever disagree. That guard is what stops a false address going live quietly.
 
 ### 8.4 Donations
 
@@ -227,14 +227,14 @@ the Gradle plugin's normaliser emits `The 2-Clause BSD License`, and using SPDX 
 The question is not "compatible with Apache-2.0" in the abstract, but **"compatible with a publicly reachable network service whose source is public under
 Apache-2.0"**.
 
-| Category | Examples | Verdict |
-|---|---|---|
-| Permissive | MIT, BSD-2/3, Apache-2.0, ISC, Unlicense, Zlib | ✅ Use freely. Attribution only — the notices page satisfies it. |
-| Weak copyleft | MPL-2.0, EPL-2.0, CDDL, LGPL | ⚠️ Acceptable for unmodified library use; file-level or relinking obligations. Prefer an alternative; record why if used. |
-| Strong copyleft | GPL-2.0, GPL-3.0 | ❌ Avoid. GPL-2.0-only is outright incompatible with Apache-2.0. |
-| **Network copyleft** | **AGPL-3.0** | ❌ **The one to watch.** § 13 fires on *network interaction*, not distribution — this project is the trigger case. It would relicense the combined work. |
-| Source-available | BUSL/BSL, SSPL, Elastic 2.0, FSL, Commons Clause | ❌ Not OSI-approved; several forbid exactly "offer this as a service". |
-| Unknown / missing / custom | no metadata, bespoke terms | ❌ Treat as a build failure until resolved. The largest real category in npm trees. |
+| Category                   | Examples                                         | Verdict                                                                                                                                                  |
+|----------------------------|--------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Permissive                 | MIT, BSD-2/3, Apache-2.0, ISC, Unlicense, Zlib   | ✅ Use freely. Attribution only — the notices page satisfies it.                                                                                         |
+| Weak copyleft              | MPL-2.0, EPL-2.0, CDDL, LGPL                     | ⚠️ Acceptable for unmodified library use; file-level or relinking obligations. Prefer an alternative; record why if used.                                |
+| Strong copyleft            | GPL-2.0, GPL-3.0                                 | ❌ Avoid. GPL-2.0-only is outright incompatible with Apache-2.0.                                                                                         |
+| **Network copyleft**       | **AGPL-3.0**                                     | ❌ **The one to watch.** § 13 fires on *network interaction*, not distribution — this project is the trigger case. It would relicense the combined work. |
+| Source-available           | BUSL/BSL, SSPL, Elastic 2.0, FSL, Commons Clause | ❌ Not OSI-approved; several forbid exactly "offer this as a service".                                                                                   |
+| Unknown / missing / custom | no metadata, bespoke terms                       | ❌ Treat as a build failure until resolved. The largest real category in npm trees.                                                                      |
 
 Two specifics: prefer **OpenSearch** (Apache-2.0) over Elasticsearch if that step is ever taken, and keep **FullCalendar's premium plugins** out — the standard
 packages are MIT, the premium ones are commercially licensed.
@@ -243,31 +243,31 @@ packages are MIT, the premium ones are commercially licensed.
 
 **Target: WCAG 2.1 Level AA** — the level German and EU law reference (BFSG / EN 301 549).
 
-What enforces it: `eslint-plugin-vuejs-accessibility` on source, and an `@axe-core/playwright` sweep over every static route **in both locales and both themes**.
-German is reliably longer than English, so it is where an overflow or contrast regression actually appears. The sweep has already caught two real contrast
-failures, which were fixed at the design tokens rather than at the call sites.
+What enforces it: `eslint-plugin-vuejs-accessibility` on source, and an `@axe-core/playwright` sweep over every static route **in both locales and both
+themes**. German is reliably longer than English, so it is where an overflow or contrast regression actually appears. The sweep has already caught two real
+contrast failures, which were fixed at the design tokens rather than at the call sites.
 
 **Do not claim conformance publicly** until something has measured it end to end; axe finds roughly a third of WCAG issues. An accessibility statement is a
 *claim*, so it can only be published once the target is actually met.
 
-The rules themselves are in [`events-frontend/AGENTS.md` §Accessibility](../events-frontend/AGENTS.md) — the frontend file, because that is what an agent editing
-a `.vue` file loads.
+The rules themselves are in [`events-frontend/AGENTS.md` §Accessibility](../events-frontend/AGENTS.md) — the frontend file, because that is what an agent
+editing a `.vue` file loads.
 
 ## 13. Decision log
 
-| # | Question | Decision | Where |
-|---|---|---|---|
-| 1 | Imprint address | Rent a *ladungsfähige Anschrift* from Postflex after domain registration; guarded placeholder until then | §8.3 |
-| 2 | Legal-page language | English first, German in the same release as the German UI and authoritative from then — **done 2026-08-08** | §6.1 |
-| 3 | First public version | `0.1.0`; `main` carries `0.1.0-SNAPSHOT`; `-SNAPSHOT` renders unlinked | §4.7 |
-| 4 | `package.json` version | Mirrors the Gradle version, kept in step by hand, without `-SNAPSHOT` | §4.6 |
-| 5 | Actuator | `/actuator/info` internally **and** `GET /meta` publicly — same bean, different consumers | §4.4 |
-| 6 | Code of Conduct | Contributor Covenant **3.0** (not GitHub's built-in 2.1 template) | `CODE_OF_CONDUCT.md` |
-| 7 | Donations | Possible later. `FUNDING.yml` first; on the site link out, never embed | §8.4 |
-| 8 | Localisation | English + German — **done**, see [ADR-013](adr/ADR-013_LOCALISATION.md) | §6.2 |
-| 9 | Accessibility | Target **WCAG 2.1 AA**, with linting and an axe sweep enforcing it | §12 |
-| 10 | Licence tooling | Not ORT: generated notices plus two allow-list gates and a PR deny-list | §9.1 |
-| 11 | Version source | Build-stamped from `gradle.properties`, never the GitHub API | §4.1 |
+| #  | Question               | Decision                                                                                                     | Where                |
+|----|------------------------|--------------------------------------------------------------------------------------------------------------|----------------------|
+| 1  | Imprint address        | Rent a *ladungsfähige Anschrift* from Postflex after domain registration; guarded placeholder until then     | §8.3                 |
+| 2  | Legal-page language    | English first, German in the same release as the German UI and authoritative from then — **done 2026-08-08** | §6.1                 |
+| 3  | First public version   | `0.1.0`; `main` carries `0.1.0-SNAPSHOT`; `-SNAPSHOT` renders unlinked                                       | §4.7                 |
+| 4  | `package.json` version | Mirrors the Gradle version, kept in step by hand, without `-SNAPSHOT`                                        | §4.6                 |
+| 5  | Actuator               | `/actuator/info` internally **and** `GET /meta` publicly — same bean, different consumers                    | §4.4                 |
+| 6  | Code of Conduct        | Contributor Covenant **3.0** (not GitHub's built-in 2.1 template)                                            | `CODE_OF_CONDUCT.md` |
+| 7  | Donations              | Possible later. `FUNDING.yml` first; on the site link out, never embed                                       | §8.4                 |
+| 8  | Localisation           | English + German — **done**, see [ADR-013](adr/ADR-013_LOCALISATION.md)                                      | §6.2                 |
+| 9  | Accessibility          | Target **WCAG 2.1 AA**, with linting and an axe sweep enforcing it                                           | §12                  |
+| 10 | Licence tooling        | Not ORT: generated notices plus two allow-list gates and a PR deny-list                                      | §9.1                 |
+| 11 | Version source         | Build-stamped from `gradle.properties`, never the GitHub API                                                 | §4.1                 |
 
 ## 14. Open items — what is **not** signed off
 

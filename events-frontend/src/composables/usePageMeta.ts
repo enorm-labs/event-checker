@@ -49,7 +49,9 @@ function rememberDefault(selector: string): string {
 /** Sets `content` on an existing `<meta>`, or restores the site default when it is undefined. */
 function setMeta(selector: string, content: string | undefined): void {
   const fallback = rememberDefault(selector)
-  document.head.querySelector<HTMLMetaElement>(selector)?.setAttribute('content', content ?? fallback)
+  document.head
+    .querySelector<HTMLMetaElement>(selector)
+    ?.setAttribute('content', content ?? fallback)
 }
 
 /**

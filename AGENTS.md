@@ -34,9 +34,9 @@
 
 The public privacy notice (`/legal/privacy`) and the imprint describe **what this system actually does**. Each exists as **two documents** —
 `PrivacyView.en.vue` and `PrivacyView.de.vue` under `events-frontend/src/views/legal/`, with the German one authoritative — so updating one and not the other
-leaves the site stating two different things.
-They are only correct as long as that description matches reality, and the changes that break them do not look like privacy work. **Before merging, check
-whether your change falls into any category below — and if it does, say so explicitly in the PR description and update
+leaves the site stating two different things. They are only correct as long as that description matches reality, and the changes that break them do not look
+like privacy work. **Before merging, check whether your change falls into any category below — and if it does, say so explicitly in the PR description and
+update
 [docs/LEGAL.md](docs/LEGAL.md) §7 plus the privacy page in the same PR.**
 
 **Infrastructure and operations**
@@ -57,8 +57,8 @@ whether your change falls into any category below — and if it does, say so exp
   decision, not an implementation detail. **Escalate rather than implement.**
 - **Any third-party resource loaded by the browser** — a font, script, iframe, map, embed, social widget, or image hotlinked from another host. Each one
   transmits the visitor's IP address to that host. Fonts are self-hosted (`@fontsource-variable/geist`) for exactly this reason; keep it that way.
-- **Any outbound call made from the frontend** to a domain we do not operate. The GitHub API is the tempting one — see LEGAL.md §4.1 for why the
-  footer's version does not come from it.
+- **Any outbound call made from the frontend** to a domain we do not operate. The GitHub API is the tempting one — see LEGAL.md §4.1 for why the footer's
+  version does not come from it.
 - **Accounts, login, sessions, newsletter, contact form, comments, favourites, or notifications** — each introduces user data we do not process at all today,
   and needs its own legal basis, retention period and deletion route.
 - **New personal data in the domain model.** Artist names are already personal data (§7.3 of the plan, and §4 of the privacy notice). Adding contact details,
@@ -423,7 +423,7 @@ Java version is managed via SDKMAN (`.sdkmanrc` pins `java=25.0.2-tem`; run `sdk
       excluded there too — this is the single thing to know before editing them.
 
       | Where | Scope | Holds |
-      |-------|-------|-------|
+            |-------|-------|-------|
       | root `build.gradle.kts`, `subprojects { configure<KoverProjectExtension> … }` | every module's own report | `de.norm.events.*Module`, `de.norm.events.*Fixtures` |
       | root `build.gradle.kts`, top-level `kover { }` | the aggregated report | the shared patterns **again**, plus the events-core domain classes |
       | `events-core/build.gradle.kts`, `kover { }` | events-core's own report | its plain domain data classes, by exact name |
@@ -439,7 +439,7 @@ Java version is managed via SDKMAN (`.sdkmanrc` pins `java=25.0.2-tem`; run `sdk
       `build.gradle.kts`, next to the number each module actually sits at.
 
       | Module | Actual | Floor |
-      |---|---:|---:|
+            |---|---:|---:|
       | `events-core` | 100.0% | 95 |
       | `events-bff` | 98.6% | 92 |
       | `events-importer` | 95.4% | 90 |
@@ -607,7 +607,7 @@ Java version is managed via SDKMAN (`.sdkmanrc` pins `java=25.0.2-tem`; run `sdk
 | ADR: Cloud platform & hosting         | `docs/adr/ADR-012_CLOUD_PLATFORM.md`                                                                      |
 | ADR: Localisation (English + German)  | `docs/adr/ADR-013_LOCALISATION.md`                                                                        |
 | ADR: Rendering strategy (SPA/SSG/SSR) | `docs/adr/ADR-014_RENDERING_STRATEGY.md`                                                                  |
-| Plan: footer, legal pages, versioning | `docs/LEGAL.md`                                                                           |
+| Plan: footer, legal pages, versioning | `docs/LEGAL.md`                                                                                           |
 | Frontend entry point                  | `events-frontend/src/main.ts`                                                                             |
 | IntelliJ HTTP Client requests         | `http/importer/` (admin) and `http/bff/` (public read) `.http` files + shared `http/http-client.env.json` |
 | Local dev environment control script  | `scripts/dev-env.sh` (start/stop the stack, seed sources, trigger imports, inspect + diff the data)       |

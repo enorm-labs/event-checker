@@ -1,8 +1,8 @@
 # Security Report
 
-Pull the project's current dependency-vulnerability position into one prioritized report: the latest **OWASP Dependency-Check** findings and **GitHub's Dependabot
-alerts**, reconciled against each other and against what we have already triaged. This is a **read-only investigation** — inspect and report, never mutate.
-Propose fixes; do not apply them unless the user explicitly asks.
+Pull the project's current dependency-vulnerability position into one prioritized report: the latest **OWASP Dependency-Check** findings and **GitHub's
+Dependabot alerts**, reconciled against each other and against what we have already triaged. This is a **read-only investigation** — inspect and report, never
+mutate. Propose fixes; do not apply them unless the user explicitly asks.
 
 ## Important
 
@@ -15,11 +15,11 @@ Propose fixes; do not apply them unless the user explicitly asks.
 
 Three workflows touch this area, and they fail in three different ways. Getting this wrong makes the whole report misleading:
 
-| Workflow                            | Trigger            | Fails the run?                          | Notes                                                                 |
-|-------------------------------------|--------------------|-----------------------------------------|-----------------------------------------------------------------------|
-| `build-backend.yml` (dependency-check job) | PR / push to main  | **No** — step is `continue-on-error: true` | Informational only. Uploads SARIF + HTML artifact.                    |
-| `dependency-check-scheduled.yml`    | Nightly + dispatch | **Yes** — this is the enforced scan      | Fails on CVSS ≥ 7 (`failBuildOnCVSS`). Owns the shared NVD cache.     |
-| `dependency-review.yml`             | PR                 | **Yes** — `fail-on-severity: high`       | Only diffs *newly introduced* deps; uses the GitHub Advisory DB.      |
+| Workflow                                   | Trigger            | Fails the run?                             | Notes                                                             |
+|--------------------------------------------|--------------------|--------------------------------------------|-------------------------------------------------------------------|
+| `build-backend.yml` (dependency-check job) | PR / push to main  | **No** — step is `continue-on-error: true` | Informational only. Uploads SARIF + HTML artifact.                |
+| `dependency-check-scheduled.yml`           | Nightly + dispatch | **Yes** — this is the enforced scan        | Fails on CVSS ≥ 7 (`failBuildOnCVSS`). Owns the shared NVD cache. |
+| `dependency-review.yml`                    | PR                 | **Yes** — `fail-on-severity: high`         | Only diffs *newly introduced* deps; uses the GitHub Advisory DB.  |
 
 So a red nightly run blocks nothing and merges keep working — it only shows up as a failed scheduled run, which is easy to miss. That is the main reason to run
 this command by hand.
@@ -85,7 +85,8 @@ gh api repos/enorm-labs/event-checker/dependabot/alerts --paginate \
 If this returns `403`, the token lacks the alerts scope — say so and suggest `gh auth refresh -s security_events` rather than reporting "no alerts". An empty
 list and an unauthorized request look identical if you only check the output length.
 
-Dependabot reads the dependency graph submitted by `dependency-submission.yml`, so its view is of Gradle's resolved graph on `main` **as of the last submission**
+Dependabot reads the dependency graph submitted by `dependency-submission.yml`, so its view is of Gradle's resolved graph on `main` **as of the last
+submission**
 — not of your working tree. Two consequences worth checking rather than assuming:
 
 - `.dependency.scope` is `null` for every alert here (the Gradle submission does not populate it), so you cannot use it to separate runtime from test/dev
@@ -113,8 +114,8 @@ Dependency-Check independently flagged real CVEs that Dependabot did not raise. 
 
 For every unique CVE, in this order:
 
-1. **Is it already suppressed?** Check `owasp-suppressions.xml`. A suppressed CVE should not appear at all — if it does, the entry's `packageUrl` scope no longer
-   matches and the entry needs revisiting.
+1. **Is it already suppressed?** Check `owasp-suppressions.xml`. A suppressed CVE should not appear at all — if it does, the entry's `packageUrl` scope no
+   longer matches and the entry needs revisiting.
 2. **Is it already being handled?** Check open PRs and the **Bugs** list in `TODO.md` before reporting it as new.
 3. **Verify against the authoritative advisory — do not trust the artifact name.** This is the step that separates a useful report from a noisy one:
 
@@ -153,8 +154,8 @@ For each one, compare the pinned version against what the BOM would now supply o
 # What the BOM alone would supply: comment the property out (or `-P<name>=` it away), then re-run and compare
 ```
 
-Report an override as **obsolete and safe to delete** when the BOM's own version is greater than or equal to the pinned one, and as **still required** otherwise
-— naming the CVE that justifies keeping it. Removing it is an ordinary change; recommend it, but leave the edit to the user unless asked.
+Report an override as **obsolete and safe to delete** when the BOM's own version is greater than or equal to the pinned one, and as **still required**
+otherwise — naming the CVE that justifies keeping it. Removing it is an ordinary change; recommend it, but leave the edit to the user unless asked.
 
 ## Output
 

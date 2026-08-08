@@ -6,6 +6,10 @@ import de.norm.events.scraper.ScrapedArtist
 import de.norm.events.scraper.ScrapedEvent
 import de.norm.events.scraper.attrAt
 import de.norm.events.scraper.cleanEventTitle
+import de.norm.events.scraper.derweissehase.DerWeisseHaseOverviewPageScraper.Companion.LINEUP_SEPARATOR
+import de.norm.events.scraper.derweissehase.DerWeisseHaseOverviewPageScraper.Companion.LINE_UP_HEADING
+import de.norm.events.scraper.derweissehase.DerWeisseHaseOverviewPageScraper.Companion.RA_EVENT_URL
+import de.norm.events.scraper.derweissehase.DerWeisseHaseOverviewPageScraper.Companion.UNANNOUNCED_SLOT_PATTERN
 import de.norm.events.scraper.isNonArtistName
 import de.norm.events.scraper.parseGermanDate
 import de.norm.events.scraper.parseTime

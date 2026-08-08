@@ -1,4 +1,4 @@
-import { onScopeDispose, toValue, watchEffect, type MaybeRefOrGetter } from 'vue'
+import { type MaybeRefOrGetter, onScopeDispose, toValue, watchEffect } from 'vue'
 
 import type { JsonLd } from '@/lib/structuredData'
 

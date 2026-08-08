@@ -6,9 +6,9 @@
  * changes, this file is the single place to follow it.
  */
 import http from 'k6/http'
-import { check, fail } from 'k6'
+import {check, fail} from 'k6'
 
-import { BASE_URL, isoDate } from './config.js'
+import {BASE_URL, isoDate} from './config.js'
 
 /**
  * A tagged GET.
@@ -18,69 +18,69 @@ import { BASE_URL, isoDate } from './config.js'
  * instead of one row per slug — k6's URL grouping does not happen automatically for path
  * parameters.
  */
-export function get(path, { group, name, params = {} } = {}) {
-  return http.get(`${BASE_URL}${path}`, {
-    tags: { group, name: name || path },
-    ...params,
-  })
+export function get(path, {group, name, params = {}} = {}) {
+    return http.get(`${BASE_URL}${path}`, {
+        tags: {group, name: name || path},
+        ...params,
+    })
 }
 
 /** A 200 carrying a JSON body — the bar every read endpoint has to clear. */
 export function checkOk(response, label) {
-  return check(response, {
-    [`${label}: status is 200`]: (r) => r.status === 200,
-    [`${label}: body is JSON`]: (r) => (r.headers['Content-Type'] || '').includes('application/json'),
-  })
+    return check(response, {
+        [`${label}: status is 200`]: (r) => r.status === 200,
+        [`${label}: body is JSON`]: (r) => (r.headers['Content-Type'] || '').includes('application/json'),
+    })
 }
 
 /** As above, plus the paged envelope the list endpoints return. */
 export function checkPage(response, label) {
-  const ok = checkOk(response, label)
-  return (
-    check(response, {
-      [`${label}: has a content array`]: (r) => {
-        try {
-          return Array.isArray(r.json('content'))
-        } catch {
-          return false
-        }
-      },
-    }) && ok
-  )
+    const ok = checkOk(response, label)
+    return (
+        check(response, {
+            [`${label}: has a content array`]: (r) => {
+                try {
+                    return Array.isArray(r.json('content'))
+                } catch {
+                    return false
+                }
+            },
+        }) && ok
+    )
 }
 
 // --- The endpoints -----------------------------------------------------------------------------
 
 export const api = {
-  /** `GET /events?…` — the search endpoint behind the events list page. */
-  searchEvents: (query = '') => get(`/events${query}`, { group: 'list', name: '/events' }),
+    /** `GET /events?…` — the search endpoint behind the events list page. */
+    searchEvents: (query = '') => get(`/events${query}`, {group: 'list', name: '/events'}),
 
-  /** `GET /events/today` — the home page's "Tonight" feed. */
-  today: () => get('/events/today', { group: 'list', name: '/events/today' }),
+    /** `GET /events/today` — the home page's "Tonight" feed. */
+    today: () => get('/events/today', {group: 'list', name: '/events/today'}),
 
-  /** `GET /events/calendar?from=&to=` — the calendar view. The range is capped at 92 days. */
-  calendar: (fromDays = 0, toDays = 30) =>
-    get(`/events/calendar?from=${isoDate(fromDays)}&to=${isoDate(toDays)}`, {
-      group: 'calendar',
-      name: '/events/calendar',
-    }),
+    /** `GET /events/calendar?from=&to=` — the calendar view. The range is capped at 92 days. */
+    calendar: (fromDays = 0, toDays = 30) =>
+        get(`/events/calendar?from=${isoDate(fromDays)}&to=${isoDate(toDays)}`, {
+            group: 'calendar',
+            name: '/events/calendar',
+        }),
 
-  event: (slug) => get(`/events/${slug}`, { group: 'detail', name: '/events/{slug}' }),
+    event: (slug) => get(`/events/${slug}`, {group: 'detail', name: '/events/{slug}'}),
 
-  listVenues: (query = '') => get(`/venues${query}`, { group: 'list', name: '/venues' }),
-  venue: (slug) => get(`/venues/${slug}`, { group: 'detail', name: '/venues/{slug}' }),
+    listVenues: (query = '') => get(`/venues${query}`, {group: 'list', name: '/venues'}),
+    venue: (slug) => get(`/venues/${slug}`, {group: 'detail', name: '/venues/{slug}'}),
 
-  listArtists: (query = '') => get(`/artists${query}`, { group: 'list', name: '/artists' }),
-  artist: (slug) => get(`/artists/${slug}`, { group: 'detail', name: '/artists/{slug}' }),
+    listArtists: (query = '') => get(`/artists${query}`, {group: 'list', name: '/artists'}),
+    artist: (slug) => get(`/artists/${slug}`, {group: 'detail', name: '/artists/{slug}'}),
 
-  listPromoters: (query = '') => get(`/promoters${query}`, { group: 'list', name: '/promoters' }),
-  promoter: (slug) => get(`/promoters/${slug}`, { group: 'detail', name: '/promoters/{slug}' }),
+    listPromoters: (query = '') => get(`/promoters${query}`, {group: 'list', name: '/promoters'}),
+    promoter: (slug) => get(`/promoters/${slug}`, {group: 'detail', name: '/promoters/{slug}'}),
 
-  /** `GET /genres` — an unpaged list, used to populate the filter bar's dropdown. */
-  genres: () => get('/genres', { group: 'list', name: '/genres' }),
+    /** `GET /genres` — an unpaged list, used to populate the filter bar's dropdown. */
+    genres: () => get('/genres', {group: 'list', name: '/genres'}),
 
-  /** `GET /meta` — build info for the footer. Cheap, and the best liveness probe here. */
-  meta: () => get('/meta', { group: 'detail', name: '/meta' }),
+    /** `GET /meta` — build info for the footer. Cheap, and the best liveness probe here. */
+    meta: () => get('/meta', {group: 'detail', name: '/meta'}),
 }
 
 // --- Discovery ---------------------------------------------------------------------------------
@@ -95,57 +95,57 @@ export const api = {
  * Called from each script's `setup()`, which k6 runs exactly once; the returned object is handed
  * to every VU.
  */
-export function discover({ requireData = true } = {}) {
-  const liveness = api.meta()
-  if (liveness.status !== 200) {
-    fail(
-      `The BFF is not answering at ${BASE_URL} (GET /meta → ${liveness.status}). ` +
-        'Start it with `scripts/dev-env.sh up bff`, or point k6 elsewhere with `-e BFF_HOST=…`.',
-    )
-  }
-
-  const slugsFrom = (response, path) => {
-    if (response.status !== 200) return []
-    try {
-      const body = response.json(path)
-      return (body || []).map((item) => item.slug).filter(Boolean)
-    } catch {
-      return []
+export function discover({requireData = true} = {}) {
+    const liveness = api.meta()
+    if (liveness.status !== 200) {
+        fail(
+            `The BFF is not answering at ${BASE_URL} (GET /meta → ${liveness.status}). ` +
+            'Start it with `scripts/dev-env.sh up bff`, or point k6 elsewhere with `-e BFF_HOST=…`.',
+        )
     }
-  }
 
-  const data = {
-    events: slugsFrom(api.searchEvents('?size=20'), 'content'),
-    venues: slugsFrom(api.listVenues('?size=20'), 'content'),
-    artists: slugsFrom(api.listArtists('?size=20'), 'content'),
-    promoters: slugsFrom(api.listPromoters('?size=20'), 'content'),
-  }
+    const slugsFrom = (response, path) => {
+        if (response.status !== 200) return []
+        try {
+            const body = response.json(path)
+            return (body || []).map((item) => item.slug).filter(Boolean)
+        } catch {
+            return []
+        }
+    }
 
-  const total = Object.values(data).reduce((sum, list) => sum + list.length, 0)
-  if (total === 0) {
-    const message =
-      `The BFF at ${BASE_URL} answered, but the database is empty — every list endpoint ` +
-      'returned no rows. Seed it with `scripts/dev-env.sh seed-all` and run an import, or the ' +
-      'detail endpoints below are measuring 404s.'
-    if (requireData) fail(message)
-    console.warn(`${message} Continuing with the list endpoints only.`)
-  }
+    const data = {
+        events: slugsFrom(api.searchEvents('?size=20'), 'content'),
+        venues: slugsFrom(api.listVenues('?size=20'), 'content'),
+        artists: slugsFrom(api.listArtists('?size=20'), 'content'),
+        promoters: slugsFrom(api.listPromoters('?size=20'), 'content'),
+    }
 
-  // `/events` defaults to today onwards, so an empty result can simply mean the seeded data has
-  // aged out rather than that the database is empty. Worth saying plainly, because the symptom
-  // (detail requests skipped) looks identical to a broken endpoint.
-  if (data.events.length === 0 && data.venues.length > 0) {
-    console.warn(
-      'No upcoming events found — `GET /events` defaults to today onwards, so the seeded events ' +
-        'may all be in the past. Event detail requests will be skipped.',
-    )
-  }
+    const total = Object.values(data).reduce((sum, list) => sum + list.length, 0)
+    if (total === 0) {
+        const message =
+            `The BFF at ${BASE_URL} answered, but the database is empty — every list endpoint ` +
+            'returned no rows. Seed it with `scripts/dev-env.sh seed-all` and run an import, or the ' +
+            'detail endpoints below are measuring 404s.'
+        if (requireData) fail(message)
+        console.warn(`${message} Continuing with the list endpoints only.`)
+    }
 
-  return data
+    // `/events` defaults to today onwards, so an empty result can simply mean the seeded data has
+    // aged out rather than that the database is empty. Worth saying plainly, because the symptom
+    // (detail requests skipped) looks identical to a broken endpoint.
+    if (data.events.length === 0 && data.venues.length > 0) {
+        console.warn(
+            'No upcoming events found — `GET /events` defaults to today onwards, so the seeded events ' +
+            'may all be in the past. Event detail requests will be skipped.',
+        )
+    }
+
+    return data
 }
 
 /** Pick one at random, or `null` when the list is empty. VUs must handle the empty case. */
 export function pick(list) {
-  if (!list || list.length === 0) return null
-  return list[Math.floor(Math.random() * list.length)]
+    if (!list || list.length === 0) return null
+    return list[Math.floor(Math.random() * list.length)]
 }

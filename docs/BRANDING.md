@@ -6,32 +6,32 @@
 
 ## 1. Brand foundation
 
-|                          |                                                                                                                        |
-|--------------------------|------------------------------------------------------------------------------------------------------------------------|
-| **Public name**          | **Event Junkie** (domain: `event-junkie.de`)                                                                           |
-| **Internal / repo name** | **Event Checker** (repo, modules, READMEs, ADRs — see the naming rule below)                                           |
-| **Tagline**              | *Can't get enough of Berlin* · DE: *Von Berlin kriegst du nie genug* — the German line is **shipping but not signed off**; see [§8](#8-localisation--the-german-register)                                                        |
-| **Positioning line**     | *The event app that Berlin deserves* — **not the tagline**; see below                                                  |
-| **One-liner**            | Your always-fresh feed of what's on across Berlin's venues — concerts, club nights, festivals, and the odd quiz night. |
-| **Scope**                | All music, every genre and room size — not just techno. Berlin-only for now. Which *kinds* of event: [EVENT_SCOPE.md](EVENT_SCOPE.md) |
+|                          |                                                                                                                                                                           |
+|--------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Public name**          | **Event Junkie** (domain: `event-junkie.de`)                                                                                                                              |
+| **Internal / repo name** | **Event Checker** (repo, modules, READMEs, ADRs — see the naming rule below)                                                                                              |
+| **Tagline**              | *Can't get enough of Berlin* · DE: *Von Berlin kriegst du nie genug* — the German line is **shipping but not signed off**; see [§8](#8-localisation--the-german-register) |
+| **Positioning line**     | *The event app that Berlin deserves* — **not the tagline**; see below                                                                                                     |
+| **One-liner**            | Your always-fresh feed of what's on across Berlin's venues — concerts, club nights, festivals, and the odd quiz night.                                                    |
+| **Scope**                | All music, every genre and room size — not just techno. Berlin-only for now. Which *kinds* of event: [EVENT_SCOPE.md](EVENT_SCOPE.md)                                     |
 
 ### Tagline vs. positioning line
 
 Two lines exist and they do different jobs. Keeping them apart is deliberate — using either in the other's place is how the voice goes muddy.
 
-| | *Can't get enough of Berlin* | *The event app that Berlin deserves* |
-|---|---|---|
-| **Role** | Tagline | Positioning line |
-| **Speaks about** | the **user** — it flatters them (§3) | the **product** — what it is trying to be |
-| **Where it goes** | hero, page titles, OG tags, marketing | About page, README, a pitch |
-| **Register** | playful, in-character | plain, sincere |
+|                   | *Can't get enough of Berlin*          | *The event app that Berlin deserves*      |
+|-------------------|---------------------------------------|-------------------------------------------|
+| **Role**          | Tagline                               | Positioning line                          |
+| **Speaks about**  | the **user** — it flatters them (§3)  | the **product** — what it is trying to be |
+| **Where it goes** | hero, page titles, OG tags, marketing | About page, README, a pitch               |
+| **Register**      | playful, in-character                 | plain, sincere                            |
 
 The positioning line is **not a second tagline**, and should not appear in the hero, the page title or the OG tags. It reads as a claim rather than a wink, and
 the brand's whole premise (§2) is that the app flatters the user rather than itself — a claim in the hero would undercut the tagline sitting next to it.
 
-**German:** the About page already ships it inside a sentence — *"Weil ich die Event-App bauen wollte, die Berlin verdient."* That works because the line sits in
-prose there. A standalone German form (*"Die Event-App, die Berlin verdient"*) is **not signed off**, and would need the same written-not-translated treatment
-as everything else in [§8](#8-localisation--the-german-register) before it goes anywhere on its own.
+**German:** the About page already ships it inside a sentence — *"Weil ich die Event-App bauen wollte, die Berlin verdient."* That works because the line sits
+in prose there. A standalone German form (*"Die Event-App, die Berlin verdient"*) is **not signed off**, and would need the same written-not-translated
+treatment as everything else in [§8](#8-localisation--the-german-register) before it goes anywhere on its own.
 
 ### Naming rule
 
@@ -194,8 +194,8 @@ Sprache*, and `du` is that. If this ever changes it changes on every page at onc
 
 *Can't get enough of Berlin* is a pun on the brand premise (§2), and a literal German rendering loses it. Three options were considered:
 
-| Option                                | Reading                                                                                                                   |
-|---------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
+| Option                                | Reading                                                                                                                    |
+|---------------------------------------|----------------------------------------------------------------------------------------------------------------------------|
 | ***Von Berlin kriegst du nie genug*** | **Currently shipping.** Keeps the "you can't get enough" flattery and the `du` register; idiomatic rather than translated. |
 | *Berlin macht süchtig*                | Closer to the junkie metaphor, further from flattering the user — it praises the city, not the reader.                     |
 | Keep the English line on `/de` too    | Legitimate, and common for Berlin brands. Costs the German reader the joke.                                                |

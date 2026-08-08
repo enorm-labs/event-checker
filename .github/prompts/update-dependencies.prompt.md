@@ -200,11 +200,11 @@ npm run test:unit
 The badge row at the top of [`README.md`](../../README.md) hardcodes versions that this run may have changed. Badges are the first thing a reader sees, and
 nothing in the build fails when they go stale — so update them here, in the same commit as the bump that made them wrong.
 
-| Badge         | Source of truth                                                         | Update when                                   |
-|---------------|-------------------------------------------------------------------------|-----------------------------------------------|
-| `Kotlin`      | `kotlin("jvm") version "..."` in `settings.gradle.kts`                  | always, to the exact version                  |
-| `Spring Boot` | `id("org.springframework.boot") version "..."` in `settings.gradle.kts` | always, to the exact version                  |
-| `Java`        | `java.version` in `gradle.properties`                                   | major only — the badge carries no minor/patch |
+| Badge         | Source of truth                                                         | Update when                                    |
+|---------------|-------------------------------------------------------------------------|------------------------------------------------|
+| `Kotlin`      | `kotlin("jvm") version "..."` in `settings.gradle.kts`                  | always, to the exact version                   |
+| `Spring Boot` | `id("org.springframework.boot") version "..."` in `settings.gradle.kts` | always, to the exact version                   |
+| `Java`        | `java.version` in `gradle.properties`                                   | major only — the badge carries no minor/patch  |
 | `Vue.js`      | `"vue"` in `events-frontend/package.json`                               | major only — the badge reads `3`, not `3.5.41` |
 
 Only the version segment of the shields.io URL changes; leave the colour, logo and link target alone. Note that `%20` encodes the space in `Spring%20Boot`, so
@@ -212,9 +212,9 @@ edit the number, not the surrounding path. Check every badge even if you think t
 compatibility, and a frontend-only run can still cross a Vue major.
 
 [docs/DEVELOPMENT.md](../../docs/DEVELOPMENT.md)'s "Updating the Gradle wrapper" section also carries a version — the `--gradle-version <x>` example (it lived
-in the README before the restructure, so look there if this section has moved again). That one is illustrative rather than a claim, but
-an example older than the wrapper itself reads as neglect, so match it to `distributionUrl` in `gradle/wrapper/gradle-wrapper.properties` whenever you notice a
-gap. This prompt does not bump the wrapper itself; that is a separate manual step.
+in the README before the restructure, so look there if this section has moved again). That one is illustrative rather than a claim, but an example older than
+the wrapper itself reads as neglect, so match it to `distributionUrl` in `gradle/wrapper/gradle-wrapper.properties` whenever you notice a gap. This prompt does
+not bump the wrapper itself; that is a separate manual step.
 
 ## Output Summary
 

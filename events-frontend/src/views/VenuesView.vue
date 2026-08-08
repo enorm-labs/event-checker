@@ -75,16 +75,16 @@ const { t } = useI18n()
       <form class="flex gap-2" @submit.prevent="applyFilters({ q: search })">
         <BaseInput
           v-model="search"
-          class="px-3"
           :placeholder="t('venues.searchPlaceholder')"
+          class="px-3"
           type="search"
         />
         <Button type="submit" variant="outline">{{ t('common.actions.search') }}</Button>
       </form>
 
       <BaseSelect
-        :model-value="queryString('district')"
         :aria-label="t('venues.byDistrict')"
+        :model-value="queryString('district')"
         @change="applyFilters({ district: ($event.target as HTMLSelectElement).value })"
       >
         <option value="">{{ t('venues.allDistricts') }}</option>

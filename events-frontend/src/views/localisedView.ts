@@ -1,4 +1,4 @@
-import { computed, defineAsyncComponent, defineComponent, h, type Component } from 'vue'
+import { type Component, computed, defineAsyncComponent, defineComponent, h } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { DEFAULT_LOCALE, type Locale } from '@/i18n/locales'

@@ -19,8 +19,8 @@ import {
   CONTRIBUTING_URL,
   LICENSE_URL,
   NEW_ISSUE_URL,
-  releaseTagUrl,
   RELEASES_URL,
+  releaseTagUrl,
   REPOSITORY_URL,
 } from '@/lib/links'
 import { useLocalePath } from '@/composables/useLocalePath'
@@ -132,8 +132,8 @@ const localePath = useLocalePath()
         <p v-if="meta?.version" class="mt-4 font-mono text-xs sm:mt-0" data-testid="app-version">
           <component
             :is="releaseUrl ? 'a' : 'span'"
-            v-bind="releaseUrl ? { href: releaseUrl, rel: 'noopener', target: '_blank' } : {}"
             :class="releaseUrl ? linkClass : ''"
+            v-bind="releaseUrl ? { href: releaseUrl, rel: 'noopener', target: '_blank' } : {}"
           >
             v{{ meta.version }}
           </component>

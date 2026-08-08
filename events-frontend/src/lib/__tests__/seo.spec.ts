@@ -70,7 +70,9 @@ describe('the indexable path list', () => {
 
 describe('the sitemap', () => {
   it('has one entry per locale per indexable path', () => {
-    const locations = [...parsedSitemap().getElementsByTagName('loc')].map((node) => node.textContent)
+    const locations = [...parsedSitemap().getElementsByTagName('loc')].map(
+      (node) => node.textContent,
+    )
 
     expect(locations).toHaveLength(LOCALES.length * INDEXABLE_PATHS.length)
     expect(new Set(locations).size, 'duplicate <loc> entries').toBe(locations.length)

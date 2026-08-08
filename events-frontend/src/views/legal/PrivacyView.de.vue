@@ -83,10 +83,10 @@ const { t } = useI18n()
         identifizieren oder ein Profil zu bilden, und führen sie mit keinen anderen Daten zusammen.
       </p>
       <p>
-        <strong>Speicherdauer:</strong> Logdaten sollen nach sieben Tagen gelöscht werden; ausgenommen
-        sind Einträge, die wegen eines konkreten Sicherheitsvorfalls länger aufbewahrt werden müssen.
-        Diese Frist wird gemeinsam mit dem Hosting-Setup festgelegt und diese Seite entsprechend
-        angepasst — genannt wird hier immer die tatsächlich konfigurierte Frist.
+        <strong>Speicherdauer:</strong> Logdaten sollen nach sieben Tagen gelöscht werden;
+        ausgenommen sind Einträge, die wegen eines konkreten Sicherheitsvorfalls länger aufbewahrt
+        werden müssen. Diese Frist wird gemeinsam mit dem Hosting-Setup festgelegt und diese Seite
+        entsprechend angepasst — genannt wird hier immer die tatsächlich konfigurierte Frist.
       </p>
     </section>
 
@@ -165,9 +165,9 @@ const { t } = useI18n()
       </ul>
       <p>
         Wenn du uns per E-Mail schreibst oder ein Issue auf GitHub eröffnest, werden diese Daten zur
-        Bearbeitung deines Anliegens verarbeitet (Art. 6 Abs. 1 lit. f DSGVO, bei Vertragsbezug
-        Art. 6 Abs. 1 lit. b DSGVO). GitHub wird von einem US-Unternehmen betrieben; ob du dort statt
-        per E-Mail schreibst, entscheidest du.
+        Bearbeitung deines Anliegens verarbeitet (Art. 6 Abs. 1 lit. f DSGVO, bei Vertragsbezug Art.
+        6 Abs. 1 lit. b DSGVO). GitHub wird von einem US-Unternehmen betrieben; ob du dort statt per
+        E-Mail schreibst, entscheidest du.
       </p>
     </section>
 
@@ -189,10 +189,10 @@ const { t } = useI18n()
         <strong>Widerspruchsrecht (Art. 21 DSGVO).</strong> Da wir uns auf berechtigte Interessen
         nach Art. 6 Abs. 1 lit. f DSGVO stützen, hast du das Recht, jederzeit aus Gründen, die sich
         aus deiner besonderen Situation ergeben, gegen die Verarbeitung deiner personenbezogenen
-        Daten Widerspruch einzulegen. Legst du Widerspruch ein, verarbeiten wir die betroffenen Daten
-        nicht mehr, es sei denn, wir können zwingende schutzwürdige Gründe nachweisen, die deine
-        Interessen, Rechte und Freiheiten überwiegen. Ein Widerspruch ist kostenlos und formlos —
-        eine E-Mail genügt.
+        Daten Widerspruch einzulegen. Legst du Widerspruch ein, verarbeiten wir die betroffenen
+        Daten nicht mehr, es sei denn, wir können zwingende schutzwürdige Gründe nachweisen, die
+        deine Interessen, Rechte und Freiheiten überwiegen. Ein Widerspruch ist kostenlos und
+        formlos — eine E-Mail genügt.
       </p>
       <p>
         <strong>Beschwerderecht.</strong> Du kannst dich bei einer Aufsichtsbehörde beschweren,
@@ -209,8 +209,8 @@ const { t } = useI18n()
       <p>
         Du bist weder gesetzlich noch vertraglich verpflichtet, personenbezogene Daten
         bereitzustellen. Technisch lässt sich eine Webseite allerdings nicht ohne die IP-Adresse
-        deines Geräts ausliefern — diese Seite zu nutzen, ohne dass sie verarbeitet wird, ist deshalb
-        nicht möglich. Alles Weitere ist freiwillig.
+        deines Geräts ausliefern — diese Seite zu nutzen, ohne dass sie verarbeitet wird, ist
+        deshalb nicht möglich. Alles Weitere ist freiwillig.
       </p>
     </section>
 
@@ -226,8 +226,8 @@ const { t } = useI18n()
       <h2>9. Änderungen dieser Erklärung</h2>
       <p>
         Diese Erklärung beschreibt, was das System tatsächlich tut — sie ändert sich also, wenn das
-        System sich ändert. Das Prüfdatum oben auf dieser Seite sagt dir, wann sie zuletzt abgeglichen
-        wurde.
+        System sich ändert. Das Prüfdatum oben auf dieser Seite sagt dir, wann sie zuletzt
+        abgeglichen wurde.
       </p>
     </section>
   </LegalPage>

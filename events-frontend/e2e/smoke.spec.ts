@@ -29,7 +29,13 @@ const staticRoutes = [
   // `nav` is the accessible name of the nav link — home's is the brand logo, not "Home".
   { path: '/', url: '/en', name: 'home', nav: 'Event Junkie', heading: 'Event Junkie' },
   { path: '/events', url: '/en/events', name: 'events', nav: 'Events', heading: 'Events' },
-  { path: '/calendar', url: '/en/calendar', name: 'calendar', nav: 'Calendar', heading: 'Calendar' },
+  {
+    path: '/calendar',
+    url: '/en/calendar',
+    name: 'calendar',
+    nav: 'Calendar',
+    heading: 'Calendar',
+  },
   { path: '/venues', url: '/en/venues', name: 'venues', nav: 'Venues', heading: 'Venues' },
   { path: '/about', url: '/en/about', name: 'about', nav: 'About', heading: 'About' },
 ] as const
@@ -136,7 +142,9 @@ test('app shell marks the app as beta and explains what that means', async ({ pa
 test('app shell links to the source repository on GitHub', async ({ page }) => {
   await page.goto('/about')
 
-  const link = page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Source code on GitHub' })
+  const link = page
+    .getByRole('navigation', { name: 'Main' })
+    .getByRole('link', { name: 'Source code on GitHub' })
   await expect(link).toBeVisible()
   await expect(link).toHaveAttribute('href', 'https://github.com/enorm-labs/event-checker')
   await expect(link).toHaveAttribute('title', 'Source code on GitHub')

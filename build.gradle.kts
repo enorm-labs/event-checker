@@ -335,14 +335,20 @@ licenseReport {
 
     renderers =
         arrayOf(
-            com.github.jk1.license.render.JsonReportRenderer("licenses.json", false),
-            com.github.jk1.license.render.InventoryHtmlReportRenderer("licenses.html")
+            com.github.jk1.license.render
+                .JsonReportRenderer("licenses.json", false),
+            com.github.jk1.license.render
+                .InventoryHtmlReportRenderer("licenses.html")
         )
 
     // Normalises the many spellings of the same licence ("Apache 2", "The Apache Software
     // License, Version 2.0", …) into one bundle so the notices page groups correctly. Without it
     // Apache-2.0 alone appears under half a dozen names.
-    filters = arrayOf(com.github.jk1.license.filter.LicenseBundleNormalizer())
+    filters =
+        arrayOf(
+            com.github.jk1.license.filter
+                .LicenseBundleNormalizer()
+        )
 
     // Checked by `./gradlew checkLicense`. Deliberately an *allow*-list here, unlike the CI
     // deny-list in dependency-review.yml: this runs over the full resolved tree where we control

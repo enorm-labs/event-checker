@@ -33,22 +33,22 @@ An earlier draft of this ADR claimed Googlebot's render pass takes "days to week
 decision resting on it would be a decision resting on 2018-era folklore:
 
 - The median crawl-to-render gap is around [10 seconds, with the 25th percentile inside four](https://www.onely.com/blog/googles-rendering-delay-5-seconds/).
-- Across 100,000+ Googlebot fetches, one study found [Google rendered 100% of indexable HTML pages, with no measurable penalty for JavaScript
-  complexity](https://nadiamohamed.me/insights/javascript-seo/).
+- Across 100,000+ Googlebot fetches, one study
+  found [Google rendered 100% of indexable HTML pages, with no measurable penalty for JavaScript complexity](https://nadiamohamed.me/insights/javascript-seo/).
 
-The honest caveat, which does apply to us: that delay [scales with crawl priority, and low-priority sites can still wait a week or
-more](https://seolinkscan.com/blog/javascript-seo-guide-2026). A brand-new site with no inbound links is exactly a low-priority site — so this is a real risk
-**at launch specifically**, decaying as the site establishes itself. It is a reason to watch Search Console, not a reason to build a rendering architecture up
-front.
+The honest caveat, which does apply to us: that
+delay [scales with crawl priority, and low-priority sites can still wait a week or more](https://seolinkscan.com/blog/javascript-seo-guide-2026). A brand-new
+site with no inbound links is exactly a low-priority site — so this is a real risk **at launch specifically**, decaying as the site establishes itself. It is a
+reason to watch Search Console, not a reason to build a rendering architecture up front.
 
 ### What is already mitigated
 
-| Surface                                       | State                                                                                                   |
-|-----------------------------------------------|---------------------------------------------------------------------------------------------------------|
-| `hreflang` alternates                         | Carried by `sitemap.xml`, a static file needing no rendering — the primary annotation today              |
-| `canonical`, `og:url`, `og:locale`            | JS-injected; reach Googlebot, reach no non-JS consumer                                                   |
-| `schema.org` JSON-LD                          | JS-injected; reaches Googlebot, which is enough — there is no non-JS consumer of structured data         |
-| **Per-page `og:title` / `og:description`**    | **The gap.** Title is JS-injected; description is not set per page at all. Neither reaches a scraper.    |
+| Surface                                    | State                                                                                                 |
+|--------------------------------------------|-------------------------------------------------------------------------------------------------------|
+| `hreflang` alternates                      | Carried by `sitemap.xml`, a static file needing no rendering — the primary annotation today           |
+| `canonical`, `og:url`, `og:locale`         | JS-injected; reach Googlebot, reach no non-JS consumer                                                |
+| `schema.org` JSON-LD                       | JS-injected; reaches Googlebot, which is enough — there is no non-JS consumer of structured data      |
+| **Per-page `og:title` / `og:description`** | **The gap.** Title is JS-injected; description is not set per page at all. Neither reaches a scraper. |
 
 So what rendering must buy is narrow and specific: **correct per-page head tags in the served HTML for data-driven routes.** Not body content, not first paint,
 not the static pages.
@@ -209,4 +209,5 @@ exactly as they are.
   currently works
 - [LEGAL.md](../LEGAL.md) §7.7 — the standing check any new processor or edge processing must clear
 - [Google's rendering delay](https://www.onely.com/blog/googles-rendering-delay-5-seconds/) · [JavaScript SEO in 2026](https://nadiamohamed.me/insights/javascript-seo/) · [crawl priority and render queue](https://seolinkscan.com/blog/javascript-seo-guide-2026)
-- [Cloudflare `HTMLRewriter`](https://developers.cloudflare.com/workers/runtime-apis/html-rewriter/) · [Google Search Central — dynamic rendering](https://developers.google.com/search/docs/crawling-indexing/javascript/dynamic-rendering)
+- [Cloudflare
+  `HTMLRewriter`](https://developers.cloudflare.com/workers/runtime-apis/html-rewriter/) · [Google Search Central — dynamic rendering](https://developers.google.com/search/docs/crawling-indexing/javascript/dynamic-rendering)

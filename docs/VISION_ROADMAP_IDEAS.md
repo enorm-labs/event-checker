@@ -70,15 +70,15 @@ Make it comprehensive, discoverable and pleasant. → TODO: **Importer / Data**,
 - Scale importer coverage toward the full venue list in
   [EVENT_DATA_SOURCES.md](EVENT_DATA_SOURCES.md); enrich venue metadata.
 - An **admin imports-status dashboard** to watch import health and failures.
-- Venues page with map, a full UX/mobile pass, and SEO surfaces (sitemap, RSS); i18n/l10n.
-  *(Done: i18n/l10n, sitemap, `hreflang`, canonical URLs and `schema.org` structured data — 2026-08-08. RSS and the map remain.)*
+- Venues page with map, a full UX/mobile pass, and SEO surfaces (sitemap, RSS); i18n/l10n. *(Done: i18n/l10n, sitemap, `hreflang`, canonical URLs and
+  `schema.org` structured data — 2026-08-08. RSS and the map remain.)*
 - **Server-side head tags for shared links.** Every page serves an empty `<div id="app">`, so scrapers that do not run JavaScript (Slack, WhatsApp, iMessage,
   Facebook, LinkedIn) show the generic site title and description for *every* shared link, including event pages — and sharing a specific event is a primary way
-  a nightlife product spreads.
-  → Decided in **[ADR-014](adr/ADR-014_RENDERING_STRATEGY.md)** (2026-08-08, *Proposed*): **meta injection**, not prerendering. No build-time rendering of any
-  route — it buys nothing for the pages people share, and for detail routes daily imports make it stale by construction. The work splits in two: the shared
-  module computing each page's head tags can be built now (it also closes the missing per-page `og:description`), while the transport that rewrites the response
-  waits for ADR-012 to be executed. Full SSR is deferred behind a named trigger — Search Console showing detail pages indexed poorly — rather than anticipated.
+  a nightlife product spreads. → Decided in **[ADR-014](adr/ADR-014_RENDERING_STRATEGY.md)** (2026-08-08, *Proposed*): **meta injection**, not prerendering. No
+  build-time rendering of any route — it buys nothing for the pages people share, and for detail routes daily imports make it stale by construction. The work
+  splits in two: the shared module computing each page's head tags can be built now (it also closes the missing per-page `og:description`), while the transport
+  that rewrites the response waits for ADR-012 to be executed. Full SSR is deferred behind a named trigger — Search Console showing detail pages indexed
+  poorly — rather than anticipated.
 - "Missing event / venue" and feedback forms.
 
 ### Phase 3 — Accounts & personalization 👤 _(Expansion stage 1)_

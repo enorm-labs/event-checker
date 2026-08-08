@@ -185,7 +185,8 @@ useStructuredData((): JsonLd[] => {
         >
           <SectionLabel>{{ t('events.detail.tickets') }}</SectionLabel>
           <p v-if="formatPrice(event.pricePresale, event.priceCurrency)" class="text-sm">
-            {{ t('events.detail.presale') }}: {{ formatPrice(event.pricePresale, event.priceCurrency) }}
+            {{ t('events.detail.presale') }}:
+            {{ formatPrice(event.pricePresale, event.priceCurrency) }}
           </p>
           <p v-if="formatPrice(event.priceBoxOffice, event.priceCurrency)" class="text-sm">
             {{ t('events.detail.boxOffice') }}:

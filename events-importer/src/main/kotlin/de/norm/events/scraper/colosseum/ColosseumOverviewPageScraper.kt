@@ -7,6 +7,8 @@ import de.norm.events.scraper.WIX_REGISTRATION_TICKETS
 import de.norm.events.scraper.WixEventsWarmupData
 import de.norm.events.scraper.buildArtistList
 import de.norm.events.scraper.cleanEventTitle
+import de.norm.events.scraper.colosseum.ColosseumOverviewPageScraper.Companion.VENUE_FORMAT_KEYWORDS
+import de.norm.events.scraper.colosseum.ColosseumOverviewPageScraper.Companion.resolveEventType
 import de.norm.events.scraper.extractSupportFromSubtitle
 import de.norm.events.scraper.inferUnmarkedTitleType
 import de.norm.events.scraper.mapWixEventStatus

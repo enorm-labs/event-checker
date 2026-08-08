@@ -24,7 +24,16 @@ import { expect, type Page, type Route, test } from '@playwright/test'
 // Both locales. German is reliably longer than English, so it is where a layout overflow or a
 // contrast regression actually shows up — sweeping only `/en` would miss exactly the cases the
 // translation introduces (see AGENTS.md §Testing — locale strategy).
-const PATHS = ['', '/events', '/venues', '/calendar', '/about', '/legal/imprint', '/legal/privacy', '/legal/notices']
+const PATHS = [
+  '',
+  '/events',
+  '/venues',
+  '/calendar',
+  '/about',
+  '/legal/imprint',
+  '/legal/privacy',
+  '/legal/notices',
+]
 const staticRoutes = ['en', 'de'].flatMap((locale) => PATHS.map((path) => `/${locale}${path}`))
 
 /** The conformance target. `best-practice` is deliberately excluded: useful, but not the bar. */
@@ -112,7 +121,7 @@ const eventSummaries = [
   { slug: 'second-show', title: 'Second Show', eventDate: '2026-08-16' },
 ]
 
-const page1 = <T,>(content: T[], size: number) => ({
+const page1 = <T>(content: T[], size: number) => ({
   content,
   page: 0,
   size,
@@ -154,7 +163,11 @@ async function mockBff(page: Page): Promise<void> {
       status: 'SCHEDULED',
       venue: { slug: 'mock-venue', name: 'Mock Venue', address: 'Test Str. 1', city: 'Berlin' },
       lineup: [
-        { artist: { slug: 'mock-artist', name: 'Mock Artist' }, role: 'HEADLINER', billingOrder: 1 },
+        {
+          artist: { slug: 'mock-artist', name: 'Mock Artist' },
+          role: 'HEADLINER',
+          billingOrder: 1,
+        },
       ],
       promoters: [{ slug: 'mock-promoter', name: 'Mock Promoter' }],
     }),
@@ -165,7 +178,12 @@ async function mockBff(page: Page): Promise<void> {
       route,
       page1(
         [
-          { slug: 'mock-venue', name: 'Mock Venue', city: 'Berlin', district: 'friedrichshain-kreuzberg' },
+          {
+            slug: 'mock-venue',
+            name: 'Mock Venue',
+            city: 'Berlin',
+            district: 'friedrichshain-kreuzberg',
+          },
           { slug: 'other-venue', name: 'Other Venue', city: 'Berlin' },
         ],
         24,

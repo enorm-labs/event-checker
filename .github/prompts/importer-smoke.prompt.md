@@ -92,9 +92,9 @@ that parses *something* plausible from the wrong container passes every automate
 
 **Soft findings — ship, but write them down.** Where depends on what kind of finding it is:
 
-1. **A gap that is ours and worth repairing** → the **Bugs** list in `TODO.md`. We lose or mangle data the source *did* publish, or our model has nowhere to
-   put it: a mis-split lineup, a field dropped because it has no column, an entity that won't merge with its counterpart from another venue. If it is a
-   one-line fix, just make it instead.
+1. **A gap that is ours and worth repairing** → the **Bugs** list in `TODO.md`. We lose or mangle data the source *did* publish, or our model has nowhere to put
+   it: a mis-split lineup, a field dropped because it has no column, an entity that won't merge with its counterpart from another venue. If it is a one-line
+   fix, just make it instead.
 2. **A limitation we accept** → the importer's or scraper's KDoc, next to the code that causes it. This is also where a field the site simply doesn't publish
    goes (no prices, no doors time, no images, a `TBA` lineup), and `event_type = OTHER` where the site gives no usable signal. The importer stored everything
    that was there, so there is nothing to action.

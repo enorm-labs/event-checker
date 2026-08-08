@@ -68,8 +68,8 @@ function pathIn(locale: Locale): string {
        no landmark. `aria-current` marks the active language in both. -->
   <component
     :is="props.compact ? 'span' : 'nav'"
-    v-bind="props.compact ? {} : { 'aria-label': $t('common.locale.label') }"
     :class="['flex items-center', props.compact ? 'gap-1 text-xs' : 'gap-2 text-sm']"
+    v-bind="props.compact ? {} : { 'aria-label': $t('common.locale.label') }"
   >
     <template v-for="(locale, index) in LOCALES" :key="locale">
       <span v-if="index > 0" aria-hidden="true" class="text-muted-foreground">·</span>

@@ -89,7 +89,7 @@ npm run type-check
 ```
 
 Restart the BFF after editing a controller or DTO: with a stale BFF running, the command succeeds and quietly writes the
-*old* API. Never edit `schema.d.ts` by hand — the next run discards the edit. Friendly aliases for the generated schemas
+_old_ API. Never edit `schema.d.ts` by hand — the next run discards the edit. Friendly aliases for the generated schemas
 live in [`src/api/types.ts`](src/api/types.ts); use those in views and composables.
 
 ### Format code
@@ -153,7 +153,7 @@ npm run test:a11y -- --project=chromium
 ```
 
 Powered by [axe-core](https://github.com/dequelabs/axe-core) through
-[`@axe-core/playwright`](https://playwright.dev/docs/accessibility-testing). This is a *filter* over the e2e suite, not a
+[`@axe-core/playwright`](https://playwright.dev/docs/accessibility-testing). This is a _filter_ over the e2e suite, not a
 separate check — `npm run test:e2e` already runs it, so CI is covered. It exists so markup work does not have to pay for
 the whole suite. The static half of the same target is `eslint-plugin-vuejs-accessibility`, which runs inside
 `npm run lint`. Neither may be silenced to make a build pass.

@@ -19,9 +19,9 @@ The site is English-only today. It targets Berlin — an audience that is heavil
 under German law. Two forces make German non-optional rather than a nice-to-have:
 
 1. **Audience.** A Berlin events guide that cannot be read in German excludes a large part of the city it is about.
-2. **Law.** [LEGAL.md §6.1](../LEGAL.md) chose English-only legal pages on the explicit condition that *German legal pages ship in
-   the same release as German UI*. An English-only imprint and privacy notice on a site presenting itself in German to a German visitor is the configuration
-   where the Art. 12 GDPR "clear and plain language" argument turns against us.
+2. **Law.** [LEGAL.md §6.1](../LEGAL.md) chose English-only legal pages on the explicit condition that *German legal pages ship in the same release as German
+   UI*. An English-only imprint and privacy notice on a site presenting itself in German to a German visitor is the configuration where the Art. 12 GDPR "clear
+   and plain language" argument turns against us.
 
 The scale is what makes this ADR worth writing: 20 of 29 `.vue` files carry user-facing text (~145 literal strings), 7 TypeScript modules do too, and ~82 e2e
 assertions address elements by their English accessible name.
@@ -42,7 +42,8 @@ decision:
 #### Option A — `vue-i18n` + `@intlify/unplugin-vue-i18n`
 
 - v11.4.8, MIT, ~3.6 M weekly downloads, 19 releases in the last 8 months. The de-facto standard for Vue 3, by the Intlify team.
-- Composition API (`useI18n`) is first-class; the Legacy API is deprecated in v11 and removed in v12, so writing Composition-only today makes v12 a version bump.
+- Composition API (`useI18n`) is first-class; the Legacy API is deprecated in v11 and removed in v12, so writing Composition-only today makes v12 a version
+  bump.
 - Ships `$d`/`$n` wrappers over `Intl` for dates and numbers.
 - The unplugin (v11.2.4, MIT) precompiles messages at build time, which removes the runtime message compiler.
 - **Verified compatible with this repo**: `vue ^3.0.0` (we have 3.5.41), plugin peers `vite ^6 || ^7 || ^8` (we have 8.2.0).
@@ -66,18 +67,18 @@ decision:
 - No dependency at all. `Intl.DateTimeFormat` and `Intl.NumberFormat` already do the formatting work; a `useT()` composable over a JSON object is perhaps 40
   lines.
 - Genuinely viable at this size, and worth taking seriously rather than dismissing.
-- What it costs: pluralisation, interpolation, fallback chains, lazy-loading per locale, and the SFC/devtools integration all become ours to write and maintain
-  — and each is a small thing that is easy to get subtly wrong. It also gives future contributors nothing familiar to work from.
+- What it costs: pluralisation, interpolation, fallback chains, lazy-loading per locale, and the SFC/devtools integration all become ours to write and
+  maintain — and each is a small thing that is easy to get subtly wrong. It also gives future contributors nothing familiar to work from.
 
 ### URL strategy
 
-| Option | Example | Crawlable | Shareable | Notes |
-|---|---|---|---|---|
-| **Path prefix** | `/de/events` | ✅ | ✅ | One deployment, one origin. Google's own guidance prefers distinct URLs per language. |
-| Subdomain | `de.event-junkie.de` | ✅ | ✅ | Extra DNS and TLS setup; splits the origin, which complicates the same-origin `/api` arrangement in [ADR-012](ADR-012_CLOUD_PLATFORM.md). |
-| ccTLD | `event-junkie.de` / `.com` | ✅ | ✅ | A second domain to buy and run. Language and country are not the same axis — a German speaker abroad wants German, not `.de`. |
-| Query parameter | `/events?lang=de` | ⚠️ | ✅ | Works, but reads as an afterthought and is weaker for SEO. |
-| Stored preference only | `/events` | ❌ | ❌ | Every shared link becomes a coin flip: the recipient gets whatever *their* storage says. Invisible to crawlers. |
+| Option                 | Example                    | Crawlable | Shareable | Notes                                                                                                                                     |
+|------------------------|----------------------------|-----------|-----------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| **Path prefix**        | `/de/events`               | ✅        | ✅        | One deployment, one origin. Google's own guidance prefers distinct URLs per language.                                                     |
+| Subdomain              | `de.event-junkie.de`       | ✅        | ✅        | Extra DNS and TLS setup; splits the origin, which complicates the same-origin `/api` arrangement in [ADR-012](ADR-012_CLOUD_PLATFORM.md). |
+| ccTLD                  | `event-junkie.de` / `.com` | ✅        | ✅        | A second domain to buy and run. Language and country are not the same axis — a German speaker abroad wants German, not `.de`.             |
+| Query parameter        | `/events?lang=de`          | ⚠️        | ✅        | Works, but reads as an afterthought and is weaker for SEO.                                                                                |
+| Stored preference only | `/events`                  | ❌        | ❌        | Every shared link becomes a coin flip: the recipient gets whatever *their* storage says. Invisible to crawlers.                           |
 
 ## Decision
 
@@ -99,18 +100,18 @@ Bare `/` redirects to a locale chosen from `Accept-Language`, falling back to `e
 preserve. Every month this waits, the cost rises.
 
 A stored locale preference (`localStorage`) is permitted **only** as a hint for resolving bare `/`. The URL is always the source of truth. This keeps the § 25
-TDDDG posture from [LEGAL.md §7.4](../LEGAL.md) intact: a preference the user set themselves is strictly necessary, so no consent
-banner — but it must not become the *only* record of the choice.
+TDDDG posture from [LEGAL.md §7.4](../LEGAL.md) intact: a preference the user set themselves is strictly necessary, so no consent banner — but it must not
+become the *only* record of the choice.
 
 ### 3. Translate the chrome, not the data
 
-| | Translate? |
-|---|---|
-| UI labels, headings, empty and error states, legal pages | ✅ |
-| Event titles, venue names, artist names, line-ups | ❌ third-party content |
-| Berlin district names (`lib/districts.ts`) | ❌ proper nouns — *Mitte* is *Mitte* |
-| Event types (`CONCERT`, `CLUB_NIGHT`, …) | ✅ enum-backed, so ours |
-| Genre tags | ❌ they behave like data |
+|                                                          | Translate?                           |
+|----------------------------------------------------------|--------------------------------------|
+| UI labels, headings, empty and error states, legal pages | ✅                                   |
+| Event titles, venue names, artist names, line-ups        | ❌ third-party content               |
+| Berlin district names (`lib/districts.ts`)               | ❌ proper nouns — *Mitte* is *Mitte* |
+| Event types (`CONCERT`, `CLUB_NIGHT`, …)                 | ✅ enum-backed, so ours              |
+| Genre tags                                               | ❌ they behave like data             |
 
 Genre tags are the close call. They are enum-ish, but they arrive from venues and are largely untranslatable anyway ("Techno", "Singer-Songwriter"). Treating
 them as data avoids a translation table that would be wrong as often as right.
@@ -139,8 +140,8 @@ Stated on each page once both exist: *Maßgeblich ist die deutsche Fassung.* The
 - **Every route gains a prefix**, so every internal link, every router assertion and the `scrollBehavior` added in the footer work must account for it.
 - **The German legal pages become release-blocking.** German UI cannot ship without them (§Context). This is the constraint most likely to be forgotten under
   time pressure, and the one with an actual legal standard attached.
-- **Two message catalogues drift.** Mitigated by a unit test asserting identical key sets — a missing German key silently falls back to English, which is exactly
-  the failure that ships unnoticed.
+- **Two message catalogues drift.** Mitigated by a unit test asserting identical key sets — a missing German key silently falls back to English, which is
+  exactly the failure that ships unnoticed.
 - **German is longer than English**, reliably. Layouts that fit today will not all fit tomorrow; the axe sweep and the overflow guards must cover `/de`.
 
 **Deliberately deferred:**
@@ -148,12 +149,12 @@ Stated on each page once both exist: *Maßgeblich ist die deutsche Fassung.* The
 - **More than two languages.** The structure supports it; nothing here assumes it.
 - **Backend localisation.** The BFF returns data and RFC 9457 problem details; the frontend owns all user-facing language. If that changes, `Accept-Language`
   handling in the BFF is a separate decision.
-- **SSR / prerendering.** Wanted for SEO and tracked separately, but not a prerequisite: `hreflang` and per-locale `og:locale` are worth adding regardless.
-  *(Decided in [ADR-014](ADR-014_RENDERING_STRATEGY.md), 2026-08-08. The "not a prerequisite" judgement held for `hreflang` — the sitemap carries it — but only
+- **SSR / prerendering.** Wanted for SEO and tracked separately, but not a prerequisite: `hreflang` and per-locale `og:locale` are worth adding regardless. *(
+  Decided in [ADR-014](ADR-014_RENDERING_STRATEGY.md), 2026-08-08. The "not a prerequisite" judgement held for `hreflang` — the sitemap carries it — but only
   partly: page-level `og:` tags do need server-side rendering, because the scrapers that consume them do not run JavaScript.)*
-- **A German tagline.** *"Can't get enough of Berlin"* is a pun on the brand premise ([BRANDING.md](../BRANDING.md) §2) and a literal rendering loses it. Whether
-  the brand line stays English on the German site is a **brand decision, not an architectural one** — it belongs in BRANDING.md, and many Berlin brands do keep
-  an English tagline.
+- **A German tagline.** *"Can't get enough of Berlin"* is a pun on the brand premise ([BRANDING.md](../BRANDING.md) §2) and a literal rendering loses it.
+  Whether the brand line stays English on the German site is a **brand decision, not an architectural one** — it belongs in BRANDING.md, and many Berlin brands
+  do keep an English tagline.
 
 ## References
 

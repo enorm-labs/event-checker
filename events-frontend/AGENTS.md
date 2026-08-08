@@ -106,7 +106,7 @@ events-frontend/
 Four imports carry an explicit `.ts` extension, against the rule above:
 
 | File                  | Import                  |
-|-----------------------|-------------------------|
+| --------------------- | ----------------------- |
 | `vite.config.ts`      | `./scripts/seoFiles.ts` |
 | `vitest.config.ts`    | `./vite.config.ts`      |
 | `scripts/seoFiles.ts` | `../src/lib/seo.ts`     |
@@ -114,7 +114,7 @@ Four imports carry an explicit `.ts` extension, against the rule above:
 
 Vite's config loader is moving from bundling the config (`configLoader: 'bundle'`, today's default) to handing it
 to the Node runtime (`configLoader: 'native'`, the announced future default). The native loader uses Node's ESM
-resolver, where a specifier means exactly what it says — no extension inference. The requirement is *transitive*,
+resolver, where a specifier means exactly what it says — no extension inference. The requirement is _transitive_,
 so it propagates down the whole import chain reachable from a config file, which is how it reaches into `src/`.
 
 `npm run dev` warned about each of these until they were fixed. Two consequences worth knowing:
@@ -171,7 +171,8 @@ Reference: [Styling with utility classes](https://tailwindcss.com/docs/styling-w
   3. an arbitrary value, for genuinely one-off values (a decorative blur radius, a hero glow's dimensions).
 
   Arbitrary **variants** (`[&.router-link-exact-active]:…`, `dark:[color-scheme:dark]`) are fine — the rule is
-  about magic *values*.
+  about magic _values_.
+
 - **Inline `style` is allowed only** for values utilities can't express: dynamic values from data, or setting a
   CSS variable that utilities then read (`class="bg-(--glow)"`). Not as an escape hatch from writing classes.
 - **Never put two conflicting utilities on one element** (`class="grid flex"`) — the winner is decided by
@@ -217,7 +218,7 @@ Reference: [Styling with utility classes](https://tailwindcss.com/docs/styling-w
 - **Vendored `ui/` components: reach for a variant, not a one-off `class`** — they accept a `class` prop (that's
   the shadcn pattern, merged via `cn()`), but using it to invent per-call-site colours or sizes erodes the
   consistency the variants exist to enforce. Add a `variant`/`size` to the component's `cva` config instead.
-  A one-off `class` for *layout* at the call site (margins, `w-full`) is fine — it's appearance that must stay
+  A one-off `class` for _layout_ at the call site (margins, `w-full`) is fine — it's appearance that must stay
   in the variants.
 - **Class merging** — compose conditional classes with the `cn()` helper from `@/lib/utils`
   (clsx + tailwind-merge), as the generated components do.
@@ -278,7 +279,7 @@ Reference: [Styling with utility classes](https://tailwindcss.com/docs/styling-w
 **`src/api/schema.d.ts` is generated and committed. If you change the BFF's public API — a new endpoint, a renamed or added response field, a changed
 type — regenerate it in the same change, or the frontend will keep type-checking against an API that no longer exists.**
 
-The generator reads the *running* BFF's live OpenAPI document over HTTP; there is no offline mode and no build-time hook. So the BFF has to be up:
+The generator reads the _running_ BFF's live OpenAPI document over HTTP; there is no offline mode and no build-time hook. So the BFF has to be up:
 
 ```bash
 # 1. Start the BFF (from the repository root) — it must be listening on :8080
@@ -295,8 +296,8 @@ npm run type-check
 
 Things worth knowing:
 
-- **The failure mode is silent and confusing.** With the BFF down, `npm run generate:api` fails on the fetch — noisy and obvious. With the BFF running *stale
-  code*, it succeeds and writes a schema for the API you didn't change. Restart the BFF after editing a controller or DTO.
+- **The failure mode is silent and confusing.** With the BFF down, `npm run generate:api` fails on the fetch — noisy and obvious. With the BFF running _stale
+  code_, it succeeds and writes a schema for the API you didn't change. Restart the BFF after editing a controller or DTO.
 - **A rename lands as a delete plus an add.** `src/api/types.ts` addresses schemas by name (`Schemas['EventDetailResponse']`), so a renamed BFF DTO surfaces as
   a type error there, not in the diff. That is the intended tripwire — fix the alias, don't widen it.
 - **Removing or narrowing a field is a breaking change for the site, not just for the types.** Regenerating makes it compile; it does not make the view render.
@@ -310,21 +311,21 @@ Things worth knowing:
 The site is locale-routed: every page lives under `/<locale>/…`, and `src/i18n/locales.ts` is the single list of what is published. See
 [ADR-013](../docs/adr/ADR-013_LOCALISATION.md).
 
-- **Every in-app link goes through `useLocalePath()`.** A bare `to="/events"` still *works* — the catch-all redirects it — but costs a redirect on every
+- **Every in-app link goes through `useLocalePath()`.** A bare `to="/events"` still _works_ — the catch-all redirects it — but costs a redirect on every
   navigation and briefly shows the wrong URL. `localePath('/events')` → `/en/events`.
-- **Adding a locale means adding it to `LOCALES`** *and* shipping its message catalogue in the same change. The route matcher is built from that list, so a
+- **Adding a locale means adding it to `LOCALES`** _and_ shipping its message catalogue in the same change. The route matcher is built from that list, so a
   locale becomes routable the moment it is listed — and a `/de` URL rendering English is worse than no `/de` at all.
 - **User-facing strings belong in `src/i18n/messages/`**, not in templates.
 - **The four long-form pages are the documented exception**: About and the three under `/legal/*` have **one component per language**
   (`ImprintView.en.vue` / `ImprintView.de.vue`), wired through `localisedView()` in the router. Their prose carries inline links and `<strong>`/`<code>`
-  *inside* paragraphs, which JSON cannot hold without `v-html` or shattered sentences — and a legal page has to be reviewable as a document. **Editing one
+  _inside_ paragraphs, which JSON cannot hold without `v-html` or shattered sentences — and a legal page has to be reviewable as a document. **Editing one
   language version means editing the other in the same change**; facts that must not diverge (address, supervisory authority, review date) come from
   `src/lib/legal.ts`, and `views/legal/__tests__/legalViews.spec.ts` runs the mandatory-element checklist against each language separately.
 - **German is the authoritative version of the legal pages** (LEGAL.md §6.1), and both language versions say so. Do not remove that sentence.
 - **`lib/format.ts` stays pure** — its functions take a locale argument. `composables/useFormat.ts` is the thin layer that supplies it from the active i18n
   instance, so unit tests can call the helpers without mounting an app.
 - **`todayIso()`'s `en-CA` is a format, not a language.** It is the shortest way to get `YYYY-MM-DD` out of `Intl`. Making it locale-aware breaks every date
-  filter *silently*, because `12.6.2026` is still a plausible date. Do not touch it.
+  filter _silently_, because `12.6.2026` is still a plausible date. Do not touch it.
 - **Event-type labels come from the `eventType.*` catalogue**, with `humaniseEventType()` as the fallback for values the frontend has not been taught yet — the
   BFF enum can gain a value in a backend release that ships first.
 - Component tests get the i18n plugin automatically via `src/test/setup.ts`; no per-spec wiring needed.
@@ -351,8 +352,8 @@ The site is locale-routed: every page lives under `/<locale>/…`, and `src/i18n
   a generated sentence — the same rule the structured data follows.
 - **Structured data (`src/lib/structuredData.ts`) may only describe what the page displays.** That is Google policy, not style — structured data must represent
   visible content. Before adding a property, check the view actually renders it.
-- **Omit rather than guess.** A missing property costs a recommendation; a wrong one is a misrepresentation we volunteered, on a site whose imprint says *alle
-  Angaben ohne Gewähr*. `eventJsonLd` returns `null` when a required field is absent, because partial structured data is rejected outright rather than partially
+- **Omit rather than guess.** A missing property costs a recommendation; a wrong one is a misrepresentation we volunteered, on a site whose imprint says _alle
+  Angaben ohne Gewähr_. `eventJsonLd` returns `null` when a required field is absent, because partial structured data is rejected outright rather than partially
   used.
 - **Two claims are deliberately not made, and both are legal rather than technical.** Performers are `PerformingGroup`, never `Person` — §7.3 treats artist
   names as personal data, and asserting personhood machine-readably is gratuitous. The site is a `WebSite`, never an `Organization` — the imprint states a
@@ -365,7 +366,7 @@ The application version lives in **`version` in the root `gradle.properties`** �
 
 - `events-frontend/package.json` **mirrors** it, kept in step **by hand**. Nothing generates or verifies it, so a version bump is one change touching two files.
 - The mirror is deliberately **without** the `-SNAPSHOT` suffix that `gradle.properties` carries: npm's SemVer has no such convention, and `0.1.0-SNAPSHOT`
-  reads as a malformed prerelease. The two files are *intentionally* not byte-identical — do not "fix" this.
+  reads as a malformed prerelease. The two files are _intentionally_ not byte-identical — do not "fix" this.
 - **Do not bump `version` in `package.json` on its own.** It is `private: true` and never published, so nothing breaks visibly if it drifts — which is exactly
   why it needs the discipline.
 - **The version the site displays never comes from `package.json`.** The footer reads `GET /meta`, which the backend stamps from the Gradle build (see
@@ -383,15 +384,15 @@ npm run generate:notices                                   # events-frontend; me
 
 - The `--no-configuration-cache` flag is required — the licence-report plugin is not configuration-cache compatible (see the note in `gradle.properties`).
 - The generator deliberately writes **no timestamp**, so re-running it with unchanged dependencies produces an identical file and an empty diff.
-Licence policy is enforced on both sides, in two files because the ecosystems report licence names differently (SPDX ids vs the Gradle normaliser's prose
-names). They are one policy — change them together:
+  Licence policy is enforced on both sides, in two files because the ecosystems report licence names differently (SPDX ids vs the Gradle normaliser's prose
+  names). They are one policy — change them together:
 
 ```bash
 npm run check:licenses                                     # this project's production dependencies, vs config/allowed-licenses-npm.json
 ./gradlew checkLicense --no-configuration-cache            # the JVM modules, vs config/allowed-licenses-jvm.json (repository root)
 ```
 
-`.github/workflows/dependency-review.yml` adds a third gate: a deny-list applied to *newly introduced* dependencies at PR time.
+`.github/workflows/dependency-review.yml` adds a third gate: a deny-list applied to _newly introduced_ dependencies at PR time.
 
 **Do not widen an allow-list to make a build pass.** AGPL, GPL without the Classpath Exception, and source-available licences (SSPL, BUSL, Elastic-2.0) are not
 acceptable — see [docs/LEGAL.md §9.2](../docs/LEGAL.md). If a licence genuinely belongs on the list, record why in the policy
@@ -413,7 +414,7 @@ list: [docs/LEGAL.md §12](../docs/LEGAL.md).
 - **Prefer a reka-ui / shadcn-vue primitive** over a hand-rolled interactive component. They handle focus management, keyboard interaction and ARIA that a
   bespoke `div` will not.
 - **Form controls need a label** — a `<label>` element, or an `aria-label` where the design has no visible label (as in `EventFilterBar.vue`).
-- **Write e2e selectors by role and accessible name** (`getByRole('link', { name: … })`). This is the house style *and* it makes the Playwright suite an
+- **Write e2e selectors by role and accessible name** (`getByRole('link', { name: … })`). This is the house style _and_ it makes the Playwright suite an
   accessibility regression test.
 - **Colour is never the only carrier of meaning** (1.4.1). New colour pairs must clear 4.5:1 for body text and 3:1 for large text and UI boundaries (1.4.3,
   1.4.11).
@@ -423,11 +424,11 @@ list: [docs/LEGAL.md §12](../docs/LEGAL.md).
   it, and never hard-code it back to a literal — axe's `html-has-lang` would still pass while German content announced itself as English.
 
 Further reading: [Vue's own accessibility guide](https://vuejs.org/guide/best-practices/accessibility.html). The rules above already implement its
-recommendations — skip link, heading order, landmarks, labelled controls, `aria-hidden` on decorative icons — so read it for the *why*, not as a gap list.
+recommendations — skip link, heading order, landmarks, labelled controls, `aria-hidden` on decorative icons — so read it for the _why_, not as a gap list.
 Two of its suggestions are deliberately **not** followed:
 
 - It suggests restoring focus to the top of the document on route change. This app instead announces the new page title into an `aria-live` region (see
-  `App.vue`), which tells a screen-reader user *where they are* rather than only resetting where they are. Moving focus as well would interrupt that
+  `App.vue`), which tells a screen-reader user _where they are_ rather than only resetting where they are. Moving focus as well would interrupt that
   announcement.
 - It prefers `for`/`id` label association over wrapping. Both are valid; the `label-has-for` override in `eslint.config.ts` accepts either, and
   `EventFilterBar.vue` wraps.
@@ -458,7 +459,7 @@ The sweep runs in three passes:
 3. **`best-practice`, informational** — never fails the build. See below.
 
 **The mock matchers must stay non-overlapping**, which takes a lookahead: `/events` has three sub-resources (`/today`, `/calendar`, `/{slug}`) and a naive
-`\/events\/[^/?]+` swallows all three. Playwright consults route handlers in *reverse* registration order, so an overlap silently picks the handler registered
+`\/events\/[^/?]+` swallows all three. Playwright consults route handlers in _reverse_ registration order, so an overlap silently picks the handler registered
 last — and a feed served an object instead of an array renders an empty state that axe passes happily.
 
 #### The informational `best-practice` pass
@@ -469,16 +470,16 @@ and attached to the Playwright report.
 
 Three are open today. Fixing any of them is welcome; **promoting the pass to a gate is not the way to get them fixed**:
 
-| Finding | Where | Note |
-|---|---|---|
-| `heading-order` | `/events`, `/venues` | The list pages go `h1` → `h3`, because `EventCard` / `VenueCard` render `h3` — correct on the home page, where an `h2` section heading sits above them. Needs a decision about the shared card component, not a local edit. |
-| `empty-table-header` (7 nodes) | `/calendar` | FullCalendar's own weekday header cells. Third-party markup we do not write. |
+| Finding                        | Where                | Note                                                                                                                                                                                                                        |
+| ------------------------------ | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `heading-order`                | `/events`, `/venues` | The list pages go `h1` → `h3`, because `EventCard` / `VenueCard` render `h3` — correct on the home page, where an `h2` section heading sits above them. Needs a decision about the shared card component, not a local edit. |
+| `empty-table-header` (7 nodes) | `/calendar`          | FullCalendar's own weekday header cells. Third-party markup we do not write.                                                                                                                                                |
 
 ### Why not the axe CLI
 
 `@axe-core/cli` exists, and it is the wrong tool here. It drives a standalone ChromeDriver against a list of URLs, which means: no way to reach a state behind
 an interaction (the light theme is behind a button click), no way to mock the BFF (so every data-driven route scans its error state), one browser instead of
-five, and a second browser-automation dependency alongside Playwright. The `@axe-core/playwright` integration runs the *same* axe-core engine with none of
+five, and a second browser-automation dependency alongside Playwright. The `@axe-core/playwright` integration runs the _same_ axe-core engine with none of
 those limits. There is no coverage argument for adding the CLI.
 
 What automation genuinely cannot do is still worth knowing: axe reliably finds roughly a third of WCAG issues. Keyboard-only walkthroughs and a screen-reader
@@ -520,9 +521,9 @@ The project uses a two-tier linting strategy:
   English accessible names as stable handles; re-running them in German would double an already five-project matrix to re-assert the same behaviour. So put
   anything that only exists in a second language — the URL contract, the switcher, date formats, the per-locale pages — in `i18n.spec.ts`, and leave the rest
   in English.
-    - **Two exceptions, both deliberate.** The **axe sweep runs both locales**, because German is reliably longer and that is where a layout overflow or a
-      contrast regression actually appears. And **landmark names are translated**, so a selector like `getByRole('navigation', { name: 'Main' })` becomes
-      `'Haupt'` under `/de` — which is the concrete reason the other suites stay on `/en` rather than a stylistic one.
+  - **Two exceptions, both deliberate.** The **axe sweep runs both locales**, because German is reliably longer and that is where a layout overflow or a
+    contrast regression actually appears. And **landmark names are translated**, so a selector like `getByRole('navigation', { name: 'Main' })` becomes
+    `'Haupt'` under `/de` — which is the concrete reason the other suites stay on `/en` rather than a stylistic one.
 - **Layout/responsive gotcha:** because `/verify` is chromium-only (desktop viewport), it will not catch
   regressions that only appear on the mobile projects — e.g. a wider header nav overflowing a ~390px screen
   and pushing a control off-screen (a real failure we hit). When touching the **app shell, header/nav, or any

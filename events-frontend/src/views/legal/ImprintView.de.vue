@@ -72,9 +72,10 @@ const { t } = useI18n()
         Event Junkie wird von einer Privatperson betrieben, nicht von einem Unternehmen: Es gibt
         keinen Handelsregistereintrag, keine Umsatzsteuer-Identifikationsnummer nach § 27a UStG,
         keine Aufsichtsbehörde und keine reglementierte Berufsbezeichnung. Über diese Seite werden
-        keine Verbraucherverträge geschlossen, sodass weder die EU-Plattform zur Online-Streitbeilegung
-        noch § 36 VSBG einschlägig sind. Zur Teilnahme an einem Streitbeilegungsverfahren vor einer
-        Verbraucherschlichtungsstelle sind wir weder verpflichtet noch bereit.
+        keine Verbraucherverträge geschlossen, sodass weder die EU-Plattform zur
+        Online-Streitbeilegung noch § 36 VSBG einschlägig sind. Zur Teilnahme an einem
+        Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle sind wir weder
+        verpflichtet noch bereit.
       </p>
     </section>
 
@@ -85,8 +86,8 @@ const { t } = useI18n()
       <p>
         Die Veranstaltungsdaten auf dieser Seite werden automatisiert aus öffentlich zugänglichen
         Quellen zusammengetragen. Alle Angaben erfolgen ohne Gewähr für Richtigkeit, Vollständigkeit
-        und Aktualität. Veranstaltungen können verlegt, ausverkauft oder abgesagt werden, nachdem wir
-        die Quelle zuletzt gelesen haben. Prüfe Details deshalb immer bei der Location oder beim
+        und Aktualität. Veranstaltungen können verlegt, ausverkauft oder abgesagt werden, nachdem
+        wir die Quelle zuletzt gelesen haben. Prüfe Details deshalb immer bei der Location oder beim
         offiziellen Ticketanbieter, bevor du losziehst. Für Entscheidungen, die auf Grundlage der
         hier gezeigten Informationen getroffen werden, wird keine Haftung übernommen.
       </p>

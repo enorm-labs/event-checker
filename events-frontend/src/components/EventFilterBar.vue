@@ -106,8 +106,8 @@ const { t } = useI18n()
     <form class="flex gap-2" @submit.prevent="applyFilters({ q: search })">
       <BaseInput
         v-model="search"
-        class="px-3"
         :placeholder="t('events.filters.searchPlaceholder')"
+        class="px-3"
         type="search"
       />
       <Button type="submit" variant="outline">{{ t('common.actions.search') }}</Button>
@@ -123,19 +123,19 @@ const { t } = useI18n()
     -->
     <div v-if="showDateRange" class="flex flex-wrap items-center gap-2">
       <BaseInput
+        :aria-label="t('events.filters.earliestDate')"
         :max="queryString('to') || undefined"
         :min="today"
         :model-value="queryString('from')"
-        :aria-label="t('events.filters.earliestDate')"
         type="date"
         @change="applyFilters({ from: ($event.target as HTMLInputElement).value })"
         @click="openDatePicker"
       />
       <span class="text-sm text-muted-foreground">–</span>
       <BaseInput
+        :aria-label="t('events.filters.latestDate')"
         :min="queryString('from') || today"
         :model-value="queryString('to')"
-        :aria-label="t('events.filters.latestDate')"
         type="date"
         @change="applyFilters({ to: ($event.target as HTMLInputElement).value })"
         @click="openDatePicker"
@@ -159,8 +159,8 @@ const { t } = useI18n()
     </div>
 
     <BaseSelect
-      :model-value="queryString('eventType')"
       :aria-label="t('events.filters.byType')"
+      :model-value="queryString('eventType')"
       @change="applyFilters({ eventType: ($event.target as HTMLSelectElement).value })"
     >
       <option value="">{{ t('events.filters.allTypes') }}</option>
@@ -175,8 +175,8 @@ const { t } = useI18n()
     </BaseSelect>
 
     <BaseSelect
-      :model-value="queryString('venue')"
       :aria-label="t('events.filters.byVenue')"
+      :model-value="queryString('venue')"
       @change="applyFilters({ venue: ($event.target as HTMLSelectElement).value })"
     >
       <option value="">{{ t('events.filters.allVenues') }}</option>
@@ -186,8 +186,8 @@ const { t } = useI18n()
     </BaseSelect>
 
     <BaseSelect
-      :model-value="queryString('district')"
       :aria-label="t('events.filters.byDistrict')"
+      :model-value="queryString('district')"
       @change="applyFilters({ district: ($event.target as HTMLSelectElement).value })"
     >
       <option value="">{{ t('events.filters.allDistricts') }}</option>
@@ -195,8 +195,8 @@ const { t } = useI18n()
     </BaseSelect>
 
     <BaseSelect
-      :model-value="queryString('genre')"
       :aria-label="t('events.filters.byGenre')"
+      :model-value="queryString('genre')"
       @change="applyFilters({ genre: ($event.target as HTMLSelectElement).value })"
     >
       <option value="">{{ t('events.filters.allGenres') }}</option>
@@ -209,10 +209,10 @@ const { t } = useI18n()
       <BaseInput
         v-model="minPrice"
         :aria-label="t('events.filters.minPrice')"
+        :placeholder="t('events.filters.minPricePlaceholder')"
         class="w-20"
         inputmode="decimal"
         min="0"
-        :placeholder="t('events.filters.minPricePlaceholder')"
         step="0.01"
         type="number"
       />
@@ -220,10 +220,10 @@ const { t } = useI18n()
       <BaseInput
         v-model="maxPrice"
         :aria-label="t('events.filters.maxPrice')"
+        :placeholder="t('events.filters.maxPricePlaceholder')"
         class="w-20"
         inputmode="decimal"
         min="0"
-        :placeholder="t('events.filters.maxPricePlaceholder')"
         step="0.01"
         type="number"
       />

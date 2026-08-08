@@ -18,8 +18,8 @@ Proposed (2026-08-03)
 
 ## Context
 
-Event Junkie is a Berlin music-events guide, **not yet deployed anywhere** (see [README §Status](../../README.md#status)). The decision is being made before
-the first deploy, which means we are choosing the platform we will write Terraform and a Helm chart *against* — switching later costs real work, so it is worth
+Event Junkie is a Berlin music-events guide, **not yet deployed anywhere** (see [README §Status](../../README.md#status)). The decision is being made before the
+first deploy, which means we are choosing the platform we will write Terraform and a Helm chart *against* — switching later costs real work, so it is worth
 recording why.
 
 ### What actually has to run
@@ -34,9 +34,8 @@ Four deployables today, derived from the modules in this repo, plus one more tha
 | PostgreSQL 18     | The only stateful component; owns all event/venue/artist data     | ~2 vCPU / 4 GB, tens of GB, needs backups + point-in-time recovery |
 | *admin frontend*  | **Planned** (TODO 🟠) — a second static SPA over the admin API    | Static files, one user, **must not be publicly reachable**         |
 
-**On the planned admin frontend.** TODO lists an admin UI to operate the importers and curate data (imports status, import configuration, data-quality
-overview, manual event entry). It is not built yet, but it is close enough to change two things here, so it is priced and designed for rather than discovered
-later:
+**On the planned admin frontend.** TODO lists an admin UI to operate the importers and curate data (imports status, import configuration, data-quality overview,
+manual event entry). It is not built yet, but it is close enough to change two things here, so it is priced and designed for rather than discovered later:
 
 - **It is a fifth deployable, and its cost is not uniform across the options.** On Hetzner or any container platform it is another nginx serving a few MB —
   noise. On a **per-GB-RAM PaaS it is another billed container** (~€25–30/month on Scalingo, $25 on Render), which is a second reason those options want their

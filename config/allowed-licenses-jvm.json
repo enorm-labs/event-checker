@@ -1,39 +1,61 @@
 {
-  "_comment": [
-    "Licence allow-list for `./gradlew checkLicense --no-configuration-cache`.",
-    "Policy and reasoning: docs/LEGAL.md §9.2.",
-    "",
-    "SCOPE — runtime dependencies only, i.e. what actually ships. Build-tool and test classpaths",
-    "are excluded via `licenseReport.configurations` in the root build: nothing on them reaches a",
-    "user, so their licences carry no distribution obligation for us.",
-    "",
-    "NAMES — these are the *normalised* names produced by LicenseBundleNormalizer, not raw POM",
-    "strings. They are deliberately verbatim: 'The 2-Clause BSD License', not 'BSD-2-Clause'. If a",
-    "new dependency fails the check with a licence that is clearly acceptable, check whether it is",
-    "the same licence under a name the normaliser has not folded in before adding an entry.",
-    "",
-    "TO ADD AN ENTRY — it must be permissive, or weak copyleft used as an unmodified library.",
-    "Strong copyleft (GPL without the Classpath Exception), network copyleft (AGPL) and",
-    "source-available licences (SSPL, BUSL, Elastic-2.0) are NOT acceptable: this project ships a",
-    "public network service whose own source is Apache-2.0. The matching deny-list for new",
-    "dependencies at PR time lives in .github/workflows/dependency-review.yml.",
-    "",
-    "DELIBERATELY ABSENT — 'GNU LESSER GENERAL PUBLIC LICENSE, Version 2.1'. Logback is the only",
-    "dependency offering it, and it is dual-licensed, so it passes on EPL-2.0 instead. Keeping LGPL",
-    "off the list means an LGPL-only dependency stops the build and gets a decision, which is the",
-    "intent. Same for CC0 ('Creative Commons Legal Code'): HdrHistogram passes on 2-Clause BSD."
-  ],
-  "allowedLicenses": [
-    { "moduleLicense": "Apache License, Version 2.0" },
-    { "moduleLicense": "MIT License" },
-    { "moduleLicense": "MIT-0" },
-    { "moduleLicense": "The 2-Clause BSD License" },
-    { "moduleLicense": "The 3-Clause BSD License" },
-    { "moduleLicense": "BSD Zero Clause License" },
-    { "moduleLicense": "ISC License" },
-    { "moduleLicense": "PUBLIC DOMAIN" },
-    { "moduleLicense": "Eclipse Public License - v 2.0" },
-    { "moduleLicense": "Eclipse Distribution License - v 1.0" },
-    { "moduleLicense": "GNU GENERAL PUBLIC LICENSE, Version 2 + Classpath Exception" }
-  ]
+    "_comment": [
+        "Licence allow-list for `./gradlew checkLicense --no-configuration-cache`.",
+        "Policy and reasoning: docs/LEGAL.md §9.2.",
+        "",
+        "SCOPE — runtime dependencies only, i.e. what actually ships. Build-tool and test classpaths",
+        "are excluded via `licenseReport.configurations` in the root build: nothing on them reaches a",
+        "user, so their licences carry no distribution obligation for us.",
+        "",
+        "NAMES — these are the *normalised* names produced by LicenseBundleNormalizer, not raw POM",
+        "strings. They are deliberately verbatim: 'The 2-Clause BSD License', not 'BSD-2-Clause'. If a",
+        "new dependency fails the check with a licence that is clearly acceptable, check whether it is",
+        "the same licence under a name the normaliser has not folded in before adding an entry.",
+        "",
+        "TO ADD AN ENTRY — it must be permissive, or weak copyleft used as an unmodified library.",
+        "Strong copyleft (GPL without the Classpath Exception), network copyleft (AGPL) and",
+        "source-available licences (SSPL, BUSL, Elastic-2.0) are NOT acceptable: this project ships a",
+        "public network service whose own source is Apache-2.0. The matching deny-list for new",
+        "dependencies at PR time lives in .github/workflows/dependency-review.yml.",
+        "",
+        "DELIBERATELY ABSENT — 'GNU LESSER GENERAL PUBLIC LICENSE, Version 2.1'. Logback is the only",
+        "dependency offering it, and it is dual-licensed, so it passes on EPL-2.0 instead. Keeping LGPL",
+        "off the list means an LGPL-only dependency stops the build and gets a decision, which is the",
+        "intent. Same for CC0 ('Creative Commons Legal Code'): HdrHistogram passes on 2-Clause BSD."
+    ],
+    "allowedLicenses": [
+        {
+            "moduleLicense": "Apache License, Version 2.0"
+        },
+        {
+            "moduleLicense": "MIT License"
+        },
+        {
+            "moduleLicense": "MIT-0"
+        },
+        {
+            "moduleLicense": "The 2-Clause BSD License"
+        },
+        {
+            "moduleLicense": "The 3-Clause BSD License"
+        },
+        {
+            "moduleLicense": "BSD Zero Clause License"
+        },
+        {
+            "moduleLicense": "ISC License"
+        },
+        {
+            "moduleLicense": "PUBLIC DOMAIN"
+        },
+        {
+            "moduleLicense": "Eclipse Public License - v 2.0"
+        },
+        {
+            "moduleLicense": "Eclipse Distribution License - v 1.0"
+        },
+        {
+            "moduleLicense": "GNU GENERAL PUBLIC LICENSE, Version 2 + Classpath Exception"
+        }
+    ]
 }

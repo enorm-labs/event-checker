@@ -9,6 +9,7 @@ import de.norm.events.scraper.cleanEventTitle
 import de.norm.events.scraper.extractSupportFromSubtitle
 import de.norm.events.scraper.inferUnmarkedTitleType
 import de.norm.events.scraper.parseTime
+import de.norm.events.scraper.peteredel.PeterEdelOverviewPageScraper.Companion.VENUE_FORMAT_KEYWORDS
 import de.norm.events.scraper.resolveUrl
 import de.norm.events.scraper.textAt
 import de.norm.events.slug.SlugGenerator

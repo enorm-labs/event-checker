@@ -1,12 +1,16 @@
-import { createRouter, createWebHistory, type RouteLocationNormalized } from 'vue-router'
+import {
+  createRouter,
+  createWebHistory,
+  type RouteLocationNormalized,
+  RouterView,
+} from 'vue-router'
 import { h } from 'vue'
-import { RouterView } from 'vue-router'
 import { applyPageMeta } from '../composables/usePageMeta'
 import { staticPageMeta } from '../lib/pageMeta'
 import {
   isLocale,
-  LOCALES,
   type Locale,
+  LOCALES,
   rememberLocale,
   resolveLocale,
   stripLocale,

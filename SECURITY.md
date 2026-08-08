@@ -28,8 +28,8 @@ what an attacker could actually achieve with it.
 
 ## Scope
 
-The project is **not deployed anywhere yet** (see [README §Status](./README.md#status)), so there is no production system to attack. That makes
-the interesting surface the code itself:
+The project is **not deployed anywhere yet** (see [README §Status](./README.md#status)), so there is no production system to attack. That makes the interesting
+surface the code itself:
 
 **In scope**
 
@@ -43,8 +43,8 @@ the interesting surface the code itself:
 
 - The third-party venue websites the importer reads from. They are not ours; please do not test against them.
 - Findings that require access to a developer's machine or to the repository's secrets.
-- Automated scanner output with no demonstrated impact. We already run OWASP Dependency-Check, CodeQL and Dependabot — a report that simply repeats their
-  output is not useful unless you can show why it matters here.
+- Automated scanner output with no demonstrated impact. We already run OWASP Dependency-Check, CodeQL and Dependabot — a report that simply repeats their output
+  is not useful unless you can show why it matters here.
 
 ## What we already do
 

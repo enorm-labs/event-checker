@@ -77,8 +77,8 @@ useful — a problem concentrated at one venue usually points at that importer.
 - Non-artist strings sitting in `artist.name`: event-format words (`Quiz`, `Karaoke`, `Open Mic`,
   `Festival`, `Special`, `Tour`, `Support`, `Live`, `Warm Up`, `Aftershow`, `w/`, `presents`, `vs`), standalone symbols, pure numbers, or very long strings (a
   whole title parsed as one artist).
-- Residual ALL-CAPS artist names — `canonicalArtistName`'s de-shouting is casing-only and its `ACRONYMS` set is curated, so a genuine all-caps name that is
-  not in it gets title-cased and a new stylised one slips through until added.
+- Residual ALL-CAPS artist names — `canonicalArtistName`'s de-shouting is casing-only and its `ACRONYMS` set is curated, so a genuine all-caps name that is not
+  in it gets title-cased and a new stylised one slips through until added.
 - Artist/promoter names with leftover HTML entities (`&amp;`, `&#039;`), stray encoding (`Ã¤`, `â€™`), leading/trailing punctuation or whitespace, doubled
   spaces.
 - Promoter names that are actually venue names, generic labels (`Presents`, `Konzert`), or descriptors that should have been stripped/merged.
@@ -101,8 +101,8 @@ useful — a problem concentrated at one venue usually points at that importer.
 
 ### 5. Dates, times & prices
 
-- `event_date` in the far past (stale listings) or implausibly far future — the usual cause is year inference on a year-less date. Bucket by how far from
-  today (`2026-07-07`).
+- `event_date` in the far past (stale listings) or implausibly far future — the usual cause is year inference on a year-less date. Bucket by how far from today
+  (`2026-07-07`).
 - `start_time` earlier than `doors_time` (doors should be ≤ start).
 - Negative or absurd prices; `price_presale`/`price_box_office` with `free = true`; `price_currency`
   other than `EUR`; `sold_out = true` for a venue whose importer KDoc says it cannot detect sold-out at all (SO36).
