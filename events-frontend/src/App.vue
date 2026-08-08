@@ -103,6 +103,10 @@ const localePath = useLocalePath()
         >
           <BaseBadge variant="outline">{{ t('common.nav.beta') }}</BaseBadge>
         </RouterLink>
+        <!-- Order is deliberate: /events and /calendar are two views of the same thing (a list and
+             a month grid over the same events), so they sit next to each other; /venues is a
+             different entity and follows them; /about is meta and goes last. e2e/smoke.spec.ts
+             pins this order so it cannot drift back unnoticed. -->
         <div class="order-last flex w-full items-center gap-4 sm:order-none sm:w-auto sm:gap-6">
           <RouterLink
             class="text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
@@ -112,15 +116,15 @@ const localePath = useLocalePath()
           </RouterLink>
           <RouterLink
             class="text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
-            :to="localePath('/venues')"
-          >
-            {{ t('common.nav.venues') }}
-          </RouterLink>
-          <RouterLink
-            class="text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
             :to="localePath('/calendar')"
           >
             {{ t('common.nav.calendar') }}
+          </RouterLink>
+          <RouterLink
+            class="text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
+            :to="localePath('/venues')"
+          >
+            {{ t('common.nav.venues') }}
           </RouterLink>
           <RouterLink
             class="text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
