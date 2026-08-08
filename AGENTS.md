@@ -346,7 +346,7 @@ When launching these from an agent shell, redirect the command's own output (`> 
 tool's stdout pipe and keeps the call hanging long after the script itself has exited.
 
 **Working in a git worktree** (a session started with `claude --worktree`, or any `git worktree add` checkout — see
-[README → Parallel work with Git worktrees](./README.md#parallel-work-with-git-worktrees)). Files and Gradle output are isolated; the local runtime is not.
+[docs/WORKTREES.md](docs/WORKTREES.md)). Files and Gradle output are isolated; the local runtime is not.
 
 - **Export `COMPOSE_PROJECT_NAME=event-checker` before any `bootRun` or `scripts/dev-env.sh up` in a worktree.** Docker Compose names the project after the
   directory containing the `compose.yaml` it is given, and both paths pass the worktree's copy — so without the override the worktree starts a *second*

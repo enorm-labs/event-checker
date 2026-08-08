@@ -18,7 +18,7 @@ Proposed (2026-08-03)
 
 ## Context
 
-Event Junkie is a Berlin music-events guide, **not yet deployed anywhere** (see [README §Project Status](../../README.md)). The decision is being made before
+Event Junkie is a Berlin music-events guide, **not yet deployed anywhere** (see [README §Status](../../README.md#status)). The decision is being made before
 the first deploy, which means we are choosing the platform we will write Terraform and a Helm chart *against* — switching later costs real work, so it is worth
 recording why.
 

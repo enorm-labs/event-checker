@@ -211,7 +211,8 @@ Only the version segment of the shields.io URL changes; leave the colour, logo a
 edit the number, not the surrounding path. Check every badge even if you think the bump was unrelated — a Spring Boot bump can drag Kotlin along via
 compatibility, and a frontend-only run can still cross a Vue major.
 
-The README's "Update the Gradlew Wrapper" section also carries a version — the `--gradle-version <x>` example. That one is illustrative rather than a claim, but
+[docs/DEVELOPMENT.md](../../docs/DEVELOPMENT.md)'s "Updating the Gradle wrapper" section also carries a version — the `--gradle-version <x>` example (it lived
+in the README before the restructure, so look there if this section has moved again). That one is illustrative rather than a claim, but
 an example older than the wrapper itself reads as neglect, so match it to `distributionUrl` in `gradle/wrapper/gradle-wrapper.properties` whenever you notice a
 gap. This prompt does not bump the wrapper itself; that is a separate manual step.
 
