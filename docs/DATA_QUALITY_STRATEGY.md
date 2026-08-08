@@ -172,9 +172,10 @@ title → artist extraction, event-type validation, genre / missing-field enrich
 - Deterministic rules stay the fast, free, first pass; the model is the fallback, not the front door.
 - Human-in-the-loop: a steward confirms/corrects model output (via the API now, a frontend later — §7); confirmed corrections feed back into the curated
   vocabulary — closing the loop Pillar 1 opened. This is where the *curated-vocab storage* decision (§6) bites: live steward fixes need the vocab to be data.
-- **Requires its own ADR** (proposed **ADR-012 — AI-Assisted Data Quality**): it introduces a new external dependency, per-import cost and latency, and
-  non-deterministic output, all of which interact with the scraping-pipeline decisions in ADR-007. Scope for the ADR: model/provider choice, where the stage
-  sits in the pipeline, caching/idempotency, cost controls, and how model output is reconciled with the deterministic layer and the human review step.
+- **Requires its own ADR — *AI-Assisted Data Quality*** (unnumbered until written; see the numbering note in [AGENTS.md](../AGENTS.md)): it introduces a new
+  external dependency, per-import cost and latency, and non-deterministic output, all of which interact with the scraping-pipeline decisions in ADR-007. Scope
+  for the ADR: model/provider choice, where the stage sits in the pipeline, caching/idempotency, cost controls, and how model output is reconciled with the
+  deterministic layer and the human review step.
 
 ## 6. Open decisions
 
@@ -197,7 +198,8 @@ These are recorded, not yet resolved — settle them before the pillar that need
 1. **Pillar 1** — data-quality report + worklist endpoints. Fast, low-risk, and it baselines everything after it.
 2. **Pillar 2** — golden fixture tests + boundary validation gate. The safety net that de-risks touching the normalizers.
 3. **Pillar 3** — title-as-headliner extraction + backfill. Highest immediate user-visible gain; safe once Pillar 2 exists.
-4. **Pillar 4** — AI-assisted enrichment + steward review. Largest lever and most effort; gated on ADR-012 and the §6 vocab-storage decision.
+4. **Pillar 4** — AI-assisted enrichment + steward review. Largest lever and most effort; gated on the *AI-Assisted Data Quality* ADR (§5) and the §6
+   vocab-storage decision.
 
 ## 8. Success metrics
 

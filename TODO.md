@@ -201,9 +201,9 @@ Strategy & sequencing: [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEG
   `isNonArtistName` festival filter. **Still TODO: a one-off backfill re-scrape** — existing rows keep no artist until re-imported.
 - [ ] **(Pillar 4 — Systematize)** AI-assisted data quality in the importer (one capability, several uses): detect/extract artist names from titles, validate
   event types, enrich missing fields (genres, event types), and fix bad values (artist names, promoter names, …) — cross-checking the event source page and the
-  wider web where useful. Runs *after* the deterministic normalizers, human-in-the-loop via the admin review UI. **Needs ADR-013 (AI-Assisted Data Quality)** —
-  new external dependency, cost/latency, non-deterministic output. (Renumbered from ADR-012, which is now the cloud-platform decision; 013 is the next free
-  number.)
+  wider web where useful. Runs *after* the deterministic normalizers, human-in-the-loop via the admin review UI. **Needs an ADR — *AI-Assisted Data Quality***
+  — new external dependency, cost/latency, non-deterministic output. (Unnumbered on purpose: this ADR has been pre-assigned a number twice and lost it twice, to
+  the cloud-platform and localisation decisions. It gets one when it is written.)
 - [ ] **(Decision — ADR candidate)** Curated-vocabulary storage: code vs. data. Move the denylists / synonym maps / corrections (`NON_ARTIST_NAMES`,
   `NAME_CORRECTIONS`, genre synonyms, `ACRONYMS`) from hardcoded Kotlin to steward-editable DB tables so fixes land without a redeploy — vs. keeping them as
   tested code fixed via PR. Spike + ADR before Pillar 4's human-in-the-loop needs live editing; blocks nothing in Pillars 1–3. (Strategy §6.)
