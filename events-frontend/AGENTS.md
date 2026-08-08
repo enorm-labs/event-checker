@@ -228,8 +228,42 @@ Reference: [Styling with utility classes](https://tailwindcss.com/docs/styling-w
 ### API Communication
 
 - The Vite dev server proxies `/api` requests to the BFF backend at `http://localhost:8080`.
-- Use `fetch` or a thin wrapper for HTTP calls — no heavy HTTP client libraries needed.
-- Type API responses with TypeScript interfaces matching the backend's response DTOs.
+- Calls go through `src/api/client.ts` (`openapi-fetch`), which is typed from the generated schema — not through bare `fetch`.
+- **Never hand-write a response type.** `src/api/schema.d.ts` is generated from the BFF's OpenAPI document; `src/api/types.ts` gives its schemas readable
+  aliases (`EventSummary`, `VenueDetail`, …). Use those aliases in views and composables rather than reaching into `components['schemas'][…]`.
+- Every generated field is **optional**, because the BFF's OpenAPI document emits no `required` metadata. Guard with optional chaining and defaults.
+
+#### Regenerating `schema.d.ts` after a BFF API change
+
+**`src/api/schema.d.ts` is generated and committed. If you change the BFF's public API — a new endpoint, a renamed or added response field, a changed
+type — regenerate it in the same change, or the frontend will keep type-checking against an API that no longer exists.**
+
+The generator reads the *running* BFF's live OpenAPI document over HTTP; there is no offline mode and no build-time hook. So the BFF has to be up:
+
+```bash
+# 1. Start the BFF (from the repository root) — it must be listening on :8080
+./gradlew :events-bff:bootRun
+#    or: scripts/dev-env.sh up bff
+
+# 2. Regenerate (from events-frontend/)
+npm run generate:api        # npx openapi-typescript http://localhost:8080/v3/api-docs -o src/api/schema.d.ts
+
+# 3. See what actually moved, then follow it through
+git diff src/api/schema.d.ts
+npm run type-check
+```
+
+Things worth knowing:
+
+- **The failure mode is silent and confusing.** With the BFF down, `npm run generate:api` fails on the fetch — noisy and obvious. With the BFF running *stale
+  code*, it succeeds and writes a schema for the API you didn't change. Restart the BFF after editing a controller or DTO.
+- **A rename lands as a delete plus an add.** `src/api/types.ts` addresses schemas by name (`Schemas['EventDetailResponse']`), so a renamed BFF DTO surfaces as
+  a type error there, not in the diff. That is the intended tripwire — fix the alias, don't widen it.
+- **Removing or narrowing a field is a breaking change for the site, not just for the types.** Regenerating makes it compile; it does not make the view render.
+  Grep for the alias before assuming type-check success means done.
+- **Never edit `schema.d.ts` by hand** — it carries a "do not make direct changes" banner and the next regeneration discards them. It also does not count as
+  hand-written code in reviews or coverage.
+- The generated document covers the **BFF only**. The importer's admin API has its own OpenAPI document on `:8081`, and the frontend does not consume it.
 
 ## Localisation
 
