@@ -350,6 +350,15 @@ Ordered by when it becomes possible.
 - [ ] **Replace the placeholder postal address** — [ADR-012](docs/adr/ADR-012_CLOUD_PLATFORM.md) covers the domain; the address comes from a rented Postflex
   *ladungsfähige Anschrift*. Update `events-frontend/src/lib/legal.ts`, `CODE_OF_CONDUCT.md` and `SECURITY.md`, then set `CONTACT_DETAILS_ARE_PROVISIONAL =
   false` **in the same commit** — a unit test fails if the flag and the placeholder ever disagree, which is what stops a false address going live quietly
+- [ ] **Register the role mailboxes** `hello@event-junkie.de` and `security@event-junkie.de`, and check that mail actually arrives. They are already published
+  in the imprint, the privacy notice, `SECURITY.md` and `CODE_OF_CONDUCT.md`, so until the domain exists **every reporting route the project advertises is a
+  dead address** — including the Code of Conduct's enforcement contact and the security-disclosure address. Distinct from the read-through item above: that one
+  is proofreading, this one is infrastructure
+- [ ] **Conclude the Art. 28 contracts** — Hetzner's AVV (offered in their console) and Cloudflare's DPA — and name the transfer mechanism actually in force in
+  the privacy notice, replacing the placeholder sentence. *A notice naming processors without a DPA in place is worse than one naming none* (LEGAL.md §14)
+- [ ] **Give backup retention its own line in the privacy notice.** It is a separate period from log retention, and the two interact: if logs on disk are
+  captured by `wal-g` snapshots, the effective log retention is the **backup** window, not the rotation one. Check this against the final design rather than
+  assuming it — assuming it is how a notice ends up stating a period the system does not honour
 - [ ] **Settle the logging decisions** (LEGAL.md §7.5.1): whether Traefik and the nginx container log real client IPs, whether they are truncated,
   the retention period, and where retention is actually enforced. The privacy notice currently states an *intended* seven days — it must state the configured
   one
@@ -390,6 +399,20 @@ Ordered by when it becomes possible.
   alternative is a small k3s sidecar, which costs more operationally and keeps all processing in Germany. **It must fail open** — a slow or failing BFF has to
   yield the unmodified shell, never an error page. If the Worker is chosen, that is a §7.7 change to raise rather than assume.
   *(The other half — computing the tags — needs no deployment and is tracked under Frontend & BFF.)*
+
+### Deferred deliberately — decided, not forgotten
+
+Not blocking anything. Listed so they are not rediscovered as gaps and "fixed" by someone who does not know they were choices. Mirrors
+[LEGAL.md §14](docs/LEGAL.md).
+
+- [ ] **`1.0.0`, and dropping the beta badge — one decision, not two** (LEGAL.md §4.7). The badge says the data may be incomplete or stale; it comes off when
+  that stops being true, not when the code feels finished. Bumping the version and removing the badge belong in the same change
+- [ ] **An accessibility statement.** Only publishable once conformance has actually been measured end to end — a statement is a *claim*, and `axe` finds
+  roughly a third of WCAG issues, so passing the sweep is not evidence of AA (LEGAL.md §12). The natural home is `/legal/accessibility`, which the route
+  structure already anticipates
+- [ ] **`FUNDING.yml`** — absent on purpose until donations are actually wanted. When they are: `FUNDING.yml` first (zero site impact), and on the site **link
+  out, never embed** — an embedded payment widget introduces a processor and a third-party request. Commercial changes also alter the § 5 DDG imprint analysis,
+  not just the privacy notice (LEGAL.md §8.4)
 
 ## Tooling, AI Agents & Skills
 
