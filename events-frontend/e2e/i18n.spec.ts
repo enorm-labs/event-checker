@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test'
 /**
  * Locale routing and the content that is genuinely locale-specific.
  *
- * The other suites are pinned to `/en` deliberately (docs/LOCALISATION_PLAN.md §4): they are
+ * The other suites are pinned to `/en` deliberately (AGENTS.md §Testing — locale strategy): they are
  * behaviour tests that happen to use English accessible names as stable handles, and re-running
  * them in German would double the matrix to re-assert the same behaviour. This file carries what
  * only exists in a second language — the URL contract, the redirects, the switcher, date formats,

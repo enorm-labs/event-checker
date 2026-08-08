@@ -104,7 +104,7 @@ its legal pages in the same release.
 
 ### 6.2 Localisation
 
-Delivered; see [ADR-013](adr/ADR-013_LOCALISATION.md) and [LOCALISATION_PLAN.md](LOCALISATION_PLAN.md). Locale-prefixed routes, per-locale legal pages, a
+Delivered; see [ADR-013](adr/ADR-013_LOCALISATION.md). Locale-prefixed routes, per-locale legal pages, a
 switcher in both header and footer, `hreflang`, `og:locale` and structured data.
 
 ## 7. GDPR / DSGVO

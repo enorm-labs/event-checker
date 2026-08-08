@@ -4,8 +4,8 @@
 
 Proposed (2026-08-08)
 
-> Closes the question [ADR-013](ADR-013_LOCALISATION.md) §Consequences deferred (*"SSR / prerendering — wanted for SEO and tracked separately"*) and that
-> [LOCALISATION_PLAN.md](../LOCALISATION_PLAN.md) §Phase 5 ran into.
+> Closes the question [ADR-013](ADR-013_LOCALISATION.md) §Consequences deferred (*"SSR / prerendering — wanted for SEO and tracked separately"*) and that the
+> SEO work then ran into: `hreflang` had to be carried by the sitemap, because script-injected annotations are unreliable for crawlers (§Context).
 >
 > **Part of the delivery depends on [ADR-012](ADR-012_CLOUD_PLATFORM.md) being executed; the decision does not.** See §Decision 3, which splits the work by that
 > dependency. Rendering-delay figures were checked on **2026-08-08**.
@@ -205,7 +205,8 @@ exactly as they are.
 
 - [ADR-012](ADR-012_CLOUD_PLATFORM.md) — the deployment shape, and the dependency behind the second half of Decision 3
 - [ADR-013](ADR-013_LOCALISATION.md) — deferred this decision; its locale-prefixed URLs are what make per-page head tags worth computing
-- [LOCALISATION_PLAN.md](../LOCALISATION_PLAN.md) §Phase 5 — where the sitemap became the primary `hreflang` carrier, and why
+- [`events-frontend/AGENTS.md`](../../events-frontend/AGENTS.md) §SEO surfaces — including the rule that the sitemap, not the head tags, is the annotation that
+  currently works
 - [LEGAL.md](../LEGAL.md) §7.7 — the standing check any new processor or edge processing must clear
 - [Google's rendering delay](https://www.onely.com/blog/googles-rendering-delay-5-seconds/) · [JavaScript SEO in 2026](https://nadiamohamed.me/insights/javascript-seo/) · [crawl priority and render queue](https://seolinkscan.com/blog/javascript-seo-guide-2026)
 - [Cloudflare `HTMLRewriter`](https://developers.cloudflare.com/workers/runtime-apis/html-rewriter/) · [Google Search Central — dynamic rendering](https://developers.google.com/search/docs/crawling-indexing/javascript/dynamic-rendering)

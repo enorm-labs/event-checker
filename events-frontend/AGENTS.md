@@ -234,7 +234,7 @@ Reference: [Styling with utility classes](https://tailwindcss.com/docs/styling-w
 ## Localisation
 
 The site is locale-routed: every page lives under `/<locale>/…`, and `src/i18n/locales.ts` is the single list of what is published. See
-[ADR-013](../docs/adr/ADR-013_LOCALISATION.md) and [docs/LOCALISATION_PLAN.md](../docs/LOCALISATION_PLAN.md).
+[ADR-013](../docs/adr/ADR-013_LOCALISATION.md).
 
 - **Every in-app link goes through `useLocalePath()`.** A bare `to="/events"` still *works* — the catch-all redirects it — but costs a redirect on every
   navigation and briefly shows the wrong URL. `localePath('/events')` → `/en/events`.
@@ -385,6 +385,13 @@ The project uses a two-tier linting strategy:
 - Dev mode: runs against `http://localhost:5173` (Vite dev server, reuses existing).
 - CI mode: builds first, then runs against `http://localhost:4173` (Vite preview server).
 - Run with: `npm run test:e2e`. CI runs the **full matrix**; the `/verify` skill runs **chromium only** to stay fast.
+- **Locale strategy: every suite is pinned to `/en` except `e2e/i18n.spec.ts` and the axe sweep.** The other suites are behaviour tests that happen to use
+  English accessible names as stable handles; re-running them in German would double an already five-project matrix to re-assert the same behaviour. So put
+  anything that only exists in a second language — the URL contract, the switcher, date formats, the per-locale pages — in `i18n.spec.ts`, and leave the rest
+  in English.
+    - **Two exceptions, both deliberate.** The **axe sweep runs both locales**, because German is reliably longer and that is where a layout overflow or a
+      contrast regression actually appears. And **landmark names are translated**, so a selector like `getByRole('navigation', { name: 'Main' })` becomes
+      `'Haupt'` under `/de` — which is the concrete reason the other suites stay on `/en` rather than a stylistic one.
 - **Layout/responsive gotcha:** because `/verify` is chromium-only (desktop viewport), it will not catch
   regressions that only appear on the mobile projects — e.g. a wider header nav overflowing a ~390px screen
   and pushing a control off-screen (a real failure we hit). When touching the **app shell, header/nav, or any

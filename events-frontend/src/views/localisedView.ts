@@ -10,7 +10,7 @@ import { DEFAULT_LOCALE, type Locale } from '@/i18n/locales'
  * Everywhere else in this app the opposite is right: UI labels belong in `src/i18n/messages`, and
  * the key-parity test exists to keep them honest. This helper is for the four pages where that
  * breaks down — the About page and the three legal pages, ~1,600 words carrying inline links,
- * `<strong>` and `<code>` *inside* their paragraphs (docs/LOCALISATION_PLAN.md §Phase 2). Putting
+ * `<strong>` and `<code>` *inside* their paragraphs. Putting
  * that in JSON means either HTML inside message strings or sentences shattered into fragments.
  *
  * For the legal pages there is a second reason, and it is the stronger one: an imprint and a
