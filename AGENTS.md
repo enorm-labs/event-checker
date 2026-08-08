@@ -405,6 +405,22 @@ Java version is managed via SDKMAN (`.sdkmanrc` pins `java=25.0.2-tem`; run `sdk
 - Kotlin compiler flags: `-Xjsr305=strict` (all modules) and `-Xannotation-default-target=param-property` (BFF + importer) are set in `compilerOptions`.
 - **Kover** (`org.jetbrains.kotlinx.kover`) is configured for code coverage reports. Run `./gradlew koverLog` for a console summary or
   `./gradlew koverHtmlReport` for detailed HTML reports.
+    - **Exclusions live in three places, and filters never propagate between them.** A class hidden from one report is still counted in the others unless it is
+      excluded there too — this is the single thing to know before editing them.
+
+      | Where | Scope | Holds |
+      |-------|-------|-------|
+      | root `build.gradle.kts`, `subprojects { configure<KoverProjectExtension> … }` | every module's own report | `de.norm.events.*Module`, `de.norm.events.*Fixtures` |
+      | root `build.gradle.kts`, top-level `kover { }` | the aggregated report | the shared patterns **again**, plus the events-core domain classes |
+      | `events-core/build.gradle.kts`, `kover { }` | events-core's own report | its plain domain data classes, by exact name |
+
+    - **What gets excluded, and why**: classes with no executable logic, whose synthetic members Kover would otherwise count as uncovered — Spring Modulith
+      `@ApplicationModule` markers (`*Module`), published `java-test-fixtures` factories (`*Fixtures`), and events-core's plain domain data classes. Everything
+      that carries logic stays measured.
+    - `*` **spans package segments** in a Kover class pattern, so `de.norm.events.*Module` matches `de.norm.events.meta.MetaModule`. That is why the domain data
+      classes are listed by exact name instead: a `de.norm.events.*Entity`-style pattern would silently swallow the BFF/importer persistence classes, which
+      *should* be measured.
+    - Adding a new `*Module` marker or `*Fixtures` factory therefore needs no config change. Anything else does — in all three places.
 - **Kotlin idioms** (per [official coding conventions](https://kotlinlang.org/docs/coding-conventions.html)):
     - **Trailing commas** at declaration sites (constructor params, function params, enum entries, collection literals) — produces cleaner VCS diffs.
     - **Expression bodies** — prefer `fun foo() = expr` over `fun foo() { return expr }` for single-expression functions.
