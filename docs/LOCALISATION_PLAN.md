@@ -1,7 +1,7 @@
 # Plan — Localisation (English + German)
 
-> Status: **implemented** — Phases 1–3 on 2026-08-07, Phases 4–5 on 2026-08-08. What remains is not localisation work: prerendering, and a sitemap covering
-> detail routes once it exists (§Phase 5).
+> Status: **implemented** — Phases 1–3 on 2026-08-07, Phases 4–5 on 2026-08-08. What remains is not localisation work: rendering, now decided in
+> [ADR-014](adr/ADR-014_RENDERING_STRATEGY.md), and a BFF-served sitemap covering detail routes (§Phase 5).
 > Delivers Phase 7 of [FOOTER_AND_LEGAL_PLAN.md](FOOTER_AND_LEGAL_PLAN.md) §6.2, which agreed the work and recorded the constraints it places on code written
 > since.
 > Related: [BRANDING.md](BRANDING.md) · [ADR-010 (styling)](adr/ADR-010_FRONTEND_STYLING_FRAMEWORK.md) · [ADR-011 (calendar)](adr/ADR-011_CALENDAR_LIBRARY.md)
@@ -259,9 +259,10 @@ with an English-only imprint or privacy notice.
 > `<link>` tags this phase adds do not yet do the job on their own — **the sitemap is the primary annotation** and the head tags are the secondary one that
 > starts working when prerendering lands. That inverts later; until it does, an hreflang change touching only the head tags has not really shipped.
 >
-> **Detail routes are deliberately not in the sitemap.** They are not merely unenumerable at build time — they are client-rendered with no prerendered content,
-> so listing them would point crawlers at an empty shell and spend crawl budget doing it. They join when prerendering exists, most likely from a BFF-served
-> sitemap since the data lives in the database.
+> **Detail routes are deliberately not in the sitemap**, because the build cannot enumerate them without the BFF and that independence is worth keeping.
+> *(The reasoning originally given here — that listing client-rendered pages would point crawlers at an empty shell — was corrected in
+> [ADR-014](adr/ADR-014_RENDERING_STRATEGY.md): Googlebot renders JavaScript and reaches these pages through internal links anyway. The conclusion stands, the
+> justification does not.)* When they do get a sitemap it will be served by the BFF, which holds the data and can leave out events that have already happened.
 >
 > **Three smaller decisions**, each recorded in `src/lib/seo.ts`: `x-default` points at `/en/…` rather than the unprefixed path, because the latter negotiates
 > `Accept-Language` in JavaScript and Google asks hreflang to name indexable URLs rather than redirects; the canonical URL drops the query string, so

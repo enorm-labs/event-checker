@@ -28,11 +28,11 @@ export const SITE_URL = 'https://event-junkie.de'
  * The static pages worth putting in front of a crawler, as locale-relative paths (`''` is the
  * locale home). Every one gets a `<url>` entry per locale in the sitemap.
  *
- * **Detail routes are deliberately absent** — `/events/:slug` and friends are not merely
- * unenumerable at build time, they are client-rendered with no prerendering, so listing them
- * would point crawlers at an empty shell and spend crawl budget to do it. They belong in a
- * sitemap the moment prerendering exists, and not one release before
- * (docs/LOCALISATION_PLAN.md §Phase 5).
+ * **Detail routes are deliberately absent** — this build is independent of the BFF and the
+ * database (ADR-014 §Decision 1), so it cannot enumerate them, and that independence is worth
+ * more than the listing would be. It is *not* because they are client-rendered: Googlebot runs
+ * JavaScript and reaches them through internal links regardless. When they do get a sitemap it
+ * belongs in the BFF, which holds the data and can leave out events that have already happened.
  *
  * A unit test holds this list against the router: adding a static route without deciding whether
  * it is indexable fails the build rather than silently going unlisted.
