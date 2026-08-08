@@ -49,6 +49,12 @@ Rough priority: **Now** → **Next** → grouped backlog → **Someday / Vision*
 ## UI / UX / Branding
 
 - [ ] Full frontend UX pass — what's missing / improvable? (cross-check the vision + branding docs)
+- [ ] **Fix `heading-order` on the list pages** — `/events` and `/venues` go `h1` → `h3`, because `EventCard` / `VenueCard` render an `h3`, which is correct on
+  the home page where an `h2` section heading sits above them. Needs a decision about the shared card component (a `level` prop, or a visually-hidden `h2` on the
+  list pages), not a local edit. Surfaced by the informational axe `best-practice` pass, which reports it without gating on it
+- [ ] **Manual accessibility passes before go-live** — a keyboard-only walkthrough and a screen-reader pass. axe reliably finds roughly a third of WCAG issues,
+  so the two automated checks cannot certify WCAG 2.1 AA no matter how thorough they get. Required if a conformance statement is ever wanted for the live site
+  (LEGAL.md §12)
 - [ ] Improve **branding & UI/visual design** — a dedicated visual pass beyond the UX audit (colour, type, spacing, components, logo, iconography, imagery,
   motion), aligned with [BRANDING.md](docs/BRANDING.md)
 - [ ] Verify responsive design + look on mobile
