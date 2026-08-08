@@ -21,6 +21,10 @@
   checks succeed, and Kover coverage thresholds are met. **Skip this step** when only Markdown documentation (`.md` files) or frontend files
   (`events-frontend/`) were changed — the Gradle build covers the backend modules only.
 - **No unsolicited git commits/pushes**: Never run `git commit`, `git push`, or `git rebase` (squash) unless explicitly asked to by the user.
+- **ADR numbers are claimed by writing the ADR, never by planning one.** A document that says *"needs ADR-0NN"* for an ADR nobody has written yet is a
+  reservation the numbering scheme does not honour: the next ADR actually written takes that number, and the reference silently starts pointing at an unrelated
+  decision. This has already happened twice to the same planned ADR. **Refer to a future ADR by its title only** — *"needs an ADR: AI-Assisted Data Quality"* —
+  and assign the next free number from `docs/adr/` at the moment you create the file.
 - **GitHub CLI (`gh`)**: The `gh` CLI is installed (Homebrew) and authenticated for GitHub.com and enterprise instances. Use it for GitHub interactions such as
   creating/viewing PRs, managing issues, checking CI status, and browsing repositories.
   See [GitHub CLI quickstart](https://docs.github.com/en/github-cli/github-cli/quickstart) and
