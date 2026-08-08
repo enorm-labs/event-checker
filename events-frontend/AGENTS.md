@@ -32,8 +32,9 @@ dependency rather than chosen:
 
 - **Node 20 dropped** when `vue-i18n` was adopted — it requires Node ≥ 22 and `@intlify/unplugin-vue-i18n` ≥ 22.13. See
   [ADR-013](../docs/adr/ADR-013_LOCALISATION.md).
-- **Node 22 dropped** for jsdom 30, which requires `^22.22.2 || ^24.15.0 || >=26`. Raising to 24 rather than `^22.22.2` matches what `.nvmrc` and CI already
-  used, so there is now one number instead of three.
+- **Node 22 dropped** for jsdom 30, which requires `^22.22.2 || ^24.15.0 || >=26`. Raising to the 24 line rather than `^22.22.2` matches what `.nvmrc` and CI
+  already used. Note the **patch** floor: `>=24.15.0`, not `>=24` — jsdom's range excludes 24.0–24.14, so a bare `>=24` would let `npm install` succeed on a
+  Node it does not support, with only an `EBADENGINE` warning to say so.
 
 **A stale local Node silently hides dependency updates.** `npm outdated` filters out versions whose `engines` your interpreter does not satisfy — which is
 exactly how jsdom 30 stayed invisible in the report while being available. If a dependency check looks suspiciously quiet, check `node --version` against
