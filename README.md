@@ -217,7 +217,7 @@ How to get help, and what to expect: [SUPPORT.md](./SUPPORT.md).
 
 ## Maintainers
 
-[@enorm-labs](https://github.com/enorm-labs). This is a single-maintainer project — see
+Norman Lange ([@enorm-labs](https://github.com/enorm-labs)). This is a single-maintainer project — see
 [SUPPORT.md](./SUPPORT.md#what-to-expect) for what that means in practice.
 
 ## License
