@@ -1,6 +1,8 @@
 import type { Plugin } from 'vite'
 
-import { robotsTxt, sitemapXml } from '../src/lib/seo'
+// Explicit `.ts`: this module is reached from vite.config.ts, which Vite's `configLoader: 'native'`
+// mode loads through Node's ESM resolver. See the note in vite.config.ts.
+import { robotsTxt, sitemapXml } from '../src/lib/seo.ts'
 
 /**
  * Emits `sitemap.xml` and `robots.txt`.

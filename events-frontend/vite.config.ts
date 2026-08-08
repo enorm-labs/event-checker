@@ -6,11 +6,13 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 import tailwindcss from '@tailwindcss/vite'
 import vueI18n from '@intlify/unplugin-vue-i18n/vite'
 
-// Extensionless, like every other import in this repo. Vite's config loader warns that its future
-// `configLoader: 'native'` mode will want `./scripts/seoFiles.ts` — but so would every import in
-// the chain, and TypeScript rejects the extension unless `allowImportingTsExtensions` is enabled
-// across all three tsconfig projects. That is a repo-wide convention change, not a config detail.
-import { seoFiles } from './scripts/seoFiles'
+// Explicit `.ts`, unlike the extensionless imports elsewhere in this repo. Vite's config loader is
+// moving to `configLoader: 'native'`, which hands the file to Node's own type-stripping resolver —
+// and that follows ESM rules, where a specifier means exactly what it says. The requirement is
+// transitive, so it also applies to `scripts/seoFiles.ts` and, through it, to `src/lib/seo.ts`.
+// Those three imports carry an extension and the rest of the repo does not; see
+// events-frontend/AGENTS.md §Config-loader imports.
+import { seoFiles } from './scripts/seoFiles.ts'
 
 // https://vite.dev/config/
 export default defineConfig({
