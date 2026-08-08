@@ -89,8 +89,10 @@ function openCalendar() {
 
 export default function (data) {
   // Weights approximate a session distribution: home is the entry point, the events list is the
-  // main destination, the calendar and venues are secondary. Adjust once there is real traffic to
-  // model — until then this is a considered guess, and labelled as one.
+  // main destination, the calendar and venues are secondary. **This is a considered guess, not a
+  // measurement**, and the value of a "realistic" mix depends entirely on the mix being realistic —
+  // so it is tracked in TODO.md rather than left to be believed. Re-derive it from real traffic
+  // once there is any.
   const roll = Math.random()
 
   visitHome()

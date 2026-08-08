@@ -320,6 +320,9 @@ Strategy & sequencing: [docs/DATA_QUALITY_STRATEGY.md](docs/DATA_QUALITY_STRATEG
   local k3d work *is* the production deployment path, not a rehearsal for a different target
 - [ ] Maintenance mode — a downtime page for deploys and outages (frontend + BFF behaviour)
 - [x] Performance tests for the BFF read API — [k6](https://k6.io) scripts in [`perf/`](perf) (`smoke.js` · `load.js` · `spike.js`), run locally on demand
+- [ ] **Re-derive `perf/load.js`'s session weights from real traffic.** They are currently 55% events list / 25% calendar / 20% venues — a considered guess,
+  labelled as one in the script. A load test's p95 only describes traffic that could actually occur, so a wrong mix produces a confident number about a session
+  nobody has. Needs analytics or access logs, so it is blocked on a deployment
 - [ ] **Automate the k6 runs**, once there is somewhere worth pointing them. Deliberately deferred — a GitHub runner is too noisy to baseline against, and a
   CI run against an empty database would only re-assert what the Testcontainers tests already cover with real data. Two follow-ups, in order:
     1. Point `perf/smoke.js` and `perf/load.js` at **staging** from a scheduled workflow, once staging exists (blocked on ADR-012)
