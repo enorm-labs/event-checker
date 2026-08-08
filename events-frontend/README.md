@@ -117,6 +117,22 @@ npm run test:e2e -- tests/example.spec.ts
 npm run test:e2e -- --debug
 ```
 
+### Run the accessibility sweep
+
+```sh
+# The axe/WCAG 2.1 AA sweep on its own, across all five browser projects
+npm run test:a11y
+
+# The fast local loop
+npm run test:a11y -- --project=chromium
+```
+
+Powered by [axe-core](https://github.com/dequelabs/axe-core) through
+[`@axe-core/playwright`](https://playwright.dev/docs/accessibility-testing). This is a *filter* over the e2e suite, not a
+separate check — `npm run test:e2e` already runs it, so CI is covered. It exists so markup work does not have to pay for
+the whole suite. The static half of the same target is `eslint-plugin-vuejs-accessibility`, which runs inside
+`npm run lint`. Neither may be silenced to make a build pass.
+
 ### Lint with [ESLint](https://eslint.org/)
 
 ```sh

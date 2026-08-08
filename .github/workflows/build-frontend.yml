@@ -104,3 +104,17 @@ jobs:
 
       - name: Run e2e tests
         run: npm run test:e2e
+
+      # Without this the report exists only inside the runner. An axe violation is reported as a
+      # rule id plus a CSS selector, which is enough to know something broke and not enough to see
+      # what — the HTML report carries the DOM snapshot and the trace that make it actionable.
+      # Failure only: a green run's report is noise, and these artifacts are not small.
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            events-frontend/playwright-report/
+            events-frontend/test-results/
+          retention-days: 7
