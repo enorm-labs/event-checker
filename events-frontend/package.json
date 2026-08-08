@@ -11,6 +11,8 @@
     "test:unit": "vitest",
     "test:unit:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
+    "//test:a11y": "The axe/WCAG sweep on its own, for iterating on markup without paying for the whole e2e suite. It also runs as part of `test:e2e` — this is a filter, not a second check, so there is nothing extra to wire into CI.",
+    "test:a11y": "playwright test a11y.spec.ts",
     "build-only": "vite build",
     "generate:api": "npx -y openapi-typescript@7 http://localhost:8080/v3/api-docs -o src/api/schema.d.ts",
     "generate:notices": "node scripts/generate-notices.mjs",

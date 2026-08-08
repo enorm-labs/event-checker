@@ -42,6 +42,7 @@ npm run preview    # Preview production build locally (http://localhost:4173)
 npm run test:unit  # Vitest unit tests (jsdom, watch mode)
 npm run test:unit:coverage  # Unit tests with V8 coverage report
 npm run test:e2e   # Playwright end-to-end tests (chromium, firefox, webkit)
+npm run test:a11y  # Just the axe/WCAG sweep (a filter over test:e2e, not a second check)
 npm run lint       # oxlint (--fix) + eslint (--fix --cache)
 npm run format     # oxfmt formatter
 ```
@@ -408,13 +409,52 @@ list: [docs/LEGAL.md §12](../docs/LEGAL.md).
   1.4.11).
 - **The skip link in `App.vue` must stay the first focusable element** in the document, and `#main-content` must keep its `tabindex="-1"` — that is what makes
   it focusable as a skip target without entering the tab order.
-- **`<html lang>` in `index.html` is not decorative.** It is currently `en`; it becomes dynamic when locales land. Never blank it.
+- **`<html lang>` is not decorative, and it is dynamic.** `index.html` ships `lang="en"`; `src/i18n/index.ts` rewrites it on every locale change. Never blank
+  it, and never hard-code it back to a literal — axe's `html-has-lang` would still pass while German content announced itself as English.
 
-Two checks enforce this, and **neither may be silenced to make a build pass** — fix the markup, or raise it:
+Further reading: [Vue's own accessibility guide](https://vuejs.org/guide/best-practices/accessibility.html). The rules above already implement its
+recommendations — skip link, heading order, landmarks, labelled controls, `aria-hidden` on decorative icons — so read it for the *why*, not as a gap list.
+Two of its suggestions are deliberately **not** followed:
 
-- `eslint-plugin-vuejs-accessibility` (`flat/recommended`) runs inside `npm run lint`.
-- `@axe-core/playwright` sweeps every static route in both themes via `e2e/a11y.spec.ts` during `npm run test:e2e`. If it reports a contrast failure, fix the
-  design token rather than excluding the rule.
+- It suggests restoring focus to the top of the document on route change. This app instead announces the new page title into an `aria-live` region (see
+  `App.vue`), which tells a screen-reader user *where they are* rather than only resetting where they are. Moving focus as well would interrupt that
+  announcement.
+- It prefers `for`/`id` label association over wrapping. Both are valid; the `label-has-for` override in `eslint.config.ts` accepts either, and
+  `EventFilterBar.vue` wraps.
+
+### The two checks
+
+**Neither may be silenced to make a build pass** — fix the markup, or raise it:
+
+- **`eslint-plugin-vuejs-accessibility`** (`flat/recommended`), inside `npm run lint` — catches what is visible in the source: missing form labels, bad `alt`,
+  redundant roles, click handlers on non-interactive elements.
+- **`@axe-core/playwright`**, via `e2e/a11y.spec.ts`, inside `npm run test:e2e` (or `npm run test:a11y` alone) — catches what only exists at runtime: colour
+  contrast against the resolved theme tokens, focus order, landmark structure, duplicate IDs.
+
+```bash
+npm run test:a11y                          # the axe sweep on its own, all five browser projects
+npm run test:a11y -- --project=chromium    # the fast local loop
+```
+
+`test:a11y` is a **filter over the same suite**, not a second check — `test:e2e` already includes it, so CI needs nothing extra. It exists so markup work does
+not have to pay for the whole e2e run. If axe reports a contrast failure, fix the design token rather than excluding the rule.
+
+The sweep runs in two passes, and both matter:
+
+1. **Static routes, no BFF** — every static route in both locales, plus a light-theme pass (new visitors get dark, so light is otherwise unexercised).
+2. **Data-driven routes, BFF mocked** — home feeds, the events list with its filter bar and pagination, the venues list, and an event detail page. Without this
+   pass the components carrying nearly all the interactive markup are never scanned, because an error state renders none of them. **If you add a data-driven
+   view, add it here** — the static pass will happily go green on its error state.
+
+### Why not the axe CLI
+
+`@axe-core/cli` exists, and it is the wrong tool here. It drives a standalone ChromeDriver against a list of URLs, which means: no way to reach a state behind
+an interaction (the light theme is behind a button click), no way to mock the BFF (so every data-driven route scans its error state), one browser instead of
+five, and a second browser-automation dependency alongside Playwright. The `@axe-core/playwright` integration runs the *same* axe-core engine with none of
+those limits. There is no coverage argument for adding the CLI.
+
+What automation genuinely cannot do is still worth knowing: axe reliably finds roughly a third of WCAG issues. Keyboard-only walkthroughs and a screen-reader
+pass remain manual, and are tracked in [docs/LEGAL.md §12](../docs/LEGAL.md).
 
 ## Linting & Formatting
 
