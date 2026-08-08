@@ -455,9 +455,11 @@ Not blocking anything. Listed so they are not rediscovered as gaps and "fixed" b
   (§ "Naming rule"); if pursued, update BRANDING.md accordingly. Scope: repo name, Gradle modules, packages, DB schema, ADRs, docs.
 - [ ] Clean up KDoc comments across the codebase — drop boilerplate/irrelevant comments, keep the rest meaningful
 - [ ] Generate a Mermaid domain class diagram via Gradle
-- [ ] Community/repo health files — `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md` (Contributor Covenant 3.0), `SECURITY.md`, issue templates and a PR template all
-  exist; **`SUPPORT.md` does not**, and the contact addresses in the existing ones are not registered yet (see the go-live review item).
-  Example: [gitfolio](https://github.com/github-samples/gitfolio)
+- [x] Community/repo health files — `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md` (Contributor Covenant 3.0), `SECURITY.md`, `SUPPORT.md`, issue templates and a PR
+  template all exist. Example: [gitfolio](https://github.com/github-samples/gitfolio)
+- [ ] **Still open from the above:** the contact addresses those files name are **not registered** — `security@event-junkie.de` and the removal-request address
+  are both promised as "once the domain is registered", and until then the private GitHub advisory form is the only confidential channel for *three* distinct
+  purposes (security reports, name-removal requests, venue opt-outs). Registering the domain unblocks all three; see the go-live review item.
 - [ ] Repository best-practices pass (follow GitHub docs)
 - [ ] Create a public Roadmap (seed it from the phased roadmap in [docs/VISION_ROADMAP_IDEAS.md](docs/VISION_ROADMAP_IDEAS.md))
 - [ ] Create a template repository (Enterprise + private):
