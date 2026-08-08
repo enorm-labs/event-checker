@@ -78,6 +78,12 @@ Rough priority: **Now** → **Next** → grouped backlog → **Someday / Vision*
   `hreflang`, canonical URLs, per-page head tags and `schema.org` structured data are all built — see [ADR-014](docs/adr/ADR-014_RENDERING_STRATEGY.md) and
   `events-frontend/AGENTS.md` §SEO surfaces. The remaining SEO work is the meta injector, which needs a deployment and is tracked below.)
 - [ ] RSS feed for newly imported events
+- [ ] **Enforce that `events-frontend/src/api/schema.d.ts` is current**, rather than relying on the developer remembering. It is generated from the BFF's
+  `/v3/api-docs` and committed, and nothing checks it: change a BFF response DTO without regenerating and the frontend keeps type-checking cleanly against an
+  API that no longer exists, failing only at runtime. A CI job would have to boot Postgres, run the importer for the Flyway migrations, start the BFF,
+  regenerate and fail on a non-empty diff — a JVM in a frontend workflow that currently has none, plus a coupling between the two pipelines. **Deliberately
+  deferred until the BFF's public API stops changing daily**; the failure mode and the manual step are documented in `events-frontend/AGENTS.md` §API
+  Communication until then
 - Note: `GET /artists`, `GET /venues`, `GET /promoters` list endpoints exist and are smoke-tested, but only their `/{slug}` detail counterparts have UI pages
   yet.
 
