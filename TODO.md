@@ -58,6 +58,8 @@ Rough priority: **Now** → **Next** → grouped backlog → **Someday / Vision*
 - [ ] Improve **branding & UI/visual design** — a dedicated visual pass beyond the UX audit (colour, type, spacing, components, logo, iconography, imagery,
   motion), aligned with [BRANDING.md](docs/BRANDING.md)
 - [ ] Verify responsive design + look on mobile
+- [ ] **Add a hero screenshot to the README** (events list or calendar, dark mode). The single biggest thing the front page is still missing — a screenshot does
+  more than any paragraph currently there. Deliberately sequenced *after* the branding/visual pass above, so it does not have to be retaken immediately
 - [ ] Audit that all **user-facing** surfaces read "Event Junkie" (internal stays "Event Checker")
 - [ ] Decide on a display/hero typeface vs. staying all-Geist (BRANDING §5.3)
 - [ ] "Venue or event missing? Let us know" form (→ GitHub issues?)
