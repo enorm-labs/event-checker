@@ -22,7 +22,7 @@ import venues from './venues.json'
  * words carrying 29 inline links, `<strong>` and `<code>` elements *inside* their paragraphs.
  * Putting that in JSON would mean HTML inside strings rendered with `v-html`, or shattering
  * sentences into fragments that no translator could work from. Those pages become per-locale
- * components instead — see docs/LOCALISATION_PLAN.md §Phase 2.
+ * components instead — see `views/localisedView.ts` for the reasoning.
  */
 export default {
   calendar,

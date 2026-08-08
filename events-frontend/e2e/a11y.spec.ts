@@ -17,7 +17,7 @@ import { expect, type Page, test } from '@playwright/test'
 
 // Both locales. German is reliably longer than English, so it is where a layout overflow or a
 // contrast regression actually shows up — sweeping only `/en` would miss exactly the cases the
-// translation introduces (docs/LOCALISATION_PLAN.md §4).
+// translation introduces (see AGENTS.md §Testing — locale strategy).
 const PATHS = ['', '/events', '/venues', '/calendar', '/about', '/legal/imprint', '/legal/privacy', '/legal/notices']
 const staticRoutes = ['en', 'de'].flatMap((locale) => PATHS.map((path) => `/${locale}${path}`))
 

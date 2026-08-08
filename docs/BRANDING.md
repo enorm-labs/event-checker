@@ -188,7 +188,7 @@ Sprache*, and `du` is that. If this ever changes it changes on every page at onc
 
 The brand name **Event Junkie** (never *Veranstaltungs-Junkie*), the **beta** marker, and everything sourced from third parties: event titles, venue and
 promoter names, artist names, line-ups, genre tags, and Berlin district names. *Mitte* is *Mitte* in every language — see
-[LOCALISATION_PLAN §2.3](LOCALISATION_PLAN.md), which flags `src/lib/districts.ts` as the file that looks translatable and is not.
+[ADR-013 §3](adr/ADR-013_LOCALISATION.md), which flags `src/lib/districts.ts` as the file that looks translatable and is not.
 
 ### Microcopy in voice, not in translation
 

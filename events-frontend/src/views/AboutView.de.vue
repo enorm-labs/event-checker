@@ -3,7 +3,7 @@
  * „Über uns" — deutsche Fassung von `AboutView.en.vue`.
  *
  * Written rather than translated. The beta section is brand voice, not neutral prose
- * (docs/LOCALISATION_PLAN.md §5), and a literal rendering of *"still finding its feet"* or
+ * (BRANDING.md §8), and a literal rendering of *"still finding its feet"* or
  * *"the nights worth showing up for"* reads as a machine translation of an English site — which
  * is the one thing the page is there to disprove.
  */

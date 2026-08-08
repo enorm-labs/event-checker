@@ -23,7 +23,7 @@ import { expect, type Page, test } from '@playwright/test'
 // `path` is what a visitor types (unprefixed paths redirect); `url` is where they end up, since
 // routes are locale-prefixed (ADR-013 §Decision 2) and home is the locale root itself — `/en`, not
 // `/en/`. This suite is pinned to English deliberately: it tests behaviour, and English is simply
-// the stable handle for it (docs/LOCALISATION_PLAN.md §4).
+// the stable handle for it (see AGENTS.md §Testing — locale strategy).
 const staticRoutes = [
   // `nav` is the accessible name of the nav link — home's is the brand logo, not "Home".
   { path: '/', url: '/en', name: 'home', nav: 'Event Junkie', heading: 'Event Junkie' },

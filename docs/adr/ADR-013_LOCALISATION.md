@@ -2,13 +2,16 @@
 
 ## Status
 
-Accepted (2026-08-07)
+Accepted (2026-08-07) — **implemented in full (2026-08-08)**
 
-> Phase 0 of [LOCALISATION_PLAN.md](../LOCALISATION_PLAN.md), which delivers Phase 7 of
-> [LEGAL.md](../LEGAL.md) §6.2. That document agreed the work and recorded the constraints it has been placing on frontend code
-> since; this ADR settles the decisions that are expensive to reverse, before any of them are baked into routes.
+> Written as Phase 0 of a localisation plan, which delivered the follow-up [LEGAL.md](../LEGAL.md) §6.2 had agreed. **That plan has been retired**: every phase
+> shipped, so the decisions live here, the operational rules in [`events-frontend/AGENTS.md`](../../events-frontend/AGENTS.md) §Localisation, and nothing was
+> left for a plan to describe.
 >
-> Package versions and download figures were checked on **2026-08-07** and should be re-verified if this sits unimplemented for long.
+> What shipped: locale-prefixed routes for `en` and `de`, per-locale legal and About pages with German authoritative, a switcher in header and footer,
+> locale-aware formatting, `hreflang`, `og:locale` and a generated sitemap.
+>
+> Package versions and download figures were checked on **2026-08-07**.
 
 ## Context
 
@@ -154,7 +157,7 @@ Stated on each page once both exist: *Maßgeblich ist die deutsche Fassung.* The
 
 ## References
 
-- [LOCALISATION_PLAN.md](../LOCALISATION_PLAN.md) — the implementation plan this ADR unblocks
+- [`events-frontend/AGENTS.md`](../../events-frontend/AGENTS.md) §Localisation — the rules this ADR's decisions became, and §Testing for the e2e locale strategy
 - [LEGAL.md](../LEGAL.md) §6.1, §6.2, §7.4 — the language and device-storage commitments this inherits
 - [Vue I18n](https://vue-i18n.intlify.dev/) · [`@intlify/unplugin-vue-i18n`](https://www.npmjs.com/package/@intlify/unplugin-vue-i18n)
 - [Google Search Central — managing multi-regional and multilingual sites](https://developers.google.com/search/docs/specialty/international/managing-multi-regional-sites)
