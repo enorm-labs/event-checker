@@ -2,35 +2,26 @@
 
 > _"Can't get enough of Berlin."_
 
-A factual, present-tense snapshot of **what Event Junkie is, what it does, and where it stands today**. It's meant to be a shared reference — for onboarding,
-for the README, and as raw material for the **branding** work (see [BRANDING.md](BRANDING.md)). For where the product is _headed_, see
-[VISION_ROADMAP_IDEAS.md](VISION_ROADMAP_IDEAS.md); for the task backlog, see [TODO.md](../TODO.md).
+**A feature inventory: what Event Junkie does today, in present tense.**
+
+This document deliberately does **not** argue the *why*. The motivation, the problem it answers and how it differs from Resident Advisor, Bandsintown/Songkick
+and the ticketing sites live in the [README](../README.md#background) and on the site's own About page — one place each, so they cannot drift into three
+slightly different pitches. What belongs here is the checklist of what actually exists.
+
+Elsewhere: which *kinds* of event are in scope — [EVENT_SCOPE.md](EVENT_SCOPE.md) · where the product is headed —
+[VISION_ROADMAP_IDEAS.md](VISION_ROADMAP_IDEAS.md) · the backlog — [TODO.md](../TODO.md) · voice and visual direction — [BRANDING.md](BRANDING.md).
 
 Public app name: **Event Junkie** (→ event-junkie.de). **Event Checker** is the internal/repo name.
 
 ---
 
-## What is Event Junkie?
+## In one line
 
-Event Junkie is a **music-event discovery app for Berlin**. It automatically collects concerts, club nights and festivals from venue and promoter websites and
-brings them together into one fast, filterable, mobile-friendly place — always linking back to the original source for tickets and details.
+A **music-event discovery app for Berlin**: it collects events automatically from venue and promoter websites into one fast, filterable feed, always linking
+back to the original source for tickets and details.
 
-Think Resident Advisor, Bandsintown or Songkick — but for **all** of Berlin's music scene, not just the big electronic/ticketed shows.
-
-The one-line scope rule: **if a Berlin venue puts it on a stage in the evening, it is in scope.** What that includes, what is deliberately excluded (sport,
-participation formats, trade fairs, and — for now — classical) and which coverage questions are still open is set out in
-[EVENT_SCOPE.md](EVENT_SCOPE.md).
-
-## The problem it solves
-
-- **Berlin's live-music scene is huge but scattered.** What's on is spread across dozens of venue and promoter sites, each with its own layout, quirks and gaps.
-  There's no single, reliable place to just _browse what's happening_.
-- **Existing aggregators are narrow.** They skew toward Techno/electronic or only list the big, ticketed events — small, underground and non-electronic shows
-  fall through the cracks.
-- **Discovery is hard.** It's tedious to answer simple questions like _"what's on near me this weekend, in my genre, that's free or cheap?"_ when the data lives
-  on 40+ separate websites.
-
-Event Junkie aggregates those sources into **one clean, searchable feed**, so finding something to go to takes seconds instead of a dozen browser tabs.
+Scope rule — **if a Berlin venue puts it on a stage in the evening, it is in scope.** What that includes and what is deliberately excluded (sport, participation
+formats, trade fairs, and for now classical) is set out in [EVENT_SCOPE.md](EVENT_SCOPE.md).
 
 ## What it lets you do
 
@@ -92,9 +83,11 @@ roadmap — see
 
 ---
 
-## Using this for branding
+## Keeping this honest
 
-This overview is deliberately concrete about the **audience** (Berlin music-goers who want _everything_, not just the big electronic nights), the **core value**
-(one fast, filterable feed for a fragmented scene), and the **personality hooks** (comprehensive, local, for the dedicated fan — _"can't get enough of
-Berlin"_). Those are the angles to sharpen into voice, logo, colour and imagery in
-[BRANDING.md](BRANDING.md).
+Everything above is a claim about what exists **now**, so it goes stale in exactly one way: a feature ships and nobody updates the list. Two things that have
+already gone stale here and are worth not repeating:
+
+- **Counts.** This document said "eight venues live" long after there were 86. Numbers that change belong in the source that owns them —
+  [EVENT_DATA_SOURCES.md](EVENT_DATA_SOURCES.md) for coverage — and should be *linked* from here, not copied.
+- **The pitch.** The *why* used to live here as well as in the README. It now lives in the README and the About page only.
