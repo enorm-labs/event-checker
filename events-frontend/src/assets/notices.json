@@ -1,5 +1,5 @@
 {
-  "componentCount": 642,
+  "componentCount": 650,
   "licenses": [
     {
       "license": "MIT",
@@ -210,6 +210,12 @@
           "ecosystem": "frontend"
         },
         {
+          "name": "@esbuild/darwin-arm64",
+          "version": "0.28.1",
+          "url": "https://github.com/evanw/esbuild",
+          "ecosystem": "frontend"
+        },
+        {
           "name": "@eslint-community/eslint-utils",
           "version": "4.10.1",
           "url": "https://github.com/eslint-community/eslint-utils",
@@ -267,6 +273,30 @@
           "name": "@hono/node-server",
           "version": "2.1.0",
           "url": "https://github.com/honojs/node-server",
+          "ecosystem": "frontend"
+        },
+        {
+          "name": "@intlify/core-base",
+          "version": "11.4.8",
+          "url": "https://github.com/intlify/vue-i18n",
+          "ecosystem": "frontend"
+        },
+        {
+          "name": "@intlify/devtools-types",
+          "version": "11.4.8",
+          "url": "https://github.com/intlify/vue-i18n",
+          "ecosystem": "frontend"
+        },
+        {
+          "name": "@intlify/message-compiler",
+          "version": "11.4.8",
+          "url": "https://github.com/intlify/vue-i18n",
+          "ecosystem": "frontend"
+        },
+        {
+          "name": "@intlify/shared",
+          "version": "11.4.8",
+          "url": "https://github.com/intlify/vue-i18n",
           "ecosystem": "frontend"
         },
         {
@@ -409,7 +439,7 @@
         },
         {
           "name": "@types/node",
-          "version": "26.1.2",
+          "version": "26.2.0",
           "url": "https://github.com/DefinitelyTyped/DefinitelyTyped",
           "ecosystem": "frontend"
         },
@@ -453,6 +483,12 @@
           "name": "@vue/compiler-ssr",
           "version": "3.5.41",
           "url": "https://github.com/vuejs/core",
+          "ecosystem": "frontend"
+        },
+        {
+          "name": "@vue/devtools-api",
+          "version": "6.6.4",
+          "url": "https://github.com/vuejs/vue-devtools",
           "ecosystem": "frontend"
         },
         {
@@ -990,6 +1026,12 @@
           "ecosystem": "frontend"
         },
         {
+          "name": "esbuild",
+          "version": "0.28.1",
+          "url": "https://github.com/evanw/esbuild",
+          "ecosystem": "frontend"
+        },
+        {
           "name": "escalade",
           "version": "3.2.0",
           "url": "https://github.com/lukeed/escalade",
@@ -1009,7 +1051,7 @@
         },
         {
           "name": "eslint",
-          "version": "10.8.0",
+          "version": "10.8.1",
           "url": "https://github.com/eslint/eslint",
           "ecosystem": "frontend"
         },
@@ -2035,7 +2077,7 @@
         },
         {
           "name": "shadcn-vue",
-          "version": "2.8.1",
+          "version": "2.8.2",
           "url": "https://github.com/unovue/shadcn-vue",
           "ecosystem": "frontend"
         },
@@ -2299,7 +2341,7 @@
         },
         {
           "name": "vite",
-          "version": "8.2.0",
+          "version": "8.2.1",
           "url": "https://github.com/vitejs/vite",
           "ecosystem": "frontend"
         },
@@ -2319,6 +2361,12 @@
           "name": "vue-eslint-parser",
           "version": "10.4.1",
           "url": "https://github.com/vuejs/vue-eslint-parser",
+          "ecosystem": "frontend"
+        },
+        {
+          "name": "vue-i18n",
+          "version": "11.4.8",
+          "url": "https://github.com/intlify/vue-i18n",
           "ecosystem": "frontend"
         },
         {
@@ -3379,7 +3427,7 @@
       "components": [
         {
           "name": "@lucide/vue",
-          "version": "1.28.0",
+          "version": "1.30.0",
           "url": "https://github.com/lucide-icons/lucide",
           "ecosystem": "frontend"
         },
@@ -3738,6 +3786,18 @@
           "ecosystem": "frontend"
         },
         {
+          "name": "jakarta.activation:jakarta.activation-api",
+          "version": "2.1.4",
+          "url": "https://github.com/jakartaee/jaf-api",
+          "ecosystem": "backend"
+        },
+        {
+          "name": "jakarta.xml.bind:jakarta.xml.bind-api",
+          "version": "4.0.5",
+          "url": "https://www.eclipse.org",
+          "ecosystem": "backend"
+        },
+        {
           "name": "qs",
           "version": "6.15.3",
           "url": "https://github.com/ljharb/qs",
@@ -3839,6 +3899,36 @@
           "url": "http://www.qos.ch",
           "ecosystem": "backend"
         },
+        {
+          "name": "jakarta.activation:jakarta.activation-api",
+          "version": "2.1.4",
+          "url": "https://github.com/jakartaee/jaf-api",
+          "ecosystem": "backend"
+        },
+        {
+          "name": "jakarta.annotation:jakarta.annotation-api",
+          "version": "3.0.0",
+          "url": "https://projects.eclipse.org/projects/ee4j.ca",
+          "ecosystem": "backend"
+        },
+        {
+          "name": "jakarta.validation:jakarta.validation-api",
+          "version": "3.1.1",
+          "url": "https://beanvalidation.org",
+          "ecosystem": "backend"
+        },
+        {
+          "name": "jakarta.xml.bind:jakarta.xml.bind-api",
+          "version": "4.0.5",
+          "url": "https://www.eclipse.org",
+          "ecosystem": "backend"
+        }
+      ]
+    },
+    {
+      "license": "GNU GENERAL PUBLIC LICENSE, Version 2",
+      "url": null,
+      "components": [
         {
           "name": "jakarta.activation:jakarta.activation-api",
           "version": "2.1.4",
@@ -3982,24 +4072,6 @@
           "version": "4.41.0",
           "url": "https://github.com/sindresorhus/type-fest",
           "ecosystem": "frontend"
-        }
-      ]
-    },
-    {
-      "license": "EDL-1.0",
-      "url": "https://www.eclipse.org/org/documents/edl-v10.php",
-      "components": [
-        {
-          "name": "jakarta.activation:jakarta.activation-api",
-          "version": "2.1.4",
-          "url": "https://github.com/jakartaee/jaf-api",
-          "ecosystem": "backend"
-        },
-        {
-          "name": "jakarta.xml.bind:jakarta.xml.bind-api",
-          "version": "4.0.5",
-          "url": "https://www.eclipse.org",
-          "ecosystem": "backend"
         }
       ]
     },
