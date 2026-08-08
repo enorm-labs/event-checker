@@ -1,6 +1,6 @@
 # Plan — Localisation (English + German)
 
-> Status: **Phases 1–3 implemented** (2026-08-07); Phases 4–5 still proposal.
+> Status: **Phases 1–4 implemented** (Phases 1–3 on 2026-08-07, Phase 4 on 2026-08-08); Phase 5 still proposal.
 > Delivers Phase 7 of [FOOTER_AND_LEGAL_PLAN.md](FOOTER_AND_LEGAL_PLAN.md) §6.2, which agreed the work and recorded the constraints it places on code written
 > since.
 > Related: [BRANDING.md](BRANDING.md) · [ADR-010 (styling)](adr/ADR-010_FRONTEND_STYLING_FRAMEWORK.md) · [ADR-011 (calendar)](adr/ADR-011_CALENDAR_LIBRARY.md)
@@ -18,6 +18,9 @@ strategy, what counts as translatable, and where the locale lives. Measured agai
 | TypeScript modules with user-facing text | **7**        | route titles, error messages, date-range presets, page titles |
 | e2e assertions bound to English strings  | **~82**      | across 9 spec files                                           |
 | Legal pages needing a German version     | **2**        | imprint + privacy, and they are the *hard* ones               |
+
+*(Measured before Phase 1. The last row proved to be an undercount: the notices and About pages are the same kind of long-form English prose, so Phase 4
+shipped **four** per-locale pages rather than two.)*
 
 The legal pages are the reason this cannot be done casually. [FOOTER_AND_LEGAL_PLAN §6.1](FOOTER_AND_LEGAL_PLAN.md) committed to a hard coupling:
 
@@ -217,8 +220,33 @@ diff with no behaviour change. The key-parity test lands here, comparing English
 >
 > Original scope: Write `de` messages for everything except the legal pages. Add the footer locale switcher. Extend the axe sweep to `/de`.
 
-**Phase 4 — German legal pages + go-live coupling.** Imprint and privacy in German, the authoritative-version sentence, the generator cross-check, BRANDING.md's
-German register. **Phases 3 and 4 must be released together** (§1).
+**Phase 4 — German legal pages + go-live coupling.** ✅ done (2026-08-08). The §6.1 coupling is satisfied: no page of this site now presents itself in German
+with an English-only imprint or privacy notice.
+>
+> **Scope was four pages, not two.** The plan says "imprint and privacy", but the About page and the notices page are the same kind of artefact — long-form
+> English prose that would have rendered untranslated under `/de`. Leaving them is the half-state §1 argues against, arriving through a different door. All four
+> now have a per-locale component.
+>
+> **Mechanism: `localisedView()`** (`src/views/localisedView.ts`), a route-level helper that picks `ImprintView.de.vue` or `ImprintView.en.vue` and keeps each
+> language in its own lazy chunk. The alternative — one component reading translated prose — was rejected in Phase 2 for the JSON problem, and again here for a
+> better reason: an imprint is a **document**, reviewed as a document, possibly by someone who does not read Vue. `ImprintView.de.vue` can be read start to
+> finish. A page assembled from 29 interpolated fragments cannot be reviewed at all without running it.
+>
+> **The cost is drift, and it is real.** No test can tell you that a German sentence stopped meaning what the English one does. What is testable, and now
+> tested: the mandatory-element checklist runs against **each language separately** (`legalViews.spec.ts`, 64 assertions), so a section missing from one version
+> fails even when the other is complete; the facts that must never diverge come from `src/lib/legal.ts`; and the authoritative-version sentence is a
+> `LegalPage` prop rather than a line typed into four files.
+>
+> **Register: `du`, including the legal pages** — recorded in [BRANDING.md §8](BRANDING.md) along with the German tagline, which ships but is explicitly still
+> the owner's call.
+>
+> **Two things this phase did not do.** The DSGVO-generator cross-check (§6, FOOTER_AND_LEGAL_PLAN §7.8) has **not** been run — it is a pre-go-live task, and
+> so is a review by a qualified person. A machine-drafted German privacy notice that nobody qualified reads is exactly the artefact §7.8 warns about; the draft
+> being careful does not change that. And the country name moved out of `CONTROLLER` into the message catalogue (`legal.country`), because "Germany" and
+> "Deutschland" are one fact worded twice, unlike the street and city.
+>
+> Original scope: Imprint and privacy in German, the authoritative-version sentence, the generator cross-check, BRANDING.md's German register.
+> **Phases 3 and 4 must be released together** (§1).
 
 **Phase 5 — SEO.** `hreflang` alternates, per-locale `og:locale`, and the sitemap. This compounds with the existing prerendering item: a client-rendered SPA
 whose language is only resolved in JavaScript is worse for crawlers than one with no translations at all.
@@ -232,6 +260,8 @@ whose language is only resolved in JavaScript is worse for crawlers than one wit
 3. **Default locale for a visitor with no preference** — `Accept-Language`, or always `/en`? Recommendation: honour `Accept-Language`, fall back to `en`.
 4. **Does `engines.node` dropping Node 20 affect anything else?** Nothing in CI pins 20, but worth confirming before it becomes a surprise.
 5. **Is a German tagline wanted at all**, or does the brand stay English even on the German site? Legitimate either way — many Berlin brands do the latter.
+   *Still open.* *Von Berlin kriegst du nie genug* ships because a German page needs a tagline; the three options and the cost of switching are recorded in
+   [BRANDING.md §8](BRANDING.md).
 
 ---
 

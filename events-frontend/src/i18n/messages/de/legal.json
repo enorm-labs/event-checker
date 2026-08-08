@@ -1,5 +1,8 @@
 {
   "lastReviewed": "Zuletzt geprüft:",
+  "country": "Deutschland",
+  "authoritativeVersion": "Diese Seite gibt es auf Deutsch und auf Englisch. Bei Abweichungen ist die deutsche Fassung maßgeblich.",
   "notFinal": "Diese Seite ist noch nicht final.",
-  "englishOnly": "Diese Seite gibt es bislang nur auf Englisch. Die deutsche Fassung folgt und wird dann die maßgebliche sein."
+  "provisionalContact": "Die unten genannte Postanschrift und E-Mail-Adresse sind Platzhalter. Die echten Kontaktdaten werden vor dem Start der Seite eingetragen.",
+  "provisionalInfrastructure": "Event Junkie ist noch nicht in Betrieb. Die hier genannten Hosting- und Content-Delivery-Anbieter sind die vorgesehenen; vor dem Start wird diese Seite mit dem abgeglichen, was tatsächlich läuft."
 }

@@ -18,9 +18,12 @@ export const CONTROLLER = {
   name: 'Norman Lange',
   street: 'Musterstraße 1',
   city: '12345 Musterstadt',
-  country: 'Germany',
   email: 'hello@event-junkie.de',
 } as const
+
+// The country is deliberately *not* here. Street and city are proper nouns and read the same in
+// every language; a country name does not — "Germany" and "Deutschland" are the same fact worded
+// twice, which is what the message catalogue is for. It lives at `legal.country`.
 
 /**
  * While `true`, the legal pages say so in a banner rather than presenting placeholder details as
@@ -39,7 +42,7 @@ export const CONTACT_DETAILS_ARE_PROVISIONAL = true
 export const INFRASTRUCTURE_IS_PROPOSED = true
 
 /** Date the legal pages were last reviewed against what the system actually does (§7.7). */
-export const LAST_REVIEWED = '2026-08-07'
+export const LAST_REVIEWED = '2026-08-08'
 
 /** The supervisory authority for a controller established in Berlin (Art. 13 (2) (d) GDPR). */
 export const SUPERVISORY_AUTHORITY = {

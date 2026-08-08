@@ -28,7 +28,9 @@
 
 ## Privacy & GDPR — re-check when infrastructure or features change
 
-The public privacy notice (`/legal/privacy`, `events-frontend/src/views/legal/PrivacyView.vue`) and the imprint describe **what this system actually does**.
+The public privacy notice (`/legal/privacy`) and the imprint describe **what this system actually does**. Each exists as **two documents** —
+`PrivacyView.en.vue` and `PrivacyView.de.vue` under `events-frontend/src/views/legal/`, with the German one authoritative — so updating one and not the other
+leaves the site stating two different things.
 They are only correct as long as that description matches reality, and the changes that break them do not look like privacy work. **Before merging, check
 whether your change falls into any category below — and if it does, say so explicitly in the PR description and update
 [docs/FOOTER_AND_LEGAL_PLAN.md](docs/FOOTER_AND_LEGAL_PLAN.md) §7 plus the privacy page in the same PR.**

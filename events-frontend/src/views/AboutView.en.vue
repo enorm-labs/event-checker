@@ -1,4 +1,9 @@
 <script lang="ts" setup>
+/**
+ * "About" — English version; `AboutView.de.vue` is its counterpart, written from the concept
+ * rather than translated (docs/LOCALISATION_PLAN.md §5). Both anchor the beta section at `#beta`,
+ * because the header badge links there regardless of language.
+ */
 import { RouterLink } from 'vue-router'
 import { useLocalePath } from '@/composables/useLocalePath'
 

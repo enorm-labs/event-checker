@@ -240,8 +240,13 @@ The site is locale-routed: every page lives under `/<locale>/…`, and `src/i18n
   navigation and briefly shows the wrong URL. `localePath('/events')` → `/en/events`.
 - **Adding a locale means adding it to `LOCALES`** *and* shipping its message catalogue in the same change. The route matcher is built from that list, so a
   locale becomes routable the moment it is listed — and a `/de` URL rendering English is worse than no `/de` at all.
-- **User-facing strings belong in `src/i18n/messages/`**, not in templates. (String extraction is Phase 2 of the plan; until then most strings are still
-  inline. New strings should go into the catalogue.)
+- **User-facing strings belong in `src/i18n/messages/`**, not in templates.
+- **The four long-form pages are the documented exception**: About and the three under `/legal/*` have **one component per language**
+  (`ImprintView.en.vue` / `ImprintView.de.vue`), wired through `localisedView()` in the router. Their prose carries inline links and `<strong>`/`<code>`
+  *inside* paragraphs, which JSON cannot hold without `v-html` or shattered sentences — and a legal page has to be reviewable as a document. **Editing one
+  language version means editing the other in the same change**; facts that must not diverge (address, supervisory authority, review date) come from
+  `src/lib/legal.ts`, and `views/legal/__tests__/legalViews.spec.ts` runs the mandatory-element checklist against each language separately.
+- **German is the authoritative version of the legal pages** (FOOTER_AND_LEGAL_PLAN §6.1), and both language versions say so. Do not remove that sentence.
 - **`lib/format.ts` stays pure** — its functions take a locale argument. `composables/useFormat.ts` is the thin layer that supplies it from the active i18n
   instance, so unit tests can call the helpers without mounting an app.
 - **`todayIso()`'s `en-CA` is a format, not a language.** It is the shortest way to get `YYYY-MM-DD` out of `Intl`. Making it locale-aware breaks every date

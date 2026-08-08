@@ -10,7 +10,7 @@
 |--------------------------|------------------------------------------------------------------------------------------------------------------------|
 | **Public name**          | **Event Junkie** (domain: `event-junkie.de`)                                                                           |
 | **Internal / repo name** | **Event Checker** (repo, modules, READMEs, ADRs — see the naming rule below)                                           |
-| **Tagline**              | *Can't get enough of Berlin* · DE: *Von Berlin kriegst du nie genug* — **proposed, needs a brand decision (see §Localisation below)**                                                                                           |
+| **Tagline**              | *Can't get enough of Berlin* · DE: *Von Berlin kriegst du nie genug* — the German line is **shipping but not signed off**; see [§8](#8-localisation--the-german-register)                                                        |
 | **One-liner**            | Your always-fresh feed of what's on across Berlin's venues — concerts, club nights, festivals, and the odd quiz night. |
 | **Scope**                | All music, every genre and room size — not just techno. Berlin-only for now.                                           |
 
@@ -159,6 +159,45 @@ A sequence that also captures the §3–§5 design ideas not tracked in the chec
 - [x] Events & Calendar: eyebrow headers, filter-forward polish, accent-branded day markers. *(§5.6)*
 - [x] Detail pages: editorial layout + eyebrow section labels; desaturate-on-rest image treatment. *(§4, §5.4)*
 - [x] Empty / 404 / loading microcopy in the brand voice. *(§3)*
+
+## 8. Localisation — the German register
+
+The site publishes English and German ([ADR-013](adr/ADR-013_LOCALISATION.md)). **German is not a translation layer over English** — both are the brand
+speaking, and the pieces below are written from the concept rather than rendered word for word.
+
+### Register: `du`, everywhere
+
+Informal throughout, **including the imprint and the privacy notice**. Two pages in `Sie` on a site that says `du` everywhere else read as boilerplate copied
+from a generator, which is the impression a legal page can least afford. Nothing requires the formal register — Art. 12 (1) DSGVO asks for *klare und einfache
+Sprache*, and `du` is that. If this ever changes it changes on every page at once.
+
+### The tagline — shipping, not signed off
+
+*Can't get enough of Berlin* is a pun on the brand premise (§2), and a literal German rendering loses it. Three options were considered:
+
+| Option                                | Reading                                                                                                                   |
+|---------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
+| ***Von Berlin kriegst du nie genug*** | **Currently shipping.** Keeps the "you can't get enough" flattery and the `du` register; idiomatic rather than translated. |
+| *Berlin macht süchtig*                | Closer to the junkie metaphor, further from flattering the user — it praises the city, not the reader.                     |
+| Keep the English line on `/de` too    | Legitimate, and common for Berlin brands. Costs the German reader the joke.                                                |
+
+**Still the owner's call.** It ships because a German page needs *a* tagline, not because the question is closed — changing it is one line in
+`src/i18n/messages/de/footer.json` plus one e2e assertion.
+
+### What stays in English
+
+The brand name **Event Junkie** (never *Veranstaltungs-Junkie*), the **beta** marker, and everything sourced from third parties: event titles, venue and
+promoter names, artist names, line-ups, genre tags, and Berlin district names. *Mitte* is *Mitte* in every language — see
+[LOCALISATION_PLAN §2.3](LOCALISATION_PLAN.md), which flags `src/lib/districts.ts` as the file that looks translatable and is not.
+
+### Microcopy in voice, not in translation
+
+The English examples in §3 have German counterparts written the same way — for the joke, not for the words. Shipping today:
+
+- Disclaimer: *"Die Event-Daten stammen aus öffentlichen Quellen — alle Angaben ohne Gewähr. Frag im Zweifel bei der Location nach, bevor du losziehst."*
+- Beta explanation: *"Warum da beta steht"* — the section heading on the About page, phrased as the reader's question rather than as a status label.
+
+**Note the vocabulary choice:** *Location*, not *Veranstaltungsort*. It is what Berlin actually says, and the nav label uses it too.
 
 ## Glossary
 

@@ -1,108 +1,230 @@
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 
 import { mount } from '@vue/test-utils'
-import ImprintView from '@/views/legal/ImprintView.vue'
-import PrivacyView from '@/views/legal/PrivacyView.vue'
+import ImprintDe from '@/views/legal/ImprintView.de.vue'
+import ImprintEn from '@/views/legal/ImprintView.en.vue'
+import PrivacyDe from '@/views/legal/PrivacyView.de.vue'
+import PrivacyEn from '@/views/legal/PrivacyView.en.vue'
 import { CONTROLLER } from '@/lib/legal'
+import { DEFAULT_LOCALE, type Locale } from '@/i18n/locales'
+import { i18n } from '@/i18n'
+
+/**
+ * The mandatory-element checklists, run against **each language version separately**.
+ *
+ * That separation is the point. The two versions are separate documents (see
+ * `views/localisedView.ts`), which buys reviewability at the cost of drift — and the drift that
+ * matters is not a clumsy sentence, it is a section that exists in one language and not the other.
+ * Checking only English would leave a German notice missing its Widerspruchsrecht entirely green.
+ *
+ * What these tests cannot do is tell you the two say the *same* thing. Nothing automated can. They
+ * pin the elements the law names, and `@/lib/legal` holds the facts that would otherwise be typed
+ * twice.
+ */
 
 const stubs = {
   RouterLink: { template: '<a :href="to"><slot /></a>', props: ['to'] },
 }
 
-const mountImprint = () => mount(ImprintView, { global: { stubs } })
-const mountPrivacy = () => mount(PrivacyView, { global: { stubs } })
+/**
+ * Rendered text with runs of whitespace collapsed.
+ *
+ * Templates wrap prose across source lines, so a sentence that reads as one phrase on the page is
+ * broken by newlines and indentation in `textContent`. Without this, an assertion passes or fails
+ * depending on where Prettier happened to wrap the paragraph.
+ */
+function textOf(component: unknown, locale: Locale): string {
+  i18n.global.locale.value = locale
+  return mount(component as never, { global: { stubs } })
+    .text()
+    .replace(/\s+/g, ' ')
+}
 
-describe('Imprint', () => {
-  it('names the provider and a reachable postal address (§ 5 DDG)', () => {
-    const text = mountImprint().text()
-    expect(text).toContain(CONTROLLER.name)
-    expect(text).toContain(CONTROLLER.street)
-    expect(text).toContain(CONTROLLER.city)
-  })
-
-  it('offers an email address, not only a web form', () => {
-    expect(mountImprint().get(`a[href="mailto:${CONTROLLER.email}"]`)).toBeTruthy()
-  })
-
-  it('names a person responsible for editorial content (§ 18 (2) MStV)', () => {
-    expect(mountImprint().text()).toContain('§ 18 (2) MStV')
-  })
-
-  it('carries the disclaimer in its formal register', () => {
-    const text = mountImprint().text()
-    expect(text).toContain('without warranty as to accuracy, completeness or timeliness')
-    expect(text).toContain('Liability for links')
-  })
-
-  it('separates our code licence from third-party rights in the event data', () => {
-    const text = mountImprint().text()
-    expect(text).toContain('Apache License 2.0')
-    expect(text).toContain('remain the property of their respective rights holders')
-  })
+afterEach(() => {
+  i18n.global.locale.value = DEFAULT_LOCALE
 })
 
-describe('Privacy', () => {
-  // Art. 13 has twelve mandatory elements (docs/FOOTER_AND_LEGAL_PLAN.md §7.2); omitting one is
-  // the usual defect, and it is invisible without a checklist. This is that checklist.
-  const required: [string, RegExp][] = [
-    ['controller identity', new RegExp(CONTROLLER.name)],
-    ['controller contact', new RegExp(CONTROLLER.email)],
-    ['absence of a DPO', /no data protection officer/i],
-    ['legal basis', /Art\. 6 \(1\) \(f\) GDPR/],
-    ['legitimate interests, spelled out', /legitimate interest is operating/i],
-    ['recipients', /Hetzner|Cloudflare/],
-    ['third-country transfer', /US company/],
-    ['retention period', /deleted after seven days/i],
-    ['right of access', /Art\. 15/],
-    ['right to erasure', /Art\. 17/],
-    ['right to object, prominently', /Right to object \(Art\. 21 GDPR\)/],
-    ['right to complain to a supervisory authority', /Berliner Beauftragte/],
-    ['whether provision is required', /neither legally nor contractually obliged/i],
-    ['no automated decision-making', /Art\. 22 GDPR/],
-  ]
+const IMPRINT = { en: ImprintEn, de: ImprintDe } as const
+const PRIVACY = { en: PrivacyEn, de: PrivacyDe } as const
 
-  for (const [element, pattern] of required) {
-    it(`states the ${element}`, () => {
-      expect(mountPrivacy().text()).toMatch(pattern)
+/** Per-language wording for the same required element. */
+interface Element {
+  what: string
+  en: RegExp
+  de: RegExp
+}
+
+const IMPRINT_ELEMENTS: Element[] = [
+  {
+    what: 'the person responsible for editorial content (§ 18 MStV)',
+    en: /§ 18 \(2\) MStV/,
+    de: /§ 18 Abs\. 2 MStV/,
+  },
+  {
+    what: 'the disclaimer in its formal register',
+    en: /without warranty as to accuracy, completeness or timeliness/,
+    de: /ohne Gewähr für Richtigkeit, Vollständigkeit und Aktualität/,
+  },
+  {
+    what: 'a disclaimer for linked sites',
+    en: /Liability for links/,
+    de: /Haftung für Links/,
+  },
+  {
+    what: 'our code licence, separated from third-party rights in the event data',
+    en: /Apache License 2\.0.*remain the property of their respective rights holders/s,
+    de: /Apache License 2\.0.*bleiben Eigentum der jeweiligen Rechteinhaber/s,
+  },
+  {
+    what: 'the country in its own language',
+    en: /Germany/,
+    de: /Deutschland/,
+  },
+]
+
+// Art. 13 has twelve mandatory elements (docs/FOOTER_AND_LEGAL_PLAN.md §7.2); omitting one is the
+// usual defect, and it is invisible without a checklist. This is that checklist, in both languages.
+const PRIVACY_ELEMENTS: Element[] = [
+  {
+    what: 'absence of a DPO',
+    en: /no data protection officer/i,
+    de: /Datenschutzbeauftragter ist nicht bestellt/i,
+  },
+  {
+    what: 'legal basis',
+    en: /Art\. 6 \(1\) \(f\) GDPR/,
+    de: /Art\. 6 Abs\. 1 lit\. f DSGVO/,
+  },
+  {
+    what: 'legitimate interests, spelled out rather than merely asserted',
+    en: /legitimate interest is operating/i,
+    de: /berechtigtes Interesse ist der Betrieb/i,
+  },
+  { what: 'recipients', en: /Hetzner.*Cloudflare/s, de: /Hetzner.*Cloudflare/s },
+  { what: 'third-country transfer', en: /US company/, de: /US-Unternehmen/ },
+  {
+    what: 'retention period',
+    en: /deleted after seven days/i,
+    de: /nach sieben Tagen gelöscht/i,
+  },
+  { what: 'right of access', en: /Art\. 15/, de: /Art\. 15 DSGVO/ },
+  { what: 'right to rectification', en: /Art\. 16/, de: /Art\. 16 DSGVO/ },
+  { what: 'right to erasure', en: /Art\. 17/, de: /Art\. 17 DSGVO/ },
+  { what: 'right to restriction', en: /Art\. 18/, de: /Art\. 18 DSGVO/ },
+  { what: 'right to portability', en: /Art\. 20/, de: /Art\. 20 DSGVO/ },
+  {
+    what: 'right to object, under its own heading',
+    en: /Right to object \(Art\. 21 GDPR\)/,
+    de: /Widerspruchsrecht \(Art\. 21 DSGVO\)/,
+  },
+  {
+    what: 'right to complain to the competent supervisory authority',
+    en: /Berliner Beauftragte/,
+    de: /Berliner Beauftragte/,
+  },
+  {
+    what: 'whether providing data is required',
+    en: /neither legally nor contractually obliged/i,
+    de: /weder gesetzlich noch vertraglich verpflichtet/i,
+  },
+  {
+    what: 'absence of automated decision-making',
+    en: /Art\. 22 GDPR/,
+    de: /Art\. 22 DSGVO/,
+  },
+  {
+    what: 'the local-storage key and why it needs no consent',
+    en: /§ 25 \(2\) 2 TDDDG/,
+    de: /§ 25 Abs\. 2 Nr\. 2 TDDDG/,
+  },
+  { what: 'that no cookies are set', en: /no cookies/i, de: /keine Cookies/i },
+  {
+    what: 'artist data as personal data',
+    en: /artist is a natural person/i,
+    de: /natürliche Person/i,
+  },
+  {
+    what: 'a route to having an artist name removed',
+    en: /removed or corrected/i,
+    de: /entfernt oder korrigiert/i,
+  },
+]
+
+for (const locale of ['en', 'de'] as const) {
+  describe(`Imprint (${locale})`, () => {
+    it('names the provider and a reachable postal address (§ 5 DDG)', () => {
+      const text = textOf(IMPRINT[locale], locale)
+      expect(text).toContain(CONTROLLER.name)
+      expect(text).toContain(CONTROLLER.street)
+      expect(text).toContain(CONTROLLER.city)
     })
-  }
 
-  it('describes the local-storage key and why it needs no consent', () => {
-    const text = mountPrivacy().text()
-    expect(text).toContain('§ 25 (2) 2 TDDDG')
-    expect(text).toMatch(/no cookies/i)
-  })
+    it('offers an email address, not only a web form', () => {
+      i18n.global.locale.value = locale
+      const wrapper = mount(IMPRINT[locale], { global: { stubs } })
+      expect(wrapper.get(`a[href="mailto:${CONTROLLER.email}"]`)).toBeTruthy()
+    })
 
-  it('names artist data as personal data and offers a removal route', () => {
-    const text = mountPrivacy().text()
-    expect(text).toMatch(/artist is a natural person/i)
-    expect(text).toMatch(/removed or corrected/i)
-  })
-
-  it('does not describe processing that does not happen', () => {
-    // A notice claiming cookie consent, analytics or ad partners we do not have is as inaccurate
-    // as one omitting processing we do — and generators produce exactly that (§7.8).
-    const text = mountPrivacy().text()
-    expect(text).not.toMatch(/Google Analytics|advertising partners|withdraw your cookie consent/i)
-  })
-
-  it('carries the same controller address as the imprint', () => {
-    // §8.3: the two pages must never disagree about the address. They share one module, and this
-    // asserts the sharing actually reaches the rendered output.
-    const privacy = mountPrivacy().text()
-    const imprint = mountImprint().text()
-    for (const line of [CONTROLLER.name, CONTROLLER.street, CONTROLLER.city]) {
-      expect(privacy).toContain(line)
-      expect(imprint).toContain(line)
+    for (const element of IMPRINT_ELEMENTS) {
+      it(`states ${element.what}`, () => {
+        expect(textOf(IMPRINT[locale], locale)).toMatch(element[locale])
+      })
     }
   })
-})
 
-describe('while the pages are provisional', () => {
-  it('says so rather than presenting placeholders as fact', () => {
-    for (const text of [mountImprint().text(), mountPrivacy().text()]) {
-      expect(text).toContain('This page is not final')
-      expect(text).toMatch(/placeholders/i)
+  describe(`Privacy (${locale})`, () => {
+    it('identifies the controller and how to reach them', () => {
+      const text = textOf(PRIVACY[locale], locale)
+      expect(text).toContain(CONTROLLER.name)
+      expect(text).toContain(CONTROLLER.email)
+    })
+
+    for (const element of PRIVACY_ELEMENTS) {
+      it(`states the ${element.what}`, () => {
+        expect(textOf(PRIVACY[locale], locale)).toMatch(element[locale])
+      })
     }
+
+    it('does not describe processing that does not happen', () => {
+      // A notice claiming cookie consent, analytics or ad partners we do not have is as inaccurate
+      // as one omitting processing we do — and generators produce exactly that (§7.8).
+      expect(textOf(PRIVACY[locale], locale)).not.toMatch(
+        /Google Analytics|advertising partners|Werbepartner|withdraw your cookie consent|Cookie-Einwilligung/i,
+      )
+    })
+  })
+}
+
+describe('across both language versions', () => {
+  it('states which version prevails, on every page that has two', () => {
+    // Two language versions with no stated precedence is worse than one language: it invites the
+    // reader to pick whichever suits them. Both pages, both languages — four places to forget it.
+    expect(textOf(IMPRINT.en, 'en')).toMatch(/the German version prevails/)
+    expect(textOf(PRIVACY.en, 'en')).toMatch(/the German version prevails/)
+    expect(textOf(IMPRINT.de, 'de')).toMatch(/deutsche Fassung maßgeblich/)
+    expect(textOf(PRIVACY.de, 'de')).toMatch(/deutsche Fassung maßgeblich/)
+  })
+
+  it('carries one controller address across all four documents', () => {
+    // §8.3: these must never disagree about the address, and now there are four of them. They
+    // share one module; this asserts the sharing actually reaches the rendered output.
+    for (const [component, locale] of [
+      [IMPRINT.en, 'en'],
+      [IMPRINT.de, 'de'],
+      [PRIVACY.en, 'en'],
+      [PRIVACY.de, 'de'],
+    ] as const) {
+      const text = textOf(component, locale)
+      for (const line of [CONTROLLER.name, CONTROLLER.street, CONTROLLER.city]) {
+        expect(text).toContain(line)
+      }
+    }
+  })
+
+  it('says the pages are provisional rather than presenting placeholders as fact', () => {
+    expect(textOf(IMPRINT.en, 'en')).toMatch(/This page is not final.*placeholders/s)
+    expect(textOf(PRIVACY.en, 'en')).toMatch(/This page is not final.*placeholders/s)
+    expect(textOf(IMPRINT.de, 'de')).toMatch(/Diese Seite ist noch nicht final.*Platzhalter/s)
+    expect(textOf(PRIVACY.de, 'de')).toMatch(/Diese Seite ist noch nicht final.*Platzhalter/s)
   })
 })

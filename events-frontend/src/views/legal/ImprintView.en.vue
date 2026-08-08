@@ -1,20 +1,29 @@
 <script lang="ts" setup>
 /**
- * Provider identification under § 5 DDG, plus the disclaimer.
+ * Provider identification under § 5 DDG, plus the disclaimer — English version.
  *
- * English rather than German by decision — the site addresses its users in English, and Art. 12
- * (1) GDPR / § 5 DDG are judged against the audience addressed. German arrives with localisation,
- * in the same release as the German UI, and becomes the authoritative version at that point.
- * See docs/FOOTER_AND_LEGAL_PLAN.md §6.1.
+ * The German version, `ImprintView.de.vue`, is the authoritative one (FOOTER_AND_LEGAL_PLAN
+ * §6.1), and this page says so. This one exists because a large part of the audience the site
+ * addresses reads English, and Art. 12 (1) GDPR / § 5 DDG are judged against the audience
+ * addressed — not because German alone would be insufficient.
+ *
+ * **Change both files or neither.** The facts they state must not diverge; the ones that would be
+ * expensive to keep in step by hand — the address, the authority, the review date — come from
+ * `@/lib/legal` instead of being typed here.
  */
+import { useI18n } from 'vue-i18n'
+
 import LegalPage from '@/components/LegalPage.vue'
 import ProvisionalNotice from '@/components/ProvisionalNotice.vue'
 import { CONTROLLER } from '@/lib/legal'
+
+const { t } = useI18n()
 </script>
 
 <template>
   <LegalPage
     intro="Information required under § 5 DDG (formerly § 5 TMG)."
+    show-authoritative-version
     show-review-date
     title="Imprint"
   >
@@ -25,7 +34,7 @@ import { CONTROLLER } from '@/lib/legal'
       <p>{{ CONTROLLER.name }}</p>
       <p>{{ CONTROLLER.street }}</p>
       <p>{{ CONTROLLER.city }}</p>
-      <p>{{ CONTROLLER.country }}</p>
+      <p>{{ t('legal.country') }}</p>
     </section>
 
     <section>

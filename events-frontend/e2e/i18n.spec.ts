@@ -1,11 +1,13 @@
 import { expect, test } from '@playwright/test'
 
 /**
- * Locale routing — the part of localisation that is infrastructure rather than translation.
+ * Locale routing and the content that is genuinely locale-specific.
  *
- * Only English is published in this phase (`LOCALES = ['en']`), so these cover the URL contract
- * and the redirects rather than any German content. German assertions arrive with Phase 3 of
- * docs/LOCALISATION_PLAN.md.
+ * The other suites are pinned to `/en` deliberately (docs/LOCALISATION_PLAN.md §4): they are
+ * behaviour tests that happen to use English accessible names as stable handles, and re-running
+ * them in German would double the matrix to re-assert the same behaviour. This file carries what
+ * only exists in a second language — the URL contract, the redirects, the switcher, date formats,
+ * and the four long-form pages that have a separate component per language.
  */
 
 test('the bare root redirects to a locale', async ({ page }) => {
@@ -118,14 +120,6 @@ test('dates render in the locale format', async ({ page }) => {
   await expect(page.getByText(/12\. Juni 2026/)).toBeVisible()
 })
 
-test('the legal pages say they are English-only while German is pending', async ({ page }) => {
-  // German UI shipped before the German legal pages (Phase 4). Until then the gap is disclosed on
-  // the page rather than left for a German reader to discover — FOOTER_AND_LEGAL_PLAN §6.1.
-  await page.goto('/de/legal/privacy')
-
-  await expect(page.getByRole('main')).toContainText('nur auf Englisch')
-})
-
 test('the header carries a compact locale switcher', async ({ page }) => {
   await page.goto('/en/venues')
 
@@ -161,4 +155,87 @@ test('both switchers mark the active language', async ({ page }) => {
   const header = page.getByRole('navigation', { name: 'Haupt' })
   await expect(header.getByRole('link', { name: 'Deutsch' })).toHaveAttribute('aria-current', 'true')
   await expect(header.getByRole('link', { name: 'English' })).not.toHaveAttribute('aria-current', 'true')
+})
+
+/**
+ * The long-form pages — About and the three legal ones — are a separate component per language
+ * rather than translated strings (src/views/localisedView.ts). That makes one failure mode
+ * possible that the message catalogue's key-parity test cannot see: the route resolving to the
+ * wrong language version, or to none. These are the tests that would catch it.
+ */
+
+test('the German imprint is German, not the English page under a German URL', async ({ page }) => {
+  await page.goto('/de/legal/imprint')
+  const main = page.getByRole('main')
+
+  await expect(page.getByRole('heading', { level: 1, name: 'Impressum' })).toBeVisible()
+  await expect(main).toContainText('Angaben gemäß § 5 DDG')
+  await expect(main).toContainText('§ 18 Abs. 2 MStV')
+  // The tell for a silent fallback: the English headings, under /de.
+  await expect(main).not.toContainText('Service provider')
+})
+
+test('the German privacy notice carries the Art. 13 elements in German form', async ({ page }) => {
+  // Not a re-run of the unit checklist — this proves the *route* serves the German document, with
+  // its German citations, in a real browser. `Art. 6 (1) (f) GDPR` here would mean the fallback.
+  await page.goto('/de/legal/privacy')
+  const main = page.getByRole('main')
+
+  await expect(main).toContainText('Art. 6 Abs. 1 lit. f DSGVO')
+  await expect(main).toContainText('Widerspruchsrecht (Art. 21 DSGVO)')
+  await expect(main).toContainText('§ 25 Abs. 2 Nr. 2 TDDDG')
+  await expect(main).toContainText('Berliner Beauftragte')
+})
+
+test('both language versions name the German one as authoritative', async ({ page }) => {
+  await page.goto('/en/legal/imprint')
+  await expect(page.getByRole('main')).toContainText('the German version prevails')
+
+  await page.goto('/de/legal/imprint')
+  await expect(page.getByRole('main')).toContainText('deutsche Fassung maßgeblich')
+})
+
+test('the About page and its beta anchor are German under /de', async ({ page }) => {
+  // The header's beta badge links to `#beta` in whichever locale you are in, so the anchor id has
+  // to survive translation even though every heading around it changes.
+  await page.goto('/de/about#beta')
+
+  await expect(page.getByRole('heading', { level: 1, name: 'Über uns' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Warum da beta steht' })).toBeVisible()
+})
+
+test('the notices page counts components in German too', async ({ page }) => {
+  await page.goto('/de/legal/notices')
+
+  await expect(page.getByRole('heading', { level: 1, name: 'Open-Source-Lizenzen' })).toBeVisible()
+  await expect(page.locator('summary').filter({ hasText: /^\s*MIT\s+—/ })).toContainText(
+    'Komponenten',
+  )
+})
+
+test('switching language on a legal page stays on that page', async ({ page }) => {
+  // The case the switcher most needs to get right: someone reading the privacy notice in the wrong
+  // language should land on the *notice*, not on the home page.
+  await page.goto('/en/legal/privacy')
+
+  await page
+    .getByRole('navigation', { name: 'Language' })
+    .getByRole('link', { name: 'Deutsch' })
+    .click()
+
+  await expect(page).toHaveURL(/\/de\/legal\/privacy$/)
+  await expect(page.getByRole('heading', { level: 1, name: 'Datenschutz' })).toBeVisible()
+})
+
+test('sets a German document title for each legal route', async ({ page }) => {
+  const titles = [
+    ['/de/legal/imprint', 'Impressum · Event Junkie'],
+    ['/de/legal/privacy', 'Datenschutz · Event Junkie'],
+    ['/de/legal/notices', 'Open-Source-Lizenzen · Event Junkie'],
+  ] as const
+
+  for (const [path, title] of titles) {
+    await page.goto(path)
+    await expect(page).toHaveTitle(title)
+  }
 })
