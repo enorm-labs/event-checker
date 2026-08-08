@@ -117,6 +117,10 @@ subprojects sharing a root `settings.gradle.kts`, plus a standalone frontend pro
   Controllers are annotated with `@Tag(name = "Admin: <Entity>")` to group endpoints by entity type in Swagger UI (e.g. `"Admin: Venues"`, `"Admin: Events"`).
   Request and response DTOs use `@Schema` annotations on every field to provide descriptions, examples, and required-mode metadata in the generated API docs.
   Domain classes in `events-core` are intentionally kept free of Swagger annotations to avoid coupling the shared library to web concerns.
+    - **Changing the BFF's public API means regenerating the frontend's types in the same PR.** `events-frontend/src/api/schema.d.ts` is generated from the
+      BFF's `/v3/api-docs` and committed; nothing in either build checks that it is current, so a new endpoint, a renamed or added response field or a changed
+      type leaves the frontend type-checking against an API that no longer exists. With the BFF running: `cd events-frontend && npm run generate:api`. Details
+      and failure modes in [events-frontend/AGENTS.md](events-frontend/AGENTS.md) §API Communication.
 - **Jackson 3.x** (`tools.jackson.module:jackson-module-kotlin`) is used for JSON serialization.
 - **Spring Boot Actuator** is included in both BFF and importer for health checks and monitoring.
 - **Logging**: Both apps use [kotlin-logging](https://github.com/oshai/kotlin-logging) (`io.github.oshai:kotlin-logging-jvm`) as an idiomatic SLF4J wrapper.
