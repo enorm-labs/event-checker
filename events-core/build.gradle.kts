@@ -73,6 +73,11 @@ tasks.test {
 // number (~11%). Exclude those so the metric reflects the code that actually carries logic — the
 // enum `parseOrDefault` companions (EventType/EventStatus/ArtistRole) and MoneyExtensions, both of
 // which remain measured and tested.
+//
+// The `*Module` / `*Fixtures` patterns are NOT repeated here: they apply to every module and are
+// configured once in the root build's `subprojects` block. What is left is the part specific to
+// this module — the domain data classes, listed by exact name so the BFF/importer `*Entity`
+// persistence classes are not caught by a pattern and stay measured.
 kover {
     reports {
         filters {
@@ -84,11 +89,7 @@ kover {
                     "de.norm.events.event.LineupEntry",
                     "de.norm.events.genretag.GenreTag",
                     "de.norm.events.promoter.Promoter",
-                    "de.norm.events.venue.Venue",
-                    // Spring Modulith `@ApplicationModule` markers — no logic (`*` spans package segments).
-                    "de.norm.events.*Module",
-                    // Published test-fixture factories (java-test-fixtures) — test support, not production code.
-                    "de.norm.events.*Fixtures"
+                    "de.norm.events.venue.Venue"
                 )
             }
         }

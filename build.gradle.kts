@@ -80,6 +80,34 @@ subprojects {
         }
     }
 
+    // Kover – the exclusions every module shares. Filters do NOT propagate between projects (nor
+    // into the aggregated report below), so anything that should be invisible everywhere has to be
+    // configured per module — which is what this block does, instead of the same list copy-pasted
+    // into three build files. Applies to `:events-<x>:koverLog` / `koverHtmlReport`, the per-module
+    // numbers CI prints alongside the aggregate.
+    //
+    // Both patterns match classes carrying no executable logic, whose synthetic members would
+    // otherwise be counted as uncovered:
+    //   *Module   — Spring Modulith `@ApplicationModule` package markers (EventsCoreModule,
+    //               MetaModule, VenueModule, …). `*` spans package segments, so one pattern covers
+    //               every module package.
+    //   *Fixtures — published `java-test-fixtures` factories: test support, not production code.
+    //
+    // Module-specific exclusions stay in the module (see events-core, which additionally drops its
+    // plain domain data classes by exact name so the BFF/importer `*Entity` classes stay measured).
+    configure<kotlinx.kover.gradle.plugin.dsl.KoverProjectExtension> {
+        reports {
+            filters {
+                excludes {
+                    classes(
+                        "de.norm.events.*Module",
+                        "de.norm.events.*Fixtures"
+                    )
+                }
+            }
+        }
+    }
+
     // Stamp META-INF/build-info.properties into every Boot application, which auto-configures a
     // `BuildProperties` bean. The BFF serves it at `GET /meta` (the frontend footer) and both apps
     // expose it at `/actuator/info` (operators) — reading one bean, so the two can never disagree.
