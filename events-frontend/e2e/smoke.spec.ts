@@ -24,12 +24,13 @@ import { expect, type Page, test } from '@playwright/test'
 // routes are locale-prefixed (ADR-013 §Decision 2) and home is the locale root itself — `/en`, not
 // `/en/`. This suite is pinned to English deliberately: it tests behaviour, and English is simply
 // the stable handle for it (see AGENTS.md §Testing — locale strategy).
+// Listed in the order the header renders them, so the nav walk below also reads left to right.
 const staticRoutes = [
   // `nav` is the accessible name of the nav link — home's is the brand logo, not "Home".
   { path: '/', url: '/en', name: 'home', nav: 'Event Junkie', heading: 'Event Junkie' },
   { path: '/events', url: '/en/events', name: 'events', nav: 'Events', heading: 'Events' },
-  { path: '/venues', url: '/en/venues', name: 'venues', nav: 'Venues', heading: 'Venues' },
   { path: '/calendar', url: '/en/calendar', name: 'calendar', nav: 'Calendar', heading: 'Calendar' },
+  { path: '/venues', url: '/en/venues', name: 'venues', nav: 'Venues', heading: 'Venues' },
   { path: '/about', url: '/en/about', name: 'about', nav: 'About', heading: 'About' },
 ] as const
 
@@ -70,6 +71,25 @@ test('navigates between static routes via the nav bar', async ({ page }) => {
   }
 
   expect(errors, 'unexpected uncaught exceptions').toEqual([])
+})
+
+test('header nav lists the sections in the intended order', async ({ page }) => {
+  // The order is a product decision, not an accident: Events and Calendar are two views of the
+  // same event data and belong together, Venues is a different entity, About is meta. Without this
+  // assertion the sequence is invisible to every other test — they all address links by name — so
+  // an edit could reshuffle it silently.
+  await page.goto('/about')
+
+  const nav = page.getByRole('navigation', { name: 'Main' })
+  const labels = await nav.getByRole('link').allInnerTexts()
+
+  // Filtered to the section links rather than compared whole: the header also carries the brand,
+  // the beta badge, the locale links and an icon-only GitHub button, and pinning those here would
+  // make this test fail for reasons that have nothing to do with the section order.
+  const sections = ['Events', 'Calendar', 'Venues', 'About']
+  const rendered = labels.map((label) => label.trim()).filter((label) => sections.includes(label))
+
+  expect(rendered).toEqual(sections)
 })
 
 test('header nav fits its viewport without overflowing', async ({ page }) => {
