@@ -17,8 +17,9 @@
  *
  * **Before go-live, every published locale needs its legal pages in that language** — an
  * English-only imprint and privacy notice on a site presenting itself in German is the one
- * configuration FOOTER_AND_LEGAL_PLAN §6.1 rules out. German legal pages are Phase 4; until they
- * exist, those pages carry a visible notice saying so.
+ * configuration FOOTER_AND_LEGAL_PLAN §6.1 rules out. Both published locales have them
+ * (`ImprintView.de.vue`, `PrivacyView.de.vue`); a third locale would need the same before it
+ * could be listed here.
  */
 export const LOCALES = ['en', 'de'] as const
 
@@ -52,6 +53,17 @@ export const INTL_LOCALES: Record<Locale, string> = {
 
 export function isLocale(value: unknown): value is Locale {
   return typeof value === 'string' && (LOCALES as readonly string[]).includes(value)
+}
+
+/**
+ * Drops the locale segment from a routed path: `/de/legal/privacy` → `/legal/privacy`, `/en` → ``.
+ *
+ * The result is what every "same page, other language" calculation is built on — the locale
+ * switcher's links, the canonical URL, and the `hreflang` alternates. One implementation because
+ * three subtly different ones is how `/en/` and `/en` became two URLs for one page in Phase 1.
+ */
+export function stripLocale(path: string): string {
+  return path.replace(/^\/[^/]+/, '')
 }
 
 /** The stored preference, if it is still a locale we publish. */

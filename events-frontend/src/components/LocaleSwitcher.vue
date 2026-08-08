@@ -13,7 +13,7 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 
-import { DEFAULT_LOCALE, isLocale, type Locale, LOCALES } from '@/i18n/locales'
+import { DEFAULT_LOCALE, isLocale, type Locale, LOCALES, stripLocale } from '@/i18n/locales'
 
 const props = withDefaults(
   defineProps<{
@@ -57,7 +57,7 @@ const current = computed<Locale>(() => {
 
 /** The current path with its locale segment swapped, so the switch stays on this page. */
 function pathIn(locale: Locale): string {
-  const rest = (route?.path ?? '/').replace(/^\/[^/]+/, '')
+  const rest = stripLocale(route?.path ?? '/')
   return `${`/${locale}${rest}`.replace(/\/$/, '')}${route?.hash ?? ''}`
 }
 </script>

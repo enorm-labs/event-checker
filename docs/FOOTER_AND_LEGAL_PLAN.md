@@ -1316,9 +1316,10 @@ rule touching both `gradle.properties` and `package.json` (§4.6), a link to `CO
 
 ### Phase 7 (follow-up, separate plan) — localisation → planned in [LOCALISATION_PLAN.md](LOCALISATION_PLAN.md)
 
-> ✅ **Phases 1–4 of that plan shipped (2026-08-07 / 2026-08-08).** The site publishes English and German under locale-prefixed routes, and the legal pages
-> exist in both languages with German authoritative — so §6.1's interim answer is retired exactly as anticipated below. Its Phase 5 (`hreflang`, per-locale
-> `og:locale`, sitemap) is still outstanding.
+> ✅ **That plan shipped in full (2026-08-07 / 2026-08-08).** The site publishes English and German under locale-prefixed routes, the legal pages exist in both
+> languages with German authoritative — so §6.1's interim answer is retired exactly as anticipated below — and Phase 5 added `hreflang`, canonical URLs,
+> per-locale `og:locale`, a generated `sitemap.xml` and a `robots.txt`. What remains is prerendering, which is tracked separately and which the SEO work depends
+> on to be fully effective.
 
 Full English/German localisation of the site, as agreed in §6.2. Not part of this plan's delivery, but it is the immediate next piece of work and it retires
 §6.1's interim answer: once locales exist, the legal pages are simply two more localised routes and the "which language is authoritative" question becomes a

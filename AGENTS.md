@@ -42,7 +42,8 @@ whether your change falls into any category below — and if it does, say so exp
   **Proposed**, and the privacy notice currently says so.
 - Changing log content, log retention, or IP handling (truncation/anonymisation) — the notice states a retention period; it must be the real one.
 - Adding monitoring, error tracking, uptime checks, APM, or a metrics backend that receives request or user data.
-- Adding a staging or preview environment reachable from the internet.
+- Adding a staging or preview environment reachable from the internet. **Note the SEO hazard alongside the privacy one:** the build emits a `robots.txt` that
+  allows all crawlers and a `sitemap.xml` naming the production origin, so any environment serving that build invites indexing. Override both per environment.
 
 **Features**
 
