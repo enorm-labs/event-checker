@@ -30,3 +30,6 @@ __pycache__/
 # "is not tracked by Git. However, it is not added to the .gitignore file" — the IDE hides it from
 # its commit dialog and nothing else, so a `git add` from a terminal would have committed the key.
 http/http-client.private.env.json
+
+# Written by scripts/ej.sh for the local operations page (#1185); regenerated on every call.
+docs/ops/dashboard/status.js
