@@ -6,11 +6,16 @@ reasoning rather than restating it.
 ## The short version
 
 ```sh
-source scripts/shell-aliases.sh                    # every command below, shortened
-sudo wg-quick up ~/.wireguard/staging.conf         # nothing administrative works without the tunnel
+scripts/ej.sh up staging                           # tunnel, handshake check, and the three port-forwards
+scripts/ej.sh urls                                 # the Swagger UIs and OpenObserve, on localhost
 kubectl --context event-junkie-staging get pods -A
-sudo wg-quick down ~/.wireguard/staging.conf
+scripts/ej.sh down staging                         # the forwards it started, then the tunnel
 ```
+
+`scripts/ej.sh` is the session. `up` is `wg-quick up` plus the handshake check and a look at `/etc/hosts`. Then it starts one `kubectl port-forward`
+each for the importer admin API, the BFF's Swagger UI and OpenObserve. The ports do not collide between the two environments or with `dev-env.sh`.
+`status` is one screen of both tunnels, both clusters and anything not Ready. `versions` is what each cluster runs beside what Flux would resolve next.
+`source scripts/shell-aliases.sh` gives every command below a short name.
 
 - **Two environments, and the difference matters more than the commands do.** Staging is not on the public internet at all. Production is running but **dark**:
   the domain resolves to nothing until `publish_dns` is flipped.
@@ -239,14 +244,13 @@ What it defines:
 
 |                                    |                                                                   |
 | ---------------------------------- | ----------------------------------------------------------------- |
-| `ej-up` / `ej-up-prod` / `ej-down` | tunnels, with a handshake check rather than a hopeful "done"      |
+| `ej-up` / `ej-up-prod` / `ej-down` | `scripts/ej.sh up` and `down`: the tunnel and the three forwards  |
 | `ejk` / `ejkp`                     | `kubectl` with `--context` already pinned to staging / production |
 | `ejf` / `ejfp`                     | the same for `flux`                                               |
 | `ej-site` / `ej-api`               | curl the staging site and API with the right `--resolve` and `-k` |
 | `ej-venue <slug>`                  | one venue end to end: the source row, then what the site serves   |
 | `ej-db` / `ej-db-prod`             | open the tunnel _and_ a `psql`, then close it again               |
-| `ej-o2`                            | the OpenObserve port-forward                                      |
 | `ej-backups` / `ej-backups-prod`   | `walg check` on the right node                                    |
-| `ej-status`                        | one screen: both tunnels, both clusters, anything not Ready       |
+| `ej-status` / `ej-versions`        | `scripts/ej.sh status` and `versions`                             |
 
 **No alias wraps `tofu`, `helm upgrade`, or anything that writes to production.** Those want the friction.

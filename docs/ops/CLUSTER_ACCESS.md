@@ -277,6 +277,8 @@ about the _site_, which does have an ingress to test.
 kubectl --context event-junkie-staging port-forward -n event-junkie svc/event-junkie-importer 18081:8081
 ```
 
+`scripts/ej.sh up staging` starts this forward, the BFF's and OpenObserve's together, on the same ports. The command above is what it runs.
+
 **`18081`, not `8081`.** The local importer from `scripts/dev-env.sh` owns `8081`. A forward that silently lands on a local stack is how you seed the wrong
 database and believe you seeded staging.
 
@@ -317,6 +319,8 @@ here. Reach it through the tunnel and a port-forward:
 kubectl --context event-junkie-staging -n observability \
   port-forward svc/openobserve-openobserve-standalone 5080:5080
 ```
+
+`scripts/ej.sh up staging` starts this forward too, and `up production` the same one on `25080`.
 
 Then `http://localhost:5080/` and log in with the root credentials from the password manager — the ones in the `openobserve-credentials` Secret
 ([SECRETS.md](SECRETS.md)). They are not in this repository and no deploy will bring them.

@@ -69,13 +69,14 @@ Run by an agent or a developer. No cluster, no tunnel; `k3d-rehearsal.sh` makes 
 Run by the operator, with the WireGuard tunnel up. Three of these live next to what they operate rather than here, and are listed so there is one place to
 look. None of them wraps `tofu`, `helm upgrade`, or anything that writes to production.
 
-| Script                       | What it does                                                                                                    | Where it is documented                                  |
-| ---------------------------- | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
-| `shell-aliases.sh`           | Shell functions for day-to-day work against the two clusters; source it from `~/.zshrc`                         | `docs/ops/DAILY_COMMANDS.md` § Aliases                  |
-| `deployed-versions.sh`       | Which published chart version each cluster would resolve, right now — Flux's own selection, no cluster needed   | `image-scan-scheduled.yml`, `docs/ops/RELEASING.md`     |
-| `upstream-node-pins.sh`      | Are the k3s and wal-g pins behind upstream? `node-pin-reminder.yml` runs it weekly                              | `docs/ops/K3S_UPGRADE.md`, `docs/ops/BACKUPS.md`        |
-| `seed-sources.py`            | Register the venues and event sources from `dev-seed.http` on a cluster; the dry run is the drift report (#876) | `docs/ops/CLUSTER_ACCESS.md` § 6a                       |
-| `apply-licence-review.py`    | Write the licence review in `docs/licence-review/` onto the event sources; dry run by default (#283)            | `docs/licence-review/`                                  |
-| `deploy/dashboards/apply.sh` | Import the OpenObserve dashboards, and check their panels return data                                           | `docs/ops/OPENOBSERVE.md`                               |
-| `deploy/alerts/apply.sh`     | Push the alert rules into OpenObserve, or check that they can fire at all                                       | `docs/ops/OPENOBSERVE.md`, `docs/ops/DAILY_COMMANDS.md` |
-| `infra/check-capacity.sh`    | Can Hetzner deliver the server the plan orders? Only `--probe` answers                                          | `infra/README.md`, `docs/ops/DAILY_COMMANDS.md`         |
+| Script                       | What it does                                                                                                                    | Where it is documented                                  |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| `ej.sh`                      | The operator's session: the tunnel and the three port-forwards, up in one command and down in one; also `status` and `versions` | `docs/ops/DAILY_COMMANDS.md` § The short version        |
+| `shell-aliases.sh`           | Shell functions for day-to-day work against the two clusters; source it from `~/.zshrc`                                         | `docs/ops/DAILY_COMMANDS.md` § Aliases                  |
+| `deployed-versions.sh`       | Which published chart version each cluster would resolve, right now — Flux's own selection, no cluster needed                   | `image-scan-scheduled.yml`, `docs/ops/RELEASING.md`     |
+| `upstream-node-pins.sh`      | Are the k3s and wal-g pins behind upstream? `node-pin-reminder.yml` runs it weekly                                              | `docs/ops/K3S_UPGRADE.md`, `docs/ops/BACKUPS.md`        |
+| `seed-sources.py`            | Register the venues and event sources from `dev-seed.http` on a cluster; the dry run is the drift report (#876)                 | `docs/ops/CLUSTER_ACCESS.md` § 6a                       |
+| `apply-licence-review.py`    | Write the licence review in `docs/licence-review/` onto the event sources; dry run by default (#283)                            | `docs/licence-review/`                                  |
+| `deploy/dashboards/apply.sh` | Import the OpenObserve dashboards, and check their panels return data                                                           | `docs/ops/OPENOBSERVE.md`                               |
+| `deploy/alerts/apply.sh`     | Push the alert rules into OpenObserve, or check that they can fire at all                                                       | `docs/ops/OPENOBSERVE.md`, `docs/ops/DAILY_COMMANDS.md` |
+| `infra/check-capacity.sh`    | Can Hetzner deliver the server the plan orders? Only `--probe` answers                                                          | `infra/README.md`, `docs/ops/DAILY_COMMANDS.md`         |
