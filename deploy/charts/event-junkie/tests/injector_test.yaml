@@ -1,0 +1,99 @@
+# The meta-injection sidecar in the frontend pod (#287, ADR-014 §Decision 3).
+#
+# What is pinned here is the loopback contract and the off-switch. nginx.conf proxies detail routes
+# to 127.0.0.1:3000 and the sidecar fetches the shell from 127.0.0.1:8080 — two literals in two
+# images that have to agree with the values here, and a render that drifted from either would
+# install, pass every probe, and serve the plain shell on every detail page with no error anywhere.
+suite: the meta-injection sidecar
+
+templates:
+  - frontend-deployment.yaml
+
+tests:
+  - it: runs the injector beside nginx, from the same release as the frontend image
+    set:
+      database.host: "10.0.1.2"
+      networkPolicy.databaseCidr: "10.0.1.2/32"
+      database.existingSecret: "events-db"
+    asserts:
+      - lengthEqual:
+          path: spec.template.spec.containers
+          count: 2
+      - equal:
+          path: spec.template.spec.containers[1].name
+          value: injector
+      # The same `appVersion` fallback as every other image: one release, one tag, both images.
+      - matchRegex:
+          path: spec.template.spec.containers[1].image
+          pattern: '^ghcr\.io/enorm-labs/event-junkie/injector:[0-9]+\.[0-9]+\.[0-9]+([-+][0-9A-Za-z.-]+)?$'
+      - equal:
+          path: spec.template.spec.containers[1].ports[0].containerPort
+          value: 3000
+
+  - it: wires the sidecar to nginx over loopback and to the BFF by its Service name
+    set:
+      database.host: "10.0.1.2"
+      networkPolicy.databaseCidr: "10.0.1.2/32"
+      database.existingSecret: "events-db"
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[1].env
+          content:
+            name: SHELL_URL
+            value: "http://127.0.0.1:8080/index.html"
+      - contains:
+          path: spec.template.spec.containers[1].env
+          content:
+            name: BFF_URL
+            value: "http://RELEASE-NAME-event-junkie-bff:8080"
+      # Under nginx's 3s proxy_read_timeout, or the sidecar's answer arrives after nginx stopped listening.
+      - contains:
+          path: spec.template.spec.containers[1].env
+          content:
+            name: BFF_TIMEOUT_MS
+            value: "1500"
+
+  - it: probes the sidecar on its own health endpoint, all three probes
+    set:
+      database.host: "10.0.1.2"
+      networkPolicy.databaseCidr: "10.0.1.2/32"
+      database.existingSecret: "events-db"
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[1].startupProbe.httpGet.path
+          value: /healthz
+      - equal:
+          path: spec.template.spec.containers[1].livenessProbe.httpGet.path
+          value: /healthz
+      - equal:
+          path: spec.template.spec.containers[1].readinessProbe.httpGet.path
+          value: /healthz
+
+  - it: carries the same hardening as every other container
+    set:
+      database.host: "10.0.1.2"
+      networkPolicy.databaseCidr: "10.0.1.2/32"
+      database.existingSecret: "events-db"
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[1].securityContext.readOnlyRootFilesystem
+          value: true
+      - equal:
+          path: spec.template.spec.containers[1].securityContext.allowPrivilegeEscalation
+          value: false
+      - isNotEmpty:
+          path: spec.template.spec.containers[1].resources.limits.memory
+
+  - it: leaves the pod as it was when the sidecar is switched off
+    set:
+      database.host: "10.0.1.2"
+      networkPolicy.databaseCidr: "10.0.1.2/32"
+      database.existingSecret: "events-db"
+      frontend.injector.enabled: false
+    asserts:
+      - lengthEqual:
+          path: spec.template.spec.containers
+          count: 1
+      - equal:
+          path: spec.template.spec.containers[0].name
+          value: frontend

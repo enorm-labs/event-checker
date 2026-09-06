@@ -220,6 +220,21 @@ jobs:
             VERSION=${{ steps.version.outputs.value }}
             REVISION=${{ github.sha }}
 
+      # The meta-injection sidecar (#287), from the same tree: `npm run build` emitted
+      # `dist-injector/` beside `dist/`, and release.yml publishes the two images together.
+      - name: Build the injector image (amd64 + arm64, no push)
+        if: github.event_name == 'pull_request'
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
+        with:
+          context: events-frontend
+          file: events-frontend/Dockerfile.injector
+          platforms: linux/amd64,linux/arm64
+          push: false
+          outputs: type=cacheonly
+          build-args: |
+            VERSION=${{ steps.version.outputs.value }}
+            REVISION=${{ github.sha }}
+
   # **This is the required context, and it is the only job here that always runs.** The build above
   # is conditional, and a conditional job cannot be a required check: GitHub leaves an unreported
   # context Pending forever, which reads as a hung check rather than a misconfiguration (#443, #494).

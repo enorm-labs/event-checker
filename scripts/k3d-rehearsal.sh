@@ -462,7 +462,7 @@ cmd_up() {
   #
   # `up` builds a precondition, so it fails fast. `verify` measures, so it accumulates into FAILURES
   # and reports at the end — those are different jobs and deliberately behave differently.
-  log "Building the three images"
+  log "Building the four images"
   ./gradlew -q :events-bff:bootJarLayers :events-importer:bootJarLayers \
     || die "the Gradle build failed — there is no jar to put in an image"
   npm --prefix events-frontend run build >/dev/null \
@@ -480,10 +480,17 @@ cmd_up() {
     -t localhost/event-junkie/frontend:dev --load --quiet >/dev/null \
     || die "could not build the frontend image"
   info "built localhost/event-junkie/frontend:dev"
+  # The meta-injection sidecar (#287), from the same `npm run build` — `dist-injector/` sits beside `dist/`.
+  docker buildx build events-frontend -f events-frontend/Dockerfile.injector \
+    --build-arg "VERSION=$ver" --build-arg "REVISION=$rev" \
+    -t localhost/event-junkie/injector:dev --load --quiet >/dev/null \
+    || die "could not build the injector image"
+  info "built localhost/event-junkie/injector:dev"
 
   create_cluster
   k3d image import -c "$CLUSTER" \
-    localhost/event-junkie/bff:dev localhost/event-junkie/importer:dev localhost/event-junkie/frontend:dev >/dev/null \
+    localhost/event-junkie/bff:dev localhost/event-junkie/importer:dev localhost/event-junkie/frontend:dev \
+    localhost/event-junkie/injector:dev >/dev/null \
     || die "could not import the images into the cluster — every pod would then try to pull them from a registry that does not have them"
   info "images imported"
 

@@ -27,6 +27,7 @@ Four deployables today, derived from the modules in this repo, plus one more tha
 | `events-bff`      | Spring Boot 4 / WebFlux / R2DBC, read-only public API (port 8080) | Stateless, horizontally scalable, JVM ≈ 512 MB–1 GB heap           |
 | `events-importer` | Spring Boot 4 / WebFlux / R2DBC + admin API (port 8081)           | **Always-on, effectively single-instance** — see below             |
 | `events-frontend` | Vue 3 + Vite **SPA** — `npm run build` emits a static `dist/`     | No server runtime of its own; static files + a router fallback     |
+| `injector`        | The meta-injection sidecar in the frontend pod (ADR-014, #287)    | One Node process, loopback-only, fails open to the static shell    |
 | PostgreSQL 18     | The only stateful component; owns all event/venue/artist data     | ~2 vCPU / 4 GB, tens of GB, needs backups + point-in-time recovery |
 | _admin frontend_  | **Planned** (TODO 🟠) — a second static SPA over the admin API    | Static files, one user, **must not be publicly reachable**         |
 

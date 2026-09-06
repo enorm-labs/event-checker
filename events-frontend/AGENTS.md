@@ -100,10 +100,15 @@ events-frontend/
 │   │   └── __tests__/       # Unit tests (colocated)
 │   ├── lib/                 # Shared helpers (e.g. utils.ts → cn() classnames helper)
 │   └── assets/              # Static assets (main.css holds the theme tokens, images)
+├── injector/                # The meta-injection sidecar (ADR-014): Node, no DOM, no Vue
+│   └── __tests__/           # Its unit tests, including the client/injector parity test
 ├── e2e/                     # Playwright end-to-end tests
 ├── public/                  # Static files served as-is
 ├── index.html               # HTML entry point
+├── Dockerfile               # nginx serving dist/
+├── Dockerfile.injector      # node running dist-injector/injector.mjs
 ├── vite.config.ts           # Vite configuration
+├── vite.injector.config.ts  # The second build: injector/server.ts → dist-injector/
 ├── vitest.config.ts         # Vitest configuration
 ├── playwright.config.ts     # Playwright configuration
 ├── eslint.config.ts         # ESLint flat config
@@ -268,13 +273,18 @@ The site is locale-routed: every page lives under `/<locale>/…`, and `src/i18n
 - **`sitemap.xml` and `robots.txt` are generated, not files.** `scripts/seoFiles.ts` emits them at build and serves the same bytes from the dev server. Do not
   add copies under `public/`; they would go stale silently.
 - **The sitemap is the primary `hreflang` carrier, not a duplicate of the head tags.** The `<link>` elements in `lib/seoTags.ts` are written by JavaScript after
-  the router resolves, and script-injected hreflang is unreliable for crawlers. That inverts once prerendering lands; until then, an hreflang change that
-  touches only the head tags has not really shipped.
+  the router resolves, and script-injected hreflang is unreliable for crawlers. The injector writes the same elements into the served HTML for detail routes
+  only; every static route still depends on the sitemap, so an hreflang change that touches only the head tags has not really shipped.
 - **Canonical URLs come from `SITE_URL`, never from `window.location`.** Deriving them from the request host makes every alias and preview deployment declare
   itself canonical, which is the duplicate-content problem the tag exists to solve.
-- **Title, description and image come from `src/lib/pageMeta.ts` — nowhere else.** That module will be used twice: by the client today, and by the meta injector
-  server-side ([ADR-014](../docs/adr/ADR-014_RENDERING_STRATEGY.md) §Decision 3). If the two ever compose their own, a shared link previews as one thing and
-  opens as another. `composables/usePageMeta.ts` only writes the tags; it decides nothing.
+- **Title, description and image come from `src/lib/pageMeta.ts` — nowhere else.** That module is used twice: by the client after boot, and by the meta
+  injector server-side (`injector/`, [ADR-014](../docs/adr/ADR-014_RENDERING_STRATEGY.md) §Decision 3). If the two ever compose their own, a shared link previews
+  as one thing and opens as another. `composables/usePageMeta.ts` only writes the tags; it decides nothing, and `injector/__tests__/parity.spec.ts` proves the
+  two writers leave the same head.
+- **The injector is a second Vite build and a second image.** `npm run build` also runs `vite.injector.config.ts`, which bundles `injector/server.ts` and
+  everything it imports into `dist-injector/injector.mjs`; `Dockerfile.injector` ships that one file. It runs beside nginx in the frontend pod and only
+  answers the four detail route families `docker/nginx.conf` proxies to it, failing open to the plain shell on any error. Keep everything it imports free of
+  the DOM and of Vue — `tsconfig.node.json` is what type-checks it, and it has neither.
 - **Entity descriptions are composed from data and punctuation, never from prose.** `Fr., 12. Juni 2026 · Lido, Berlin` needs only `Intl`; "Concert at Lido on
   Friday" would need the message catalogue, and the injector may run somewhere that has none. Static pages are the exception — they are not data-driven, so they
   take their description from `pageDescription.*` in the catalogue.
