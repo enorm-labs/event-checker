@@ -134,6 +134,17 @@ This one is **not** in the always-run block above, unlike the three parity check
 seconds rather than milliseconds. Run it when `package.json`, `package-lock.json`, `gradle.properties` or any `build.gradle.kts` moved. `check` restores the
 committed file before exiting whatever happens; the bare form regenerates it for committing. `validate-notices.yml` runs it in CI on the same paths.
 
+### The operations page (when the diff touches `docs/LINKS.md`, `docs/ops/DAILY_COMMANDS.md` or `docs/ops/dashboard/`)
+
+```bash
+scripts/dashboard-parity.sh check
+```
+
+`docs/ops/dashboard/links.js`, `docs/event-junkie-bookmarks.html` and `docs/ops/dashboard/dashboard.css` are generated and committed, so the page works from
+a clone with nothing built. The first two come from the Markdown, the third from the page's own classes through the pinned tailwindcss, which is why this
+needs `events-frontend/node_modules` and is not in the always-run block. `check` restores the committed files whatever happens; the bare form regenerates
+them for committing. `validate-docs.yml` runs it in CI.
+
 ### The Content-Security-Policy (when the diff touches `deploy/`, `events-frontend/index.html` or `events-frontend/scripts/csp.ts`)
 
 ```bash

@@ -84,6 +84,16 @@ repos:
         files: \.md$
         pass_filenames: true
 
+      # The operations page's generated files, regenerated from LINKS.md, DAILY_COMMANDS.md and the
+      # page itself. Writes, like format-markdown, so a regenerated file lands in the same commit.
+      # Needs events-frontend/node_modules for the CSS half; the script says so when it is missing.
+      - id: dashboard-parity
+        name: operations page parity
+        entry: scripts/dashboard-parity.sh
+        language: system
+        files: ^(docs/LINKS\.md|docs/ops/DAILY_COMMANDS\.md|docs/ops/dashboard/|scripts/links_export\.py|scripts/dashboard-parity\.sh|events-frontend/scripts/ops-page-css\.mjs)
+        pass_filenames: false
+
       # `helm lint --strict` is a pure function of the working tree — no cluster, no kubeconfig, no
       # credentials — which is what makes it safe as a commit hook at all. `pass_filenames: false`
       # because helm lints a chart directory, not a list of files.

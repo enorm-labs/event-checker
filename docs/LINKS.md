@@ -7,8 +7,9 @@ of this project is documented well ahead of being deployed. Staging exists, prod
 below are decided rather than opened. A link that resolves is not evidence that the thing behind it is running.
 
 Two companion files sit beside this one. [`event-junkie-bookmarks.html`](event-junkie-bookmarks.html) is the same set,
-importable into a browser. [`CREDENTIALS.md`](CREDENTIALS.md) lists what you need in a password manager to actually use
-any of it.
+importable into a browser, and **generated from this file** by `scripts/dashboard-parity.sh`. So is the links section of
+the local operations page, [`ops/dashboard/index.html`](ops/dashboard/index.html). Edit here, then regenerate.
+[`CREDENTIALS.md`](CREDENTIALS.md) lists what you need in a password manager to actually use any of it.
 
 Everything here is derived from the repository's own documentation. Some documents name a service but not its entry
 point, such as INWX or the Hetzner status page. The obvious console URL is filled in there, and marked _(added)_.

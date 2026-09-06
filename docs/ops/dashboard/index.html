@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<!--
+  The local operations page. Open this file in a browser — no server, no build at runtime.
+
+  Everything it shows comes from two generated files and one hand-written module:
+    links.js      from docs/LINKS.md and docs/ops/DAILY_COMMANDS.md — scripts/dashboard-parity.sh
+    status.js     from scripts/ej.sh (gitignored) — tunnels, forwards, versions
+    dashboard.js  the custom elements that render both
+  dashboard.css is Tailwind, built once from this file and committed; the same parity script checks it.
+
+  The page reads and links. It never writes, carries no credential and talks to no admin API (#340).
+-->
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Event Junkie · Operations</title>
+  <link rel="stylesheet" href="dashboard.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='7' fill='%2322c55e'/%3E%3C/svg%3E" />
+</head>
+<body class="min-h-screen bg-zinc-50 text-zinc-900 antialiased dark:bg-zinc-950 dark:text-zinc-100">
+  <header class="sticky top-0 z-10 border-b border-zinc-200 bg-white/90 backdrop-blur dark:border-zinc-800 dark:bg-zinc-900/90">
+    <div class="mx-auto flex max-w-6xl flex-wrap items-baseline gap-x-6 gap-y-1 px-6 py-3">
+      <h1 class="text-lg font-semibold tracking-tight">Event Junkie <span class="text-zinc-400">·</span> Operations</h1>
+      <nav class="flex flex-wrap gap-x-4 text-sm text-zinc-600 dark:text-zinc-400">
+        <a class="hover:text-zinc-900 dark:hover:text-zinc-100" href="#session">Session</a>
+        <a class="hover:text-zinc-900 dark:hover:text-zinc-100" href="#environments">Environments</a>
+        <a class="hover:text-zinc-900 dark:hover:text-zinc-100" href="#links">Links</a>
+        <a class="hover:text-zinc-900 dark:hover:text-zinc-100" href="#cheatsheet">Cheatsheet</a>
+      </nav>
+      <ej-freshness class="ml-auto text-xs text-zinc-500"></ej-freshness>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-6xl space-y-12 px-6 py-8">
+    <section id="session" class="space-y-3">
+      <h2 class="text-base font-semibold">Make the links work</h2>
+      <p class="max-w-3xl text-sm text-zinc-600 dark:text-zinc-400">
+        Everything under <em>Environments</em> sits behind the WireGuard tunnel and a port-forward. One command opens both, one closes them.
+        Run either from the repository root; <code>up</code> asks for your password once, for <code>wg-quick</code>.
+      </p>
+      <div class="grid gap-3 md:grid-cols-2">
+        <ej-command label="Staging up" command="scripts/ej.sh up staging"></ej-command>
+        <ej-command label="Production up" command="scripts/ej.sh up production"></ej-command>
+        <ej-command label="Everything down" command="scripts/ej.sh down"></ej-command>
+        <ej-command label="Refresh this page's facts" command="scripts/ej.sh status"></ej-command>
+      </div>
+      <p class="text-xs text-zinc-500">
+        A green dot means the local port answers right now, probed by this page. A port-forward accepts the connection before the pod does, so
+        green proves the forward, not the service; the Swagger link is the proof of the service.
+      </p>
+    </section>
+
+    <section id="environments" class="space-y-3">
+      <h2 class="text-base font-semibold">Environments</h2>
+      <div class="grid gap-4 lg:grid-cols-2">
+        <ej-env name="staging"></ej-env>
+        <ej-env name="production"></ej-env>
+      </div>
+    </section>
+
+    <section id="links" class="space-y-3">
+      <h2 class="text-base font-semibold">Links</h2>
+      <p class="max-w-3xl text-sm text-zinc-600 dark:text-zinc-400">
+        Rendered from <code>docs/LINKS.md</code>. Read the status column: a link that resolves is not evidence that the thing behind it is running.
+      </p>
+      <ej-links></ej-links>
+    </section>
+
+    <section id="cheatsheet" class="space-y-3">
+      <h2 class="text-base font-semibold">Cheatsheet</h2>
+      <p class="max-w-3xl text-sm text-zinc-600 dark:text-zinc-400">
+        Every command block from <code>docs/ops/DAILY_COMMANDS.md</code>, in its order. The reasoning is in that file; this is the typing.
+      </p>
+      <ej-cheatsheet></ej-cheatsheet>
+    </section>
+  </main>
+
+  <footer class="mx-auto max-w-6xl px-6 pb-10 text-xs text-zinc-500">
+    Generated files: <code>links.js</code> and <code>dashboard.css</code> by <code>scripts/dashboard-parity.sh</code>;
+    <code>status.js</code> by <code>scripts/ej.sh</code>. Edit the Markdown, not this page.
+  </footer>
+
+  <template id="tpl-env">
+    <div class="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+      <div class="flex items-baseline justify-between">
+        <h3 class="text-sm font-semibold uppercase tracking-wide" data-name></h3>
+        <span class="text-xs text-zinc-500" data-tunnel></span>
+      </div>
+      <dl class="mt-3 space-y-2 text-sm" data-rows></dl>
+      <p class="mt-3 hidden rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:bg-amber-950 dark:text-amber-200" data-hint></p>
+    </div>
+  </template>
+  <template id="tpl-env-row">
+    <div class="flex items-center gap-3">
+      <ej-dot></ej-dot>
+      <dt class="w-28 shrink-0 text-zinc-500" data-label></dt>
+      <dd class="min-w-0 flex-1 truncate" data-value></dd>
+    </div>
+  </template>
+
+  <script src="links.js"></script>
+  <script src="status.js"></script>
+  <!-- A classic script, not a module: Chromium and WebKit refuse a module script from file://. -->
+  <script src="dashboard.js"></script>
+</body>
+</html>

@@ -307,6 +307,7 @@ cmd_up() {
     write_status_js
     [ "$failed" -eq 0 ] || return 1
     echo
+    echo "the page:       open docs/ops/dashboard/index.html"
     echo "down again with: scripts/ej.sh down $env"
 }
 

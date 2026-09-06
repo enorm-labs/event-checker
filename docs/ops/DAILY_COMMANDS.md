@@ -10,6 +10,7 @@ scripts/ej.sh up staging                           # tunnel, handshake check, an
 scripts/ej.sh urls                                 # the Swagger UIs and OpenObserve, on localhost
 kubectl --context event-junkie-staging get pods -A
 scripts/ej.sh down staging                         # the forwards it started, then the tunnel
+open docs/ops/dashboard/index.html                 # the operations page: every link above, with a dot per forward
 ```
 
 `scripts/ej.sh` is the session. `up` is `wg-quick up` plus the handshake check and a look at `/etc/hosts`. Then it starts one `kubectl port-forward`
