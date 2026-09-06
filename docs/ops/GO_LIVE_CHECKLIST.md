@@ -78,12 +78,12 @@ Expect the apply to touch `hcloud_zone_rrset` only. Stop if a server appears.
 
 ### Backups and recovery
 
-| Done       | Item                                   | Evidence                    |
-| ---------- | -------------------------------------- | --------------------------- |
-| 2026-08-30 | `walg check` passes on production      | `ok: newest …, disk 1%`     |
-| 2026-08-30 | Base backups run nightly               | `walg-basebackup.timer`     |
-| 2026-08-21 | The dead-man's switch reaches a human  | `HEALTHCHECKS.md` drill log |
-|            | **A restore drill against production** | `RESTORE_RUNBOOK.md` §4–5   |
+| Done       | Item                                   | Evidence                        |
+| ---------- | -------------------------------------- | ------------------------------- |
+| 2026-08-30 | `walg check` passes on production      | `ok: newest …, disk 1%`         |
+| 2026-08-30 | Base backups run nightly               | `walg-basebackup.timer`         |
+| 2026-08-21 | The dead-man's switch reaches a human  | `HEALTHCHECKS.md` drill log     |
+|            | **A restore drill against production** | #862, `RESTORE_RUNBOOK.md` §4–5 |
 
 The restore drill is the line most easily nodded through. `infra/AGENTS.md` calls it not optional
 before go-live. The drill covers staging only, so far.
@@ -102,10 +102,10 @@ before go-live. The drill covers staging only, so far.
 |            | Decide how visitors and traffic are counted                  | #1126                                           |
 | 2026-08-31 | **Production has any in-cluster monitoring**                 | #880, and the dashboard push below              |
 |            | Alerts reach a person                                        | #877                                            |
-|            | An alert proven by breaking something on prod                | #285                                            |
+| 2026-08-31 | An alert proven by breaking something on prod                | #285                                            |
 
 **Production has its own observability now** (#880, closed). It runs OpenObserve, the collector agent and gateway,
-the OTel operator and `postgres-exporter`. It carries all eleven alert rules. So the external layer below is no
+the OTel operator and `postgres-exporter`. It carries all twelve alert rules. So the external layer below is no
 longer the only thing watching production. That layer still gives one thing an in-cluster stack cannot: a view from
 **outside** the cluster.
 
@@ -139,23 +139,21 @@ OpenObserve to Signal). That is a different chain, and it stays unbuilt.
 
 ### Content and data
 
-| Done | Item                                                                                                      | Evidence |
-| ---- | --------------------------------------------------------------------------------------------------------- | -------- |
-|      | Event sources registered **and enabled**, so the site has content                                         | #876     |
-|      | Venue addresses, districts and coordinates audited                                                        | #329     |
-|      | Venue descriptions read against the venue they describe                                                   | #1124    |
-|      | Every page read in both languages **by the maintainer**, as a reader — About and the legal texts included | #280     |
-|      | Images served from our own cache, not hotlinked                                                           | #843     |
+| Done       | Item                                                                                                      | Evidence |
+| ---------- | --------------------------------------------------------------------------------------------------------- | -------- |
+| 2026-08-30 | Event sources registered **and enabled**, so the site has content                                         | #876     |
+| 2026-08-30 | Venue addresses, districts and coordinates audited                                                        | #329     |
+|            | Venue descriptions read against the venue they describe                                                   | #1124    |
+|            | Every page read in both languages **by the maintainer**, as a reader — About and the legal texts included | #280     |
+| 2026-08-31 | Images served from our own cache, not hotlinked                                                           | #843     |
 
-**Production serves an empty site today, and the last step is deliberate.** All 86 sources are
-registered and carry their licence verdicts. Every one is disabled. A source with no import history
-is always due, so enabling them starts 86 scrapes within a minute. Two venues forbid their
-descriptions and images, and that had to be recorded first. Enabling them is the remaining step.
-Do #843 before it — see below.
+**Production serves the full catalogue.** All 86 sources are registered, enabled and carry their licence
+verdicts, and the importer runs on schedule (#876, #285). Two venues forbid their descriptions and images, and
+that was recorded before the sources were enabled. Images serve from the cache (#843), not from venue sites.
 
-**Nothing has ever audited the venue data.** District, address and coordinates were filled in as
-venues were added, with varying care. A wrong coordinate puts a pin in the wrong place, and it drops
-the venue out of a radius search without saying so. The second failure is the quiet one.
+**#329 audited district, address and coordinates on 2026-08-30**, and corrected 30 venue records (#986). A wrong
+coordinate puts a pin in the wrong place, and it drops the venue out of a radius search without saying so. The
+second failure is the quiet one, and it is the one the audit looked for.
 
 **The descriptions are hand-written prose, and #1124 reads each one against the venue itself.**
 #986 read them against the address only. It found two that were wrong, and both failed the same
@@ -165,23 +163,16 @@ described as "next to Club der Visionäre" because it carried that club's addres
 A corrected address does not correct the sentence that quotes it. Read each description against the
 venue, and look twice at any that names a street, a neighbour or a distance.
 
-**The image cache has six ordered steps, and two of them must not be combined.** #843 has the order.
-Turning serving on before the backfill finishes shows a visitor broken images.
-
-**Do it before enabling the sources, and production never hotlinks at all.** That option exists only
-because the sources were left disabled. Until the cache is on, the site fetches from venue websites.
-That spends their bandwidth. It also leaks a referer on every load.
-
 **The prose is two independent documents in two languages.** The key-parity test proves every German
 key exists. It cannot tell you a translation is good, or that a claim is still true.
 
 ### Legal
 
-| Done | Item                                 | Evidence |
-| ---- | ------------------------------------ | -------- |
-|      | The privacy notice matches what runs | #278     |
-|      | Legal review of the German notice    | #279     |
-|      | Copyright status per source          | #283     |
+| Done       | Item                                 | Evidence |
+| ---------- | ------------------------------------ | -------- |
+| 2026-09-02 | The privacy notice matches what runs | #278     |
+|            | Legal review of the German notice    | #279     |
+| 2026-08-30 | Copyright status per source          | #283     |
 
 ### SEO
 
@@ -196,11 +187,11 @@ key exists. It cannot tell you a translation is good, or that a claim is still t
 
 ### Security
 
-| Done | Item                                   | Evidence             |
-| ---- | -------------------------------------- | -------------------- |
-|      | CSP enforced, not report-only          | #854, and #843 first |
-|      | Rate limiting on the public API        | #268                 |
-|      | The Security tab is at zero or triaged | `/security-triage`   |
+| Done       | Item                                   | Evidence             |
+| ---------- | -------------------------------------- | -------------------- |
+|            | CSP enforced, not report-only          | #854, and #843 first |
+| 2026-09-03 | Rate limiting on the public API        | #268                 |
+|            | The Security tab is at zero or triaged | `/security-triage`   |
 
 ### Product
 
