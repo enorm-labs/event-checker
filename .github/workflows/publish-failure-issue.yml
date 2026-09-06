@@ -147,7 +147,7 @@ jobs:
               const zip = path.join(dir, 'trivy-reports.zip');
               fs.writeFileSync(zip, Buffer.from(data));
               await exec.exec('unzip', ['-o', '-q', zip, '-d', dir]);
-              for (const component of ['bff', 'importer', 'frontend']) {
+              for (const component of ['bff', 'importer', 'frontend', 'injector']) {
                 const file = path.join(dir, `trivy-${component}.txt`);
                 const text = fs.existsSync(file) ? fs.readFileSync(file, 'utf8').trim() : '';
                 tables.push({ component, text });
