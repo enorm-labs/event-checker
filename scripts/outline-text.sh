@@ -17,6 +17,10 @@
 # faces ship as woff2 inside node_modules.
 set -euo pipefail
 
+case "${1:-}" in
+    -h | --help) awk '/^# Usage:/ { p = 1 } p && !/^#./ { exit } p { sub(/^# ?/, ""); print }' "$0"; exit 0 ;;
+esac
+
 readonly FONTTOOLS_VERSION='4.63.0'
 readonly BROTLI_VERSION='1.2.0'
 

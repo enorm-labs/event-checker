@@ -95,17 +95,21 @@ pre-commit run gitleaks --all-files       # everything tracked by git
 gitleaks detect --source . --verbose      # the entire history (needs: brew install gitleaks)
 ```
 
-Four more hooks run alongside it, all `local`. They use the `tofu`, `shellcheck` and `helm` already on your machine,
-rather than pulling third-party hook repositories that would each need their own pinning:
+The other hooks are all `local`. They use the `tofu`, `shellcheck` and `helm` already on your machine, or a script from this
+repository. Third-party hook repositories would each need their own pinning.
 
-| Hook                 | Runs on                                                                                                                      |
-| -------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `tofu-fmt`           | any `.tf` / `.tfvars` file. It rewrites in place, so a failure means "re-stage and commit again", not "go and fix something" |
-| `shellcheck-scripts` | any `.sh` under `infra/` or `scripts/`                                                                                       |
-| `format-markdown`    | any `.md` file. Also rewrites in place, so the same "re-stage and commit again" applies                                      |
-| `helm-lint`          | anything under `deploy/charts/`. Lints the chart directory, so it takes no filenames                                         |
+| Hook                  | Runs on                                                                                                                      |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `tofu-fmt`            | any `.tf` / `.tfvars` file. It rewrites in place, so a failure means "re-stage and commit again", not "go and fix something" |
+| `shellcheck-scripts`  | any `.sh` under `infra/` or `scripts/`                                                                                       |
+| `version-consistency` | any of the four files that carry the version; `scripts/version.sh check`                                                     |
+| `skill-parity`        | anything under `.claude/skills/`, `.claude/commands/`, `.github/prompts/`, or `CLAUDE.md`                                    |
+| `rules-parity`        | anything under `.claude/rules/`, `.github/instructions/`, or `AGENTS.md`                                                     |
+| `index-parity`        | anything under `scripts/`. The index in `scripts/README.md`, and every script's `--help`                                     |
+| `format-markdown`     | any `.md` file. Also rewrites in place, so the same "re-stage and commit again" applies                                      |
+| `helm-lint`           | anything under `deploy/charts/`. Lints the chart directory, so it takes no filenames                                         |
 
-All four are also CI's job, in `validate-infra.yml`, `validate-chart.yml`, `validate-scripts.yml` and
+All of them are also CI's job, in `validate-infra.yml`, `validate-chart.yml`, `validate-scripts.yml` and
 `validate-docs.yml`. The hooks move the deterministic half of that feedback before the push. Without the tools
 installed the hooks fail. Install them with `brew install opentofu shellcheck helm`, or skip them with
 `git commit --no-verify` on a change that touches none of those paths.

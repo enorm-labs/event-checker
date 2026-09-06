@@ -51,7 +51,7 @@ fail() {
 }
 
 usage() {
-    sed -n '3,17p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
+    awk '/^# Usage:/ { p = 1 } p && !/^#./ { exit } p { sub(/^# ?/, ""); print }' "${BASH_SOURCE[0]}"
 }
 
 # count <pattern> <file> — the number in front of a word, from the last line that carries one.

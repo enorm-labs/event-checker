@@ -55,7 +55,7 @@ die() {
 }
 
 usage() {
-    sed -n '3,10p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
+    awk '/^# Usage:/ { p = 1 } p && !/^#./ { exit } p { sub(/^# ?/, ""); print }' "${BASH_SOURCE[0]}"
 }
 
 while [[ $# -gt 0 ]]; do

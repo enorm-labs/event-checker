@@ -28,14 +28,15 @@ import argparse
 import os
 import sys
 
-from fontTools.pens.boundsPen import BoundsPen
-from fontTools.pens.svgPathPen import SVGPathPen
-from fontTools.pens.transformPen import TransformPen
-from fontTools.misc.transform import Transform
-from fontTools.ttLib import TTFont
-
 
 def outline(font_path, text, size, x, baseline, tracking, anchor, weight, precision):
+    # Imported here rather than at the top so `--help` works outside the venv the wrapper builds.
+    from fontTools.pens.boundsPen import BoundsPen
+    from fontTools.pens.svgPathPen import SVGPathPen
+    from fontTools.pens.transformPen import TransformPen
+    from fontTools.misc.transform import Transform
+    from fontTools.ttLib import TTFont
+
     if not os.path.isfile(font_path):
         sys.exit(f"error: no such font: {font_path}")
     try:

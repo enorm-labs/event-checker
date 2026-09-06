@@ -8,7 +8,6 @@
 # docker/psql/curl incantations on every loop iteration.
 #
 # Usage: scripts/dev-env.sh <command> [args]
-#
 #   db-reset                     Drop the Postgres volume and start a fresh database
 #   up [service…] [--scheduling] Start service(s) in the background, wait until they answer
 #   down [service…] [--db]       Stop service(s) (and with --db the database too)
@@ -499,10 +498,10 @@ case "${1:-}" in
     diff-snapshot) shift && cmd_diff_snapshot "$@" ;;
     check) shift && cmd_check "$@" ;;
     psql) shift && cmd_psql "$@" ;;
+    "" | -h | --help) awk '/^# Usage:/ { p = 1 } p && !/^#./ { exit } p { sub(/^# ?/, ""); print }' "${BASH_SOURCE[0]}" ;;
     *)
-        # Print the header comment block as the usage text: from line 3 to the first
-        # non-comment line, so the range does not rot as the header grows.
-        awk 'NR < 3 { next } /^#/ { sub(/^# ?/, ""); print; next } { exit }' "${BASH_SOURCE[0]}"
+        echo "dev-env.sh: unknown command '$1'" >&2
+        awk '/^# Usage:/ { p = 1 } p && !/^#./ { exit } p { sub(/^# ?/, ""); print }' "${BASH_SOURCE[0]}" >&2
         exit 1
         ;;
 esac

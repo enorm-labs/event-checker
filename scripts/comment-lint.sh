@@ -44,7 +44,7 @@ EXCLUDE='node_modules/|/build/|/dist/|/coverage/'
 DATE_IS_POLICY='^(zizmor\.yml|\.trivyignore|\.github/dependabot\.yml)$'
 
 usage() {
-    sed -n '3,15p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
+    awk '/^# Usage:/ { p = 1 } p && !/^#./ { exit } p { sub(/^# ?/, ""); print }' "${BASH_SOURCE[0]}"
 }
 
 files() {

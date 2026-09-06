@@ -11,6 +11,7 @@ by an approved dictionary of ~900 words that this repository cannot carry, so
 nothing printed here implies dictionary compliance.
 """
 
+import argparse
 import bisect
 import os
 import re
@@ -302,8 +303,12 @@ def scan(path):
 
 
 def main(argv):
-    stats = "--stats" in argv
-    paths = [arg for arg in argv if not arg.startswith("--")]
+    parser = argparse.ArgumentParser(description="Scan Markdown for the structural ASD-STE100 rules.")
+    parser.add_argument("paths", nargs="+", metavar="FILE", help="Markdown files to scan")
+    parser.add_argument("--stats", action="store_true", help="per-area sentence and finding counts instead of findings")
+    args = parser.parse_args(argv)
+    stats = args.stats
+    paths = args.paths
 
     out = []
     totals = {}

@@ -27,6 +27,10 @@
 
 set -euo pipefail
 
+case "${1:-}" in
+    -h | --help) awk '/^# Usage:/ { p = 1 } p && !/^#./ { exit } p { sub(/^# ?/, ""); print }' "$0"; exit 0 ;;
+esac
+
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 OUT="${1:-$REPO_ROOT/build/BACKLOG.md}"
 REPO="${BACKLOG_REPO:-enorm-labs/event-junkie}"

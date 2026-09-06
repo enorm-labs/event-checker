@@ -9,7 +9,6 @@
 # here are the ones that run on Hetzner k3s, which is what makes it worth doing at all.
 #
 # Usage: scripts/k3d-rehearsal.sh <command>
-#
 #   up            Build images, create the cluster, install the chart, wait for it to converge
 #   verify        Assert the ingress split from outside the cluster (routing + the negative cases)
 #   import [slug] Seed one venue and source through the admin API and run a real import
@@ -18,7 +17,7 @@
 #   status        What exists right now: cluster, pods, release
 #   down          Uninstall, delete the cluster, drop the database, restore the kube context
 #   all           up → verify → import → chain → test → down, stopping at the first failure
-#
+#   Through Flux, with the chart already published in GHCR:
 #   flux-up       Create the cluster, install the Flux controllers, apply deploy/clusters/k3d
 #   flux-verify   Assert what Flux pulled: a snapshot, from GHCR, one tag, tests passed
 #   flux-trap     Remove the `-0` from the semver range and watch it stop matching (#414)
@@ -1127,7 +1126,7 @@ main() {
       trap cmd_down EXIT
       cmd_flux_up && cmd_flux_verify && cmd_flux_trap && cmd_flux_break
       ;;
-    ""|-h|--help) sed -n '2,30p' "$0" | sed 's/^# \{0,1\}//' ;;
+    ""|-h|--help) awk '/^# Usage:/ { p = 1 } p && !/^#./ { exit } p { sub(/^# ?/, ""); print }' "$0" ;;
     *) die "unknown command '$1' — run '$0 --help'" ;;
   esac
   if [ "$FAILURES" -gt 0 ]; then

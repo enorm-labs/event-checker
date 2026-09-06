@@ -541,16 +541,10 @@ a PR without one is the exception that makes the milestone view stop meaning any
 | CI: Markdown formatting                     | `.github/workflows/validate-docs.yml`                                                                                             |
 | CI: build, scan and publish to GHCR         | `.github/workflows/release.yml` — the only workflow that pushes anything; it does not deploy                                      |
 | CI: deployment records from Flux            | `.github/workflows/deployment-status.yml` — writes the GitHub deployment; the cluster triggers it, not a merge                    |
-| Version scheme (one number, 4 files)        | `scripts/version.sh`; `gradle.properties` is the source of truth — docs/DEVELOPMENT.md §Versions                                  |
-| Snapshot versions must ORDER (#455)         | `scripts/version-test.sh` — asserted against Helm's own solver; a format check would not catch it                                 |
+| Every script, and the `--help` rule         | `scripts/README.md` — gates, tools, and ops; `scripts/index-parity.sh` fails when the directory, the index, or the tree disagrees |
 | Markdown formatting                         | `scripts/format-markdown.sh` + `.oxfmtrc.json` — Markdown only, and the scope is load-bearing                                     |
-| Brand artwork carries outlined glyphs       | `scripts/outline-text.sh` — a `<text>` logo renders in a fallback face silently; fontTools is pinned for the same reason oxfmt is |
 | README screenshots, and when they rot       | `docs/screenshots/` — dated, because nothing else signals staleness; retake on design changes, never on data changes              |
 | Trivy waivers                               | `.trivyignore` — empty on purpose; an entry needs a reason and a date                                                             |
-| Chart and images agree about the UID        | `scripts/uid-consistency.sh` — reads the three Dockerfiles' `USER` and the chart; enforces the >10000 floor                       |
-| What each cluster would deploy              | `scripts/deployed-versions.sh` — reproduces Flux's selection; no cluster and no credential needed                                 |
-| Whether the two node pins are current       | `scripts/upstream-node-pins.sh` — k3s and wal-g against upstream; `node-pin-reminder.yml` runs it weekly                          |
-| Whether a scanner still covers as much      | `scripts/scan-coverage.sh` + `scripts/scan-coverage-baseline.txt` — denominators, not just exit codes                             |
 | Infrastructure as code (OpenTofu)           | `infra/` — read `infra/AGENTS.md` first; `bootstrap/` is applied, `environments/` is not                                          |
 | Shared MCP servers                          | `.mcp.json` — `opentofu`, the hosted registry lookup; no key, one approval per contributor                                        |
 | Cloud-init for the Hetzner nodes            | `infra/modules/environment/cloud-init/`                                                                                           |
@@ -569,7 +563,6 @@ a PR without one is the exception that makes the milestone view stop meaning any
 | Vendored Simplified Technical English skill | `.claude/skills/asd-ste100/`                                                                                                      |
 | Vendored GitHub CLI skill                   | `.claude/skills/gh/` — upstream `cli/cli`; see its `VENDORED.md` before touching it                                               |
 | Copilot's view of both vendored skills      | `.github/skills/` — one directory symlink each into `.claude/skills/`; never a copy                                               |
-| Skill and command parity check              | `scripts/skill-parity.sh`                                                                                                         |
 | Code review prompt                          | `.github/prompts/code-review.prompt.md`                                                                                           |
 | Security report prompt                      | `.github/prompts/security-report.prompt.md`                                                                                       |
 | Security triage prompt                      | `.github/prompts/security-triage.prompt.md` — its `--unattended` section is what `agent-security.yml` runs                        |
@@ -637,10 +630,6 @@ a PR without one is the exception that makes the milestone view stop meaning any
 | Secrets, and the SOPS plan                  | `docs/ops/SECRETS.md` — three hand-made objects today; the age private key never enters this repository                           |
 | Flux resources (one dir per cluster)        | `deploy/clusters/` — read `deploy/AGENTS.md` first; the semver range is on the OCIRepository                                      |
 | Plan: footer, legal pages, versioning       | `docs/LEGAL.md`                                                                                                                   |
-| Backlog snapshot generator                  | `scripts/generate-backlog-snapshot.sh` → `build/BACKLOG.md` (generated, not committed)                                            |
-| Issue board helper                          | `scripts/issue-board.sh` — Status and Priority are project fields, not labels                                                     |
 | Frontend entry point                        | `events-frontend/src/main.ts`                                                                                                     |
 | IntelliJ HTTP Client requests               | `http/importer/` (admin) and `http/bff/` (public read) `.http` files + shared `http/http-client.env.json`                         |
-| Venue coordinates, and checking them        | `scripts/geocode-venues.py` + `http/google/` (detector) and `http/osm/` (the ODbL source) — read the script's docstring           |
-| Local dev environment control script        | `scripts/dev-env.sh` (start/stop the stack, seed sources, trigger imports, inspect + diff the data)                               |
 | Performance tests (k6)                      | `perf/` — `smoke.js` · `load.js` · `spike.js`, endpoints in `perf/lib/api.js`                                                     |

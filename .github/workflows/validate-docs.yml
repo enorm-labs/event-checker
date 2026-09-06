@@ -19,6 +19,7 @@ on:
       - 'scripts/skill-parity.sh'
       - 'scripts/rules-parity.sh'
       - 'scripts/collector-parity.sh'
+      - 'scripts/index-parity.sh'
       - 'events-importer/src/main/kotlin/de/norm/events/scraper/LogContext.kt'
       - 'events-importer/src/main/kotlin/de/norm/events/scraper/LogFields.kt'
       - 'events-bff/src/main/kotlin/de/norm/events/LogContextConfiguration.kt'
@@ -42,6 +43,7 @@ on:
       - 'scripts/skill-parity.sh'
       - 'scripts/rules-parity.sh'
       - 'scripts/collector-parity.sh'
+      - 'scripts/index-parity.sh'
       - 'events-importer/src/main/kotlin/de/norm/events/scraper/LogContext.kt'
       - 'events-importer/src/main/kotlin/de/norm/events/scraper/LogFields.kt'
       - 'events-bff/src/main/kotlin/de/norm/events/LogContextConfiguration.kt'
@@ -62,9 +64,11 @@ jobs:
   # drifting apart. A log field name is written in four places with nothing joining those either
   # (#992), and that one reads Kotlin and YAML as well, which is why the filter above names them:
   # renaming a constant touches no Markdown, and it is the change most likely to break the check.
-  # No Node, so this does not wait on the setup the formatting job needs.
+  # The scripts index is the fourth: a stale `scripts/<name>` reference is usually written in a
+  # runbook or a prompt, which validate-scripts.yml never sees. No Node, so this does not wait on
+  # the setup the formatting job needs.
   parity:
-    name: Check skill, rule and log field parity
+    name: Check skill, rule, log field and scripts index parity
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -81,6 +85,9 @@ jobs:
 
       - name: Check log field parity
         run: scripts/collector-parity.sh
+
+      - name: Check the scripts index
+        run: scripts/index-parity.sh
 
   # The sentence rules, held per area to a ceiling that only moves down (scripts/ste-baseline.txt,
   # #733). python3 is preinstalled on the runner and the scanner imports nothing outside the standard
