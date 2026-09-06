@@ -27,6 +27,10 @@ on:
       - 'scripts/ste-lint.sh'
       - 'scripts/ste_lint.py'
       - 'scripts/ste-baseline.txt'
+      - 'docs/ops/dashboard/**'
+      - 'scripts/links_export.py'
+      - 'scripts/dashboard-parity.sh'
+      - 'events-frontend/scripts/ops-page-css.mjs'
       - 'events-frontend/package-lock.json'
       - '.github/workflows/validate-docs.yml'
   pull_request:
@@ -51,6 +55,10 @@ on:
       - 'scripts/ste-lint.sh'
       - 'scripts/ste_lint.py'
       - 'scripts/ste-baseline.txt'
+      - 'docs/ops/dashboard/**'
+      - 'scripts/links_export.py'
+      - 'scripts/dashboard-parity.sh'
+      - 'events-frontend/scripts/ops-page-css.mjs'
       - 'events-frontend/package-lock.json'
       - '.github/workflows/validate-docs.yml'
   workflow_dispatch:
@@ -165,6 +173,12 @@ jobs:
       # rejects any path containing '..', so the script's paths are all relative to the root.
       - name: Check Markdown formatting
         run: scripts/format-markdown.sh check
+
+      # The operations page's three generated files — links.js and the bookmarks file from the
+      # Markdown, dashboard.css from the page — against their sources. Here rather than in the parity
+      # job because the CSS half needs the tailwindcss that `npm ci` above installs.
+      - name: Check the operations page's generated files
+        run: scripts/dashboard-parity.sh check
 
       - name: Explain the fix
         if: failure()
