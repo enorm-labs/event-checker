@@ -393,8 +393,11 @@ Scanned: 0` incident actually happened to — did not until #1087, and needed `"
       `postgresql`, `flyway`, `reactor`, `detekt`, `owasp`, `gradle-plugins`.
     - **`npm`** (`/events-frontend`) — `versioning-strategy: increase`, which is what preserves the frontend's exact-pin convention: Dependabot rewrites the pin
       rather than widening it into a `^` range. Five families (`vue`, `linting`, `testing`, `typescript`, `tailwind`) keep toolchains that must move together in
-      one PR, and `frontend-minor-patch` sweeps up the rest. **A dependency joins the first group it matches**, so the families must stay above the sweep in the
-      file. Majors outside a family stay ungrouped deliberately — a Vite or Vue major deserves its own PR.
+      one PR, and `frontend-minor-patch` sweeps up the rest. **A dependency joins the most _specific_ group that matches it, not the first** (dependabot-core#13044,
+      on for everyone since 2026-05-19): an exact name outranks a wildcard, and a group with no `patterns:` outranks a wildcard too. That last part is why the
+      sweep carries `patterns: ["*"]` — the universal wildcard is the one pattern every family beats. Without it the `update-types`-only sweep took every glob
+      member (`eslint-plugin-oxlint`, `@types/node`, `@vue/test-utils`) away from its family, which is what split the oxlint pair twice (#494). Majors outside a
+      family stay ungrouped deliberately — a Vite or Vue major deserves its own PR.
     - **`github-actions`** (`/`) — one group for all of them. `/` here does not mean the repository root in the usual sense; for this ecosystem Dependabot
       always reads `.github/workflows/`.
     - **`opentofu`** (`/infra/**`) — **not `terraform`**. They are separate ecosystems with separate registries, and the lock files there record providers as
