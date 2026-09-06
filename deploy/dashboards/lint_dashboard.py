@@ -125,6 +125,17 @@ def lint(dash):
                         problems.append(
                             "%s: query %d is promql but stream_type is %r, expected 'metrics'" % (where, n, stream_type)
                         )
+                # The mirror of the rule above. A SQL panel reads a logs stream and has to name it: the
+                # `FROM` in the query is not what OpenObserve resolves, `fields.stream` is, and an empty
+                # one renders blank rather than erroring — the same silence as everything else here.
+                if p.get("queryType") == "sql":
+                    fields = q.get("fields") or {}
+                    if fields.get("stream_type") != "logs":
+                        problems.append(
+                            "%s: query %d is sql but stream_type is %r, expected 'logs'" % (where, n, fields.get("stream_type"))
+                        )
+                    if not (fields.get("stream") or "").strip():
+                        problems.append("%s: query %d is sql but names no stream" % (where, n))
 
         # The check that catches a layout built for the OLD grid, which the overflow
         # rule cannot: 48 columns fit inside 192 perfectly well, and so does the 174 a

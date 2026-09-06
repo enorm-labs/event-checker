@@ -576,6 +576,126 @@
             "h": 16,
             "i": 12
           }
+        },
+        {
+          "id": "p_page_loads",
+          "type": "line",
+          "title": "Page loads per hour (visitors only)",
+          "description": "**Requests, not people.** The site logs no address and sets no cookie, so a unique-visitor count does not exist and cannot be added here (#276, LEGAL.md \u00a77.5). This counts successful GETs for a page path \u2014 `/`, `/de/events`, `/en/venues/\u2026` \u2014 and leaves out a page's parts (`/assets/`, anything with a dot), search crawlers, the kubelet, the daily probe, Better Stack and k6. A crawler nobody has named yet counts as a visitor until it is added to `NOT_A_VISITOR` in `gen_dashboard.py`.\n\n**A zero is a quiet hour, a gap is a missing log.** The query sums a condition over every access line rather than filtering first, so an hour with only probe traffic draws 0 instead of nothing. Pick a 7d window for the week; the logs keep 14 days.",
+          "config": {
+            "show_legends": true,
+            "decimals": 0
+          },
+          "queryType": "sql",
+          "queries": [
+            {
+              "query": "SELECT histogram(_timestamp, '1 hour') AS x_axis_1, sum(CASE WHEN ((regexp_match(body, '\"GET ([^ ?\"]*)')[1] IS NOT NULL AND regexp_match(body, '\"GET ([^ ?\"]*)')[1] NOT LIKE '%.%' AND regexp_match(body, '\" ([0-9]{3}) ')[1] IN ('200','304')) AND NOT regexp_like(coalesce(regexp_match(body, '\"([^\"]*)\"$')[1], ''), '(?i)bot|crawl|spider|slurp|kube-probe|betterstack|curl/|k6')) THEN 1 ELSE 0 END) AS y_axis_1 FROM \"default\" WHERE k8s_container_name = 'frontend' AND body LIKE '[%' GROUP BY x_axis_1 ORDER BY x_axis_1",
+              "vrlFunctionQuery": null,
+              "customQuery": true,
+              "fields": {
+                "stream": "default",
+                "stream_type": "logs",
+                "x": [
+                  {
+                    "label": "Hour",
+                    "alias": "x_axis_1",
+                    "column": "x_axis_1",
+                    "color": null
+                  }
+                ],
+                "y": [
+                  {
+                    "label": "Page loads",
+                    "alias": "y_axis_1",
+                    "column": "y_axis_1",
+                    "color": null
+                  }
+                ],
+                "z": [],
+                "breakdown": [],
+                "filter": {
+                  "filterType": "group",
+                  "logicalOperator": "AND",
+                  "conditions": []
+                }
+              },
+              "config": {
+                "promql_legend": "",
+                "layer_type": "scatter",
+                "weight_fixed": 1
+              }
+            }
+          ],
+          "layout": {
+            "x": 0,
+            "y": 60,
+            "w": 112,
+            "h": 16,
+            "i": 13
+          }
+        },
+        {
+          "id": "p_referrers",
+          "type": "table",
+          "title": "Where page loads came from",
+          "description": "The `Referer` header per page load over the window, visitors and everything else side by side. `-` is a direct visit, a typed address or a link from an app that sends no referrer \u2014 and every probe and crawler, which is why the second column exists. Referrer counts in aggregate are what #481 uses to tell whether a launch channel worked, and they are compatible with the privacy notice as written: no address, no identifier, nothing stored on a device.",
+          "config": {
+            "show_legends": true,
+            "decimals": 0
+          },
+          "queryType": "sql",
+          "queries": [
+            {
+              "query": "SELECT coalesce(regexp_match(body, '\"([^\"]*)\" \"[^\"]*\"$')[1], '-') AS x_axis_1, sum(CASE WHEN ((regexp_match(body, '\"GET ([^ ?\"]*)')[1] IS NOT NULL AND regexp_match(body, '\"GET ([^ ?\"]*)')[1] NOT LIKE '%.%' AND regexp_match(body, '\" ([0-9]{3}) ')[1] IN ('200','304')) AND NOT regexp_like(coalesce(regexp_match(body, '\"([^\"]*)\"$')[1], ''), '(?i)bot|crawl|spider|slurp|kube-probe|betterstack|curl/|k6')) THEN 1 ELSE 0 END) AS y_axis_1, sum(CASE WHEN (regexp_match(body, '\"GET ([^ ?\"]*)')[1] IS NOT NULL AND regexp_match(body, '\"GET ([^ ?\"]*)')[1] NOT LIKE '%.%' AND regexp_match(body, '\" ([0-9]{3}) ')[1] IN ('200','304')) THEN 1 ELSE 0 END) AS y_axis_2 FROM \"default\" WHERE k8s_container_name = 'frontend' AND body LIKE '[%' GROUP BY x_axis_1 ORDER BY y_axis_1 DESC, y_axis_2 DESC LIMIT 15",
+              "vrlFunctionQuery": null,
+              "customQuery": true,
+              "fields": {
+                "stream": "default",
+                "stream_type": "logs",
+                "x": [
+                  {
+                    "label": "Referrer",
+                    "alias": "x_axis_1",
+                    "column": "x_axis_1",
+                    "color": null
+                  }
+                ],
+                "y": [
+                  {
+                    "label": "Visitors",
+                    "alias": "y_axis_1",
+                    "column": "y_axis_1",
+                    "color": null
+                  },
+                  {
+                    "label": "All agents",
+                    "alias": "y_axis_2",
+                    "column": "y_axis_2",
+                    "color": null
+                  }
+                ],
+                "z": [],
+                "breakdown": [],
+                "filter": {
+                  "filterType": "group",
+                  "logicalOperator": "AND",
+                  "conditions": []
+                }
+              },
+              "config": {
+                "promql_legend": "",
+                "layer_type": "scatter",
+                "weight_fixed": 1
+              }
+            }
+          ],
+          "layout": {
+            "x": 112,
+            "y": 60,
+            "w": 80,
+            "h": 16,
+            "i": 14
+          }
         }
       ]
     }

@@ -126,19 +126,21 @@ to remember `apply.sh`**, since that is when the gap actually bites.
 
 The top row is the answer; the two rows under it are why.
 
-| Panel                  | Question it answers                                            |
-| ---------------------- | -------------------------------------------------------------- |
-| Oldest source          | Is the importer completing its cycle at all?                   |
-| Sources stale > 36h    | How much of the catalogue is going stale?                      |
-| Future events          | Can the site show anything? **The failure no HTTP check sees** |
-| Node memory available  | Is the node about to fall over?                                |
-| Twenty stalest sources | One broken scraper, or all of them?                            |
-| Events in the database | Is the trend up or down?                                       |
-| PostgreSQL size        | Disk filling — one of #271's five required alerts              |
-| Node load and memory   | Is a stall CPU or memory?                                      |
-| Certificate expiry     | Expiry — another of the five, and the silent one               |
-| Metrics dropped        | **Is anything above true?** Shedding on the way in (#625)      |
-| OpenObserve memtable   | How close the ingest path is to rejecting writes               |
+| Panel                      | Question it answers                                                        |
+| -------------------------- | -------------------------------------------------------------------------- |
+| Oldest source              | Is the importer completing its cycle at all?                               |
+| Sources stale > 36h        | How much of the catalogue is going stale?                                  |
+| Future events              | Can the site show anything? **The failure no HTTP check sees**             |
+| Node memory available      | Is the node about to fall over?                                            |
+| Twenty stalest sources     | One broken scraper, or all of them?                                        |
+| Events in the database     | Is the trend up or down?                                                   |
+| PostgreSQL size            | Disk filling — one of #271's five required alerts                          |
+| Node load and memory       | Is a stall CPU or memory?                                                  |
+| Certificate expiry         | Expiry — another of the five, and the silent one                           |
+| Metrics dropped            | **Is anything above true?** Shedding on the way in (#625)                  |
+| OpenObserve memtable       | How close the ingest path is to rejecting writes                           |
+| Page loads per hour        | **Did anyone come?** Visitors' page loads, probes and crawlers out (#1126) |
+| Where page loads came from | Which channel sent them — the referrer, in aggregate                       |
 
 **"Future events" is the panel that justifies the whole exercise.** A venue redesigns its site, the
 scraper keeps returning 200 and writing nothing, the importer reports success, and the listings
@@ -160,7 +162,7 @@ signal: queue pressure surfaces at the receiver once the exporter stops acceptin
 [`../alerts/README.md`](../alerts/README.md) records `ej-ingest-shedding` reaching this conclusion
 first, for the same metric and the same reason — **one query per always-present series**.
 
-**`apply.sh --check` reports 14/14 on production.** It has not always: `p_memtable` was blank until
+**`apply.sh --check` reports every query returning data on production** (16 of 16 since #1126). It has not always: `p_memtable` was blank until
 the release carrying `ZO_PROMETHEUS_ENABLED: "true"` reconciled — the chart ships that setting off,
 which is why the outage had to be diagnosed from log lines — and `p_shedding`'s second query was on
 a series a healthy collector never creates. Both are resolved, so **a `NO DATA` here is now a
@@ -170,6 +172,25 @@ finding rather than a known gap**, which is the state a check is worth having in
 99 on two cores, `openobserve` killed by the kernel, the API server flapping — and nothing was
 watching. A dashboard about the application that cannot show the node dying under it is only half
 a dashboard.
+
+## Reach is page loads, and that is the decision
+
+**No visitor can be counted here, by design.** No address reaches a log (#276, `LEGAL.md` §7.5 — nginx's `ej_no_ip`
+format exists to make that true), no cookie is set, no identifier is stored. So unique visitors, sessions and
+returning visitors do not exist and cannot be added by a panel. #1126 asked what to do about that at launch and
+decided **nothing new**: page loads from the nginx line the frontend already writes, plus search reach from Search
+Console (#288). No new processing, no notice change, no ADR.
+
+**The two bottom panels are that decision.** They read the `default` logs stream with SQL — the only panels here
+that do — and pull request, status, referrer and user agent out of `body` with `regexp_match`, because the collector
+parses only JSON bodies and an nginx line is not one. A page load is a successful `GET` for a path without a dot;
+a visitor is any user agent not matching `NOT_A_VISITOR` in `gen_dashboard.py`. **The count sums a condition over
+every access line rather than filtering first**, so a quiet hour draws 0 and a missing log draws nothing — the same
+distinction row 4 exists for.
+
+The logs keep 14 days (`ZO_COMPACT_DATA_RETENTION_DAYS`), which is why these panels were built before the DNS
+flip: launch week is the one week the question is interesting, and it expires. Revisit a daily-salted unique count
+(#1126's option 2) after a month of real logs, when there is a number to compare it against.
 
 ## The blind spot this dashboard used to have, and how it was closed
 

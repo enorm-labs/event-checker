@@ -99,7 +99,7 @@ before go-live. The drill covers staging only, so far.
 | 2026-08-31 | That monitor proven by inducing a failure                    | HEALTHCHECKS.md drill log                       |
 |            | The monitor and `SITE_URL` both name the apex                | Section 0, changes 3 and 4                      |
 |            | **Decide whether to publish an uptime badge** in `README.md` | HEALTHCHECKS.md § It is measured, not published |
-|            | Decide how visitors and traffic are counted                  | #1126                                           |
+| 2026-09-06 | Decide how visitors and traffic are counted                  | #1126 — page loads, nothing new                 |
 | 2026-08-31 | **Production has any in-cluster monitoring**                 | #880, and the dashboard push below              |
 |            | Alerts reach a person                                        | #877                                            |
 | 2026-08-31 | An alert proven by breaking something on prod                | #285                                            |
