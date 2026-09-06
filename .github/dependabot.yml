@@ -57,8 +57,20 @@ updates:
   #
   # 45 exact pins would be 45 pull requests a week ungrouped, so the toolchains that have to move
   # together are grouped by family, and everything else is swept up by `frontend-minor-patch`.
-  # A dependency lands in the *first* group it matches, so the families must stay above the sweep.
   # Majors outside a family stay ungrouped on purpose: a Vite or Vue major deserves its own PR.
+  #
+  # **A dependency does NOT land in the first group it matches.** Since dependabot-core#13044
+  # (2025-09-11, on for everyone since #14861, 2026-05-19) it lands in the group whose pattern scores
+  # *most specific*: an exact name scores 1000, a name without wildcards 500, a wildcard pattern such
+  # as `eslint-*` about 90 to 100 — and **a group with no `patterns:` at all scores 500 for every
+  # dependency**. File order plays no part. So a catch-all declared only by `update-types` beat every
+  # wildcard in the families above it, and `eslint-plugin-oxlint`, `@types/node`, `@vue/test-utils`
+  # and every other glob-only member arrived in `frontend-minor-patch` while the exact names next to
+  # them stayed in their family. That is what split the oxlint pair in #484/#485 and #1101/#1102
+  # (#494). The sweep now carries `patterns: ["*"]` — the universal wildcard scores 1, below any
+  # family pattern — which makes precedence what this file always claimed it was. Reproduced with
+  # `dependabot update -f <job> --local <tree>` on the tree that produced #1101: without the `"*"`
+  # the linting PR carried `oxlint` and `oxfmt` alone; with it, every family member listed here.
   - package-ecosystem: "npm"
     directory: "/events-frontend"
     schedule:
@@ -104,15 +116,12 @@ updates:
       # that moves one without the other. They have to share a group, or each half arrives in its own
       # pull request and neither can pass `npm ci`. That is exactly what #1101 and #1102 were — the
       # mirror-image halves of one 1.80 to 1.81 bump, both red, neither fixable by merging the other.
-      #
-      # **`eslint-plugin-oxlint` is named although `eslint-*` looks like it covers it.** It landed in
-      # the `frontend-minor-patch` catch-all every time regardless, so the glob is not doing the work
-      # this list implies. Naming it does not depend on knowing why.
+      # `eslint-*` covers the plugin; the header above says why it did not until the sweep got its
+      # `"*"`, and why the explicit name that stood here between 2026-09-04 and #494 is gone again.
       linting:
         patterns:
           - "eslint"
           - "eslint-*"
-          - "eslint-plugin-oxlint"
           - "@eslint/*"
           - "oxlint"
           - "oxfmt"
@@ -136,7 +145,11 @@ updates:
           - "@tailwindcss/*"
           - "tailwind-merge"
           - "tw-animate-css"
+      # `patterns: ["*"]` is load-bearing, not decoration — see the header comment. Without it this
+      # group outranks every wildcard above and empties the families of their glob-only members.
       frontend-minor-patch:
+        patterns:
+          - "*"
         update-types:
           - "minor"
           - "patch"
