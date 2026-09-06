@@ -2,7 +2,10 @@
 
 ## Status
 
-**Proposed.** The decision stands. **None of it is built yet.**
+**Accepted (2026-09-06).** Built. The shared module landed first (`events-frontend/src/lib/pageMeta.ts`). The
+transport is #287: the `injector` sidecar in the frontend pod, `events-frontend/injector/`, which `docker/nginx.conf`
+proxies to for the four detail route families. The parity test §Consequences asks for is
+`injector/__tests__/parity.spec.ts`.
 
 > Closes the question [ADR-013](ADR-013_LOCALISATION.md) §Consequences deferred: _"SSR / prerendering — wanted for SEO
 > and tracked separately"_. The SEO work then ran into it. `hreflang` had to be carried by the sitemap, because a
@@ -177,7 +180,8 @@ against a guessed deployment would be waste.
 > is simply the price.
 
 **Do not prototype the transport in Vite dev middleware.** The production shape is the sidecar, and a dev-server
-approximation would be thrown away.
+approximation would be thrown away. The sidecar is a Node process rather than nginx's own `njs`. `formatDate` needs
+`Intl`, and `njs` has none — the one divergence the shared module exists to prevent.
 
 ### 4. Full SSR (Option D) is deferred, with a named trigger
 

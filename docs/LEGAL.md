@@ -314,6 +314,14 @@ not trusting a header. This one is solved by choosing a log format. `events-fron
 file. Logging no address is the version that stays true if that changes. **Verified after the change: zero IP
 addresses in the pod's entire log stream.**
 
+**The meta-injection sidecar (#287, ADR-014) changes none of this.** It is a second process in the same frontend pod.
+It fills the head of `index.html` for a detail page before the response leaves the cluster. The check the ADR asked
+for is this paragraph. It runs on the same German infrastructure. There is no new processor and nothing for §5 to
+name. It makes one request to the BFF per page, inside the namespace. That request carries no header from the
+visitor's request: no address, no user agent, no cookie. Before it proxies to the sidecar, nginx clears
+`X-Forwarded-For` and `X-Real-IP`. The visitor's address therefore never enters that process. The sidecar writes no per-request
+log line of its own. What the visitor sends and what is stored about them are exactly what they were.
+
 **One sentence above is wrong, and #268 measured it.** It claims X-Forwarded-For holds the visitor on the public
 internet. That was reasoning, not an observation. k3s exposes Traefik through ServiceLB. Its `klipper-lb` container
 installs `iptables -t nat -I POSTROUTING -d <clusterIP> -j MASQUERADE`, read out of the `svclb-traefik` pod's own

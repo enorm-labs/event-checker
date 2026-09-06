@@ -11,6 +11,8 @@ node_modules
 .DS_Store
 dist
 dist-ssr
+# The injector bundle, from `vite.injector.config.ts` — built, never committed, like dist/.
+dist-injector
 coverage
 *.local
 

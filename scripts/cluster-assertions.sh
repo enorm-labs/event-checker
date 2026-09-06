@@ -124,7 +124,7 @@ check_image_tags() {
   for file in "$CLUSTERS_DIR"/*/helm-release.yaml; do
     [[ -e "$file" ]] || continue
     current_case="$(basename "$(dirname "$file")")"
-    for component in bff importer frontend; do
+    for component in bff importer frontend frontend.injector; do
       assert_equals "helm-release.yaml: $component.image.tag is empty, so it falls back to appVersion" \
         "" "$(yq -N ".spec.values.${component}.image.tag // \"\"" "$file")"
     done

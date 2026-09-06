@@ -37,21 +37,21 @@ flowchart TB
 
     subgraph ci["GitHub Actions — release.yml"]
         ver["scripts/version.sh compute<br/><b>one version, once</b>"]
-        build["Build 3 images<br/>amd64 · arm64"]
+        build["Build 4 images<br/>amd64 · arm64"]
         scan{"Trivy<br/>fixable CRITICAL/HIGH"}
         stamp["Stamp Chart.yaml<br/>version = appVersion = VERSION"]
         push["Push images, then chart"]
     end
 
     subgraph ghcr["GHCR — public, anonymous pull"]
-        imgs[("bff · importer · frontend<br/>:VERSION")]
+        imgs[("bff · importer · frontend · injector<br/>:VERSION")]
         chart[("charts/event-junkie<br/>:VERSION")]
     end
 
     subgraph cluster["Inside the cluster"]
         ocirepo["OCIRepository<br/>semver range"]
         hr["HelmRelease"]
-        wl["bff · importer · frontend"]
+        wl["bff · importer · frontend + injector"]
         test{{"helm test hook"}}
     end
 

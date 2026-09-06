@@ -104,6 +104,58 @@ tests:
             protocol: TCP
             port: 9001
 
+  - it: the frontend pod reaches the BFF on its service port, for the meta-injection sidecar, and nothing else
+    set:
+      database.host: "10.0.1.2"
+      networkPolicy.databaseCidr: "10.0.1.2/32"
+      database.existingSecret: "events-db"
+    documentSelector:
+      path: metadata.name
+      value: RELEASE-NAME-event-junkie-allow-frontend-to-bff
+    asserts:
+      - isKind:
+          of: NetworkPolicy
+      # Both halves in one object, as the test-hook policy does it: the frontend's egress and the
+      # BFF's ingress from it. One without the other is a policy that renders and blocks.
+      - contains:
+          path: spec.policyTypes
+          content: Ingress
+      - contains:
+          path: spec.policyTypes
+          content: Egress
+      - equal:
+          path: spec.egress[0].to[0].podSelector.matchLabels["app.kubernetes.io/component"]
+          value: bff
+      - equal:
+          path: spec.ingress[0].from[0].podSelector.matchLabels["app.kubernetes.io/component"]
+          value: frontend
+      # The service port alone, asserted as the whole list: the management port must not quietly
+      # join it, and 8080 is the only port the sidecar has any business on.
+      - equal:
+          path: spec.egress[0].ports
+          value:
+            - protocol: TCP
+              port: 8080
+      - equal:
+          path: spec.ingress[0].ports
+          value:
+            - protocol: TCP
+              port: 8080
+
+  - it: turning the sidecar off removes the frontend's route to the BFF with it
+    set:
+      database.host: "10.0.1.2"
+      networkPolicy.databaseCidr: "10.0.1.2/32"
+      database.existingSecret: "events-db"
+      frontend.injector.enabled: false
+    templates:
+      - networkpolicy.yaml
+    asserts:
+      # Against every document, so it is a real negative rather than a selector that finds nothing.
+      - notMatchRegex:
+          path: metadata.name
+          pattern: allow-frontend-to-bff
+
   - it: only the two JVM services may reach the database, and only on its port
     set:
       database.host: "10.0.1.2"

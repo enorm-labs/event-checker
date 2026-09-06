@@ -261,7 +261,7 @@ Scanned: 0` incident actually happened to — did not until #1087, and needed `"
       `outputs: type=cacheonly` because a multi-platform image cannot be loaded into the local daemon, and dropping to one platform would leave arm64 — the
       architecture the Hetzner nodes run — unbuilt. **Both workflows build images on pull requests only**, since `release.yml` builds and pushes the same three
       images on every push to `main` and doing it twice per merge buys nothing.
-    - `release.yml` — **the only workflow that publishes anything.** Builds the three images and packages the chart from one computed version, scans the images
+    - `release.yml` — **the only workflow that publishes anything.** Builds the four images and packages the chart from one computed version, scans the images
       with Trivy before pushing, and pushes to GHCR: a snapshot on every push to `main`, a release on a `v*` tag. **It does not deploy** — Flux pulls and
       reconciles (#414), so a green run means the artifacts exist, not that they are live. Three things about it are deliberate and easy to "fix" wrongly:
       **no path filters** (the chart's `appVersion` is the default image tag for all three components, so every published chart needs all three image tags to
@@ -277,7 +277,7 @@ Scanned: 0` incident actually happened to — did not until #1087, and needed `"
       than the pre-commit hook, because Helm 4's `--strict` rejects an unknown `Chart.yaml` key and Helm 3's does not. Like `validate-infra.yml` it reaches no cluster, so it is a
       syntax and shape gate; the assertions are the part that catches a chart which is well-formed and wrong.
 - **Every `uses:` names a commit SHA, never a tag** (#443, 2026-08-18). A tag is a pointer its owner can move, so a compromised action repository would reach
-  every workflow here on its next run — and since #264 a run on `main` publishes three images and a chart. The form is the one Dependabot maintains:
+  every workflow here on its next run — and since #264 a run on `main` publishes four images and a chart. The form is the one Dependabot maintains:
 
     ```yaml
     uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

@@ -173,6 +173,34 @@ frontend:
   serviceAccount:
     create: true
     name: ""
+  # frontend.injector is the meta-injection sidecar (ADR-014 §Decision 3): a second container in
+  # the frontend pod that fills the head of index.html per detail page, for the scrapers that run
+  # no JavaScript. nginx proxies the four detail route families to it on loopback and serves the
+  # plain shell when it does not answer, so `enabled: false` is an emergency off-switch and costs
+  # link previews, nothing else. It is on everywhere because the fail-open path is the same in
+  # every environment and there is nothing to rehearse without it.
+  injector:
+    enabled: true
+    image:
+      # Built by #287 from events-frontend/Dockerfile.injector, in the same release as the frontend
+      # image — the two ship one tree, and the injector serves the shell the frontend image holds.
+      repository: "enorm-labs/event-junkie/injector"
+      tag: ""
+    # frontend.injector.port is loopback-only: nginx.conf proxies to 127.0.0.1:3000, and that literal
+    # is in the image, so changing this alone changes nothing. It is here for the probes.
+    port: 3000
+    # frontend.injector.bffTimeoutMs bounds the one lookup a detail page costs. Past it the sidecar
+    # answers 502 and nginx serves the plain shell; nginx's own proxy_read_timeout is 3s, so this
+    # has to stay under it or the sidecar's answer arrives after nginx has stopped listening.
+    bffTimeoutMs: 1500
+    resources:
+      requests:
+        cpu: "10m"
+        memory: "48Mi"
+      limits:
+        cpu: "200m"
+        # One Node process holding a few kilobytes of shell and up to 500 cached entities.
+        memory: "128Mi"
   # frontend.podAnnotations is deliberately empty, unlike the BFF's and the importer's. nginx serves
   # static files and exposes no metrics endpoint to scrape — ADR-015 lists the frontend's *access
   # logs* as its signal, not meters. Annotating it would point the collector at a 404 every scrape

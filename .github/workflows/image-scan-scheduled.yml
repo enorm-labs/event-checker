@@ -169,7 +169,7 @@ jobs:
       # let Flux reconcile. A failure here is a call to cut a release, not to re-run the job.
       #
       # Every image on every platform is scanned before the first failure is reported, so one bad
-      # image does not hide the state of the other five.
+      # image does not hide the state of the other seven.
       - name: Scan every deployed image, on both architectures
         id: scan
         env:
@@ -181,9 +181,22 @@ jobs:
           status=0
           mkdir -p sarif
           for version in $VERSIONS; do
-            for component in bff importer frontend; do
+            for component in bff importer frontend injector; do
+              ref="${IMAGE_PREFIX}/${component}:${version}"
+
+              # **A component that a deployed version never shipped is a warning, not a failure.**
+              # The loop walks whatever is deployed, and a component added later — `injector`
+              # arrived in #287 — has no image for any version cut before it. Trivy reports that
+              # as "unable to find the specified image", the same words as a registry outage, so
+              # the two are told apart here: a manifest that is not there is skipped and said so;
+              # everything else still fails below. This warning is expected on every run until the
+              # first release that carries the component reaches both clusters, and wrong after.
+              if ! docker manifest inspect "$ref" >/dev/null 2>&1; then
+                echo "::warning::${ref} is not in the registry — ${component} was not part of ${version}, or the registry is unreachable. Skipped."
+                continue
+              fi
+
               for arch in amd64 arm64; do
-                ref="${IMAGE_PREFIX}/${component}:${version}"
                 echo "::group::trivy ${ref} (linux/${arch})"
                 trivy image "$ref" \
                   --platform "linux/${arch}" \
@@ -229,7 +242,7 @@ jobs:
           exit $status
 
       # imgproxy is not ours and is pinned by digest, so it cannot join the loop above — that one
-      # walks our three components across the versions currently deployed. It is scanned because
+      # walks our four components across the versions currently deployed. It is scanned because
       # ADR-020 named this the strongest argument against adopting it: a third-party image we cannot
       # rebuild when a finding has no fix. `--ignore-unfixed` is what keeps that from being a nightly
       # red build for something nobody can act on, exactly as it does for the JRE base.
@@ -374,3 +387,15 @@ jobs:
         with:
           sarif_file: sarif/trivy-frontend-arm64.sarif
           category: trivy-deployed-frontend-arm64
+      - name: Upload Trivy SARIF (injector, amd64)
+        if: (success() || failure()) && github.event.pull_request.head.repo.fork != true && hashFiles('sarif/trivy-injector-amd64.sarif') != ''
+        uses: github/codeql-action/upload-sarif@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4.37.9
+        with:
+          sarif_file: sarif/trivy-injector-amd64.sarif
+          category: trivy-deployed-injector-amd64
+      - name: Upload Trivy SARIF (injector, arm64)
+        if: (success() || failure()) && github.event.pull_request.head.repo.fork != true && hashFiles('sarif/trivy-injector-arm64.sarif') != ''
+        uses: github/codeql-action/upload-sarif@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4.37.9
+        with:
+          sarif_file: sarif/trivy-injector-arm64.sarif
+          category: trivy-deployed-injector-arm64

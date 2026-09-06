@@ -108,6 +108,58 @@ spec:
               subPath: sitemap.xml
               readOnly: true
             {{- end }}
+        {{- if .Values.frontend.injector.enabled }}
+        {{- $injector := .Values.frontend.injector }}
+        {{- /* The meta-injection sidecar (ADR-014 §Decision 3). nginx proxies the four detail route
+               families to it on loopback; it fetches the shell from nginx the same way, the entity
+               from the BFF Service, and rewrites the head. Every failure is a 502 that nginx turns
+               into the plain shell, so the pod without this container serves the site exactly as
+               before — see docker/nginx.conf for that half.
+
+               A sidecar rather than a fourth Deployment for the same reason imgproxy is one: it
+               serves only what nginx hands it, and sharing the pod is what makes the loopback
+               contract hold. It shares the pod's network namespace, so `allow-frontend-to-bff` in
+               networkpolicy.yaml is the frontend pod's egress, and the only one it has beyond DNS. */}}
+        - name: injector
+          image: {{ printf "%s/%s:%s" ($injector.image.registry | default .Values.image.registry) $injector.image.repository ($injector.image.tag | default .Chart.AppVersion) | quote }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            {{- include "event-junkie.containerSecurityContext" $args | nindent 12 }}
+          env:
+            - name: INJECTOR_PORT
+              value: {{ $injector.port | quote }}
+            {{- /* The frontend container, over loopback, and index.html by name: `/` would do, but
+                   naming the file says what is being fetched. */}}
+            - name: SHELL_URL
+              value: {{ printf "http://127.0.0.1:%v/index.html" .Values.frontend.service.port | quote }}
+            {{- /* The BFF Service, not Traefik: the lookup stays in the namespace and never passes
+                   the rate limiter or the security headers, neither of which is for it. */}}
+            - name: BFF_URL
+              value: {{ printf "http://%s:%v" (include "event-junkie.componentName" (dict "ctx" $ "component" "bff")) .Values.bff.service.port | quote }}
+            - name: BFF_TIMEOUT_MS
+              value: {{ $injector.bffTimeoutMs | quote }}
+          ports:
+            - name: injector
+              containerPort: {{ $injector.port }}
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: injector
+            periodSeconds: 2
+            failureThreshold: 15
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: injector
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: injector
+            periodSeconds: 10
+          resources:
+            {{- toYaml $injector.resources | nindent 12 }}
+        {{- end }}
       volumes:
         - name: tmp
           emptyDir: {}

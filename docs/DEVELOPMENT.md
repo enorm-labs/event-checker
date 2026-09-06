@@ -486,7 +486,7 @@ The images are **not pushed by CI** — that is the release workflow's job (#264
 
 ## Running the whole stack on k3d
 
-The chart, the three images and a real import, on a local Kubernetes. Per ADR-012 this is not an approximation of the
+The chart, the four images and a real import, on a local Kubernetes. Per ADR-012 this is not an approximation of the
 production path. **It is the same chart and the same images that run on Hetzner k3s**, which is what makes it worth
 doing. Needs `k3d` (`brew install k3d`) on top of the tools above.
 
@@ -651,7 +651,7 @@ identifier below every non-numeric one. An all-digit sha would lose every tie re
 ### What gets published, and when
 
 [`release.yml`](../.github/workflows/release.yml) builds, scans and pushes **four artifacts** from one computed
-version: three images and the chart. It does not deploy. Flux pulls from GHCR on its own schedule (#414), so a green
+version: four images and the chart. It does not deploy. Flux pulls from GHCR on its own schedule (#414), so a green
 run means the artifacts exist, not that they are live.
 
 | Trigger                                         | Version                                 | Published                                         |

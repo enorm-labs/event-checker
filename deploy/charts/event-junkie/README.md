@@ -1,6 +1,6 @@
 # event-junkie Helm chart
 
-Deploys `events-bff`, `events-importer` and `events-frontend` behind one Traefik ingress, with TLS
+Deploys `events-bff`, `events-importer` and `events-frontend` — with its meta-injection sidecar — behind one Traefik ingress, with TLS
 from cert-manager, and with the importer's admin API and every `/actuator/**` endpoint unreachable
 from outside the cluster.
 
@@ -60,6 +60,7 @@ Only the values worth a decision are listed. Every property is documented in
 | `bff.service.managementPort`                 | `9001`                  | `/actuator/**`. No ingress rule names it                                                                             |
 | `importer.replicaCount`                      | `1`                     | **Pinned to 1 by `values.schema.json`.** ADR-008; see below                                                          |
 | `frontend.service.port`                      | `8080`                  | Cannot be 80: nginx runs non-root and cannot bind a privileged port                                                  |
+| `frontend.injector.enabled`                  | `true`                  | The meta-injection sidecar (ADR-014, #287). Off is an emergency switch: detail pages then preview generically        |
 | `security.runAsUser`                         | `10001`                 | Must match the UID the images actually run as (#426); above 10000 per #448, enforced by `scripts/uid-consistency.sh` |
 | `ingress.host`                               | `event-junkie.de`       | The only name routed to the applications                                                                             |
 | `ingress.redirectHosts`                      | `[event-junkie.com]`    | 301 to `ingress.host`, with its own certificate. Empty means nothing Traefik-specific renders at all                 |

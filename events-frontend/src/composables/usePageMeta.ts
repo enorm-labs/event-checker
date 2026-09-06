@@ -41,7 +41,12 @@ function rememberDefault(selector: string): string {
   const existing = SITE_DEFAULTS.get(selector)
   if (existing !== undefined) return existing
 
-  const content = document.head.querySelector<HTMLMetaElement>(selector)?.content ?? ''
+  // On a detail page the served HTML already carries that page's values — the meta injector wrote
+  // them (ADR-014 §Decision 3) and left the shipped value in `data-site-default`. Reading `content`
+  // there would remember an event's description as the site's, and a later page with none of its
+  // own would restore the wrong one.
+  const element = document.head.querySelector<HTMLMetaElement>(selector)
+  const content = element?.dataset.siteDefault ?? element?.content ?? ''
   SITE_DEFAULTS.set(selector, content)
   return content
 }

@@ -54,6 +54,10 @@ frontend:
   image:
     repository: "event-junkie/frontend"
     tag: "dev"
+  injector:
+    image:
+      repository: "event-junkie/injector"
+      tag: "dev"
 
 ingress:
   # k3d ships the same Traefik k3s does, so the ingress path is genuinely exercised. `.localhost`

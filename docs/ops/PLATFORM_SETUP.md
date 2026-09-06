@@ -347,7 +347,7 @@ is already a named processor in both privacy notices, for issue handling. Nothin
 ### What publishes them — `release.yml`
 
 **One workflow, one computed version, four artifacts, and no path filters.** `.github/workflows/release.yml` runs on every push to `main` (a snapshot) and on a
-`v*` tag (a release). It builds the three images, packages the chart, scans the images with Trivy _before_ pushing anything, and pushes images before the
+`v*` tag (a release). It builds the four images, packages the chart, scans the images with Trivy _before_ pushing anything, and pushes images before the
 chart.
 
 Five decisions in it are worth not re-deriving:
