@@ -43,6 +43,14 @@ starts a BRAND NEW series. Every query below aggregates those away with
 `max by (<real label>)` first; without it a bare selector returns one series per
 pod generation and an instant query can return nothing at all.
 
+Two panels read the `default` LOGS stream with SQL rather than PromQL (#1126).
+The frontend's nginx line arrives as an unparsed string in `body` — the
+collector only parses bodies that start with `{` — so both panels pull the
+request, status, referrer and user agent out with `regexp_match`, which
+DataFusion provides. Proven against staging on 2026-09-06 before being written
+here; `re_match`, `regexp_like` and `regexp_match(...)[1]` all work, `histogram()`
+buckets by the hour. Every clause lives once, in the constants below the helper.
+
 No panel sets `no_value_replacement`. Drawing a zero where there is no series
 would defeat row 4, whose whole job is telling "nothing happened" apart from
 "nothing was recorded". A query that cannot report zero on its own is the wrong
@@ -103,6 +111,65 @@ def panel(pid, title, description, typ, promql, x, y, w, h, unit=None, decimals=
         "layout": {"x": x, "y": y, "w": w, "h": h, "i": next(_next_i)},
     }
 
+
+def sql_panel(pid, title, description, typ, sql, x, y, w, h, columns):
+    """One panel over the `default` logs stream. `columns` names the query's aliases in order:
+    the first is the x axis, the rest are y series — OpenObserve reads `fields.x`/`fields.y` to draw
+    a custom query, not the SELECT list, so the aliases have to be declared twice."""
+    x_alias, y_aliases = columns[0], columns[1:]
+    return {
+        "id": pid,
+        "type": typ,
+        "title": title,
+        "description": description,
+        "config": {"show_legends": True, "decimals": 0},
+        "queryType": "sql",
+        "queries": [
+            {
+                "query": sql,
+                "vrlFunctionQuery": None,
+                "customQuery": True,
+                "fields": {
+                    "stream": LOG_STREAM,
+                    "stream_type": "logs",
+                    "x": [{"label": x_alias[0], "alias": x_alias[1], "column": x_alias[1], "color": None}],
+                    "y": [{"label": lbl, "alias": al, "column": al, "color": None} for lbl, al in y_aliases],
+                    "z": [], "breakdown": [],
+                    "filter": {"filterType": "group", "logicalOperator": "AND", "conditions": []},
+                },
+                "config": {"promql_legend": "", "layer_type": "scatter", "weight_fixed": 1},
+            }
+        ],
+        "layout": {"x": x, "y": y, "w": w, "h": h, "i": next(_next_i)},
+    }
+
+
+# Where the collector puts every container's stdout when no stream-name header says otherwise.
+LOG_STREAM = "default"
+
+# The frontend's access line: `[time] "GET /path HTTP/1.1" 200 3566 "referrer" "user agent"`
+# (`events-frontend/docker/nginx.conf`, format `ej_no_ip`). nginx's error log shares the container's
+# stdout and starts with a date rather than a bracket, so `body LIKE '[%'` is what keeps the count
+# to access lines.
+ACCESS_LINES = "FROM \"%s\" WHERE k8s_container_name = 'frontend' AND body LIKE '[%%'" % LOG_STREAM
+REQUEST_PATH = "regexp_match(body, '\"GET ([^ ?\"]*)')[1]"
+STATUS = "regexp_match(body, '\" ([0-9]{3}) ')[1]"
+REFERRER = "regexp_match(body, '\"([^\"]*)\" \"[^\"]*\"$')[1]"
+USER_AGENT = "regexp_match(body, '\"([^\"]*)\"$')[1]"
+
+# **A page load is a successful GET for a path with no dot in it.** `/`, `/de/events`,
+# `/en/venues/berghain` are pages; `/assets/index-abc.js`, `/favicon.svg`, `/sitemap.xml` are the
+# parts a page fetches, and counting them turns one visit into ten rows. Slugs carry no dots.
+PAGE_LOAD = "(%s IS NOT NULL AND %s NOT LIKE '%%.%%' AND %s IN ('200','304'))" % (REQUEST_PATH, REQUEST_PATH, STATUS)
+
+# **What is not a visitor.** Search crawlers carry `bot`, `crawl` or `spider`; `kube-probe` is the
+# kubelet asking the pod about itself; `curl/` is the daily site probe; Better Stack is the uptime
+# monitor; `k6` is the load test. nginx logs all but the kubelet on purpose — a monitor's line is
+# evidence the site answered the internet — so they are removed here, where reach is counted, and
+# nowhere else. **A crawler that matches nothing counts as a visitor**, the same direction of error
+# as nginx's own `map`: correctable by adding a word, rather than discovered as a silence.
+NOT_A_VISITOR = "(?i)bot|crawl|spider|slurp|kube-probe|betterstack|curl/|k6"
+VISITOR_PAGE_LOAD = "(%s AND NOT regexp_like(coalesce(%s, ''), '%s'))" % (PAGE_LOAD, USER_AGENT, NOT_A_VISITOR)
 
 panels = [
     # --- Row 1: the four numbers that answer the question -----------------
@@ -253,6 +320,44 @@ panels = [
         "line",
         "max(zo_ingest_memtable_arrow_bytes)",
         x=96, y=44, w=96, h=16, unit="bytes",
+    ),
+
+    # --- Row 5: did anyone come (#1126) -----------------------------------
+    # Page loads, not people. No address reaches a log (LEGAL.md §7.5), no cookie, no identifier,
+    # so a unique-visitor count cannot exist here by design. What the nginx line holds is enough to
+    # answer "did anyone come, and from where" — and it expires after 14 days, which is why the
+    # panel exists before launch rather than after.
+    sql_panel(
+        "p_page_loads",
+        "Page loads per hour (visitors only)",
+        "**Requests, not people.** The site logs no address and sets no cookie, so a unique-visitor count "
+        "does not exist and cannot be added here (#276, LEGAL.md §7.5). This counts successful GETs for a page "
+        "path — `/`, `/de/events`, `/en/venues/…` — and leaves out a page's parts (`/assets/`, anything with "
+        "a dot), search crawlers, the kubelet, the daily probe, Better Stack and k6. A crawler nobody has "
+        "named yet counts as a visitor until it is added to `NOT_A_VISITOR` in `gen_dashboard.py`.\n\n"
+        "**A zero is a quiet hour, a gap is a missing log.** The query sums a condition over every access "
+        "line rather than filtering first, so an hour with only probe traffic draws 0 instead of nothing. "
+        "Pick a 7d window for the week; the logs keep 14 days.",
+        "line",
+        "SELECT histogram(_timestamp, '1 hour') AS x_axis_1, sum(CASE WHEN %s THEN 1 ELSE 0 END) AS y_axis_1 "
+        "%s GROUP BY x_axis_1 ORDER BY x_axis_1" % (VISITOR_PAGE_LOAD, ACCESS_LINES),
+        x=0, y=60, w=112, h=16,
+        columns=[("Hour", "x_axis_1"), ("Page loads", "y_axis_1")],
+    ),
+    sql_panel(
+        "p_referrers",
+        "Where page loads came from",
+        "The `Referer` header per page load over the window, visitors and everything else side by side. "
+        "`-` is a direct visit, a typed address or a link from an app that sends no referrer — and every "
+        "probe and crawler, which is why the second column exists. Referrer counts in aggregate are what "
+        "#481 uses to tell whether a launch channel worked, and they are compatible with the privacy notice "
+        "as written: no address, no identifier, nothing stored on a device.",
+        "table",
+        "SELECT coalesce(%s, '-') AS x_axis_1, sum(CASE WHEN %s THEN 1 ELSE 0 END) AS y_axis_1, "
+        "sum(CASE WHEN %s THEN 1 ELSE 0 END) AS y_axis_2 %s GROUP BY x_axis_1 "
+        "ORDER BY y_axis_1 DESC, y_axis_2 DESC LIMIT 15" % (REFERRER, VISITOR_PAGE_LOAD, PAGE_LOAD, ACCESS_LINES),
+        x=112, y=60, w=80, h=16,
+        columns=[("Referrer", "x_axis_1"), ("Visitors", "y_axis_1"), ("All agents", "y_axis_2")],
     ),
 ]
 

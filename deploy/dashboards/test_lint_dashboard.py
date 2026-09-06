@@ -121,6 +121,12 @@ check("an empty query string is rejected",
       any("is empty" in p for p in problems(dashboard(a_panel(queries=[query(q="   ")])))))
 check("a promql query on a logs stream is rejected",
       any("expected 'metrics'" in p for p in problems(dashboard(a_panel(queries=[query(stream_type="logs")])))))
+check("a sql query on a metrics stream is rejected",
+      any("sql but stream_type" in p for p in problems(dashboard(a_panel(query_type="sql", queries=[
+          {"query": "SELECT 1", "customQuery": True, "fields": {"stream": "default", "stream_type": "metrics"}}])))))
+check("a sql query naming no stream is rejected",
+      any("names no stream" in p for p in problems(dashboard(a_panel(query_type="sql", queries=[
+          {"query": "SELECT 1", "customQuery": True, "fields": {"stream": "", "stream_type": "logs"}}])))))
 check("a markdown panel needs no query", problems(dashboard(a_panel(typ="markdown", queries=[]))) == [])
 
 print("\nthe dashboard as a whole")
