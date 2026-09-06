@@ -59,6 +59,17 @@ repos:
         files: ^(\.claude/rules/|\.github/instructions/|AGENTS\.md$)
         pass_filenames: false
 
+      # Every file under `scripts/` has a row in `scripts/README.md`, every path named there
+      # exists, and every script answers `--help`. Scoped to the directory: the check's tree-wide
+      # half — a `scripts/<name>` reference in a runbook that no longer resolves — is CI's job in
+      # validate-docs.yml, and running a `git grep` over the tree on every Markdown commit is not.
+      - id: index-parity
+        name: scripts index parity
+        entry: scripts/index-parity.sh
+        language: system
+        files: ^scripts/
+        pass_filenames: false
+
       # Markdown formatting, via the oxfmt pinned in events-frontend/package.json rather than
       # whatever is on $PATH — a Homebrew oxfmt and the pinned one disagree about tables nested
       # under list items, and a hook that formats differently than CI checks is worse than no hook.

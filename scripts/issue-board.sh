@@ -48,6 +48,10 @@
 # the first thirty applied and the rest not.
 set -euo pipefail
 
+case "${1:-}" in
+    -h | --help) awk '/^# Usage:/ { p = 1 } p && !/^#./ { exit } p { sub(/^# ?/, ""); print }' "$0"; exit 0 ;;
+esac
+
 REPO="${BACKLOG_REPO:-enorm-labs/event-junkie}"
 PROJECT_OWNER="enorm-labs"
 PROJECT_NUMBER=1

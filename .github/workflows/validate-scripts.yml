@@ -23,13 +23,17 @@ name: Validate Scripts
 # merge gate. #430 deleted it on the reasoning that `deploy/scripts/` was gone; the required check
 # then sat Pending forever, which deadlocks a pull request rather than failing it. Do not remove
 # either side without editing the ruleset in the same change.
+#
+# The index check runs here and in validate-docs.yml, for the same reason as the double lint above:
+# a script is added or deleted under `scripts/`, which this workflow sees, and a reference to one is
+# written in Markdown, which it does not. `scripts/**` rather than `scripts/**.sh` because the
+# index covers every file in the directory, and a README-only change has to run it.
 
 on:
   push:
     branches: [ main ]
     paths:
-      - 'scripts/**.sh'
-      - 'scripts/scan-coverage-baseline.txt'
+      - 'scripts/**'
       - '.github/workflows/validate-scripts.yml'
   pull_request:
     branches: [ main ]
@@ -38,8 +42,7 @@ on:
     # after #443: a required check that never runs stays Pending forever and deadlocks the pull
     # request. **If this one is ever made required, delete this filter in the same change.**
     paths:
-      - 'scripts/**.sh'
-      - 'scripts/scan-coverage-baseline.txt'
+      - 'scripts/**'
       - '.github/workflows/validate-scripts.yml'
   workflow_dispatch:
 
@@ -87,6 +90,12 @@ jobs:
         run: |
           docker run --rm -v "$PWD:/mnt" -w /mnt \
             "koalaman/shellcheck:${SHELLCHECK_VERSION}" -x scripts/*.sh
+
+      # Every file in `scripts/` has a row in `scripts/README.md`, every `scripts/<name>` the tree
+      # names exists, and every script answers `--help` before it touches a tool — which is why this
+      # runs on a runner that has none of yq, helm or gh installed.
+      - name: Check the scripts index
+        run: scripts/index-parity.sh
 
       # `scan-coverage.sh` decides whether a scanner covered less than it did, and the expensive way
       # for it to be wrong is to answer "covered everything" when it could not read the output at all.

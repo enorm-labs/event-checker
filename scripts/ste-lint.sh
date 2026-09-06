@@ -29,7 +29,7 @@ SCANNER="$REPO_ROOT/scripts/ste_lint.py"
 SOURCE_GLOBS=('docs/*.md' 'docs/*/*.md')
 
 usage() {
-    sed -n '3,12p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
+    awk '/^# Usage:/ { p = 1 } p && !/^#./ { exit } p { sub(/^# ?/, ""); print }' "${BASH_SOURCE[0]}"
 }
 
 # A baseline built from a half-tracked tree is worse than none: `git ls-files` cannot see a new

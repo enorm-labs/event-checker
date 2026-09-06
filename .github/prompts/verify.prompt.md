@@ -57,6 +57,7 @@ scripts/comment-lint.sh check
 scripts/skill-parity.sh
 scripts/rules-parity.sh
 scripts/collector-parity.sh
+scripts/index-parity.sh
 ```
 
 Exits 1 on **any** violation of the rules detekt and ESLint cannot see — the block cap, file density, and markdown headings, date literals or
@@ -76,6 +77,10 @@ every pointer resolves and every skill is listed in `CLAUDE.md`. `validate-docs.
 a `paths` list for Claude Code; each agent reads only its own key, so neither can notice the two describing different globs. It also asserts every
 `.claude/rules/` symlink resolves, that no rule body is an `@` pointer — which is expanded at launch whatever `paths` says, defeating the scoping silently —
 and that every rule is linked from the AGENTS.md table. `validate-docs.yml` runs it beside `skill-parity.sh`.
+
+`index-parity.sh` is the fourth: every file under `scripts/` has a row in `scripts/README.md`, every `scripts/<name>` named anywhere in the tree exists,
+and every script answers `--help` with its `Usage:` block. A reference to a deleted script reads plausibly in a runbook for months; this is what catches it.
+`validate-scripts.yml` and `validate-docs.yml` both run it.
 
 `collector-parity.sh` is the third of the same shape, over a fact written in four places: the importer's `LogFields` and `LogContext`, the BFF's
 `LogContextConfiguration`, the collector's OTTL allowlist in `deploy/clusters/base/collector.yaml`, and the table in `docs/ops/PLATFORM_SETUP.md` §7. Two
