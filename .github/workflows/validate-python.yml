@@ -1,0 +1,90 @@
+name: Validate Python
+
+# ruff over every `.py` file, and the two Python tests. The pre-commit hooks run the same two ruff
+# commands, but a hook is advisory by construction — `git commit --no-verify` skips it, and so does
+# anything committed through the GitHub web UI or by an agent that never installed pre-commit. This
+# is the gate that makes it hold on `main`, exactly as validate-scripts.yml is for ShellCheck.
+#
+# The tests ran nowhere before this workflow. `deploy/alerts/test_diff_alerts.py` holds the property
+# that no credential appears in an alert diff, and `deploy/dashboards/test_lint_dashboard.py` shows
+# the dashboard linter catching each case it claims to. Both were documented as manual commands in
+# their READMEs, which is how a test silently stops being run. They are plain scripts that count
+# checks and exit non-zero, not a pytest suite, so the runner's own python3 is enough.
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '**.py'
+      - 'ruff.toml'
+      - '.github/workflows/validate-python.yml'
+  pull_request:
+    branches: [ main ]
+    # `paths:` is present here, like validate-docs.yml and unlike validate-infra.yml, because this
+    # check is **not** on the `main` ruleset's required list. Those workflows dropped their filters
+    # after #443: a required check that never runs stays Pending forever and deadlocks the pull
+    # request. **If this one is ever made required, delete this filter in the same change.**
+    paths:
+      - '**.py'
+      - 'ruff.toml'
+      - '.github/workflows/validate-python.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  # Pinned, for the reason validate-scripts.yml gives for ShellCheck: a gate run against whatever the
+  # runner ships fails on files the author's own copy had just passed, and ruff's formatter style
+  # moves between releases. Invisible to Dependabot — a string in YAML — so Renovate's
+  # `customManagers` watch it, beside SHELLCHECK_VERSION (ADR-024). The tag carries no `v`.
+  RUFF_VERSION: 0.16.6
+
+jobs:
+  python:
+    name: ruff, and the Python tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # From the pinned image rather than a `pip install`, the same way validate-scripts.yml runs
+      # ShellCheck. Both commands read the root ruff.toml, so the hook and this job cannot disagree
+      # about a finding except by version.
+      - name: ruff check
+        id: check
+        run: |
+          docker run --rm -v "$PWD:/io" -w /io "ghcr.io/astral-sh/ruff:${RUFF_VERSION}" check
+
+      - name: ruff format --check
+        id: format
+        run: |
+          docker run --rm -v "$PWD:/io" -w /io "ghcr.io/astral-sh/ruff:${RUFF_VERSION}" format --check --diff
+
+      - name: No credential appears in an alert diff
+        run: python3 deploy/alerts/test_diff_alerts.py
+
+      - name: The dashboard linter rejects what it claims to
+        run: python3 deploy/dashboards/test_lint_dashboard.py
+
+      # Gated on the two steps it explains, so a failing test above does not send the reader to ruff.
+      - name: Explain the fix
+        if: failure() && (steps.check.outcome == 'failure' || steps.format.outcome == 'failure')
+        run: |
+          {
+            echo "## ruff"
+            echo
+            echo "The findings above are from ruff ${RUFF_VERSION}, which is what this job pins;"
+            echo "your installed version may differ and disagree. To reproduce with the same one:"
+            echo
+            echo '```bash'
+            echo "uvx ruff@${RUFF_VERSION} check --fix && uvx ruff@${RUFF_VERSION} format"
+            echo '```'
+            echo
+            echo "Installing the pre-commit hooks (\`pre-commit install\`) runs both on every commit,"
+            echo "though the hook uses your local binary."
+          } >> "$GITHUB_STEP_SUMMARY"

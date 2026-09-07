@@ -12,8 +12,9 @@ So the comparison is exercised directly, with fabricated credentials, no network
 
     python3 deploy/alerts/test_diff_alerts.py        # exits non-zero on failure
 
-Nothing runs this automatically — there is no Python suite in this repository and
-one file does not justify inventing one. Run it after touching `differences()`.
+`validate-python.yml` runs this on every pull request that touches a `.py` file. It is
+a plain script rather than a pytest suite: one file does not justify a runner. Run it
+after touching `differences()`.
 """
 
 import pathlib

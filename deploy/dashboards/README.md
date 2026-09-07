@@ -20,7 +20,7 @@ until now nothing read it. A probe failing repeatedly appears there as `Unhealth
 EJ_NODE=ops@10.10.0.1 ./apply.sh    # any of the above, against production
 
 python3 lint_dashboard.py is-it-healthy.json    # can OpenObserve draw this? offline, no cluster
-python3 test_lint_dashboard.py                  # the linter's own checks
+python3 test_lint_dashboard.py                  # the linter's own checks; validate-python.yml runs it too
 ```
 
 **No argument means every dashboard in this directory, deliberately.** With more than one file, the

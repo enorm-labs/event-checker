@@ -26,7 +26,12 @@ order:
 Step 3 hands the sources to the scheduler, which picks them up on its next tick.
 """
 
-import argparse, json, re, sys, urllib.error, urllib.request
+import argparse
+import json
+import re
+import sys
+import urllib.error
+import urllib.request
 
 SEED_FILE = "http/importer/dev-seed.http"
 LOCAL_HOST = "http://localhost:8081"

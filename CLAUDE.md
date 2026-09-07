@@ -7,7 +7,7 @@ The full agent playbook — commands, architecture decisions, R2DBC/Modulith got
 ## Project rules
 
 Conventions that only matter for one kind of file are not in AGENTS.md. They live in [`.github/instructions/`](.github/instructions) and reach this session
-through [`.claude/rules/`](.claude/rules), which holds one symlink per topic — `architecture`, `kotlin`, `comments`, `documentation`, `markdown`, `testing`, `ci-cd`. Each
+through [`.claude/rules/`](.claude/rules), which holds one symlink per topic — `architecture`, `kotlin`, `python`, `comments`, `documentation`, `markdown`, `testing`, `ci-cd`. Each
 declares `paths:`, so Claude Code pulls it into context when you read a file it matches and leaves it out otherwise.
 
 The same file also carries an `applyTo:` line, which is what GitHub Copilot reads from `.github/instructions/` directly. One copy serves both agents, and
@@ -46,7 +46,7 @@ Slash commands available under `.claude/skills/`:
 - `/update-dependencies` — bump backend and frontend dependencies safely
 - `/update-docs` — find documentation that has stopped being true and correct, delete or leave it, with the check that proves each one
 - `/verify` — run the full pre-PR sequence: backend `ktlintCheck detekt build koverLog` + frontend `type-check`, `lint`, `test:unit`, `test:e2e` (chromium),
-  `scripts/comment-lint.sh check` + `scripts/skill-parity.sh` + `scripts/rules-parity.sh` + `scripts/collector-parity.sh` + `scripts/index-parity.sh` always, `scripts/csp-parity.sh` when the diff touches the chart or the frontend's `index.html` or `scripts/csp.ts`, `scripts/notices-parity.sh check` when it touches either ecosystem's dependency declarations, `scripts/dashboard-parity.sh check` when it touches `docs/LINKS.md`, `docs/ops/DAILY_COMMANDS.md` or `docs/ops/dashboard/`, `scripts/format-markdown.sh check` +
+  `scripts/comment-lint.sh check` + `scripts/skill-parity.sh` + `scripts/rules-parity.sh` + `scripts/collector-parity.sh` + `scripts/index-parity.sh` always, `scripts/csp-parity.sh` when the diff touches the chart or the frontend's `index.html` or `scripts/csp.ts`, `scripts/notices-parity.sh check` when it touches either ecosystem's dependency declarations, `scripts/dashboard-parity.sh check` when it touches `docs/LINKS.md`, `docs/ops/DAILY_COMMANDS.md` or `docs/ops/dashboard/`, `ruff check` + `ruff format --check` at the pinned version when it touches any `.py` file, `scripts/format-markdown.sh check` +
   `scripts/ste-lint.sh check` when the diff touches any `.md`, and `tofu fmt`/`validate` + ShellCheck when it touches `infra/`, and `helm lint` +
   `helm unittest` + `scripts/cluster-assertions.sh` when it touches `deploy/`
 - `/write-adr` — turn a decision that has been made into the record of why; claims the next ADR number by writing the file

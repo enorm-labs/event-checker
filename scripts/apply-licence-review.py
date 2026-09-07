@@ -15,7 +15,13 @@ anything it does not cover is reported rather than matched approximately. A wron
 prohibition onto the wrong venue, which is worse than doing nothing.
 """
 
-import argparse, csv, json, sys, unicodedata, urllib.error, urllib.request
+import argparse
+import csv
+import json
+import sys
+import unicodedata
+import urllib.error
+import urllib.request
 
 # docs/EVENT_DATA_SOURCES.md name -> event_source.name, verified against http/importer/dev-seed.http.
 ALIASES = {
@@ -124,7 +130,7 @@ def main():
                 continue
             planned.append((name, slug, row))
 
-    for name, slug, row in planned:
+    for _name, slug, row in planned:
         print(f"  {row['description_licence']:<11} {row['image_licence']:<11} {slug:<28} {name}")
     print()
     for name, why in skipped:
@@ -152,7 +158,7 @@ def main():
         )
 
     ok, wrong = 0, []
-    for name, slug, row in planned:
+    for _name, slug, row in planned:
         body = {
             "descriptionLicence": row["description_licence"],
             "imageLicence": row["image_licence"],
