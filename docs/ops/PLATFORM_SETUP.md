@@ -889,8 +889,10 @@ venue domain could appear in an `<img src>`. The only workable rule permitted th
 **`img-src` is derived from `images.serving.enabled` and configured nowhere.** With serving off, the API hands out the venue's own URL. A fixed `'self'` would
 blank every image on the site, and the symptom looks like a broken image cache rather than a wrong header.
 
-**The policy is report-only by default.** A wrong policy is a blank page rather than a warning. An environment enforces it after somebody loads the site with
-the browser console open.
+**The policy is report-only by default, and both clusters enforce it.** A wrong policy is a blank page rather than a warning, so a new environment starts
+with the warning. An environment enforces it after somebody loads the site with the browser console open. Staging and production did that on 2026-09-07
+([#854](https://github.com/enorm-labs/event-junkie/issues/854)): every route family in both locales and both themes, zero violations. Each cluster's
+`HelmRelease` sets `ingress.securityHeaders.contentSecurityPolicy.reportOnly: false`. The chart default is untouched.
 
 **It is written twice, and `scripts/csp-parity.sh` is the gate.** The chart sends the header to a visitor. `events-frontend/scripts/csp.ts` applies the same
 policy to `npm run preview`, which is the server Playwright runs against on CI. The script also recomputes the `script-src` hash from `index.html`, because an
