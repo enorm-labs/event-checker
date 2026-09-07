@@ -181,14 +181,22 @@ key exists. It cannot tell you a translation is good, or that a claim is still t
 
 ### SEO
 
-| Done | Item                          | Evidence  |
-| ---- | ----------------------------- | --------- |
-|      | `noindex` off, apex served    | Section 0 |
-|      | Search Console set up         | #288      |
-|      | Sitemap and hreflang accepted | #289      |
-|      | Rich results tested           | #290      |
-|      | Link previews checked         | #291      |
-|      | Indexing watched afterwards   | #293      |
+| Done       | Item                          | Evidence  |
+| ---------- | ----------------------------- | --------- |
+|            | `noindex` off, apex served    | Section 0 |
+|            | Search Console set up         | #288      |
+|            | Sitemap and hreflang accepted | #289      |
+| 2026-09-07 | Rich results tested           | #290      |
+|            | Link previews checked         | #291      |
+|            | Indexing watched afterwards   | #293      |
+
+**The Rich Results Test passed on two real event pages, in code mode.** URL mode cannot run against
+`prod-check`: its `robots.txt` says `Disallow: /`, and the test reports the crawl as failed. The
+JSON-LD each page renders was submitted as is. Both a `MusicEvent` with an offer and a `SocialEvent`
+without one came back valid, with the breadcrumb list valid beside them. Every warning is optional
+and accepted. `endDate` and `offers.validFrom` are not in the data. `organizer` and `offers` are
+emitted when a promoter or a price exists. Structured data may only say what the page shows. Run URL
+mode once more against the apex after the flip.
 
 ### Security
 
