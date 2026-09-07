@@ -15,6 +15,7 @@ So the comparison is exercised directly, with fabricated credentials, no network
 Nothing runs this automatically — there is no Python suite in this repository and
 one file does not justify inventing one. Run it after touching `differences()`.
 """
+
 import pathlib
 import sys
 

@@ -190,7 +190,8 @@ def render_bookmarks(sections, source):
     out = [
         "<!DOCTYPE NETSCAPE-Bookmark-file-1>",
         "<!-- Event Junkie — every external service, console and reference the project depends on.",
-        "     Generated from %s by scripts/links_export.py; edit that file, then run scripts/dashboard-parity.sh." % source,
+        "     Generated from %s by scripts/links_export.py; edit that file, then run scripts/dashboard-parity.sh."
+        % source,
         "     Import via your browser's bookmark manager:",
         "       Firefox  Bookmarks > Manage Bookmarks > Import and Backup > Import Bookmarks from HTML",
         "       Chrome   Bookmarks > Bookmark Manager > (kebab menu) > Import Bookmarks",

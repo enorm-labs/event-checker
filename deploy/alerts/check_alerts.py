@@ -21,6 +21,7 @@ ingress route.
 
     python3 check_alerts.py "$AUTH" "$SVC" /tmp/ej-alerts.json
 """
+
 import json
 import subprocess
 import sys

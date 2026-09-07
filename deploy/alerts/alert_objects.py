@@ -8,10 +8,12 @@ silently not in the other. So the payloads live here and both scripts import the
 
 Copied to the node next to whichever script needs it — see `apply.sh`.
 """
+
 import json
 
 TEMPLATE_NAME = "event-junkie"
 DESTINATION_NAME = "record-only"
+
 
 def template_body(environment):
     """One line per firing, with the fields an incident actually needs.

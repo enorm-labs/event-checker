@@ -48,6 +48,7 @@ requests read it) or from $GOOGLE_MAPS_API_KEY, never from the command line. Res
 Geocoding API, by IP rather than by HTTP referrer. Responses cache in `temp/geocode-cache.json`
 for the 30 days the terms allow; `--no-cache` re-fetches.
 """
+
 import argparse, collections, json, math, os, pathlib, re, sys, time, urllib.error, urllib.parse, urllib.request
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -407,8 +408,16 @@ def point(row):
 
 
 def rank(row):
-    order = {"CHECK": 0, "CHECK-address": 1, "CHECK-name": 2, "NO MATCH": 3, "NO COORDINATE": 3,
-             "shared": 4, "unsure": 5, "ok": 6}
+    order = {
+        "CHECK": 0,
+        "CHECK-address": 1,
+        "CHECK-name": 2,
+        "NO MATCH": 3,
+        "NO COORDINATE": 3,
+        "shared": 4,
+        "unsure": 5,
+        "ok": 6,
+    }
     return order.get(row.get("verdict"), 1), -(row.get("distance") or 0)
 
 
@@ -441,8 +450,12 @@ def print_report(rows, args):
     tally = collections.Counter(r.get("verdict") for r in rows)
     print(
         f"\n{len(rows)} venues · {tally['CHECK']} to check over {args.threshold} m "
-        + (f"· {tally['CHECK-address']} where the coordinate agrees and the address does not "
-           f"· {tally['CHECK-name']} the name lookup convicts on its own " if args.by_name else "")
+        + (
+            f"· {tally['CHECK-address']} where the coordinate agrees and the address does not "
+            f"· {tally['CHECK-name']} the name lookup convicts on its own "
+            if args.by_name
+            else ""
+        )
         + f"· {tally['shared']} over it on a point another venue also claims "
         f"· {tally['unsure']} over it on a vague match · {tally['ok']} clear"
     )
@@ -482,8 +495,7 @@ def write_report(rows, args, path):
         if args.by_name:
             hit = row.get("byname")
             distance = row.get("name_distance")
-            by = (f" {distance:.0f} m, {hit['type']}, {hit['formatted']} |"
-                  if hit and distance is not None else " — |")
+            by = f" {distance:.0f} m, {hit['type']}, {hit['formatted']} |" if hit and distance is not None else " — |"
         if not found:
             out.append(
                 f"| {row.get('verdict')} | {venue['name']} | — | {row.get('status') or row.get('note')} "
@@ -517,8 +529,7 @@ def print_sql(checks):
         print(f"\n-- {venue['name']}: {row['distance']:.0f} m out, {found['type']}")
         print(f"UPDATE venue SET latitude = {found['lat']:.6f}, longitude = {found['lng']:.6f}")
         print(
-            f"WHERE slug = '{venue['slug']}' "
-            f"AND latitude = {venue['latitude']} AND longitude = {venue['longitude']};"
+            f"WHERE slug = '{venue['slug']}' AND latitude = {venue['latitude']} AND longitude = {venue['longitude']};"
         )
 
 
@@ -563,8 +574,11 @@ def main():
     p.add_argument("--threshold", type=float, default=100.0, help="Metres before a row is worth checking (default 100)")
     p.add_argument("--sql", action="store_true", help="Emit UPDATE statements for the flagged rows; needs --host")
     p.add_argument("--report", metavar="PATH", help="Also write the ranked table to a Markdown file")
-    p.add_argument("--by-name", action="store_true",
-                   help="Also ask v4 for each venue by name, which catches a borrowed address. Doubles the lookups")
+    p.add_argument(
+        "--by-name",
+        action="store_true",
+        help="Also ask v4 for each venue by name, which catches a borrowed address. Doubles the lookups",
+    )
     p.add_argument("--verbose", action="store_true", help="Show the stored pair and Google's address for every row")
     p.add_argument("--no-cache", action="store_true", help="Re-fetch even where a cached response is still fresh")
     p.add_argument("--key", help="The API key, if it is not in the private env file or the environment")

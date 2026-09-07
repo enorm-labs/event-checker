@@ -33,6 +33,7 @@ remaining work for #271 item 4 is to point DESTINATION_NAME at
 `http://signal-cli.observability.svc.cluster.local:8080/v2/send` once the
 number exists.
 """
+
 import json
 import subprocess
 import sys
@@ -84,7 +85,9 @@ def existing_alerts():
     except ValueError:
         return {}
     rows = listing.get("list", listing) if isinstance(listing, dict) else listing
-    return {row["name"]: row.get("alert_id") or row.get("id") for row in rows if isinstance(row, dict) and "name" in row}
+    return {
+        row["name"]: row.get("alert_id") or row.get("id") for row in rows if isinstance(row, dict) and "name" in row
+    }
 
 
 def stored_stream(alert_id):

@@ -65,6 +65,7 @@ redaction produces a fingerprint mismatch, which is loud and wrong rather than
 quiet and wrong. That asymmetry is deliberate: silence that reads as health is the
 failure this whole check exists to remove.
 """
+
 import hashlib
 import json
 import re
@@ -186,9 +187,7 @@ def main():
     listing = get(BASE)
     rows = listing.get("list", listing) if isinstance(listing, dict) else listing
     live = {
-        row["name"]: (row.get("alert_id") or row.get("id"))
-        for row in rows
-        if isinstance(row, dict) and "name" in row
+        row["name"]: (row.get("alert_id") or row.get("id")) for row in rows if isinstance(row, dict) and "name" in row
     }
 
     drifted = 0
@@ -236,7 +235,10 @@ def main():
         drifted += 1
 
     total = len(set(wanted_alerts) | set(live)) + 2  # + the template and the destination
-    print("\n%d/%d objects match this repository (%d rules, the template and the destination)" % (total - drifted, total, total - 2))
+    print(
+        "\n%d/%d objects match this repository (%d rules, the template and the destination)"
+        % (total - drifted, total, total - 2)
+    )
     if drifted:
         print("`./apply.sh` makes the cluster match the file. Check WHY they differ before running it —")
         print("an emergency edit made in the UI is drift that somebody meant.")

@@ -85,6 +85,7 @@ being down cannot be recorded by OpenObserve. That is what the external
 dead-man's switch (#271 item 5, healthchecks.io) is for, and it is a different
 layer on purpose.
 """
+
 import json
 
 ORG = "default"
@@ -286,8 +287,8 @@ rule(
     "still returns 200 and the run still reports success, so nothing else says a word. Zero "
     "against its own history, not a floor, because a venue on summer break is legitimately "
     "empty and is not broken.",
-    'sum((max by (source) (importer_source_events_future) == bool 0)'
-    ' * (max by (source) (max_over_time(importer_source_events_future[7d])) > bool 20))',
+    "sum((max by (source) (importer_source_events_future) == bool 0)"
+    " * (max by (source) (max_over_time(importer_source_events_future[7d])) > bool 20))",
     ">",
     0,
     stream_name="importer_source_events_future",

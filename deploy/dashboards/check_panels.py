@@ -17,6 +17,7 @@ Resolving it here also makes the variable itself a checked claim, and it is the 
 failure on a dashboard that filters every panel through one: if it resolves to nothing, everything
 below is blank for a reason that has nothing to do with the panels.
 """
+
 import json
 import subprocess
 import sys
@@ -37,7 +38,8 @@ panels = [p for tab in dash["tabs"] for p in tab["panels"]]
 def get(url):
     return subprocess.run(
         ["curl", "-sS", "-m", "60", "-H", "Authorization: " + auth, url],
-        capture_output=True, text=True,
+        capture_output=True,
+        text=True,
     ).stdout
 
 
@@ -54,10 +56,19 @@ def resolve_variables():
         stream, field = data.get("stream"), data.get("field")
         if not (name and stream and field):
             continue
-        url = "http://%s:5080/api/default/%s/_values?%s" % (svc, stream, urllib.parse.urlencode({
-            "fields": field, "type": data.get("stream_type", "metrics"),
-            "start_time": start * 1_000_000, "end_time": end * 1_000_000, "size": 10,
-        }))
+        url = "http://%s:5080/api/default/%s/_values?%s" % (
+            svc,
+            stream,
+            urllib.parse.urlencode(
+                {
+                    "fields": field,
+                    "type": data.get("stream_type", "metrics"),
+                    "start_time": start * 1_000_000,
+                    "end_time": end * 1_000_000,
+                    "size": 10,
+                }
+            ),
+        )
         try:
             hits = json.loads(get(url)).get("hits") or []
         except ValueError:
@@ -97,16 +108,35 @@ def run_sql(query, stream_type):
     Returns (rows, error). The Prometheus endpoint answers 200 with an empty result for SQL, so
     without this every panel on a SQL dashboard reports NO DATA and the check is worse than absent.
     """
-    body = json.dumps({"query": {
-        "sql": query, "start_time": start * 1_000_000, "end_time": end * 1_000_000,
-        "from": 0, "size": 1,
-    }})
+    body = json.dumps(
+        {
+            "query": {
+                "sql": query,
+                "start_time": start * 1_000_000,
+                "end_time": end * 1_000_000,
+                "from": 0,
+                "size": 1,
+            }
+        }
+    )
     out = subprocess.run(
-        ["curl", "-sS", "-m", "60", "-H", "Authorization: " + auth,
-         "-H", "Content-Type: application/json", "-X", "POST",
-         "http://%s:5080/api/default/_search?type=%s" % (svc, stream_type or "logs"),
-         "--data-binary", body],
-        capture_output=True, text=True,
+        [
+            "curl",
+            "-sS",
+            "-m",
+            "60",
+            "-H",
+            "Authorization: " + auth,
+            "-H",
+            "Content-Type: application/json",
+            "-X",
+            "POST",
+            "http://%s:5080/api/default/_search?type=%s" % (svc, stream_type or "logs"),
+            "--data-binary",
+            body,
+        ],
+        capture_output=True,
+        text=True,
     ).stdout
     try:
         d = json.loads(out)

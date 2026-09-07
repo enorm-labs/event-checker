@@ -14,6 +14,7 @@ guessed. Seven names differ between the document and the seeded sources; ALIASES
 anything it does not cover is reported rather than matched approximately. A wrong match writes a
 prohibition onto the wrong venue, which is worse than doing nothing.
 """
+
 import argparse, csv, json, sys, unicodedata, urllib.error, urllib.request
 
 # docs/EVENT_DATA_SOURCES.md name -> event_source.name, verified against http/importer/dev-seed.http.
@@ -83,15 +84,15 @@ def main():
         "--yes",
         action="store_true",
         help="confirm writing to a host other than the local default. Required there, because "
-             "a forwarded port looks exactly like a local one and the mistake is silent.",
+        "a forwarded port looks exactly like a local one and the mistake is silent.",
     )
     ap.add_argument(
         "--allow-missing",
         action="store_true",
         help="proceed when a reviewed source is absent from this database, e.g. a partly seeded "
-             "local one. Off by default: against a full database an unmatched name means a "
-             "spelling this script failed to resolve, and skipping it silently leaves a source "
-             "unreviewed while the run reports success.",
+        "local one. Off by default: against a full database an unmatched name means a "
+        "spelling this script failed to resolve, and skipping it silently leaves a source "
+        "unreviewed while the run reports success.",
     )
     args = ap.parse_args()
 

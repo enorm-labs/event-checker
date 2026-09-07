@@ -14,6 +14,7 @@ grid. Both are fabricated here.
 Nothing runs this automatically — there is no Python suite in this repository and
 two files do not justify inventing one. Run it after touching `lint()`.
 """
+
 import copy
 import json
 import pathlib
@@ -55,7 +56,10 @@ def tabbed(**tabs):
 
 def a_panel(pid="p", typ="line", x=0, y=0, w=192, h=10, queries=None, query_type="promql"):
     return {
-        "id": pid, "type": typ, "title": pid, "queryType": query_type,
+        "id": pid,
+        "type": typ,
+        "title": pid,
+        "queryType": query_type,
         "queries": [query()] if queries is None else queries,
         "layout": {"x": x, "y": y, "w": w, "h": h, "i": 1},
     }
@@ -77,7 +81,10 @@ stat = problems(dashboard(a_panel(typ="stat")))
 check("'stat' is rejected", any("'stat'" in p for p in stat))
 check("...and the message names 'metric' as the type to use", any("metric" in p for p in stat))
 check("'metric' is accepted", problems(dashboard(a_panel(typ="metric"))) == [])
-check("an invented type is rejected", any("not one OpenObserve draws" in p for p in problems(dashboard(a_panel(typ="singlestat")))))
+check(
+    "an invented type is rejected",
+    any("not one OpenObserve draws" in p for p in problems(dashboard(a_panel(typ="singlestat")))),
+)
 
 print("\nthe grid")
 check("a full-width layout is accepted", problems(dashboard(a_panel(w=192))) == [])
@@ -94,39 +101,85 @@ side_by_side = dashboard(a_panel(pid="l", x=0, w=96), a_panel(pid="r", x=96, w=9
 check("panels that merely touch do not overlap", problems(side_by_side) == [])
 stacked = dashboard(a_panel(pid="top", x=0, y=0, w=192, h=10), a_panel(pid="bottom", x=0, y=10, w=192, h=10))
 check("panels stacked vertically do not overlap", problems(stacked) == [])
-check("two panels in the same place are rejected",
-      any("overlaps" in p for p in problems(dashboard(a_panel(pid="a"), a_panel(pid="b")))))
-check("a partial overlap is rejected",
-      any("overlaps" in p for p in problems(dashboard(a_panel(pid="a", x=0, y=0, w=192, h=10),
-                                                      a_panel(pid="b", x=0, y=5, w=192, h=10)))))
+check(
+    "two panels in the same place are rejected",
+    any("overlaps" in p for p in problems(dashboard(a_panel(pid="a"), a_panel(pid="b")))),
+)
+check(
+    "a partial overlap is rejected",
+    any(
+        "overlaps" in p
+        for p in problems(dashboard(a_panel(pid="a", x=0, y=0, w=192, h=10), a_panel(pid="b", x=0, y=5, w=192, h=10)))
+    ),
+)
 
 print("\ntabs are separate grids")
 # Every tab starts at y=0 and shares coordinates with the others. Checking overlap across a whole
 # dashboard reported 116 findings on the first eight-tab dashboard, none of them real (#971).
 same_place = tabbed(one=[a_panel(pid="a")], two=[a_panel(pid="b")])
 check("identical coordinates in different tabs do not overlap", problems(same_place) == [])
-check("overlap within one tab is still caught",
-      any("overlaps" in p for p in problems(tabbed(one=[a_panel(pid="a"), a_panel(pid="b")], two=[a_panel(pid="c")]))))
+check(
+    "overlap within one tab is still caught",
+    any("overlaps" in p for p in problems(tabbed(one=[a_panel(pid="a"), a_panel(pid="b")], two=[a_panel(pid="c")]))),
+)
 short = tabbed(wide=[a_panel(pid="a", w=192)], narrow=[a_panel(pid="b", w=96)])
 check("a tab that does not reach the right edge is caught", any("different grid" in p for p in problems(short)))
 check("...and the message names which tab", any(p.startswith("narrow:") for p in problems(short)))
-check("every tab reaching the edge passes",
-      problems(tabbed(one=[a_panel(pid="a")], two=[a_panel(pid="b", x=0, w=96), a_panel(pid="c", x=96, w=96)])) == [])
-check("a duplicate id across tabs is still caught",
-      any("duplicate panel id" in p for p in problems(tabbed(one=[a_panel(pid="same")], two=[a_panel(pid="same")]))))
+check(
+    "every tab reaching the edge passes",
+    problems(tabbed(one=[a_panel(pid="a")], two=[a_panel(pid="b", x=0, w=96), a_panel(pid="c", x=96, w=96)])) == [],
+)
+check(
+    "a duplicate id across tabs is still caught",
+    any("duplicate panel id" in p for p in problems(tabbed(one=[a_panel(pid="same")], two=[a_panel(pid="same")]))),
+)
 
 print("\nqueries")
 check("a panel with no queries is rejected", any("no queries" in p for p in problems(dashboard(a_panel(queries=[])))))
-check("an empty query string is rejected",
-      any("is empty" in p for p in problems(dashboard(a_panel(queries=[query(q="   ")])))))
-check("a promql query on a logs stream is rejected",
-      any("expected 'metrics'" in p for p in problems(dashboard(a_panel(queries=[query(stream_type="logs")])))))
-check("a sql query on a metrics stream is rejected",
-      any("sql but stream_type" in p for p in problems(dashboard(a_panel(query_type="sql", queries=[
-          {"query": "SELECT 1", "customQuery": True, "fields": {"stream": "default", "stream_type": "metrics"}}])))))
-check("a sql query naming no stream is rejected",
-      any("names no stream" in p for p in problems(dashboard(a_panel(query_type="sql", queries=[
-          {"query": "SELECT 1", "customQuery": True, "fields": {"stream": "", "stream_type": "logs"}}])))))
+check(
+    "an empty query string is rejected",
+    any("is empty" in p for p in problems(dashboard(a_panel(queries=[query(q="   ")])))),
+)
+check(
+    "a promql query on a logs stream is rejected",
+    any("expected 'metrics'" in p for p in problems(dashboard(a_panel(queries=[query(stream_type="logs")])))),
+)
+check(
+    "a sql query on a metrics stream is rejected",
+    any(
+        "sql but stream_type" in p
+        for p in problems(
+            dashboard(
+                a_panel(
+                    query_type="sql",
+                    queries=[
+                        {
+                            "query": "SELECT 1",
+                            "customQuery": True,
+                            "fields": {"stream": "default", "stream_type": "metrics"},
+                        }
+                    ],
+                )
+            )
+        )
+    ),
+)
+check(
+    "a sql query naming no stream is rejected",
+    any(
+        "names no stream" in p
+        for p in problems(
+            dashboard(
+                a_panel(
+                    query_type="sql",
+                    queries=[
+                        {"query": "SELECT 1", "customQuery": True, "fields": {"stream": "", "stream_type": "logs"}}
+                    ],
+                )
+            )
+        )
+    ),
+)
 check("a markdown panel needs no query", problems(dashboard(a_panel(typ="markdown", queries=[]))) == [])
 
 print("\nthe dashboard as a whole")

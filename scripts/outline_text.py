@@ -99,8 +99,15 @@ def main():
     args = p.parse_args()
 
     path, width, bounds = outline(
-        args.font, args.text, args.size, args.x, args.baseline,
-        args.tracking, args.anchor, args.weight, args.precision,
+        args.font,
+        args.text,
+        args.size,
+        args.x,
+        args.baseline,
+        args.tracking,
+        args.anchor,
+        args.weight,
+        args.precision,
     )
 
     print(f"advance width : {width:.2f}", file=sys.stderr)
