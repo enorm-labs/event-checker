@@ -78,10 +78,11 @@ Scanned: 0` incident actually happened to — did not until #1087, and needed `"
       filed the dropped-events counter and the force-fetch trigger under "New Event Sources", because `scraper` and `importer` both carry infrastructure
       work too. Via `actions/github-script`; creates any missing label on demand and re-syncs on a title edit or a push. Uses `pull_request_target` so fork
       PRs get a writable token; safe because it never checks out or runs PR code — listing file paths through the REST API executes nothing.
-    - `milestone-dependabot.yml` — gives every Dependabot pull request a milestone, since `dependabot.yml` has no key for one and they are otherwise the
-      single class of pull request that arrives without one. Same shape and same banner as `label-pr.yml`: `pull_request_target`, no checkout, `github-script`.
+    - `milestone-dependabot.yml` — gives every bot pull request a milestone: Dependabot's, since `dependabot.yml` has no key for one, Renovate's, and the
+      release App's raise and bump (#1172), which `cut-release.yml` opens without one so the rule lives in one place. They are otherwise the single class
+      of pull request that arrives without one. Same shape and same banner as `label-pr.yml`: `pull_request_target`, no checkout, `github-script`.
       It picks the **oldest open milestone** — no milestone here carries a due date, so there is no string to keep current, and when one closes the next wins by
-      itself. It never overwrites a milestone already set. Its `workflow_dispatch` sweeps every open Dependabot pull request that has none, which is what covers
+      itself. It never overwrites a milestone already set. Its `workflow_dispatch` sweeps every open bot pull request that has none, which is what covers
       the ones predating it.
     - `deployment-status.yml` — turns a Flux `repository_dispatch` into a **GitHub deployment**, so the Environments tab says what is running (#565). Triggered
       by the `github-dispatch` Provider in each cluster, on the event type `HelmRelease/event-junkie.flux-system` — Flux's own `{Kind}/{Name}.{Namespace}`
