@@ -229,6 +229,10 @@ Scanned: 0` incident actually happened to — did not until #1087, and needed `"
       its path filters for that reason: an oxfmt bump can reformat every document here. **It keeps a `paths:` filter on `pull_request`** because it is not on
       the required list — see the note in the file, and delete the filter if it is ever made required. `validate-notices.yml` is the worked example of exactly
       that: it became required and lost its filter in one change.
+    - `validate-python.yml` — `ruff check` and `ruff format --check` over every `.py` file at the pinned `RUFF_VERSION`, from the root `ruff.toml`, then
+      the two Python tests, `deploy/alerts/test_diff_alerts.py` and `deploy/dashboards/test_lint_dashboard.py`, which ran nowhere in CI before it (#1189).
+      Same shape as `validate-scripts.yml` for ShellCheck: the pinned docker image rather than the runner's copy, and a `paths:` filter because it is not
+      on the required list.
     - `validate-notices.yml` — regenerates `events-frontend/src/assets/notices.json` and fails when the committed copy differs, via
       `scripts/notices-parity.sh check`. **It is its own workflow because the file merges two ecosystems**: the generator reads the Gradle licence report off
       disk and combines it with npm's, so a regeneration needs a JDK and Node in one job, and no other pull-request workflow has both. Folding it into

@@ -12,7 +12,8 @@ file that does not exist, when anything in the tree references a `scripts/<name>
   `case` arm, the same in every file; `dev-env.sh` is the shortest example. The exception is `shell-aliases.sh`, which is sourced and defines functions.
 - **A header is the documentation.** Name, one-line purpose, `Usage:`, then what it requires and what it reaches. The rows below quote those headers.
 - **Python is standard library only, with `argparse`.** `ste_lint.py` and the `deploy/dashboards/` and `deploy/alerts/` scripts are copied to a node and run
-  there, where nothing is installed. `outline_text.py` is the one exception, and its wrapper builds the venv it needs.
+  there, where nothing is installed. `outline_text.py` is the one exception, and its wrapper builds the venv it needs. ruff at a pinned
+  version is the gate, in the commit hook and in `validate-python.yml`, from the root `ruff.toml`.
 
 ## What was decided against
 

@@ -11,8 +11,9 @@ grid. Both are fabricated here.
 
     python3 deploy/dashboards/test_lint_dashboard.py    # exits non-zero on failure
 
-Nothing runs this automatically — there is no Python suite in this repository and
-two files do not justify inventing one. Run it after touching `lint()`.
+`validate-python.yml` runs this on every pull request that touches a `.py` file. It is
+a plain script rather than a pytest suite: two files do not justify a runner. Run it
+after touching `lint()`.
 """
 
 import copy

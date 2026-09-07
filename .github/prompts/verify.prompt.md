@@ -145,6 +145,18 @@ a clone with nothing built. The first two come from the Markdown, the third from
 needs `events-frontend/node_modules` and is not in the always-run block. `check` restores the committed files whatever happens; the bare form regenerates
 them for committing. `validate-docs.yml` runs it in CI.
 
+### Python (when the diff touches any `.py` file or `ruff.toml`)
+
+```bash
+RUFF="ruff@$(sed -n 's/^  RUFF_VERSION: //p' .github/workflows/validate-python.yml)"
+uvx "$RUFF" check && uvx "$RUFF" format --check
+```
+
+`validate-python.yml` runs the same two commands from the pinned docker image, then the two Python tests, `deploy/alerts/test_diff_alerts.py` and
+`deploy/dashboards/test_lint_dashboard.py`. Run those too when the diff touches `deploy/alerts/` or `deploy/dashboards/`; both exit non-zero on failure
+and need no cluster. `uvx` at the workflow's pin rather than a `brew install ruff`, because the pin is what decides and the formatter's style moves
+between releases.
+
 ### The Content-Security-Policy (when the diff touches `deploy/`, `events-frontend/index.html` or `events-frontend/scripts/csp.ts`)
 
 ```bash

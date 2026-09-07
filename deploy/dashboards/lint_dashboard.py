@@ -161,7 +161,7 @@ def lint(dash):
         # that a v8 layout REACHES the right edge — every reference v7/v8 dashboard
         # ends at exactly 192, every v3/v5 one at exactly 48.
         if placed:
-            rightmost = max(l["x"] + l["w"] for _, l in placed)
+            rightmost = max(layout["x"] + layout["w"] for _, layout in placed)
             if rightmost != GRID_WIDTH:
                 problems.append(
                     "%s: widest panel reaches column %d, not %d — a layout that does not reach the "

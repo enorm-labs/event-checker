@@ -49,7 +49,18 @@ Geocoding API, by IP rather than by HTTP referrer. Responses cache in `temp/geoc
 for the 30 days the terms allow; `--no-cache` re-fetches.
 """
 
-import argparse, collections, json, math, os, pathlib, re, sys, time, urllib.error, urllib.parse, urllib.request
+import argparse
+import collections
+import json
+import math
+import os
+import pathlib
+import re
+import sys
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SEED_FILE = os.path.join(REPO, "http", "importer", "dev-seed.http")

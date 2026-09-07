@@ -31,10 +31,10 @@ import sys
 
 def outline(font_path, text, size, x, baseline, tracking, anchor, weight, precision):
     # Imported here rather than at the top so `--help` works outside the venv the wrapper builds.
+    from fontTools.misc.transform import Transform
     from fontTools.pens.boundsPen import BoundsPen
     from fontTools.pens.svgPathPen import SVGPathPen
     from fontTools.pens.transformPen import TransformPen
-    from fontTools.misc.transform import Transform
     from fontTools.ttLib import TTFont
 
     if not os.path.isfile(font_path):
@@ -73,7 +73,7 @@ def outline(font_path, text, size, x, baseline, tracking, anchor, weight, precis
     fmt = lambda v: f"{v:.{precision}f}"  # noqa: E731 — the pen wants a callable
     pen, bounds = SVGPathPen(glyphs, ntos=fmt), BoundsPen(glyphs)
     cursor = start
-    for char, advance in zip(text, advances):
+    for char, advance in zip(text, advances, strict=True):
         glyph = glyphs[cmap[ord(char)]]
         # Negative y-scale because font space is y-up and SVG is y-down.
         transform = Transform(scale, 0, 0, -scale, cursor, baseline)

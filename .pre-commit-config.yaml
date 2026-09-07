@@ -31,6 +31,23 @@ repos:
         files: ^(infra|scripts)/.*\.sh$
         pass_filenames: true
 
+      # ruff at whatever version is on $PATH (`brew install ruff`), configured by the root ruff.toml;
+      # validate-python.yml pins the version that decides, the same split as ShellCheck. `ruff-format`
+      # writes in place, like format-markdown, so a reformatted file lands in the same commit.
+      - id: ruff-check
+        name: ruff check
+        entry: ruff check
+        language: system
+        files: \.py$
+        pass_filenames: true
+
+      - id: ruff-format
+        name: ruff format
+        entry: ruff format
+        language: system
+        files: \.py$
+        pass_filenames: true
+
       # One version reaches four files and only one of them is authoritative, so the drift this
       # catches is the kind nobody notices: bump `gradle.properties` alone and everything still
       # builds, lints and renders — the release just publishes a chart whose `appVersion` names image

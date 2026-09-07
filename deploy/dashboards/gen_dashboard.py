@@ -210,7 +210,8 @@ panels = [
     panel(
         "p_never_succeeded",
         "Sources that have never succeeded",
-        "**The blind spot #618 closed.** `last_success` only exists once a source has worked, so a venue that has never "
+        "**The blind spot #618 closed.** `last_success` only exists once a source has worked, "
+        "so a venue that has never "
         "imported had no series at all — not stale, not late, absent. On 2026-08-20 that was 86 sources and 84 series, "
         'and the two missing were the only two that were broken while this dashboard read "0 sources stale". '
         "`importer_source_has_succeeded` exists for every enabled row from the first refresh after start-up. "
