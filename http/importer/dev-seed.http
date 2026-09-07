@@ -115,7 +115,7 @@ Content-Type: application/json
     "latitude": 52.52077,
     "longitude": 13.38890,
     "websiteUrl": "https://www.admiralspalast.theater",
-    "description": "The Friedrichstrasse variety theatre — musicals, comedy, concerts and dance in a 1910 revue house."
+    "description": "The Friedrichstrasse variety theatre — musicals, comedy, concerts and dance in an entertainment palace of 1911, a revue house since 1923."
 }
 
 > {%
@@ -941,7 +941,7 @@ Content-Type: application/json
     "latitude": 52.49707,
     "longitude": 13.46503,
     "websiteUrl": "https://clubost.de",
-    "description": "A techno club at the western tip of the Stralau peninsula on the Rummelsburger Bucht, programming raves and club nights that run from late evening into the next morning."
+    "description": "A techno and house club on the Spree at the Ostkreuz end of the Stralau peninsula, programming raves and club nights that run from late evening into the next morning."
 }
 
 > {%
@@ -1000,7 +1000,7 @@ Content-Type: application/json
     "latitude": 52.54783,
     "longitude": 13.41181,
     "websiteUrl": "https://www.colosseumberlin.com",
-    "description": "A former Prenzlauer Berg cinema on Gleimstraße, run as an event house for readings, book premieres, talks and live podcast recordings."
+    "description": "A Prenzlauer Berg cinema of 1924 on Gleimstraße that still screens films, its halls also run as an event house for readings, book premieres, talks and live podcast recordings."
 }
 
 > {%
@@ -1295,7 +1295,7 @@ Content-Type: application/json
     "latitude": 52.507583,
     "longitude": 13.454532,
     "websiteUrl": "https://derweissehase.club",
-    "description": "A techno club in the RAW-Gelaende arches on Revaler Strasse, running raves, DJ nights and an open-air garden."
+    "description": "A techno club on the RAW-Gelände on Revaler Straße, running raves, DJ nights and an open-air garden."
 }
 
 > {%
@@ -1708,7 +1708,7 @@ Content-Type: application/json
     "latitude": 52.51611,
     "longitude": 13.41694,
     "websiteUrl": "https://goldengate-berlin.de",
-    "description": "A small, long-running techno club in the S-Bahn arches at Jannowitzbrucke, open Thursday to Saturday with house and techno DJ nights and door-only entry."
+    "description": "A small, long-running techno club in the S-Bahn arches at Jannowitzbrücke, open Thursday to Saturday with house and techno DJ nights and door-only entry."
 }
 
 > {%
@@ -1885,7 +1885,7 @@ Content-Type: application/json
     "latitude": 52.53808,
     "longitude": 13.32822,
     "websiteUrl": "https://heidegluehen.berlin",
-    "description": "An open-air techno party in a former nursery off Seestraße, running one long Saturday-into-Sunday session a week through the season."
+    "description": "A house club by the Westhafen in Wedding with a large garden, running long Saturday-into-Sunday sessions through the season."
 }
 
 > {%
@@ -1944,7 +1944,7 @@ Content-Type: application/json
     "latitude": 52.47702,
     "longitude": 13.43992,
     "websiteUrl": "https://heimathafen-neukoelln.de",
-    "description": "A Neukolln Saal and Studio venue in a historic ballroom, programming concerts, theatre, comedy, readings and its own productions."
+    "description": "A Neukölln Saal and Studio venue in a historic ballroom, programming concerts, theatre, comedy, readings and its own productions."
 }
 
 > {%
@@ -2121,7 +2121,7 @@ Content-Type: application/json
     "latitude": 52.486865,
     "longitude": 13.422321,
     "websiteUrl": "https://huxleysneuewelt.de",
-    "description": "A 1,600-capacity concert hall in a former ballroom on the Hasenheide, hosting touring rock, metal, hip hop, pop and electronic acts."
+    "description": "A 1,600-capacity concert hall in the former Neue Welt beer palace on the Hasenheide in Neukölln, hosting touring rock, metal, hip hop, pop and electronic acts."
 }
 
 > {%
@@ -2593,7 +2593,7 @@ Content-Type: application/json
     "latitude": 52.49922,
     "longitude": 13.44507,
     "websiteUrl": "https://www.lido-berlin.de",
-    "description": "A former 1950s cinema turned concert venue on the Spree in Kreuzberg, staging touring indie, rock and electronic acts as well as club nights."
+    "description": "A former 1950s cinema turned concert venue in Kreuzberg's Wrangelkiez, staging touring indie, rock and electronic acts as well as club nights."
 }
 
 > {%
@@ -2652,7 +2652,7 @@ Content-Type: application/json
     "latitude": 52.5136856,
     "longitude": 13.4661767,
     "websiteUrl": "https://www.loge-berlin.org",
-    "description": "An intimate, collectively run bar and events space in Friedrichshain, with a small programme of concerts, DJ nights and cultural gatherings."
+    "description": "A collectively run bar and events space in Friedrichshain, programming punk, rock and hip hop concerts alongside readings, discussions and DJ nights."
 }
 
 > {%
@@ -2888,7 +2888,7 @@ Content-Type: application/json
     "latitude": 52.5448,
     "longitude": 13.404494,
     "websiteUrl": "https://www.max-schmeling-halle.de",
-    "description": "A multi-purpose arena at Falkplatz in Prenzlauer Berg, hosting arena concerts alongside the handball and basketball fixtures that are not imported."
+    "description": "A multi-purpose arena at Falkplatz in Prenzlauer Berg, hosting arena concerts alongside the handball and volleyball fixtures that are not imported."
 }
 
 > {%
@@ -2947,7 +2947,7 @@ Content-Type: application/json
     "latitude": 52.501906,
     "longitude": 13.330836,
     "websiteUrl": "https://www.maxxim-berlin.de",
-    "description": "A party club off the Ku'damm, open nightly with a 90s/2000s, pop and house DJ programme."
+    "description": "A party club off the Ku'damm, open every night since 2007 with a DJ programme built around disco, house and hip hop."
 }
 
 > {%
@@ -3124,7 +3124,7 @@ Content-Type: application/json
     "latitude": 52.498979,
     "longitude": 13.352977,
     "websiteUrl": "https://mikropol-berlin.de",
-    "description": "A small underground club in Schöneberg with a varied programme of concerts and club nights across rock, metal, electronic and alternative styles."
+    "description": "A 250-capacity concert room and club opened in 2025 in the former carriage passage of the Metropol at Nollendorfplatz, with punk, rap and indie concerts, readings and house and techno nights."
 }
 
 > {%
@@ -3360,7 +3360,7 @@ Content-Type: application/json
     "latitude": 52.50644,
     "longitude": 13.42911,
     "websiteUrl": "http://www.morphinerecords.com",
-    "description": "The backyard concert room of the Morphine Records label in Kreuzberg, staging experimental, improvised and non-Western music, most of it recorded live for the label."
+    "description": "The Morphine Records label's studio and project room on the first floor of a Kreuzberg backyard, staging experimental, improvised and electronic concerts, many played as live recording sessions."
 }
 
 > {%
@@ -3478,7 +3478,7 @@ Content-Type: application/json
     "latitude": 52.49842,
     "longitude": 13.46674,
     "websiteUrl": "https://neue-zukunft.org",
-    "description": "A cultural venue and club on the Stralau peninsula by the Spree in Friedrichshain, blending concerts, club nights and arts events."
+    "description": "An arthouse cinema, pub and concert room next door to Renate on the Stralau peninsula in Friedrichshain, the successor of the Zukunft am Ostkreuz, with film, live music, theatre and a summer open-air cinema."
 }
 
 > {%
@@ -3714,7 +3714,7 @@ Content-Type: application/json
     "latitude": 52.50007,
     "longitude": 13.43485,
     "websiteUrl": "https://privatclub-berlin.de",
-    "description": "A club below the Markthalle near Schlesisches Tor in Kreuzberg, presenting concerts and DJ nights across soul, funk, indie, hip-hop and electronic music."
+    "description": "A club in the basement of a former post office on Skalitzer Straße near Schlesisches Tor in Kreuzberg, presenting concerts and DJ nights across soul, funk, indie, hip-hop and electronic music."
 }
 
 > {%
@@ -3950,7 +3950,7 @@ Content-Type: application/json
     "latitude": 52.52953,
     "longitude": 13.41259,
     "websiteUrl": "http://www.roadrunners-paradise.de",
-    "description": "A rock'n'roll club in a courtyard in Prenzlauer Berg, specialising in rockabilly, psychobilly, punk and garage live shows and parties."
+    "description": "A rock'n'roll club in the former boiler house of the old Königstadt brewery in Prenzlauer Berg, specialising in rockabilly, psychobilly, punk and garage live shows and parties."
 }
 
 > {%
@@ -4127,7 +4127,7 @@ Content-Type: application/json
     "latitude": 52.54569,
     "longitude": 13.36649,
     "websiteUrl": "https://www.silent-green.net",
-    "description": "A cultural quarter in a 1911 crematorium in Wedding, programming experimental concerts, exhibitions, film and talks across its Kuppelhalle, Betonhalle and ateliers."
+    "description": "A cultural quarter in a 1912 crematorium in Wedding, programming experimental concerts, exhibitions, film and talks across its Kuppelhalle, Betonhalle and ateliers."
 }
 
 > {%
@@ -4658,7 +4658,7 @@ Content-Type: application/json
     "latitude": 52.50410,
     "longitude": 13.44251,
     "websiteUrl": "https://www.uber-eats-music-hall.de",
-    "description": "Mid-size concert hall next door to the Uber Arena, programming touring bands, comedy and staged shows."
+    "description": "Mid-size concert hall across Uber Platz from the Uber Arena, programming touring bands, comedy and staged shows."
 }
 
 > {%
@@ -4953,7 +4953,7 @@ Content-Type: application/json
     "latitude": 52.50754,
     "longitude": 13.47581,
     "websiteUrl": "https://www.void-club.de",
-    "description": "A two-room techno club in a Lichtenberg backyard, programming drum & bass, hardtechno, trance and bass nights across the VOID Club and VOID Hall floors."
+    "description": "A multi-floor techno and bass club in a Lichtenberg backyard, open since 2015, programming drum & bass, hardtechno and trance nights across the VOID Club floors and the VOID Hall added in 2023."
 }
 
 > {%
@@ -5012,7 +5012,7 @@ Content-Type: application/json
     "latitude": 52.49749,
     "longitude": 13.43111,
     "websiteUrl": "https://www.wildatheartberlin.de",
-    "description": "A rock'n'roll bar and live club near Schlesisches Tor in Kreuzberg, hosting raucous concerts and DJ nights spanning rockabilly, punk, garage and surf."
+    "description": "A rock'n'roll bar and live club near Görlitzer Bahnhof in Kreuzberg, hosting raucous concerts and DJ nights spanning rockabilly, punk, garage and surf."
 }
 
 > {%
