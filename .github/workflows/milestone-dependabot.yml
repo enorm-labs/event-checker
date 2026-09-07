@@ -7,11 +7,15 @@
 # ==============================================================================================
 #
 # Bot pull requests are the one class that arrives with no milestone: `dependabot.yml` has no key
-# for one, and Renovate has no concept of milestones at all. This sets it, and never overwrites a
-# milestone already there.
+# for one, Renovate has no concept of milestones at all, and the release App's raise and bump pull
+# requests (`cut-release.yml`, #868, #1163) are opened by `gh pr create` with no `--milestone` on
+# purpose, so that the "oldest open milestone" rule lives here and nowhere else. This sets it, and
+# never overwrites a milestone already there.
 #
 # **`BOTS` is matched by login, so a new bot is invisible here until it is added** — and invisibly:
-# the skip below is logged as normal operation, not as a warning. `renovate[bot]` joined in #384.
+# the skip below is logged as normal operation, not as a warning. `renovate[bot]` joined in #384 and
+# `event-junkie-release[bot]` in #1172, after two releases' pull requests had been milestoned by
+# hand. The App's login is its slug plus `[bot]`, so renaming the App re-opens the gap silently.
 # The filename stays `milestone-dependabot.yml` because renaming it breaks every link into it for
 # no gain.
 name: Milestone bot PRs
@@ -25,7 +29,7 @@ on:
   pull_request_target:
     types: [ opened, reopened ]
 
-  # Sweeps open Dependabot pull requests that have none, covering the ones predating this workflow.
+  # Sweeps open bot pull requests that have none, covering the ones predating this workflow.
   # GitHub offers the button only for workflows on the default branch, so not until this merges.
   workflow_dispatch:
     inputs:
@@ -57,7 +61,7 @@ jobs:
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
-            const BOTS = new Set(['dependabot[bot]', 'dependabot-preview[bot]', 'renovate[bot]']);
+            const BOTS = new Set(['dependabot[bot]', 'dependabot-preview[bot]', 'renovate[bot]', 'event-junkie-release[bot]']);
             const { owner, repo } = context.repo;
 
             // No milestone here carries a due date, so "the next one due" cannot be asked for. The
@@ -111,10 +115,10 @@ jobs:
             const todo = open.filter((i) => i.pull_request && !i.milestone && BOTS.has(i.user.login));
 
             if (todo.length === 0) {
-              core.info('Every open Dependabot pull request already has a milestone.');
+              core.info('Every open bot pull request already has a milestone.');
               return;
             }
             for (const pr of todo) {
               await assign(pr.number, pr.title);
             }
-            core.notice(`Applied "${target.title}" to ${todo.length} Dependabot pull request(s).`);
+            core.notice(`Applied "${target.title}" to ${todo.length} bot pull request(s).`);
