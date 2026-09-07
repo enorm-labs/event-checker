@@ -194,7 +194,7 @@ key exists. It cannot tell you a translation is good, or that a claim is still t
 
 | Done       | Item                                   | Evidence             |
 | ---------- | -------------------------------------- | -------------------- |
-|            | CSP enforced, not report-only          | #854, and #843 first |
+| 2026-09-07 | CSP enforced, not report-only          | #854, and #843 first |
 | 2026-09-03 | Rate limiting on the public API        | #268                 |
 |            | The Security tab is at zero or triaged | `/security-triage`   |
 

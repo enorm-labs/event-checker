@@ -119,6 +119,13 @@ spec:
       # public Certificate Transparency logs within minutes, so the name is discoverable and crawlers
       # will find it. Keeping an unfinished site out of the index is the whole job here.
       noindex: true
+      # The Content-Security-Policy is enforced here, not report-only (#854). Staging went first and
+      # was loaded again under enforcement: 52 page loads, every route family, both locales, both
+      # themes, zero violations and zero console errors. Production's report-only header had the
+      # same pass before this flip. The chart default stays report-only for any new environment.
+      securityHeaders:
+        contentSecurityPolicy:
+          reportOnly: false
     certManager:
       clusterIssuer:
         create: true
