@@ -827,6 +827,14 @@ window.EJ_LINKS = {
           "statusText": ""
         },
         {
+          "url": "https://github.com/enorm-labs/event-junkie/blob/main/docs/ops/TROUBLESHOOTING.md",
+          "label": "docs/ops/TROUBLESHOOTING.md",
+          "what": "What you see, the check that tells the causes apart, the fix, and where the reasoning lives",
+          "whatText": "What you see, the check that tells the causes apart, the fix, and where the reasoning lives",
+          "status": "",
+          "statusText": ""
+        },
+        {
           "url": "https://github.com/enorm-labs/event-junkie/blob/main/docs/ops/HEALTHCHECKS.md",
           "label": "docs/ops/HEALTHCHECKS.md",
           "what": "Watching from outside: the site monitor, the dead-man's switches, and how to prove each fires",

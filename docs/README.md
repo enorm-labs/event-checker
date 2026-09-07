@@ -18,6 +18,7 @@ everything below — someone with a WireGuard tunnel open, not someone writing a
 | [ops/CLUSTER_ACCESS.md](ops/CLUSTER_ACCESS.md)       | Day-to-day access to a running cluster: tunnel, kubeconfig, contexts, k9s                                           |
 | [ops/BACKUPS.md](ops/BACKUPS.md)                     | What protects the database, what each layer survives, and how you know it works                                     |
 | [ops/RESTORE_RUNBOOK.md](ops/RESTORE_RUNBOOK.md)     | **Restoring it** — written for someone who is reading it because something has already gone wrong                   |
+| [ops/TROUBLESHOOTING.md](ops/TROUBLESHOOTING.md)     | Symptom first, then the check that tells the causes apart, then the fix — and a link to the runbook that explains   |
 | [ops/HEALTHCHECKS.md](ops/HEALTHCHECKS.md)           | The dead-man's switches: what alerts from outside the cluster, how to wire a node to one, and how to prove it fires |
 | [ops/SECRETS.md](ops/SECRETS.md)                     | The six cluster secrets: which are encrypted into git, which stay hand-made, and how to recreate each               |
 | [ops/DAILY_COMMANDS.md](ops/DAILY_COMMANDS.md)       | The commands you actually type, with the reasoning stripped out and linked instead                                  |
