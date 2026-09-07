@@ -347,6 +347,9 @@ tests:
       # and staging now serves cached images. Without it this case asserts the serving-off policy
       # against a serving-on render, and fails for being right about the wrong environment.
       images.serving.enabled: false
+      # Forced for the same reason: staging enforces the policy since #854, and this case is about
+      # the report-only header.
+      ingress.securityHeaders.contentSecurityPolicy.reportOnly: true
     documentSelector:
       path: metadata.name
       value: RELEASE-NAME-event-junkie-security-headers
@@ -377,6 +380,8 @@ tests:
       images.enabled: true
       images.storage.prefix: "test"
       images.serving.enabled: true
+      # Forced: the case is about `img-src`, not about which of the two headers carries it.
+      ingress.securityHeaders.contentSecurityPolicy.reportOnly: true
     documentSelector:
       path: metadata.name
       value: RELEASE-NAME-event-junkie-security-headers
