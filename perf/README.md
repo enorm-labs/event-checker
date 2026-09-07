@@ -103,8 +103,47 @@ each carry their own budget.
 The defaults are calibrated for a **local run against a laptop**, with the dev database's seeded data. They are regression detectors, not SLOs: loose enough
 that an ordinary machine under ordinary background load does not trip them, tight enough that an accidental N+1 or a dropped index does.
 
-There is no production environment yet — [ADR-012](../docs/adr/ADR-012_CLOUD_PLATFORM.md) is still Proposed. **Re-baseline against real infrastructure once
-something is deployed**, and treat that as a deliberate act. Raising a threshold because a run went red is how a performance suite becomes decorative.
+Production exists ([ADR-012](../docs/adr/ADR-012_CLOUD_PLATFORM.md), accepted) and the thresholds have not moved since they were set against a laptop.
+**Re-baselining against real infrastructure is a deliberate act**, and #297 is the issue that does it from real traffic. Raising a threshold because a run
+went red is how a performance suite becomes decorative.
+
+## Lighthouse baseline
+
+Lighthouse measures the page a visitor gets, which k6 cannot: rendering, layout shift, image delivery, compression as the browser sees it. It runs on demand
+against the live origin, never a dev server, because caching and compression are deployment properties (#292). Three runs per cell, the median reported,
+because one run is not a measurement. The command, from any directory:
+
+```bash
+CHROME_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
+npx --yes lighthouse@12 https://prod-check.event-junkie.de/de/events --preset=desktop \
+  --output=json --output-path=./list-desktop-1.json --quiet --chrome-flags="--headless=new"
+```
+
+Drop `--preset=desktop` for the mobile profile. The PageSpeed Insights API is the same engine on Google's network; its keyless quota was exhausted on the day
+below, so these are local runs on a Mac over a home connection, with Lighthouse's own throttling.
+
+**2026-09-07, Lighthouse 12.8.2, `prod-check`, v0.6.0.** Scores are medians of three, the range in brackets where it moved.
+
+| Page                | Profile | Performance | Accessibility | Best practices | SEO | LCP   | CLS  | TBT   |
+| ------------------- | ------- | ----------- | ------------- | -------------- | --- | ----- | ---- | ----- |
+| `/de/events`        | mobile  | 77 (73–77)  | 100           | 100            | 69  | 1.4 s | 0.65 | 36 ms |
+| `/de/events`        | desktop | 83 (81–84)  | 100           | 100            | 69  | 0.3 s | 0.34 | 0 ms  |
+| `/de/events/<slug>` | mobile  | 76 (75–76)  | 100           | 100            | 69  | 1.9 s | 0.79 | 42 ms |
+| `/de/events/<slug>` | desktop | 87 (87–88)  | 100           | 100            | 69  | 0.5 s | 0.27 | 0 ms  |
+
+What the numbers say, and what was done with each:
+
+- **SEO 69 is `prod-check`, not the site.** The one failing SEO audit is `is-crawlable`, because that host sends `X-Robots-Tag: noindex, nofollow` on purpose
+  (#286). It reads 100 on the apex, or the flip has gone wrong.
+- **CLS is the finding.** Every cell is over Google's 0.25 line for poor. The footer moves by the height of the content once the fetch completes, because each
+  view's `<main>` shows a one-line loading text until then. The detail page adds the poster: lazy-loaded although it is the LCP, and flagged unsized. Filed
+  as #1207 rather than fixed here.
+- **JSON is not compressed.** `uses-text-compression` lists only `/api/**` URLs: 41 KiB on the list page that gzip would make 9 KiB. Assets are gzipped by
+  nginx. Filed as #1206.
+- **Not actionable, and recorded so the next run does not rediscover them:** `bf-cache` reports "Internal error" on every run, a Lighthouse limitation on
+  headless Chrome; `dom-size` on the list page is 925 elements for 20 cards and their filters, which is the page.
+
+**Run it again after the flip (#939) on the apex**, mobile and desktop, and add a row here. The number to watch is CLS, then LCP on mobile.
 
 ## Why there is no CI workflow (yet)
 
