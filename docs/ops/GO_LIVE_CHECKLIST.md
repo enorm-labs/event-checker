@@ -143,7 +143,8 @@ OpenObserve to Signal). That is a different chain, and it stays unbuilt.
 | ---------- | --------------------------------------------------------------------------------------------------------- | -------- |
 | 2026-08-30 | Event sources registered **and enabled**, so the site has content                                         | #876     |
 | 2026-08-30 | Venue addresses, districts and coordinates audited                                                        | #329     |
-|            | Venue descriptions read against the venue they describe                                                   | #1124    |
+| 2026-09-07 | Venue descriptions read against the venue they describe                                                   | #1124    |
+|            | Venue descriptions proof-read once more **by the maintainer**, after #1124 and before the flip            | #1124    |
 |            | Every page read in both languages **by the maintainer**, as a reader — About and the legal texts included | #280     |
 | 2026-08-31 | Images served from our own cache, not hotlinked                                                           | #843     |
 
@@ -155,13 +156,17 @@ that was recorded before the sources were enabled. Images serve from the cache (
 coordinate puts a pin in the wrong place, and it drops the venue out of a radius search without saying so. The
 second failure is the quiet one, and it is the one the audit looked for.
 
-**The descriptions are hand-written prose, and #1124 reads each one against the venue itself.**
-#986 read them against the address only. It found two that were wrong, and both failed the same
-way. They repeated something the row's address said. Sonnenraum was
-described as "next to Club der Visionäre" because it carried that club's address, and it stands
-196 m away. Heideglühen was "in a former nursery off Beusselstraße", which is the wrong street.
-A corrected address does not correct the sentence that quotes it. Read each description against the
-venue, and look twice at any that names a street, a neighbour or a distance.
+**The descriptions are hand-written prose. Issue #1124 read each one against the venue itself on
+2026-09-07.** Issue #986 read them against the address only. It found two that were wrong. Both
+repeated something the row's address said. A corrected address does not correct the sentence that
+quotes it. Issue #1124 read all 86 against the venue's own site, Resident Advisor, Google's category and
+Wikipedia. 65 stood. 21 were corrected or rewritten, in the seed and in `V016`. One more sentence
+was correct in the seed and stale on both clusters, and `V016` carries it over. The address was
+rarely the fault. The faults were a building the venue never occupied, or a station that is not the
+nearest. Or a genre the house does not play, or a cinema that screens films again.
+The pass was made from sources, not from knowing the venues. The unsettled facts are listed on pull
+request #1196. The maintainer reads all 86 once more before the flip, as a reader who knows the city,
+and that read is the row above.
 
 **The prose is two independent documents in two languages.** The key-parity test proves every German
 key exists. It cannot tell you a translation is good, or that a claim is still true.
