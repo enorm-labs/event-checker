@@ -56,6 +56,7 @@ would defeat row 4, whose whole job is telling "nothing happened" apart from
 "nothing was recorded". A query that cannot report zero on its own is the wrong
 query — see `p_shedding`.
 """
+
 import json
 
 STREAM_TYPE = "metrics"
@@ -101,7 +102,10 @@ def panel(pid, title, description, typ, promql, x, y, w, h, unit=None, decimals=
                 "fields": {
                     "stream": "",
                     "stream_type": STREAM_TYPE,
-                    "x": [], "y": [], "z": [], "breakdown": [],
+                    "x": [],
+                    "y": [],
+                    "z": [],
+                    "breakdown": [],
                     "filter": {"filterType": "group", "logicalOperator": "AND", "conditions": []},
                 },
                 "config": {"promql_legend": "", "layer_type": "scatter", "weight_fixed": 1},
@@ -134,7 +138,8 @@ def sql_panel(pid, title, description, typ, sql, x, y, w, h, columns):
                     "stream_type": "logs",
                     "x": [{"label": x_alias[0], "alias": x_alias[1], "column": x_alias[1], "color": None}],
                     "y": [{"label": lbl, "alias": al, "column": al, "color": None} for lbl, al in y_aliases],
-                    "z": [], "breakdown": [],
+                    "z": [],
+                    "breakdown": [],
                     "filter": {"filterType": "group", "logicalOperator": "AND", "conditions": []},
                 },
                 "config": {"promql_legend": "", "layer_type": "scatter", "weight_fixed": 1},
@@ -154,8 +159,8 @@ LOG_STREAM = "default"
 ACCESS_LINES = "FROM \"%s\" WHERE k8s_container_name = 'frontend' AND body LIKE '[%%'" % LOG_STREAM
 REQUEST_PATH = "regexp_match(body, '\"GET ([^ ?\"]*)')[1]"
 STATUS = "regexp_match(body, '\" ([0-9]{3}) ')[1]"
-REFERRER = "regexp_match(body, '\"([^\"]*)\" \"[^\"]*\"$')[1]"
-USER_AGENT = "regexp_match(body, '\"([^\"]*)\"$')[1]"
+REFERRER = 'regexp_match(body, \'"([^"]*)" "[^"]*"$\')[1]'
+USER_AGENT = 'regexp_match(body, \'"([^"]*)"$\')[1]'
 
 # **A page load is a successful GET for a path with no dot in it.** `/`, `/de/events`,
 # `/en/venues/berghain` are pages; `/assets/index-abc.js`, `/favicon.svg`, `/sitemap.xml` are the
@@ -181,7 +186,11 @@ panels = [
         "24 is routine and the number climbing past ~36 is the signal. ADR-015's zero-events alert uses this series.",
         "metric",
         "max(%s) / 3600" % AGE,
-        x=0, y=0, w=48, h=10, decimals=1,
+        x=0,
+        y=0,
+        w=48,
+        h=10,
+        decimals=1,
     ),
     panel(
         "p_stale_count",
@@ -192,20 +201,28 @@ panels = [
         "counted here and cannot be — it has no age. The panel next to it is where those live.",
         "metric",
         "sum(%s > bool 129600)" % AGE,
-        x=48, y=0, w=48, h=10, decimals=0,
+        x=48,
+        y=0,
+        w=48,
+        h=10,
+        decimals=0,
     ),
     panel(
         "p_never_succeeded",
         "Sources that have never succeeded",
         "**The blind spot #618 closed.** `last_success` only exists once a source has worked, so a venue that has never "
         "imported had no series at all — not stale, not late, absent. On 2026-08-20 that was 86 sources and 84 series, "
-        "and the two missing were the only two that were broken while this dashboard read \"0 sources stale\". "
+        'and the two missing were the only two that were broken while this dashboard read "0 sources stale". '
         "`importer_source_has_succeeded` exists for every enabled row from the first refresh after start-up. "
         "**Anything but 0 is a scraper that has never once worked** — a different fact from a stale one, and a "
         "different response: fix the importer, do not wait for a retry.",
         "metric",
         "sum(max by (source) (importer_source_has_succeeded) == bool 0)",
-        x=96, y=0, w=48, h=10, decimals=0,
+        x=96,
+        y=0,
+        w=48,
+        h=10,
+        decimals=0,
     ),
     panel(
         "p_future_events",
@@ -214,9 +231,12 @@ panels = [
         "reports success, and the listings quietly empty out.",
         "metric",
         'max(db_events{horizon="future"})',
-        x=144, y=0, w=48, h=10, decimals=0,
+        x=144,
+        y=0,
+        w=48,
+        h=10,
+        decimals=0,
     ),
-
     # --- Row 2: the importer, which is what the project is for ------------
     panel(
         "p_stale_by_source",
@@ -226,7 +246,11 @@ panels = [
         "the database.",
         "bar",
         "topk(20, %s / 3600)" % AGE,
-        x=0, y=10, w=96, h=18, decimals=1,
+        x=0,
+        y=10,
+        w=96,
+        h=18,
+        decimals=1,
     ),
     panel(
         "p_events_trend",
@@ -234,9 +258,12 @@ panels = [
         "Both horizons. `all` only ever grows; `future` is the one that matters and the one that can fall.",
         "line",
         "max by (horizon) (db_events)",
-        x=96, y=10, w=96, h=18, decimals=0,
+        x=96,
+        y=10,
+        w=96,
+        h=18,
+        decimals=0,
     ),
-
     # --- Row 3: the platform underneath -----------------------------------
     panel(
         "p_pg",
@@ -245,7 +272,11 @@ panels = [
         "the disk with everything else.",
         "line",
         "max by (datname) (pg_database_size_bytes)",
-        x=0, y=28, w=48, h=16, unit="bytes",
+        x=0,
+        y=28,
+        w=48,
+        h=16,
+        unit="bytes",
     ),
     panel(
         "p_node_pressure",
@@ -254,7 +285,10 @@ panels = [
         "Load alone reads as a CPU problem; load next to memory utilisation is what identifies it as stalling.",
         "line",
         ["max(system_cpu_load_average_5m)", "max(system_memory_utilization)"],
-        x=48, y=28, w=48, h=16,
+        x=48,
+        y=28,
+        w=48,
+        h=16,
     ),
     panel(
         "p_node_mem",
@@ -263,7 +297,11 @@ panels = [
         "It global-OOMed on 2026-08-20 with load at 99. This panel is the one that would have seen it coming.",
         "metric",
         "min(k8s_node_memory_available)",
-        x=96, y=28, w=48, h=16, unit="bytes",
+        x=96,
+        y=28,
+        w=48,
+        h=16,
+        unit="bytes",
     ),
     panel(
         "p_certs",
@@ -282,9 +320,13 @@ panels = [
         "line",
         "clamp_max((min by (name) (certmanager_certificate_expiration_timestamp_seconds) - timestamp("
         "min by (name) (certmanager_certificate_expiration_timestamp_seconds))) / 86400, %d)" % CERT_CEILING_DAYS,
-        x=144, y=28, w=48, h=16, decimals=1, y_axis_min=0,
+        x=144,
+        y=28,
+        w=48,
+        h=16,
+        decimals=1,
+        y_axis_min=0,
     ),
-
     # --- Row 4: whether any of the above can be believed -------------------
     # A gap in every panel above looks identical to a quiet period. These two say which it was.
     panel(
@@ -306,7 +348,11 @@ panels = [
             "sum(rate(otelcol_exporter_send_failed_metric_points_total[5m]))",
             "sum(rate(otelcol_receiver_refused_metric_points_total[5m]))",
         ],
-        x=0, y=44, w=96, h=16, decimals=2,
+        x=0,
+        y=44,
+        w=96,
+        h=16,
+        decimals=2,
     ),
     panel(
         "p_memtable",
@@ -319,9 +365,12 @@ panels = [
         "because the fix without it is unfalsifiable.",
         "line",
         "max(zo_ingest_memtable_arrow_bytes)",
-        x=96, y=44, w=96, h=16, unit="bytes",
+        x=96,
+        y=44,
+        w=96,
+        h=16,
+        unit="bytes",
     ),
-
     # --- Row 5: did anyone come (#1126) -----------------------------------
     # Page loads, not people. No address reaches a log (LEGAL.md §7.5), no cookie, no identifier,
     # so a unique-visitor count cannot exist here by design. What the nginx line holds is enough to
@@ -341,7 +390,10 @@ panels = [
         "line",
         "SELECT histogram(_timestamp, '1 hour') AS x_axis_1, sum(CASE WHEN %s THEN 1 ELSE 0 END) AS y_axis_1 "
         "%s GROUP BY x_axis_1 ORDER BY x_axis_1" % (VISITOR_PAGE_LOAD, ACCESS_LINES),
-        x=0, y=60, w=112, h=16,
+        x=0,
+        y=60,
+        w=112,
+        h=16,
         columns=[("Hour", "x_axis_1"), ("Page loads", "y_axis_1")],
     ),
     sql_panel(
@@ -356,7 +408,10 @@ panels = [
         "SELECT coalesce(%s, '-') AS x_axis_1, sum(CASE WHEN %s THEN 1 ELSE 0 END) AS y_axis_1, "
         "sum(CASE WHEN %s THEN 1 ELSE 0 END) AS y_axis_2 %s GROUP BY x_axis_1 "
         "ORDER BY y_axis_1 DESC, y_axis_2 DESC LIMIT 15" % (REFERRER, VISITOR_PAGE_LOAD, PAGE_LOAD, ACCESS_LINES),
-        x=112, y=60, w=80, h=16,
+        x=112,
+        y=60,
+        w=80,
+        h=16,
         columns=[("Referrer", "x_axis_1"), ("Visitors", "y_axis_1"), ("All agents", "y_axis_2")],
     ),
 ]

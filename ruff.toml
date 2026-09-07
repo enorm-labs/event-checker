@@ -1,0 +1,18 @@
+# ruff — lint and format for the Python under scripts/, deploy/alerts/ and deploy/dashboards/.
+#
+# The pin is `RUFF_VERSION` in .github/workflows/validate-python.yml; the commit hook uses whatever
+# `ruff` is on $PATH, the same arrangement as ShellCheck. This file is the configuration both read.
+#
+# 120 rather than the default 88: the repository's prose and shell run to 100–120, and the longest
+# lines before adoption were 121–133. py312 is the `python3` on an Ubuntu 24.04 node, where the
+# deploy/ scripts and ste_lint.py are copied and run; the runner and a developer's machine are newer.
+#
+# Not selected on purpose: `UP031` (`%`-formatting is deliberate in code that runs on a node under
+# whatever python3 is there) and `PLW1510` (`subprocess.run` without `check=`, where every call
+# already reads its returncode). A `pyproject.toml` would say this is a Python project; it is not.
+
+line-length = 120
+target-version = "py312"
+
+[lint]
+select = ["E", "F", "W", "B", "I"]

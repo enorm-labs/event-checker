@@ -12,6 +12,7 @@ nothing depends on.
 
     python3 import_dashboard.py "$AUTH" "$SVC" default /tmp/ej-dashboard.json
 """
+
 import json
 import subprocess
 import sys
@@ -23,7 +24,8 @@ base = "http://%s:5080/api/%s/dashboards" % (svc, org)
 def curl(*args):
     r = subprocess.run(
         ["curl", "-sS", "-m", "60", "-H", "Authorization: " + auth, *args],
-        capture_output=True, text=True,
+        capture_output=True,
+        text=True,
     )
     if r.returncode != 0:
         sys.exit("curl failed: %s" % r.stderr.strip()[:300])
@@ -50,8 +52,13 @@ for entry in listing:
         curl("-X", "DELETE", "%s/%s" % (base, existing["dashboardId"]), "-o", "/dev/null")
 
 out = curl(
-    "-X", "POST", "-H", "Content-Type: application/json",
-    "--data-binary", "@" + path, base,
+    "-X",
+    "POST",
+    "-H",
+    "Content-Type: application/json",
+    "--data-binary",
+    "@" + path,
+    base,
 )
 try:
     created = unwrap(json.loads(out))

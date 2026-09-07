@@ -179,9 +179,7 @@ def blocks_of(lines, findings, path):
             continue
 
         if AMENDMENT.match(raw):
-            findings.append(
-                (path, lineno, "amendment", "a document states the rule, not its history")
-            )
+            findings.append((path, lineno, "amendment", "a document states the rule, not its history"))
 
         stripped = raw.strip()
         if not stripped or HEADING.match(raw) or stripped.startswith(("|", "<!--")):
@@ -213,9 +211,7 @@ def blocks_of(lines, findings, path):
 def check_block(block, path, findings):
     text = block.text
     for match in re.finditer(r";", text):
-        findings.append(
-            (path, block.line_at(match.start()), "semicolon", "STE bans the mark outright")
-        )
+        findings.append((path, block.line_at(match.start()), "semicolon", "STE bans the mark outright"))
 
     for match in PERFECT.finditer(text):
         if match.group(2).lower() in NOT_PARTICIPLES:
@@ -269,9 +265,7 @@ def check_status(path, lines):
             break
         words.extend(clean(line).split())
     if len(words) < MIN_STATUS_WORDS:
-        return [
-            (path, start, "bare-status", '"%s" does not say what was decided' % " ".join(words))
-        ]
+        return [(path, start, "bare-status", '"%s" does not say what was decided' % " ".join(words))]
     return []
 
 

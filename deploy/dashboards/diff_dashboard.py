@@ -30,6 +30,7 @@ Each of these scripts is copied to the node on its own and has to run there with
 nothing beside it, which is what makes a shared module the more expensive option
 for fifteen lines. If a third one appears, that trade changes.
 """
+
 import json
 import subprocess
 import sys
@@ -89,7 +90,9 @@ def differences(wanted, actual, where=""):
         return found
     if isinstance(wanted, list):
         if not isinstance(actual, list) or len(wanted) != len(actual):
-            return [(where, "%d entries" % len(wanted), "%d entries" % (len(actual) if isinstance(actual, list) else -1))]
+            return [
+                (where, "%d entries" % len(wanted), "%d entries" % (len(actual) if isinstance(actual, list) else -1))
+            ]
         found = []
         for index, value in enumerate(wanted):
             found += differences(value, actual[index], "%s[%d]" % (where, index))

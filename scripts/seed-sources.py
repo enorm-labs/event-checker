@@ -25,6 +25,7 @@ order:
 **This never triggers an import.** The file's third request per venue does; it is dropped here.
 Step 3 hands the sources to the scheduler, which picks them up on its next tick.
 """
+
 import argparse, json, re, sys, urllib.error, urllib.request
 
 SEED_FILE = "http/importer/dev-seed.http"
@@ -150,19 +151,19 @@ def main():
         "--yes",
         action="store_true",
         help="confirm writing to a host other than the local default. Required there, because a "
-             "forwarded port looks exactly like a local one and the mistake is silent.",
+        "forwarded port looks exactly like a local one and the mistake is silent.",
     )
     ap.add_argument(
         "--enable",
         action="store_true",
         help="step 3: hand the already-seeded sources to the scheduler. Refuses while any source "
-             "is unreviewed, because that is the order the licence gate depends on.",
+        "is unreviewed, because that is the order the licence gate depends on.",
     )
     ap.add_argument(
         "--allow-unreviewed",
         action="store_true",
         help="enable despite unreviewed sources. One is expected -- the venue whose site answers "
-             "our user agent with 406, recorded in docs/licence-review/README.md section 6.",
+        "our user agent with 406, recorded in docs/licence-review/README.md section 6.",
     )
     args = ap.parse_args()
 

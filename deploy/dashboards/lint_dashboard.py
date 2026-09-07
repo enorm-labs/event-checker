@@ -15,6 +15,7 @@ before anything reaches the network. `apply.sh` runs it on every invocation.
 
     python3 lint_dashboard.py is-it-healthy.json
 """
+
 import json
 import sys
 
@@ -36,9 +37,26 @@ GRID_WIDTH = 192
 # type outside this set fails rather than warns, because the failure it is there
 # to catch renders as an empty rectangle and nothing else.
 PANEL_TYPES = {
-    "area", "area-stacked", "bar", "custom_chart", "donut", "gauge", "geomap",
-    "h-bar", "h-stacked", "heatmap", "html", "line", "maps", "markdown",
-    "metric", "pie", "sankey", "scatter", "stacked", "table",
+    "area",
+    "area-stacked",
+    "bar",
+    "custom_chart",
+    "donut",
+    "gauge",
+    "geomap",
+    "h-bar",
+    "h-stacked",
+    "heatmap",
+    "html",
+    "line",
+    "maps",
+    "markdown",
+    "metric",
+    "pie",
+    "sankey",
+    "scatter",
+    "stacked",
+    "table",
 }
 
 # Panel types that draw from a query rather than from static content.
@@ -48,10 +66,7 @@ CONTENT_TYPES = {"markdown", "html"}
 def overlaps(a, b):
     """True when two layout rectangles share any area."""
     return (
-        a["x"] < b["x"] + b["w"]
-        and b["x"] < a["x"] + a["w"]
-        and a["y"] < b["y"] + b["h"]
-        and b["y"] < a["y"] + a["h"]
+        a["x"] < b["x"] + b["w"] and b["x"] < a["x"] + a["w"] and a["y"] < b["y"] + b["h"] and b["y"] < a["y"] + a["h"]
     )
 
 
@@ -86,7 +101,9 @@ def lint(dash):
                 problems.append("%s: panel type %r is not one OpenObserve draws%s" % (where, typ, hint))
 
             if p.get("id") in seen_ids:
-                problems.append("%s: duplicate panel id %r, already used by %r" % (where, p.get("id"), seen_ids[p["id"]]))
+                problems.append(
+                    "%s: duplicate panel id %r, already used by %r" % (where, p.get("id"), seen_ids[p["id"]])
+                )
             else:
                 seen_ids[p.get("id")] = name
 
@@ -132,7 +149,8 @@ def lint(dash):
                     fields = q.get("fields") or {}
                     if fields.get("stream_type") != "logs":
                         problems.append(
-                            "%s: query %d is sql but stream_type is %r, expected 'logs'" % (where, n, fields.get("stream_type"))
+                            "%s: query %d is sql but stream_type is %r, expected 'logs'"
+                            % (where, n, fields.get("stream_type"))
                         )
                     if not (fields.get("stream") or "").strip():
                         problems.append("%s: query %d is sql but names no stream" % (where, n))
