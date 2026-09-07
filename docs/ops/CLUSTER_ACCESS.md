@@ -3,7 +3,8 @@
 Day-to-day access. **Nothing here changes anything** — it is the read-only half of operating an environment.
 
 Setting a cluster up for the first time is [CLUSTER_BOOTSTRAP.md](CLUSTER_BOOTSTRAP.md). This page assumes you already did that, and that you have the tunnel
-config and the node's address. The commands with the reasoning stripped out are [DAILY_COMMANDS.md](DAILY_COMMANDS.md).
+config and the node's address. The commands with the reasoning stripped out are [DAILY_COMMANDS.md](DAILY_COMMANDS.md). When something is wrong and you
+do not know what, start at [TROUBLESHOOTING.md](TROUBLESHOOTING.md).
 
 ## The short version
 
