@@ -158,6 +158,13 @@ spec:
       # rendered — the header needs a Traefik Middleware, because the Ingress API cannot express a
       # response header. Production keeps that property; staging trades it for not being indexed.
       noindex: true
+      # The Content-Security-Policy is enforced here, not report-only (#854). Before the flip the
+      # report-only header was loaded in a browser: 52 page loads, every route family, both locales,
+      # both themes, zero violations. The chart default stays report-only, so a new environment
+      # starts with the warning and not the blank page.
+      securityHeaders:
+        contentSecurityPolicy:
+          reportOnly: false
       tls:
         enabled: true
         secretName: "event-junkie-staging-tls"
