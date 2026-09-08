@@ -61,6 +61,16 @@ class EventController(
         @Valid @RequestBody request: EventRequest
     ): EventResponse = eventService.update(id, request)
 
+    /**
+     * Replays language detection over stored descriptions that carry no language.
+     *
+     * A one-off for the rows that predate detection (#470). Every import classifies what it writes,
+     * so this endpoint finds nothing on a database that has imported since.
+     */
+    @PostMapping("/detect-languages")
+    @Operation(summary = "Classify the language of stored descriptions that carry none")
+    suspend fun detectLanguages(): DescriptionLanguageBackfill = eventService.classifyStoredDescriptions()
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Delete an event by ID")

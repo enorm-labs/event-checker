@@ -230,6 +230,37 @@ describe('breadcrumbJsonLd', () => {
   })
 })
 
+// The description a page shows carries its own language, which is often not the page's. Claiming
+// the locale for a German text on /en/ is a misrepresentation in a format built for machines.
+describe('eventJsonLd inLanguage', () => {
+  it('declares the language of the text it emitted', () => {
+    const german = { ...event, description: 'Ein Abend mit Aussicht', descriptionLanguage: 'de' }
+
+    expect(eventJsonLd(german, 'en')!.inLanguage).toBe('de')
+    expect(eventJsonLd(german, 'de')!.inLanguage).toBe('de')
+  })
+
+  it('follows the other-language text when that is the one shown', () => {
+    const both = {
+      ...event,
+      description: 'Ein Abend mit Aussicht',
+      descriptionLanguage: 'de',
+      descriptionAlt: 'An evening with a view',
+      descriptionAltLanguage: 'en',
+      descriptionAltOrigin: 'PUBLISHER',
+    }
+
+    expect(eventJsonLd(both, 'en')!.description).toBe('An evening with a view')
+    expect(eventJsonLd(both, 'en')!.inLanguage).toBe('en')
+  })
+
+  it('claims no language for an unclassified description', () => {
+    const unclassified = { ...event, description: 'Doors 19:30', descriptionLanguage: undefined }
+
+    expect(eventJsonLd(unclassified, 'en')!.inLanguage).toBeUndefined()
+  })
+})
+
 describe('websiteJsonLd', () => {
   it('claims a WebSite and not an Organization', () => {
     // The imprint states this is run by a private individual and not a company. An Organization

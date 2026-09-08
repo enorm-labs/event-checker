@@ -6,6 +6,7 @@ import BaseBadge from '@/components/BaseBadge.vue'
 import CachedImage from '@/components/CachedImage.vue'
 import SectionLabel from '@/components/SectionLabel.vue'
 import { useEvent } from '@/composables/useEvent'
+import { descriptionFor } from '@/lib/description'
 import { usePageMeta } from '@/composables/usePageMeta'
 import { APP_NAME, eventPageMeta, placeholderPageMeta } from '@/lib/pageMeta'
 import { useStructuredData } from '@/composables/useStructuredData'
@@ -44,6 +45,13 @@ const localePath = useLocalePath()
 const { formatDate } = useFormat()
 
 const { t, te, locale } = useI18n()
+
+// The text for this locale, its language, and whether a machine wrote it. Shared with the page
+// meta, the structured data and the injector — see lib/description.ts. Below `useI18n()` for the
+// same reason `usePageMeta` is.
+const description = computed(() =>
+  event.value ? descriptionFor(event.value, locale.value as Locale) : null,
+)
 
 /**
  * A backend enum's label, falling back to the raw value.
@@ -158,8 +166,29 @@ useStructuredData((): JsonLd[] => {
         />
       </div>
 
-      <p v-if="event.description" class="whitespace-pre-line text-foreground/90">
-        {{ event.description }}
+      <!--
+        `lang` marks the text, not the page. A German description on /en/ is what the venue wrote,
+        and declaring it lets a screen reader pronounce it and a browser offer to translate it.
+        Absent when the importer could not tell, which is the honest answer (ADR-026).
+      -->
+      <p
+        v-if="description"
+        :lang="description.lang ?? undefined"
+        class="whitespace-pre-line text-foreground/90"
+      >
+        {{ description.text }}
+      </p>
+      <!-- Machine output is never presented as the venue's own words. -->
+      <p v-if="description?.machine" class="text-sm text-muted-foreground">
+        {{ t('events.detail.machineTranslated') }}
+        <a
+          v-if="event.sourceUrl"
+          :href="event.sourceUrl"
+          class="underline underline-offset-2"
+          rel="noopener noreferrer"
+          target="_blank"
+          >{{ t('events.detail.originalText') }}</a
+        >
       </p>
       <!--
         Only where a licence removed a description, never where the venue wrote none. On a seeded
@@ -170,7 +199,7 @@ useStructuredData((): JsonLd[] => {
         read off an Impressum rather than sent to us (#809), so "at the venue's request" would be a
         position we invented for them.
       -->
-      <p v-else-if="event.descriptionWithheld" class="text-sm text-muted-foreground">
+      <p v-if="!description && event.descriptionWithheld" class="text-sm text-muted-foreground">
         {{ t('events.detail.descriptionElsewhere') }}
       </p>
 

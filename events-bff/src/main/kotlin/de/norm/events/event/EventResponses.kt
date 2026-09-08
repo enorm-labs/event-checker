@@ -134,6 +134,28 @@ data class EventDetailResponse(
     val subtitle: String?,
     @Schema(description = "Longer description or artist biography")
     val description: String?,
+    @Schema(
+        description =
+            "Language of `description` as detected at import: `de` or `en`. Null when the text is too short " +
+                "or holds both languages, in which case the page claims no language for it (ADR-026).",
+        example = "de"
+    )
+    val descriptionLanguage: String?,
+    @Schema(
+        description =
+            "The description in the other locale, when there is one. Written by the publisher, or by a machine " +
+                "where the source's grant allows it. Null far more often than not."
+    )
+    val descriptionAlt: String?,
+    @Schema(description = "Language of `descriptionAlt`: `de` or `en`. Null exactly when `descriptionAlt` is.", example = "en")
+    val descriptionAltLanguage: String?,
+    @Schema(
+        description =
+            "Who wrote `descriptionAlt`: `PUBLISHER` or `MACHINE`. A machine translation is labelled as such " +
+                "on the page and links to the source. Null exactly when `descriptionAlt` is.",
+        example = "PUBLISHER"
+    )
+    val descriptionAltOrigin: String?,
     @Schema(description = "Kind of event", example = "CONCERT")
     val eventType: EventType,
     @Schema(description = "Scheduling status of the event", example = "SCHEDULED")
@@ -221,6 +243,10 @@ data class EventDetailResponse(
                 title = entity.title,
                 subtitle = entity.subtitle,
                 description = entity.description,
+                descriptionLanguage = entity.descriptionLanguage,
+                descriptionAlt = entity.descriptionAlt,
+                descriptionAltLanguage = entity.descriptionAltLanguage,
+                descriptionAltOrigin = entity.descriptionAltOrigin,
                 eventType = EventType.parseOrDefault(entity.eventType),
                 status = EventStatus.parseOrDefault(entity.status),
                 eventDate = entity.eventDate,

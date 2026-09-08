@@ -162,4 +162,47 @@ class ScrapedEventTest {
         entity.description shouldBe "Ein Abend"
         entity.imageUrl shouldBe "https://example.test/a.jpg"
     }
+
+    // The language travels with the text, so a page can mark it and a crawler can believe it
+    // (ADR-026). The classifier's own cases live in DescriptionLanguageTest; this asserts the wiring.
+    @Test
+    fun `toEventEntity classifies the language of the stored description`() {
+        val entity = scrapedEvent(description = GERMAN_DESCRIPTION).toEntity()
+
+        entity.descriptionLanguage shouldBe "de"
+        entity.descriptionLanguageConfidence?.signum() shouldBe 1
+    }
+
+    // Nothing to classify, so nothing is claimed. A prohibited source keeps no trace of the text.
+    @Test
+    fun `toEventEntity claims no language for a description it does not store`() {
+        val entity =
+            scrapedEvent(description = GERMAN_DESCRIPTION)
+                .toEventEntity(
+                    venueId = 1L,
+                    venueSlug = "so36",
+                    eventSourceId = 1L,
+                    licences = licensed(SourceLicence.PROHIBITED, SourceLicence.UNCLEAR)
+                )
+
+        entity.description shouldBe null
+        entity.descriptionLanguage shouldBe null
+        entity.descriptionLanguageConfidence shouldBe null
+    }
+
+    // Nothing writes a second language yet. #330 imports one, #470's engine translates one.
+    @Test
+    fun `toEventEntity writes no alternative text`() {
+        val entity = scrapedEvent(description = GERMAN_DESCRIPTION).toEntity()
+
+        entity.descriptionAlt shouldBe null
+        entity.descriptionAltLanguage shouldBe null
+        entity.descriptionAltOrigin shouldBe null
+    }
+
+    private companion object {
+        const val GERMAN_DESCRIPTION =
+            "Die Bolschewistische Kurkapelle wurde 1986 in Ost-Berlin als Teil der politischen Untergrundszene " +
+                "gegründet, wenige Jahre vor dem Fall der Berliner Mauer."
+    }
 }

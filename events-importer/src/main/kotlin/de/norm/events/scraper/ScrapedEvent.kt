@@ -1,6 +1,7 @@
 package de.norm.events.scraper
 
 import de.norm.events.event.ArtistRole
+import de.norm.events.event.DescriptionLanguage
 import de.norm.events.event.EventArtistEntity
 import de.norm.events.event.EventEntity
 import de.norm.events.event.EventStatus
@@ -103,6 +104,8 @@ data class ScrapedEvent(
         // Guard the doors ≤ start invariant: a source that lists them the wrong way round
         // (e.g. SO36's "Einlass: 19:30, Beginn: 19:00") has transposed the labels — swap back.
         val (doors, start) = orderDoorsBeforeStart(doorsTime, startTime)
+        val storedDescription = if (licences.withholdsDescription()) null else description
+        val detected = DescriptionLanguage.detect(storedDescription)
         // priceCurrency is intentionally omitted — all scraped venues are currently in Berlin
         // (EUR). EventEntity defaults to "EUR". If non-EUR venues are added, introduce a
         // priceCurrency field on ScrapedEvent and pass it through here.
@@ -119,7 +122,11 @@ data class ScrapedEvent(
             // A source that forbids its prose gets none of it stored, not merely hidden (#807).
             // Blanking on read would leave the § 16 reproduction in place, and this is the only
             // point every import passes through.
-            description = if (licences.withholdsDescription()) null else description,
+            description = storedDescription,
+            // The page tells a reader and a crawler which language the text is in, so a German
+            // description under English chrome is marked rather than mislabelled (ADR-026).
+            descriptionLanguage = detected?.language?.code,
+            descriptionLanguageConfidence = detected?.confidence,
             // Fall back to OTHER (not CONCERT) when the source provided no category,
             // so unclassifiable events aren't silently labelled as concerts; then
             // promote an under-classified festival title (a "Konzert"-labelled festival

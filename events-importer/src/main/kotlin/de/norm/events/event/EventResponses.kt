@@ -144,3 +144,19 @@ data class EventArtistResponse(
             )
     }
 }
+
+/**
+ * What one replay of description-language detection classified.
+ *
+ * `unknown` is a result, not a failure: a line-up list or a field holding both languages is
+ * deliberately left unclassified (ADR-026).
+ */
+@Schema(description = "Counts from one replay of description-language detection")
+data class DescriptionLanguageBackfill(
+    @Schema(description = "Descriptions classified as German", example = "1352")
+    val german: Int,
+    @Schema(description = "Descriptions classified as English", example = "520")
+    val english: Int,
+    @Schema(description = "Descriptions the classifier could not call, left unclassified", example = "275")
+    val unknown: Int
+)

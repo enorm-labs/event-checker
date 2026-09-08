@@ -25,6 +25,17 @@ data class EventEntity(
     val title: String,
     val subtitle: String? = null,
     val description: String? = null,
+    /** `de` or `en`, detected from [description] at import. Null when the text is too short or mixes both (ADR-026). */
+    val descriptionLanguage: String? = null,
+    val descriptionLanguageConfidence: BigDecimal? = null,
+    /** The description in the other locale, when the publisher wrote one or a grant allowed a translation. */
+    val descriptionAlt: String? = null,
+    val descriptionAltLanguage: String? = null,
+    /** `PUBLISHER` or `MACHINE`. A machine translation is labelled on the page and is never the record. */
+    val descriptionAltOrigin: String? = null,
+    val descriptionAltEngine: String? = null,
+    /** SHA-256 of the [description] the alt text was made from. A changed original invalidates it. */
+    val descriptionAltSourceHash: String? = null,
     val eventType: String = EventType.CONCERT.name,
     val status: String = EventStatus.SCHEDULED.name,
     val slug: String,

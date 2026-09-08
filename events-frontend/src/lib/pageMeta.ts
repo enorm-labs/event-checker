@@ -1,4 +1,5 @@
 import type { ArtistDetail, EventDetail, PromoterDetail, VenueDetail } from '@/api/types'
+import { descriptionFor } from '@/lib/description'
 import { formatDate } from '@/lib/format'
 import { INTL_LOCALES, type Locale } from '@/i18n/locales'
 import { absoluteImageUrl } from '@/lib/seo'
@@ -88,7 +89,7 @@ export function eventPageMeta(event: EventDetail, locale: Locale): PageMeta {
     formatDate(event.eventDate, INTL_LOCALES[locale]),
     join(', ', event.venue?.name, event.venue?.city),
   )
-  const description = join(' — ', facts, event.description)
+  const description = join(' — ', facts, descriptionFor(event, locale)?.text)
 
   return {
     title: formatTitle(event.title),

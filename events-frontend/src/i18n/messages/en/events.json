@@ -39,6 +39,8 @@
     "buyTickets": "Buy tickets",
     "eventPage": "Event page",
     "descriptionElsewhere": "The description is on the venue's own page.",
+    "machineTranslated": "Machine-translated. The venue published the original text.",
+    "originalText": "Original text",
     "facebook": "Facebook",
     "kind": "Event",
     "presale": "Presale",
