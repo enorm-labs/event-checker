@@ -146,8 +146,8 @@ importer:
   affinity: {}
   # importer.translation fills in the missing language for a source whose licence grants it
   # (ADR-026, #470). **The engine is not the switch that spends money** — a source also needs
-  # `translation_licence = PERMITTED`, which only a venue's answer produces, so an environment with
-  # the engine on and no grant translates nothing and calls nobody.
+  # `translation_licence = PERMITTED`, which since ADR-027 follows the display rule, so an
+  # environment with the engine on translates every source a venue has not prohibited.
   translation:
     # `none` or `anthropic`.
     engine: "none"

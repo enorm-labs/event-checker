@@ -21,9 +21,9 @@ import org.springframework.stereotype.Service
  * costs a retry rather than data, and an engine that is slow or down must not fail a scrape. Every
  * outcome is a log line and a counter.
  *
- * The gate is [SourceLicences.allowsTranslation], which only `PERMITTED` satisfies (ADR-026). No
- * source holds that verdict until a venue answers the mail in #808, so this does nothing today by
- * design.
+ * The gate is [SourceLicences.allowsTranslation], which only `PERMITTED` satisfies. Since ADR-027
+ * that verdict follows the display rule, so it is set wherever a venue has not prohibited the
+ * description — 84 of the 86 sources on both clusters.
  */
 @Service
 @Suppress("LongParameterList") // Constructor injection: one parameter per collaborator.

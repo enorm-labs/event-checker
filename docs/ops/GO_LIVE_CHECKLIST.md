@@ -148,6 +148,7 @@ OpenObserve to Signal). That is a different chain, and it stays unbuilt.
 |            | Every page read in both languages **by the maintainer**, as a reader — About and the legal texts included | #280     |
 | 2026-08-31 | Images served from our own cache, not hotlinked                                                           | #843     |
 | 2026-09-07 | Multilingual event text decided, so the translation question is answered before a venue is asked          | #469     |
+| 2026-09-08 | Every description a venue has not prohibited translated on production                                     | #470     |
 |            | Machine-translated descriptions read on the site **by the maintainer**, in German and English             | ADR-027  |
 
 **Production serves the full catalogue.** All 86 sources are registered, enabled and carry their licence
@@ -169,6 +170,14 @@ nearest. Or a genre the house does not play, or a cinema that screens films agai
 The pass was made from sources, not from knowing the venues. The unsettled facts are listed on pull
 request #1196. The maintainer reads all 86 once more before the flip, as a reader who knows the city,
 and that read is the row above.
+
+**The machine translations exist on both clusters since 2026-09-08.** ADR-027 decided that a description may be
+translated wherever it may be displayed. So `translation_licence` is `PERMITTED` on 84 of the 86 sources. The
+other two are the venues that prohibit the description itself. The backfill then translated the whole corpus on
+production in one pass. Every translation carries the engine, its version and a hash of the text it was made
+from. A poor one is regenerated rather than repaired. Reading a sample of that output is the row above, and it
+is a read for quality. The plausibility checks in #1213 reject a summary or a lost proper noun. They cannot tell
+you that a sentence is merely bad German.
 
 **The prose is two independent documents in two languages.** The key-parity test proves every German
 key exists. It cannot tell you a translation is good, or that a claim is still true.

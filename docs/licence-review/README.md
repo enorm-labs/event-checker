@@ -8,7 +8,10 @@ the record. `scripts/apply-licence-review.py` writes it to a database.
 
 1. **All 86 sources were read on 2026-08-28.** The result was 83 `UNCLEAR`, 2 `PROHIBITED` and one
    source that our agent cannot fetch.
-2. **No source grants a reuse we can rely on.** `PERMITTED` is zero.
+2. **No source grants a reuse we can rely on.** `PERMITTED` is zero in this review, which reads what
+   the venues published. It is not zero on the clusters: ADR-027 sets `translation_licence` to
+   `PERMITTED` wherever a venue does not prohibit the description. That is our reading of silence,
+   and it is not a grant.
 3. **The standard German copyright boilerplate is `UNCLEAR`, not `PROHIBITED`.** §2 says why, and it
    decides most of the corpus.
 4. **The two prohibitions are venues whose own wording names texts and images**, without the
