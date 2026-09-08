@@ -8,14 +8,10 @@ import org.springframework.data.r2dbc.repository.Query
 import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 import java.time.Instant
 
-/**
- * Reactive repository for [EventSourceEntity] persistence via R2DBC.
- */
 interface EventSourceRepository : CoroutineCrudRepository<EventSourceEntity, Long> {
     /** Finds an event source by its unique slug (used for API dispatch). */
     suspend fun findBySlug(slug: String): EventSourceEntity?
 
-    /** Returns all event sources with pagination and sorting support. */
     fun findAllBy(pageable: Pageable): Flow<EventSourceEntity>
 
     /** Returns all enabled event sources for batch importing. */

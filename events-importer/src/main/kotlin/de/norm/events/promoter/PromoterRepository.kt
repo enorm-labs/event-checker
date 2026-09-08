@@ -7,9 +7,6 @@ import org.springframework.data.r2dbc.repository.Modifying
 import org.springframework.data.r2dbc.repository.Query
 import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 
-/**
- * Reactive repository for [Promoter][de.norm.events.promoter.Promoter] persistence via R2DBC.
- */
 interface PromoterRepository : CoroutineCrudRepository<PromoterEntity, Long> {
     suspend fun findBySlug(slug: String): PromoterEntity?
 

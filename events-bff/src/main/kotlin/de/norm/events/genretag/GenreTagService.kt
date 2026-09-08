@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional
 class GenreTagService(
     private val genreTagRepository: GenreTagRepository
 ) {
-    /** Returns all genre tags, sorted alphabetically by name. */
     @Transactional(readOnly = true)
     suspend fun list(): List<GenreTagResponse> = genreTagRepository.findAllByOrderByName().map { GenreTagResponse.fromEntity(it) }.toList()
 }

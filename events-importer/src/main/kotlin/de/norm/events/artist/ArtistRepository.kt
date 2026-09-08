@@ -7,9 +7,6 @@ import org.springframework.data.r2dbc.repository.Modifying
 import org.springframework.data.r2dbc.repository.Query
 import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 
-/**
- * Reactive repository for [Artist][de.norm.events.artist.Artist] persistence via R2DBC.
- */
 interface ArtistRepository : CoroutineCrudRepository<ArtistEntity, Long> {
     /** Finds all artists with pagination and sorting applied via [pageable]. */
     fun findAllBy(pageable: Pageable): Flow<ArtistEntity>
