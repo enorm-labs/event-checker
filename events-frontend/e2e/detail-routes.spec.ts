@@ -246,6 +246,43 @@ test.describe('a past event', () => {
     expect(description!.y - (poster!.y + poster!.height)).toBeGreaterThanOrEqual(32)
   })
 
+  test('marks the language of a description the page locale does not match', async ({ page }) => {
+    // A German text under English chrome is what the venue wrote. Telling a screen reader and a
+    // crawler that it is English is the part we can get wrong, so the attribute is asserted.
+    const german = {
+      ...eventBody,
+      description: 'Ein Abend mit Aussicht.',
+      descriptionLanguage: 'de',
+    }
+    await page.route(/\/api\/events\/[^/?]+/, (route) => json(route, german))
+
+    await page.goto('/en/events/mock-event')
+
+    await expect(page.getByText('Ein Abend mit Aussicht.')).toHaveAttribute('lang', 'de')
+  })
+
+  test('discloses a machine translation and links to the original', async ({ page }) => {
+    const translated = {
+      ...eventBody,
+      description: 'Ein Abend mit Aussicht.',
+      descriptionLanguage: 'de',
+      descriptionAlt: 'An evening with a view.',
+      descriptionAltLanguage: 'en',
+      descriptionAltOrigin: 'MACHINE',
+      sourceUrl: 'https://example.test/event',
+    }
+    await page.route(/\/api\/events\/[^/?]+/, (route) => json(route, translated))
+
+    await page.goto('/en/events/mock-event')
+
+    await expect(page.getByText('An evening with a view.')).toHaveAttribute('lang', 'en')
+    await expect(page.getByText('Machine-translated.', { exact: false })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Original text' })).toHaveAttribute(
+      'href',
+      'https://example.test/event',
+    )
+  })
+
   test('a mixed lineup labels every act', async ({ page }) => {
     const mixed = {
       ...eventBody,

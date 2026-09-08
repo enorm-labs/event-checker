@@ -132,6 +132,35 @@ class EventService(
     }
 
     /**
+     * Classifies the language of every stored description that carries none, and returns the counts.
+     *
+     * A one-off for the rows that predate detection. Every later row is classified at import, and a
+     * text the classifier cannot call keeps a null language, which is the honest answer (ADR-026).
+     * Running it twice is harmless: the second run finds only what the first could not call.
+     */
+    @Transactional
+    suspend fun classifyStoredDescriptions(): DescriptionLanguageBackfill {
+        var german = 0
+        var english = 0
+        var unknown = 0
+        eventRepository.findWithUnclassifiedDescription().collect { event ->
+            val detected = DescriptionLanguage.detect(event.description)
+            when (detected?.language) {
+                DescriptionLanguage.GERMAN -> german++
+                DescriptionLanguage.ENGLISH -> english++
+                null -> unknown++
+            }
+            if (detected != null) {
+                eventRepository.save(
+                    event.copy(descriptionLanguage = detected.language.code, descriptionLanguageConfidence = detected.confidence)
+                )
+            }
+        }
+        logger.info { "Classified stored descriptions: german=$german english=$english unknown=$unknown" }
+        return DescriptionLanguageBackfill(german = german, english = english, unknown = unknown)
+    }
+
+    /**
      * Replaces all fields and associations of an existing event.
      *
      * Artist and promoter associations are replaced using a delete-and-reinsert
@@ -344,12 +373,16 @@ class EventService(
  * (copies the identity and audit fields from the existing row onto the result).
  * Monetary values are normalized to scale 2 at this boundary.
  */
-private fun EventRequest.toEventEntity(slug: String): EventEntity =
-    EventEntity(
+private fun EventRequest.toEventEntity(slug: String): EventEntity {
+    val detected = DescriptionLanguage.detect(description)
+    return EventEntity(
         venueId = venueId,
         title = title,
         subtitle = subtitle,
         description = description,
+        // Detected here as well as in the scraper path, so a hand-created event is marked the same way.
+        descriptionLanguage = detected?.language?.code,
+        descriptionLanguageConfidence = detected?.confidence,
         eventType = eventType.name,
         status = status.name,
         slug = slug,
@@ -369,6 +402,7 @@ private fun EventRequest.toEventEntity(slug: String): EventEntity =
         soldOut = soldOut,
         free = free
     )
+}
 
 /** The id of a genre tag read back from the database, which is never null once it is persisted. */
 private fun GenreTagEntity.requiredId(): Long = requireNotNull(id) { "Persisted genre tag must have an ID" }

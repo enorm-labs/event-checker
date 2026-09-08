@@ -25,6 +25,12 @@ data class EventEntity(
     val title: String,
     val subtitle: String? = null,
     val description: String? = null,
+    /** `de` or `en` as detected by the importer, null when unknown. Written only by the importer (ADR-026). */
+    val descriptionLanguage: String? = null,
+    /** The description in the other locale, with its language and whether the publisher or a machine wrote it. */
+    val descriptionAlt: String? = null,
+    val descriptionAltLanguage: String? = null,
+    val descriptionAltOrigin: String? = null,
     val eventType: String = "CONCERT",
     val status: String = "SCHEDULED",
     val slug: String,

@@ -183,9 +183,14 @@ class EventService(
             val descriptionWithheld = licence.withholdsDescription() && event.description != null
             val imageWithheld = licence.withholdsImage() && event.imageUrl != null
             LicensedEvent(
+                // The language and the alt text describe the withheld text, so they go with it.
                 event =
                     event.copy(
                         description = if (descriptionWithheld) null else event.description,
+                        descriptionLanguage = if (descriptionWithheld) null else event.descriptionLanguage,
+                        descriptionAlt = if (descriptionWithheld) null else event.descriptionAlt,
+                        descriptionAltLanguage = if (descriptionWithheld) null else event.descriptionAltLanguage,
+                        descriptionAltOrigin = if (descriptionWithheld) null else event.descriptionAltOrigin,
                         imageUrl = if (imageWithheld) null else event.imageUrl
                     ),
                 descriptionWithheld = descriptionWithheld,

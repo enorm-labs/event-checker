@@ -736,6 +736,23 @@ export interface components {
             /** @description Longer description or artist biography */
             description?: string | null;
             /**
+             * @description Language of `description` as detected at import: `de` or `en`. Null when the text is too short or holds both languages, in which case the page claims no language for it (ADR-026).
+             * @example de
+             */
+            descriptionLanguage?: string | null;
+            /** @description The description in the other locale, when there is one. Written by the publisher, or by a machine where the source's grant allows it. Null far more often than not. */
+            descriptionAlt?: string | null;
+            /**
+             * @description Language of `descriptionAlt`: `de` or `en`. Null exactly when `descriptionAlt` is.
+             * @example en
+             */
+            descriptionAltLanguage?: string | null;
+            /**
+             * @description Who wrote `descriptionAlt`: `PUBLISHER` or `MACHINE`. A machine translation is labelled as such on the page and links to the source. Null exactly when `descriptionAlt` is.
+             * @example PUBLISHER
+             */
+            descriptionAltOrigin?: string | null;
+            /**
              * @description Kind of event
              * @example CONCERT
              * @enum {string}

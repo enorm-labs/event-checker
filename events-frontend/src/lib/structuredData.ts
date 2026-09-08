@@ -1,4 +1,5 @@
 import type { EventDetail, VenueDetail } from '@/api/types'
+import { descriptionFor } from '@/lib/description'
 import { absoluteImageUrl, canonicalUrl, SITE_URL } from '@/lib/seo'
 import { isPastEvent } from '@/lib/format'
 import { APP_NAME } from '@/lib/pageMeta'
@@ -155,6 +156,10 @@ export function eventJsonLd(event: EventDetail, locale: Locale): JsonLd | null {
 
   if (!event.title || !startDate || !location) return null
 
+  // The language of the text this page shows, not of the page. A German description on /en/ says
+  // `de`, and an unclassified one says nothing rather than guessing (ADR-026).
+  const description = descriptionFor(event, locale)
+
   return {
     '@context': 'https://schema.org',
     '@type': (event.eventType && EVENT_TYPES[event.eventType]) ?? 'Event',
@@ -162,7 +167,8 @@ export function eventJsonLd(event: EventDetail, locale: Locale): JsonLd | null {
     startDate,
     location,
     url,
-    description: event.description ?? event.subtitle ?? undefined,
+    description: description?.text ?? event.subtitle ?? undefined,
+    inLanguage: description?.lang ?? undefined,
     image: absoluteImageUrl(event.imageUrl),
     eventStatus: (event.status && EVENT_STATUS[event.status]) ?? undefined,
     // Every event in scope is a physical one; we list nothing online-only.
