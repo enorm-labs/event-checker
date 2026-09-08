@@ -34,6 +34,7 @@ import kotlin.time.Duration
  * than it is wrong (#618).
  */
 @Component
+@Suppress("TooManyFunctions") // A metrics facade is one function per meter, and the meter names are the interface.
 class ImporterMetrics(
     private val registry: MeterRegistry
 ) {
@@ -182,6 +183,17 @@ class ImporterMetrics(
         reason: String
     ) {
         registry.counter(SCRAPE_FAILURES, TAG_SOURCE, sourceSlug, TAG_REASON, reason).increment()
+    }
+
+    /**
+     * Counts one attempt to translate a description, and whether a text came back.
+     *
+     * A refused, failed or implausible translation is an ordinary outcome rather than an error, so
+     * the two are one counter with an `outcome` tag: a grant that produces nothing is visible as a
+     * ratio rather than as silence (ADR-026).
+     */
+    fun recordTranslation(written: Boolean) {
+        registry.counter(TRANSLATIONS, TAG_OUTCOME, if (written) "written" else "skipped").increment()
     }
 
     /**
@@ -407,6 +419,9 @@ class ImporterMetrics(
         const val SCRAPE_FAILURES = "importer.scrape.failures"
         const val EVENTS_DROPPED = "importer.events.dropped"
         const val SOURCE_LAST_SUCCESS = "importer.source.last_success"
+
+        /** `importer.translations{outcome}` — attempts and how many produced a text. See [recordTranslation]. */
+        const val TRANSLATIONS = "importer.translations"
 
         /**
          * `importer.source.has_succeeded{source}` — the series that exists for a source which has

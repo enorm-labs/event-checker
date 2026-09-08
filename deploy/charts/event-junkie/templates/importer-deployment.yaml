@@ -105,6 +105,24 @@ spec:
                   name: {{ .Values.images.storage.existingSecret | quote }}
                   key: IMAGE_STORAGE_SECRET_KEY
             {{- end }}
+            {{- if eq .Values.importer.translation.engine "anthropic" }}
+            {{- /* Two independent switches stand between here and a byte leaving the platform: this
+                   one, and a per-source `translation_licence` of PERMITTED that only a venue's own
+                   answer produces (ADR-026). Setting the engine alone translates nothing. */}}
+            - name: APP_TRANSLATION_ENGINE
+              value: "anthropic"
+            - name: APP_TRANSLATION_MODEL
+              value: {{ .Values.importer.translation.model | quote }}
+            {{- /* Hand-made, never SOPS: the ciphertext in a public repository is permanent, and
+                   this key is usable by anyone who holds it, from anywhere, with no network
+                   precondition (docs/ops/SECRETS.md §The decision). Regenerating it is a Console
+                   click, so encrypting it buys nothing a rebuild needs. */}}
+            - name: APP_TRANSLATION_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.importer.translation.existingSecret | quote }}
+                  key: APP_TRANSLATION_API_KEY
+            {{- end }}
             {{- if and .Values.images.enabled .Values.images.imgproxy.enabled }}
             {{- /* **The client half of the sidecar, and it is easy to leave out.** The container
                    below runs imgproxy; this is what makes the JVM call it. Without these the

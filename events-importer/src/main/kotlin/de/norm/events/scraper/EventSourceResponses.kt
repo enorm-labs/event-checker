@@ -58,6 +58,11 @@ data class EventSourceResponse(
     val descriptionLicence: String?,
     @Schema(description = "The same question for this source's images", example = "PROHIBITED")
     val imageLicence: String?,
+    @Schema(
+        description = "Whether this source grants translation of its descriptions. Only PERMITTED allows it",
+        example = "PERMITTED"
+    )
+    val translationLicence: String?,
     @Schema(description = "When the two above were last reviewed")
     val licenceReviewedAt: Instant?,
     @Schema(description = "The page the reviewer read", example = "https://example.com/presse")
@@ -104,6 +109,7 @@ data class EventSourceResponse(
                 robotsTxtUrl = entity.robotsTxtUrl,
                 descriptionLicence = entity.descriptionLicence,
                 imageLicence = entity.imageLicence,
+                translationLicence = entity.translationLicence,
                 licenceReviewedAt = entity.licenceReviewedAt,
                 licenceSourceUrl = entity.licenceSourceUrl,
                 licenceNote = entity.licenceNote,
@@ -145,4 +151,24 @@ data class ImportTriggeredResponse(
     val message: String,
     @Schema(description = "Slug of the triggered source, or null when all enabled sources were triggered", example = "privatclub")
     val sourceSlug: String? = null
+)
+
+/**
+ * What one on-demand translation run did.
+ *
+ * `permitted` is the field to read first: a source without a grant reports zero for the same reason
+ * it always will, and that is not the same answer as a source with nothing stale (ADR-026).
+ */
+@Schema(description = "Result of an on-demand translation run for one event source")
+data class TranslationRunResponse(
+    @Schema(description = "The source this ran for", example = "klunkerkranich")
+    val sourceSlug: String,
+    @Schema(description = "Whether this source's licence grants translation. False means nothing ran", example = "false")
+    val permitted: Boolean,
+    @Schema(description = "Descriptions that were missing or stale before this run", example = "12")
+    val candidates: Int,
+    @Schema(description = "Descriptions translated and stored by this run", example = "12")
+    val translated: Int,
+    @Schema(description = "Which engine answered, or `none` when translation is switched off", example = "anthropic:claude-haiku-4-5")
+    val engine: String
 )

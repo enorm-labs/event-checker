@@ -542,6 +542,41 @@ window.EJ_LINKS = {
     },
     {
       "number": 7,
+      "title": "Anthropic — the one AI vendor",
+      "columns": [
+        "Link",
+        "What it is",
+        "Status"
+      ],
+      "rows": [
+        {
+          "url": "https://platform.claude.com/dashboard",
+          "label": "platform.claude.com/dashboard",
+          "what": "<strong>The Console.</strong> Usage, spend and the limit on the <code>event-junkie</code> workspace",
+          "whatText": "The Console. Usage, spend and the limit on the event-junkie workspace",
+          "status": "In use since 2026-09-08",
+          "statusText": "In use since 2026-09-08"
+        },
+        {
+          "url": "https://platform.claude.com/settings/keys",
+          "label": "platform.claude.com/settings/keys",
+          "what": "Where <code>event-junkie-app</code> was created. A key is shown once — see CREDENTIALS.md #26",
+          "whatText": "Where event-junkie-app was created. A key is shown once — see CREDENTIALS.md #26",
+          "status": "In use",
+          "statusText": "In use"
+        },
+        {
+          "url": "https://platform.claude.com/settings/limits",
+          "label": "platform.claude.com/settings/limits",
+          "what": "The workspace spend cap. <strong>The ceiling that makes a runaway loop harmless</strong>",
+          "whatText": "The workspace spend cap. The ceiling that makes a runaway loop harmless",
+          "status": "Set on the workspace, not the key",
+          "statusText": "Set on the workspace, not the key"
+        }
+      ]
+    },
+    {
+      "number": 8,
       "title": "Security and dependency scanning",
       "columns": [
         "Link",
@@ -591,7 +626,7 @@ window.EJ_LINKS = {
       ]
     },
     {
-      "number": 8,
+      "number": 9,
       "title": "Local development",
       "columns": [
         "Address",
@@ -633,7 +668,7 @@ window.EJ_LINKS = {
       ]
     },
     {
-      "number": 9,
+      "number": 10,
       "title": "Stack reference documentation",
       "columns": [
         "Link",
@@ -735,11 +770,19 @@ window.EJ_LINKS = {
           "whatText": "Commit message format",
           "status": "",
           "statusText": ""
+        },
+        {
+          "url": "https://platform.claude.com/docs/en/api/messages",
+          "label": "platform.claude.com/docs/en/api/messages",
+          "what": "The Messages API, which Spring AI calls for translation (ADR-026)",
+          "whatText": "The Messages API, which Spring AI calls for translation (ADR-026)",
+          "status": "",
+          "statusText": ""
         }
       ]
     },
     {
-      "number": 10,
+      "number": 11,
       "title": "Where the detail lives, in this repository",
       "columns": [
         "Document",

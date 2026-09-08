@@ -12,7 +12,8 @@ package de.norm.events.licence
  */
 data class SourceLicences(
     val description: SourceLicence?,
-    val image: SourceLicence?
+    val image: SourceLicence?,
+    val translation: SourceLicence? = null
 ) {
     /**
      * Whether the description must be withheld.
@@ -29,6 +30,17 @@ data class SourceLicences(
     /** The same rule for images, answered from the source's own column. */
     fun withholdsImage(): Boolean = image == SourceLicence.PROHIBITED
 
+    /**
+     * Whether we may machine-translate this source's descriptions.
+     *
+     * **Only [SourceLicence.PERMITTED] allows it, which is the opposite of the display rule above.**
+     * A translation is an adaptation under § 23 UrhG and needs the author's consent, so silence
+     * cannot be read as permission the way it is for the display of the text as published (ADR-026).
+     * `docs/SCRAPING_POSITION.md` §3.1 carries the reasoning, and #808 is how a source reaches
+     * `PERMITTED`.
+     */
+    fun allowsTranslation(): Boolean = translation == SourceLicence.PERMITTED
+
     companion object {
         /**
          * What an event with no source at all permits.
@@ -37,16 +49,18 @@ data class SourceLicences(
          * source that produced it. Such a row has no prohibition attached to it and therefore
          * displays, which is the same answer fail-open gives everywhere else.
          */
-        val UNKNOWN_SOURCE = SourceLicences(description = null, image = null)
+        val UNKNOWN_SOURCE = SourceLicences(description = null, image = null, translation = null)
 
-        /** Reads both columns of a source row, treating anything unrecognised as [SourceLicence.PROHIBITED]. */
+        /** Reads the three columns of a source row, treating anything unrecognised as [SourceLicence.PROHIBITED]. */
         fun of(
             descriptionLicence: String?,
-            imageLicence: String?
+            imageLicence: String?,
+            translationLicence: String? = null
         ): SourceLicences =
             SourceLicences(
                 description = descriptionLicence?.let(SourceLicence::parseOrProhibited),
-                image = imageLicence?.let(SourceLicence::parseOrProhibited)
+                image = imageLicence?.let(SourceLicence::parseOrProhibited),
+                translation = translationLicence?.let(SourceLicence::parseOrProhibited)
             )
     }
 }

@@ -84,6 +84,35 @@ interface EventRepository : CoroutineCrudRepository<EventEntity, Long> {
     suspend fun clearImageUrls(eventSourceId: Long): Int
 
     /**
+     * Deletes every machine translation belonging to [eventSourceId].
+     *
+     * Runs whenever the source does not grant translation, so withdrawing a grant removes the
+     * derived text at once (ADR-026). A publisher-written second language is not touched: we hold
+     * it on the same footing as the first.
+     */
+    @Modifying
+    @Query(
+        "UPDATE $EVENTS_SCHEMA.event SET description_alt = NULL, description_alt_language = NULL, " +
+            "description_alt_origin = NULL, description_alt_engine = NULL, description_alt_source_hash = NULL " +
+            "WHERE event_source_id = :eventSourceId AND description_alt_origin = 'MACHINE'"
+    )
+    suspend fun clearTranslations(eventSourceId: Long): Int
+
+    /**
+     * Finds this source's events that a translation pass may consider.
+     *
+     * Narrows to what could possibly need one: a stored description, a language to translate from,
+     * and no publisher-written second text to displace. **Whether a translation is stale is decided
+     * in Kotlin**, by hashing the current description and comparing — PostgreSQL would need
+     * `pgcrypto` to answer the same question, for a set this small.
+     */
+    @Query(
+        "SELECT * FROM $EVENTS_SCHEMA.event WHERE event_source_id = :eventSourceId AND description IS NOT NULL " +
+            "AND description_language IS NOT NULL AND (description_alt_origin IS NULL OR description_alt_origin = 'MACHINE')"
+    )
+    fun findTranslationCandidates(eventSourceId: Long): Flow<EventEntity>
+
+    /**
      * Finds stored events whose description has never been classified.
      *
      * Detection runs at import, so this reaches only the rows that predate it. The admin endpoint

@@ -29,7 +29,13 @@ import kotlin.time.Duration.Companion.nanoseconds
  * 4. Updates the event source metadata (status, event count, ETag, etc.).
  */
 @Service
-@Suppress("LongParameterList") // Constructor injection: one parameter per collaborator; splitting the service hides the wiring.
+@Suppress(
+    // Constructor injection: one parameter per collaborator; splitting the service hides the wiring.
+    "LongParameterList",
+    // Twelve functions, and eleven of them are one named step of this pipeline. The alternative to
+    // `afterCommit` is inlining it back into a method the LongMethod rule already caps.
+    "TooManyFunctions"
+)
 class EventImportService(
     private val eventSourceRepository: EventSourceRepository,
     private val eventUpsertService: EventUpsertService,
@@ -41,6 +47,8 @@ class EventImportService(
     private val metrics: ImporterMetrics,
     /** Per-field coverage against each source's own history (#472) — the partial-failure alarm. */
     private val fieldCoverageService: FieldCoverageService,
+    /** Fills in the missing language, for the sources whose grant allows it (ADR-026, #470). */
+    private val descriptionTranslationService: DescriptionTranslationService,
     /**
      * The `robots.txt` rules behind [RobotsTxtFilter], read again here to record what they said
      * about this source's own entry URL (#790).
@@ -259,34 +267,14 @@ class EventImportService(
                     // (the claim, markSuccess/markFailed) outside the transaction boundary —
                     // they must always commit even if the upsert transaction rolls back.
                     // What this source lets us keep. PROHIBITED means the field is never stored (#807).
-                    val licences = SourceLicences.of(runningSource.descriptionLicence, runningSource.imageLicence)
+                    val licences = runningSource.licences()
                     val upsert =
                         transactionalOperator.executeAndAwait {
                             val sourceId = requireNotNull(runningSource.id) { "Event source must be persisted before importing" }
                             eventUpsertService.upsertAndCleanup(result.events, runningSource.venueId, venue.slug, sourceId, licences)
                         }
 
-                    // After the transaction commits, deliberately: a counter incremented for writes
-                    // that then rolled back would overstate what is in the database, and there is no
-                    // way to take an increment back.
-                    metrics.recordUpsertOutcome(runningSource.slug, upsert, result.droppedUnresolvedDate)
-
-                    // Per-field coverage, BEFORE markSuccess and after the transaction (#472).
-                    //
-                    // Measured from `result.events` — what the scraper extracted — and not from the
-                    // rows in the database, which also hold everything previous runs wrote. A
-                    // selector that stopped matching shows up in the former and is invisible in the
-                    // latter until the old rows age out.
-                    //
-                    // Before `markSuccess` because that save carries the entity this run has been
-                    // holding: the flag is written by a targeted UPDATE that does not touch
-                    // `version`, so the ordering is safe either way, and doing it first means a
-                    // flagged run is flagged even if the closing save is retried.
-                    //
-                    // Unguarded here on purpose: `record` never throws, and owning that promise in
-                    // the service rather than at each call site is what stops the next caller
-                    // forgetting it.
-                    fieldCoverageService.record(runningSource, result.events)
+                    afterCommit(runningSource, venue.name, result, upsert, licences)
 
                     markSuccess(runningSource, upsert.total, result.etag, result.lastModified)
                     ImportResultResponse(sourceSlug = runningSource.slug, imported = true, eventCount = upsert.total) to
@@ -345,6 +333,33 @@ class EventImportService(
             lastImportAt = claimedAt,
             version = expectedVersion + 1
         )
+    }
+
+    /**
+     * Everything a successful run does once its transaction has committed, in the order it must.
+     *
+     * **Counting writes that then rolled back would overstate the database, and an increment cannot
+     * be taken back**, so the meters wait for the commit. Field coverage is measured from what the
+     * scraper extracted rather than from the stored rows, which also hold what earlier runs wrote —
+     * a selector that stopped matching shows in the former and is invisible in the latter until the
+     * old rows age out (#472). It runs before `markSuccess` so a flagged run stays flagged even if
+     * the closing save is retried, and it is unguarded because `record` never throws.
+     *
+     * The translation pass is guarded, for the opposite reason: it is derived text, so an engine
+     * that is slow, down or unpaid must never fail a scrape that worked. It does nothing unless the
+     * source's grant names translation (ADR-026).
+     */
+    private suspend fun afterCommit(
+        source: EventSourceEntity,
+        venueName: String,
+        result: ImportResult.Success,
+        upsert: UpsertOutcome,
+        licences: SourceLicences
+    ) {
+        metrics.recordUpsertOutcome(source.slug, upsert, result.droppedUnresolvedDate)
+        fieldCoverageService.record(source, result.events)
+        runCatching { descriptionTranslationService.translateFor(source, venueName, licences) }
+            .onFailure { logger.warn(it) { "TranslationRequest pass failed for '${source.slug}'" } }
     }
 
     /**
@@ -460,6 +475,9 @@ class EventImportService(
         internal const val DEFAULT_MAX_CONCURRENCY = 4
     }
 }
+
+/** What this source permits, read from its three licence columns (#283, ADR-026). */
+private fun EventSourceEntity.licences(): SourceLicences = SourceLicences.of(descriptionLicence, imageLicence, translationLicence)
 
 /**
  * Applies what the host's `robots.txt` said about a source's entry URL (#790).

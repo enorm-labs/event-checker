@@ -78,6 +78,11 @@ spec:
     # rather than a hotlink, which is the point (#843).
     # `serving.enabled` is a published claim: §5 of the privacy notice says no image request
     # reaches a third party, and that is only true while this is on (LEGAL.md §7.3a).
+    importer:
+      # **On here translates nothing.** A source also needs a PERMITTED `translation_licence`, and
+      # none holds one (ADR-026). The Secret is hand-made — docs/ops/SECRETS.md §The decision.
+      translation:
+        engine: anthropic
     images:
       enabled: true
       serving:

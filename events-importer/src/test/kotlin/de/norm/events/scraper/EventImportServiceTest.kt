@@ -103,6 +103,9 @@ class EventImportServiceTest {
      */
     private val fieldCoverageService: FieldCoverageService = mockk(relaxed = true)
 
+    /** TranslationRequest runs after the transaction and is gated on a grant no test source holds (#470). */
+    private val descriptionTranslationService: DescriptionTranslationService = mockk(relaxed = true)
+
     /**
      * Stubbed rather than real: the cache would reach the network for a `robots.txt`, and what these
      * tests assert is the import pipeline. [RobotsRulesCacheTest] covers the cache itself.
@@ -195,6 +198,7 @@ class EventImportServiceTest {
                 transactionalOperator = transactionalOperator,
                 metrics = metrics,
                 fieldCoverageService = fieldCoverageService,
+                descriptionTranslationService = descriptionTranslationService,
                 robotsRulesCache = robotsRulesCache,
                 maxConcurrency = EventImportService.DEFAULT_MAX_CONCURRENCY
             )
@@ -330,6 +334,7 @@ class EventImportServiceTest {
                         transactionalOperator = transactionalOperator,
                         metrics = metrics,
                         fieldCoverageService = fieldCoverageService,
+                        descriptionTranslationService = descriptionTranslationService,
                         robotsRulesCache = robotsRulesCache,
                         maxConcurrency = EventImportService.DEFAULT_MAX_CONCURRENCY
                     )
@@ -1250,6 +1255,7 @@ class EventImportServiceTest {
                         transactionalOperator = transactionalOperator,
                         metrics = metrics,
                         fieldCoverageService = fieldCoverageService,
+                        descriptionTranslationService = descriptionTranslationService,
                         robotsRulesCache = robotsRulesCache,
                         maxConcurrency = maxConcurrency
                     )

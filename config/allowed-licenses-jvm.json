@@ -21,7 +21,14 @@
         "DELIBERATELY ABSENT — 'GNU LESSER GENERAL PUBLIC LICENSE, Version 2.1'. Logback is the only",
         "dependency offering it, and it is dual-licensed, so it passes on EPL-2.0 instead. Keeping LGPL",
         "off the list means an LGPL-only dependency stops the build and gets a decision, which is the",
-        "intent. Same for CC0 ('Creative Commons Legal Code'): HdrHistogram passes on 2-Clause BSD."
+        "intent. Same for CC0 ('Creative Commons Legal Code'): HdrHistogram passes on 2-Clause BSD.",
+        "",
+        "ANTLR — 'The BSD License' (org.antlr:ST4) and 'BSD licence' (org.antlr:antlr-runtime) are the",
+        "raw POM spellings, which LicenseBundleNormalizer does not fold in. Both are BSD-3-Clause:",
+        "antlr.org/license.html carries all three clauses including the endorsement one. They reach us",
+        "through Spring AI's StringTemplate dependency (#470). These two are the exception to the",
+        "normalised-names rule above, and they are named per module rather than globally so that a",
+        "different dependency claiming 'The BSD License' still stops the build and gets read."
     ],
     "allowedLicenses": [
         {
@@ -56,6 +63,14 @@
         },
         {
             "moduleLicense": "GNU GENERAL PUBLIC LICENSE, Version 2 + Classpath Exception"
+        },
+        {
+            "moduleName": "org.antlr:ST4",
+            "moduleLicense": "The BSD License"
+        },
+        {
+            "moduleName": "org.antlr:antlr-runtime",
+            "moduleLicense": "BSD licence"
         }
     ]
 }

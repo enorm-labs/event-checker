@@ -148,6 +148,7 @@ OpenObserve to Signal). That is a different chain, and it stays unbuilt.
 |            | Every page read in both languages **by the maintainer**, as a reader — About and the legal texts included | #280     |
 | 2026-08-31 | Images served from our own cache, not hotlinked                                                           | #843     |
 | 2026-09-07 | Multilingual event text decided, so the translation question is answered before a venue is asked          | #469     |
+|            | Machine-translated descriptions read on the site **by the maintainer**, in German and English             | ADR-027  |
 
 **Production serves the full catalogue.** All 86 sources are registered, enabled and carry their licence
 verdicts, and the importer runs on schedule (#876, #285). Two venues forbid their descriptions and images, and
@@ -171,6 +172,15 @@ and that read is the row above.
 
 **The prose is two independent documents in two languages.** The key-parity test proves every German
 key exists. It cannot tell you a translation is good, or that a claim is still true.
+
+**Machine translation is on, and it publishes derivative works of 84 venues' text.** ADR-027 decided that translation
+follows the display rule. Silence permits it, exactly as it permits showing the description. ADR-026 carries the case
+against, and neither document is a legal opinion.
+
+Two things make the row above worth doing rather than nodding through. The output is public and nobody read a sample
+of it yet. A poor translation also passes the checks in #1213, which reject only a summary or a lost proper noun. So
+read a handful on `/de/` and on `/en/` before the flip. §5 of `SCRAPING_POSITION.md` answers a venue that objects, the
+same day. `PROHIBITED` on either licence field then removes every translation for that source at once.
 
 ### Legal
 

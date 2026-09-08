@@ -140,22 +140,24 @@ class EventService(
      */
     @Transactional
     suspend fun classifyStoredDescriptions(): DescriptionLanguageBackfill {
-        var german = 0
-        var english = 0
-        var unknown = 0
-        eventRepository.findWithUnclassifiedDescription().collect { event ->
-            val detected = DescriptionLanguage.detect(event.description)
-            when (detected?.language) {
-                DescriptionLanguage.GERMAN -> german++
-                DescriptionLanguage.ENGLISH -> english++
-                null -> unknown++
-            }
+        // **Read the whole page before writing any of it.** A `save` issued from inside `collect`
+        // runs on the connection the open cursor is holding, and the two wait on each other until
+        // the request times out — no error, no query, nothing in the log. Materialising first is
+        // what the translation pass does for the same reason.
+        val unclassified = eventRepository.findWithUnclassifiedDescription().toList()
+        val detections = unclassified.map { it to DescriptionLanguage.detect(it.description) }
+
+        detections.forEach { (event, detected) ->
             if (detected != null) {
                 eventRepository.save(
                     event.copy(descriptionLanguage = detected.language.code, descriptionLanguageConfidence = detected.confidence)
                 )
             }
         }
+
+        val german = detections.count { it.second?.language == DescriptionLanguage.GERMAN }
+        val english = detections.count { it.second?.language == DescriptionLanguage.ENGLISH }
+        val unknown = detections.count { it.second == null }
         logger.info { "Classified stored descriptions: german=$german english=$english unknown=$unknown" }
         return DescriptionLanguageBackfill(german = german, english = english, unknown = unknown)
     }

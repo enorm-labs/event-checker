@@ -1,5 +1,5 @@
 {
-  "componentCount": 303,
+  "componentCount": 327,
   "licenses": [
     {
       "license": "Apache-2.0",
@@ -66,9 +66,21 @@
           "ecosystem": "backend"
         },
         {
+          "name": "com.fasterxml.jackson.datatype:jackson-datatype-jdk8",
+          "version": "2.21.5",
+          "url": "https://github.com/FasterXML/jackson-modules-java8/jackson-datatype-jdk8",
+          "ecosystem": "backend"
+        },
+        {
           "name": "com.fasterxml.jackson.datatype:jackson-datatype-jsr310",
           "version": "2.21.5",
           "url": "https://github.com/FasterXML/jackson-modules-java8/jackson-datatype-jsr310",
+          "ecosystem": "backend"
+        },
+        {
+          "name": "com.fasterxml.jackson.module:jackson-module-kotlin",
+          "version": "2.21.5",
+          "url": "https://github.com/FasterXML/jackson-module-kotlin",
           "ecosystem": "backend"
         },
         {
@@ -90,9 +102,51 @@
           "ecosystem": "backend"
         },
         {
+          "name": "com.github.victools:jsonschema-generator",
+          "version": "5.0.0",
+          "url": "https://github.com/victools/jsonschema-generator",
+          "ecosystem": "backend"
+        },
+        {
+          "name": "com.github.victools:jsonschema-module-jackson",
+          "version": "5.0.0",
+          "url": "https://github.com/victools/jsonschema-generator",
+          "ecosystem": "backend"
+        },
+        {
+          "name": "com.github.victools:jsonschema-module-swagger-2",
+          "version": "5.0.0",
+          "url": null,
+          "ecosystem": "backend"
+        },
+        {
           "name": "com.google.errorprone:error_prone_annotations",
           "version": "2.49.0",
           "url": "https://errorprone.info/error_prone_annotations",
+          "ecosystem": "backend"
+        },
+        {
+          "name": "com.google.errorprone:error_prone_annotations",
+          "version": "2.50.0",
+          "url": "https://errorprone.info/error_prone_annotations",
+          "ecosystem": "backend"
+        },
+        {
+          "name": "com.squareup.okhttp3:okhttp",
+          "version": "4.12.0",
+          "url": "https://square.github.io/okhttp/",
+          "ecosystem": "backend"
+        },
+        {
+          "name": "com.squareup.okio:okio",
+          "version": "3.6.0",
+          "url": "https://github.com/square/okio/",
+          "ecosystem": "backend"
+        },
+        {
+          "name": "com.squareup.okio:okio-jvm",
+          "version": "3.6.0",
+          "url": "https://github.com/square/okio/",
           "ecosystem": "backend"
         },
         {
@@ -384,6 +438,12 @@
           "ecosystem": "backend"
         },
         {
+          "name": "io.swagger.core.v3:swagger-annotations",
+          "version": "2.2.50",
+          "url": "https://github.com/swagger-api/swagger-core/modules/swagger-annotations",
+          "ecosystem": "backend"
+        },
+        {
           "name": "io.swagger.core.v3:swagger-annotations-jakarta",
           "version": "2.2.52",
           "url": "https://github.com/swagger-api/swagger-core/modules/swagger-annotations",
@@ -493,6 +553,24 @@
         },
         {
           "name": "org.jetbrains.kotlin:kotlin-stdlib",
+          "version": "2.4.10",
+          "url": "https://kotlinlang.org/",
+          "ecosystem": "backend"
+        },
+        {
+          "name": "org.jetbrains.kotlin:kotlin-stdlib-common",
+          "version": "2.4.10",
+          "url": "https://kotlinlang.org/",
+          "ecosystem": "backend"
+        },
+        {
+          "name": "org.jetbrains.kotlin:kotlin-stdlib-jdk7",
+          "version": "2.4.10",
+          "url": "https://kotlinlang.org/",
+          "ecosystem": "backend"
+        },
+        {
+          "name": "org.jetbrains.kotlin:kotlin-stdlib-jdk8",
           "version": "2.4.10",
           "url": "https://kotlinlang.org/",
           "ecosystem": "backend"
@@ -612,6 +690,12 @@
           "ecosystem": "backend"
         },
         {
+          "name": "org.springframework:spring-messaging",
+          "version": "7.0.9",
+          "url": "https://github.com/spring-projects/spring-framework",
+          "ecosystem": "backend"
+        },
+        {
           "name": "org.springframework:spring-r2dbc",
           "version": "7.0.9",
           "url": "https://github.com/spring-projects/spring-framework",
@@ -633,6 +717,30 @@
           "name": "org.springframework:spring-webflux",
           "version": "7.0.9",
           "url": "https://github.com/spring-projects/spring-framework",
+          "ecosystem": "backend"
+        },
+        {
+          "name": "org.springframework.ai:spring-ai-anthropic",
+          "version": "2.0.1",
+          "url": "https://github.com/spring-projects/spring-ai",
+          "ecosystem": "backend"
+        },
+        {
+          "name": "org.springframework.ai:spring-ai-commons",
+          "version": "2.0.1",
+          "url": "https://github.com/spring-projects/spring-ai",
+          "ecosystem": "backend"
+        },
+        {
+          "name": "org.springframework.ai:spring-ai-model",
+          "version": "2.0.1",
+          "url": "https://github.com/spring-projects/spring-ai",
+          "ecosystem": "backend"
+        },
+        {
+          "name": "org.springframework.ai:spring-ai-template-st",
+          "version": "2.0.1",
+          "url": "https://github.com/spring-projects/spring-ai",
           "ecosystem": "backend"
         },
         {
@@ -1428,6 +1536,24 @@
           "ecosystem": "frontend"
         },
         {
+          "name": "com.anthropic:anthropic-java-core",
+          "version": "2.52.0",
+          "url": "https://docs.anthropic.com/claude/reference/",
+          "ecosystem": "backend"
+        },
+        {
+          "name": "com.knuddels:jtokkit",
+          "version": "1.1.0",
+          "url": "https://github.com/knuddelsgmbh/jtokkit",
+          "ecosystem": "backend"
+        },
+        {
+          "name": "com.standardwebhooks:standardwebhooks",
+          "version": "1.1.1",
+          "url": "https://github.com/standard-webhooks/standard-webhooks/tree/main/libraries/java",
+          "ecosystem": "backend"
+        },
+        {
           "name": "confbox",
           "version": "0.1.8",
           "url": "https://github.com/unjs/confbox",
@@ -1808,6 +1934,36 @@
       ]
     },
     {
+      "license": "BSD-3-Clause",
+      "url": "https://opensource.org/license/bsd-3-clause",
+      "components": [
+        {
+          "name": "jakarta.activation:jakarta.activation-api",
+          "version": "2.1.4",
+          "url": "https://github.com/jakartaee/jaf-api",
+          "ecosystem": "backend"
+        },
+        {
+          "name": "jakarta.xml.bind:jakarta.xml.bind-api",
+          "version": "4.0.5",
+          "url": "https://www.eclipse.org",
+          "ecosystem": "backend"
+        },
+        {
+          "name": "org.antlr:antlr4-runtime",
+          "version": "4.13.1",
+          "url": "https://www.antlr.org/",
+          "ecosystem": "backend"
+        },
+        {
+          "name": "source-map-js",
+          "version": "1.2.1",
+          "url": "https://github.com/7rulnik/source-map-js",
+          "ecosystem": "frontend"
+        }
+      ]
+    },
+    {
       "license": "GNU GENERAL PUBLIC LICENSE, Version 2",
       "url": null,
       "components": [
@@ -1864,30 +2020,6 @@
           "version": "4.0.5",
           "url": "https://www.eclipse.org",
           "ecosystem": "backend"
-        }
-      ]
-    },
-    {
-      "license": "BSD-3-Clause",
-      "url": "https://opensource.org/license/bsd-3-clause",
-      "components": [
-        {
-          "name": "jakarta.activation:jakarta.activation-api",
-          "version": "2.1.4",
-          "url": "https://github.com/jakartaee/jaf-api",
-          "ecosystem": "backend"
-        },
-        {
-          "name": "jakarta.xml.bind:jakarta.xml.bind-api",
-          "version": "4.0.5",
-          "url": "https://www.eclipse.org",
-          "ecosystem": "backend"
-        },
-        {
-          "name": "source-map-js",
-          "version": "1.2.1",
-          "url": "https://github.com/7rulnik/source-map-js",
-          "ecosystem": "frontend"
         }
       ]
     },
@@ -1994,6 +2126,18 @@
       ]
     },
     {
+      "license": "BSD licence",
+      "url": null,
+      "components": [
+        {
+          "name": "org.antlr:antlr-runtime",
+          "version": "3.5.3",
+          "url": "http://www.antlr.org",
+          "ecosystem": "backend"
+        }
+      ]
+    },
+    {
       "license": "CC0-1.0",
       "url": "https://creativecommons.org/publicdomain/zero/1.0/",
       "components": [
@@ -2013,6 +2157,18 @@
           "name": "org.reactivestreams:reactive-streams",
           "version": "1.0.4",
           "url": "http://reactive-streams.org",
+          "ecosystem": "backend"
+        }
+      ]
+    },
+    {
+      "license": "The BSD License",
+      "url": null,
+      "components": [
+        {
+          "name": "org.antlr:ST4",
+          "version": "4.3.4",
+          "url": null,
           "ecosystem": "backend"
         }
       ]

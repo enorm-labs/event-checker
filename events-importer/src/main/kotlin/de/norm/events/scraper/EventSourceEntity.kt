@@ -65,6 +65,14 @@ data class EventSourceEntity(
     /** The same question for this source's images, answered separately. Agency photographs are common. */
     val imageLicence: String? = null,
     /**
+     * Whether this source grants us the right to translate its descriptions, or `null` while nobody
+     * has asked.
+     *
+     * A third answer rather than a reading of [descriptionLicence]: a translation is an adaptation
+     * under § 23 UrhG, and only `PERMITTED` allows it (ADR-026). #808 is how a source gets here.
+     */
+    val translationLicence: String? = null,
+    /**
      * When the two columns above were last reviewed, or `null` while they never were.
      *
      * Null here and null in both status columns say the same thing today. They stop agreeing the

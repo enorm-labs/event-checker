@@ -622,7 +622,8 @@ a PR without one is the exception that makes the milestone view stop meaning any
 | ADR: Operator authentication                | `docs/adr/ADR-023_OPERATOR_AUTHENTICATION.md` — the admin API stays unroutable. A Traefik middleware when a surface is deployed   |
 | ADR: Dependency update boundary             | `docs/adr/ADR-024_DEPENDENCY_UPDATE_BOUNDARY.md` — three mechanisms, and which one owns what. Read before adding a fourth         |
 | ADR: Release number from the commits        | `docs/adr/ADR-025_RELEASE_VERSION_FROM_COMMITS.md` — a `feat` is a minor, a break a major. The cut refuses less                   |
-| ADR: Multilingual event text                | `docs/adr/ADR-026_MULTILINGUAL_EVENT_TEXT.md` — the publisher's words per language, translation only under a grant                |
+| ADR: Multilingual event text                | `docs/adr/ADR-026_MULTILINGUAL_EVENT_TEXT.md` — the publisher's words per language, and the case against translating              |
+| ADR: Translation follows the display rule   | `docs/adr/ADR-027_TRANSLATION_FOLLOWS_THE_DISPLAY_RULE.md` — supersedes ADR-026 rule 3. Only PROHIBITED withholds                 |
 | Plan: Hetzner + k3s setup, go-live          | `docs/ops/PLATFORM_SETUP.md`                                                                                                      |
 | Releasing & deploying, end to end           | `docs/ops/RELEASING.md` — the diagram; ADR-016 has the reasoning                                                                  |
 | Bootstrapping a cluster, once               | `docs/ops/CLUSTER_BOOTSTRAP.md` — ordered runbook, first run 2026-08-13; traps table at the bottom                                |

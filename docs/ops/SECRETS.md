@@ -20,16 +20,17 @@ flux --context event-junkie-staging get helmreleases -A       # a missing creden
 
 ## The eight objects, and where each comes from
 
-| Secret                    | Namespace                                         | Holds                                                 | Created at                                                     |
-| ------------------------- | ------------------------------------------------- | ----------------------------------------------------- | -------------------------------------------------------------- |
-| `events-db`               | `event-junkie`                                    | the `events` role's password                          | [CLUSTER_BOOTSTRAP.md](CLUSTER_BOOTSTRAP.md) §8                |
-| `hetzner`                 | `cert-manager`                                    | an hcloud API token, **read+write** — staging only    | §8                                                             |
-| `openobserve-credentials` | `flux-system` **and** `observability` — see below | the root login and an `-o2` S3 keypair                | [SECRETS.md](SECRETS.md) §openobserve-credentials              |
-| `github-dispatch`         | `flux-system`                                     | a fine-grained PAT, **`contents: write`** on one repo | [CLUSTER_BOOTSTRAP.md](CLUSTER_BOOTSTRAP.md) §8 — **after** §9 |
-| `postgres-exporter`       | `observability`                                   | the `metrics` role's DSN                              | §postgres-exporter, below                                      |
-| `sops-age`                | `flux-system`                                     | the age private key that decrypts `events-db`         | §3, below                                                      |
-| `event-junkie-images`     | `event-junkie`                                    | an S3 keypair for the cached image bucket **only**    | §event-junkie-images, below                                    |
-| `event-junkie-imgproxy`   | `event-junkie`                                    | the key and salt that sign imgproxy URLs              | §event-junkie-imgproxy, below                                  |
+| Secret                     | Namespace                                         | Holds                                                 | Created at                                                     |
+| -------------------------- | ------------------------------------------------- | ----------------------------------------------------- | -------------------------------------------------------------- |
+| `events-db`                | `event-junkie`                                    | the `events` role's password                          | [CLUSTER_BOOTSTRAP.md](CLUSTER_BOOTSTRAP.md) §8                |
+| `hetzner`                  | `cert-manager`                                    | an hcloud API token, **read+write** — staging only    | §8                                                             |
+| `openobserve-credentials`  | `flux-system` **and** `observability` — see below | the root login and an `-o2` S3 keypair                | [SECRETS.md](SECRETS.md) §openobserve-credentials              |
+| `github-dispatch`          | `flux-system`                                     | a fine-grained PAT, **`contents: write`** on one repo | [CLUSTER_BOOTSTRAP.md](CLUSTER_BOOTSTRAP.md) §8 — **after** §9 |
+| `postgres-exporter`        | `observability`                                   | the `metrics` role's DSN                              | §postgres-exporter, below                                      |
+| `event-junkie-translation` | `event-junkie`                                    | the Claude API key the importer translates with       | §event-junkie-translation, below                               |
+| `sops-age`                 | `flux-system`                                     | the age private key that decrypts `events-db`         | §3, below                                                      |
+| `event-junkie-images`      | `event-junkie`                                    | an S3 keypair for the cached image bucket **only**    | §event-junkie-images, below                                    |
+| `event-junkie-imgproxy`    | `event-junkie`                                    | the key and salt that sign imgproxy URLs              | §event-junkie-imgproxy, below                                  |
 
 **All eight belong in that table.** Two were once documented only in their own sections below and never reached this summary. A rebuild that followed it would restore
 four, which is exactly the failure mode a summary exists to prevent. Add a row here in the same change that adds a secret.
@@ -123,16 +124,22 @@ For one operator the operational difference is otherwise small, and the deciding
 later" does not un-publish the bytes. That is fine for a value whose exposure requires a future break in X25519 — and it is a different conversation for each
 secret.
 
-| Secret                    | If the ciphertext were ever broken                                                                                        | Worth encrypting into a public repo? |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| `events-db`               | A Postgres password for a server reachable only through the private network and WireGuard. Useless without network access | **Yes**                              |
-| `github-dispatch`         | Triggering `repository_dispatch` workflows on `main`. **The strongest of the three** — see below                          | **No** — see below                   |
-| `hetzner`                 | **Read+write control of the Hetzner account** — servers, volumes, firewalls, the lot                                      | **Recommend not**                    |
-| `openobserve-credentials` | Admin login to every log and metric, **and** Object Storage keys reaching all three buckets                               | **No** — see below                   |
+| Secret                     | If the ciphertext were ever broken                                                                                        | Worth encrypting into a public repo? |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| `events-db`                | A Postgres password for a server reachable only through the private network and WireGuard. Useless without network access | **Yes**                              |
+| `github-dispatch`          | Triggering `repository_dispatch` workflows on `main`. **The strongest of the three** — see below                          | **No** — see below                   |
+| `hetzner`                  | **Read+write control of the Hetzner account** — servers, volumes, firewalls, the lot                                      | **Recommend not**                    |
+| `openobserve-credentials`  | Admin login to every log and metric, **and** Object Storage keys reaching all three buckets                               | **No** — see below                   |
+| `event-junkie-translation` | Someone else spends against one Anthropic workspace, up to its cap. No data of ours, no infrastructure                    | **No** — see below                   |
 
 **On `github-dispatch`.** The table's logic is exposure cost. A broken `github-dispatch` ciphertext buys `contents: write` on this repository. Under
 ADR-016, what lands on `main` is what the cluster runs, so repository write access is one branch-protection rule away from cluster access. That is the
 same argument that kept the Hetzner token hand-made, applied to a different asset.
+
+**On `event-junkie-translation`.** The exposure cost is the lowest in the table — a spend cap bounds it and revoking takes one click. It is hand-made anyway, for
+two other reasons. Anyone who holds it can use it, from anywhere, with **no network precondition**. That is the property that makes `events-db` safe to encrypt
+and this key not. Regenerating it is also a Console click, so the rebuild-survival benefit that justifies encrypting anything is nil. A cluster that
+never creates it is healthy: `importer.translation.engine` defaults to `none` and the deployment then names no Secret at all.
 
 **Hand-made, like `hetzner`, not encrypted like `events-db`.** The rebuild-survival benefit is small, because recreating a PAT is a two-minute job, and the
 exposure cost is the highest of the three. So the count is **one of three**: `events-db` encrypted, `hetzner` and `github-dispatch` hand-made,
@@ -226,6 +233,24 @@ write, never _where_.
 
 Until it exists the release reconciles into a failed state, which is the intended shape. A missing credential should stop the deploy, rather than produce a
 running server nobody can log into. Once it exists, helm-controller picks it up on the next reconcile and nothing needs restarting.
+
+### `event-junkie-translation` — the one that is not needed for a healthy cluster
+
+The Claude API key the importer translates with (ADR-026). **Create it only when a source is about to be granted translation.** Note what does not happen
+without it. `importer.translation.engine` defaults to `none`, so the deployment names no Secret and the importer runs as it did before. A missing one is not a
+failure to diagnose.
+
+```sh
+kubectl --context event-junkie-staging -n event-junkie create secret generic event-junkie-translation \
+  --from-literal=APP_TRANSLATION_API_KEY="$(security find-generic-password -a "$USER" -s event-junkie-translation-api-key -w)"
+```
+
+The same command against `event-junkie-production`. One key serves both clusters today, from the `event-junkie` workspace in the Anthropic Console. The
+workspace carries the spend cap, so a second key would split the budget without splitting the risk. Rotating is `kubectl delete secret` and this command again,
+followed by a restart of the importer.
+
+**Both clusters set `engine: anthropic` and neither translates anything**, because that switch is not the one that spends. A source needs
+`translation_licence = PERMITTED` as well, which only a venue's own answer produces, and none holds one.
 
 ### `postgres-exporter` — a monitoring role, not the application's
 

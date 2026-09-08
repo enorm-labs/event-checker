@@ -23,18 +23,19 @@ where a password manager is not convenience but the recovery story. **No** means
 
 Store the password, the TOTP seed, **and the recovery codes** for each. The recovery codes are the half people skip, and they are what a lost phone costs.
 
-| #   | Account                                  | Unlocks                                                                         | Status                                 | Only copy? |
-| --- | ---------------------------------------- | ------------------------------------------------------------------------------- | -------------------------------------- | ---------- |
-| 1   | **Hetzner** (`accounts.hetzner.com`)     | Everything. Servers, volumes, firewalls, DNS zones, Object Storage, the AVV     | In use                                 | Yes        |
-| 2   | **GitHub** — personal + `enorm-labs` org | The repository, Actions, GHCR packages, Flux's deploy key, branch protection    | In use                                 | Yes        |
-| 3   | **INWX** (registrar)                     | Domain renewal, nameserver delegation, the DNSSEC DS record                     | In use                                 | Yes        |
-| 4   | **healthchecks.io**                      | The dead-man's switch — its checks, its notification channel, its ping URLs     | In use                                 | Yes        |
-| 4a  | **Better Stack** (`betterstack.com`)     | The site monitor, its alert channel and the Uptime API tokens (ADR-021)         | **In use** — since 2026-08-31          | Yes        |
-| 5   | **Postflex**                             | The rented imprint address (§ 5 DDG). **A lapsed renewal breaks § 5 silently**  | **In use** — since 2026-08-21          | Yes        |
-| 6   | **Signal**, on its own prepaid number    | The alert bridge's identity. Registration state also lives on a PVC             | **Decided, not built**                 | Yes        |
-| 7   | **Hetzner Webhosting S** (konsoleH)      | The hosting package the mailboxes live on. **Its own login, not the Cloud one** | **In use** — since 2026-08-21          | Yes        |
-| 7a  | **The two mailbox passwords**            | `hello@` and `security@` — IMAP, SMTP and webmail, one password each            | **In use** — since 2026-08-21          | Yes        |
-| 8   | **OpenObserve** admin login              | Logs, metrics, dashboards, alert rules. Created at first start                  | **In use** — staging, since 2026-08-20 | Yes        |
+| #   | Account                                       | Unlocks                                                                         | Status                                 | Only copy? |
+| --- | --------------------------------------------- | ------------------------------------------------------------------------------- | -------------------------------------- | ---------- |
+| 1   | **Hetzner** (`accounts.hetzner.com`)          | Everything. Servers, volumes, firewalls, DNS zones, Object Storage, the AVV     | In use                                 | Yes        |
+| 2   | **GitHub** — personal + `enorm-labs` org      | The repository, Actions, GHCR packages, Flux's deploy key, branch protection    | In use                                 | Yes        |
+| 3   | **INWX** (registrar)                          | Domain renewal, nameserver delegation, the DNSSEC DS record                     | In use                                 | Yes        |
+| 4   | **healthchecks.io**                           | The dead-man's switch — its checks, its notification channel, its ping URLs     | In use                                 | Yes        |
+| 4a  | **Better Stack** (`betterstack.com`)          | The site monitor, its alert channel and the Uptime API tokens (ADR-021)         | **In use** — since 2026-08-31          | Yes        |
+| 5   | **Postflex**                                  | The rented imprint address (§ 5 DDG). **A lapsed renewal breaks § 5 silently**  | **In use** — since 2026-08-21          | Yes        |
+| 6   | **Signal**, on its own prepaid number         | The alert bridge's identity. Registration state also lives on a PVC             | **Decided, not built**                 | Yes        |
+| 7   | **Hetzner Webhosting S** (konsoleH)           | The hosting package the mailboxes live on. **Its own login, not the Cloud one** | **In use** — since 2026-08-21          | Yes        |
+| 7a  | **The two mailbox passwords**                 | `hello@` and `security@` — IMAP, SMTP and webmail, one password each            | **In use** — since 2026-08-21          | Yes        |
+| 8   | **OpenObserve** admin login                   | Logs, metrics, dashboards, alert rules. Created at first start                  | **In use** — staging, since 2026-08-20 | Yes        |
+| 8a  | **Anthropic Console** (`platform.claude.com`) | The `event-junkie` workspace and the API key the importer translates with (#26) | **In use** — since 2026-09-08          | Yes        |
 
 **On the Hetzner account specifically:** it is the single point of total failure here. It holds the infrastructure, the DNS, the backups and the state file.
 Treat its 2FA recovery codes with the same care as the age key in §3.
@@ -58,6 +59,7 @@ prepaid number silently ends the alerting path.
 | 15  | **`github-dispatch` PAT** (fine-grained) — `event-junkie-staging-github-dispatch` | **`contents: write` on this repository** — can trigger any `repository_dispatch` workflow on `main`                                                                    | Created 2026-08-19, **expires 2027-08-20**. **Hand-made** Kubernetes Secret in `flux-system`, one per cluster — nothing in the repo creates it ([`ops/SECRETS.md`](ops/SECRETS.md))           | No                                     |
 | 15a | **`github-dispatch` PAT** — `event-junkie-production-github-dispatch`             | Same power as #15, on the **production** cluster. Created 2026-08-21                                                                                                   | Keychain item of that name; **hand-made** Secret in production's `flux-system`. One PAT per cluster by decision, not convenience                                                              | No                                     |
 | 25  | **`event-junkie-release` GitHub App private key**                                 | **`contents: write` + `pull requests: write` on this repository.** Cuts the release and opens the bump ([#868](https://github.com/enorm-labs/event-junkie/issues/868)) | GitHub Actions repository secret `RELEASE_APP_PRIVATE_KEY`, with the App id in the variable `RELEASE_APP_ID`                                                                                  | Yes — downloaded once, but regenerable |
+| 26  | **Claude API key** (`APP_TRANSLATION_API_KEY`) — `event-junkie-app`               | **One workspace, spend-capped.** Reaches the Messages API and nothing of ours. Translates event descriptions where a source grants it (ADR-026)                        | macOS Keychain, item `event-junkie-translation-api-key`; loaded by the repository-root `.envrc`. Not yet on any cluster — nothing grants translation                                          | Yes — shown once at creation           |
 | 23a | **`BETTERSTACK_API_TOKEN`** — Uptime API token                                    | **Read + write over the team's Uptime resources.** The API has no read-only scope, so it can delete the monitor it reads. Used for exactly one `GET`                   | GitHub Actions repository secret. Shown once at creation                                                                                                                                      | No — mint another                      |
 | 24  | **`CLAUDE_CODE_OAUTH_TOKEN`** — Claude Code subscription token                    | **Spends the Claude subscription.** It reaches nothing in this repository: the agent's GitHub access is the Claude App's, not this token's                             | GitHub Actions repository secret, minted by `claude setup-token`. Shown once                                                                                                                  | No — mint another                      |
 
@@ -197,7 +199,7 @@ Small facts that are annoying to re-derive and are needed exactly when something
 
 ### What is in the macOS Keychain, and why that is not a backup
 
-`infra/.envrc` loads some of these. The rest are there so a rebuild does not need the password manager at 02:00. **The
+`infra/.envrc` and the repository-root `.envrc` load some of these. The rest are there so a rebuild does not need the password manager at 02:00. **The
 Keychain is a working copy, not the record.** It lives on one laptop and is not versioned. The 2026-08-21 rebuild
 proved what happens when something exists only in a place that gets destroyed.
 
@@ -213,6 +215,7 @@ proved what happens when something exists only in a place that gets destroyed.
 | `event-junkie-production-events-db`          | #20                | by hand, and encrypted into git                       |
 | `event-junkie-staging-o2-root-password`      | #8                 | by hand, into `openobserve-credentials`               |
 | `event-junkie-staging-metrics-password`      | the `metrics` role | by hand, into `postgres-exporter`                     |
+| `event-junkie-translation-api-key`           | #26                | the repository-root `.envrc`                          |
 
 **Every one of these belongs in KeePass too.** The two OpenObserve and metrics passwords were regenerated during the
 2026-08-21 rebuild rather than recovered, because the old values died with the node's PVC. If the password manager
@@ -224,9 +227,9 @@ One group per section above maps cleanly onto how these are actually used:
 
 ```
 event-junkie/
-├── Accounts/          Hetzner · konsoleH · GitHub · INWX · healthchecks.io · Postflex · Signal · OpenObserve
+├── Accounts/          Hetzner · konsoleH · GitHub · INWX · healthchecks.io · Postflex · Signal · OpenObserve · Anthropic
 ├── Mailboxes/         hello@ · security@ — one entry each, not one for "mail"
-├── API tokens/        HCLOUD_TOKEN · S3 key pair · cert-manager DNS token · NVD · the PATs
+├── API tokens/        HCLOUD_TOKEN · S3 key pair · cert-manager DNS token · NVD · Claude · the PATs
 ├── Keys/              age key (file attachment) · SSH key (file) · WireGuard config (file) · kubeconfig
 ├── Cluster & node/    events role password · ping URLs · wal-g credentials.env
 └── Reference/         addresses · bucket names · the AVV PDF · the age public key
