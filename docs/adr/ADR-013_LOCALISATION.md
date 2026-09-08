@@ -6,6 +6,11 @@
 per-locale legal and About pages. A switcher in header and footer, locale-aware formatting, `hreflang`, `og:locale`
 and a generated sitemap.
 
+**Partially superseded by [ADR-026](ADR-026_MULTILINGUAL_EVENT_TEXT.md) (2026-09-07).** The §3 row that keeps event
+descriptions in the publisher's language is replaced there. Descriptions are stored per language, served in the
+publisher's own words where both exist, and machine-translated only under a grant. Titles stay untranslated, and the
+other rows of §3 stand.
+
 > The operational rules live in [`events-frontend/AGENTS.md`](../../events-frontend/AGENTS.md) §Localisation, and the
 > policy in [LEGAL.md](../LEGAL.md) §6. Package versions and download figures below were surveyed once and are
 > indicative.

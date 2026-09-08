@@ -125,6 +125,13 @@ cannot justify displaying for that source.
 **What we do about it now:** §5 remains the answer for a venue that objects, and it is finer than it was. A venue that
 minds only its photographs no longer has to lose its whole listing.
 
+**We do not translate a description unless the source grants it.** A translation is an adaptation under § 23 UrhG,
+which needs the author's consent, and no statutory exception covers publishing one. So a machine translation of an
+`UNCLEAR` description would stack a third unjustified act on the two above.
+[ADR-026](adr/ADR-026_MULTILINGUAL_EVENT_TEXT.md) decides that translation waits for a `PERMITTED` verdict whose grant
+names it, and the [#808](https://github.com/enorm-labs/event-junkie/issues/808) mail asks for that as its own
+question. Serving a second language the publisher wrote is the same act as serving the first.
+
 ### 3.2 The database right (§§ 87a–87c UrhG)
 
 **Our position:** this is the argument most likely to go against us, and we accept that risk.
@@ -298,7 +305,7 @@ Any of these makes the position stale, and the first three make a qualified opin
 ## 7. References
 
 - [UrhG § 2](https://www.gesetze-im-internet.de/urhg/__2.html) · [§ 16](https://www.gesetze-im-internet.de/urhg/__16.html) ·
-  [§ 44b](https://www.gesetze-im-internet.de/urhg/__44b.html) · [§ 72](https://www.gesetze-im-internet.de/urhg/__72.html) ·
+  [§ 23](https://www.gesetze-im-internet.de/urhg/__23.html) · [§ 44b](https://www.gesetze-im-internet.de/urhg/__44b.html) · [§ 72](https://www.gesetze-im-internet.de/urhg/__72.html) ·
   [§ 87a](https://www.gesetze-im-internet.de/urhg/__87a.html) · [§ 87b](https://www.gesetze-im-internet.de/urhg/__87b.html)
 - [UWG § 4](https://www.gesetze-im-internet.de/uwg_2004/__4.html) · [BGB § 823](https://www.gesetze-im-internet.de/bgb/__823.html)
 - BGH _Paperboy_, I ZR 259/00 (2003) · BGH _Automobil-Onlinebörse_, I ZR 224/12 (2014) · CJEU _Ryanair v PR Aviation_, C-30/14 (2015)
