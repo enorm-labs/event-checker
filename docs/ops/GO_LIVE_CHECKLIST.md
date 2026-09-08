@@ -147,6 +147,7 @@ OpenObserve to Signal). That is a different chain, and it stays unbuilt.
 |            | Venue descriptions proof-read once more **by the maintainer**, after #1124 and before the flip            | #1124    |
 |            | Every page read in both languages **by the maintainer**, as a reader — About and the legal texts included | #280     |
 | 2026-08-31 | Images served from our own cache, not hotlinked                                                           | #843     |
+| 2026-09-07 | Multilingual event text decided, so the translation question is answered before a venue is asked          | #469     |
 
 **Production serves the full catalogue.** All 86 sources are registered, enabled and carry their licence
 verdicts, and the importer runs on schedule (#876, #285). Two venues forbid their descriptions and images, and
