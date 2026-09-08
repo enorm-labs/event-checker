@@ -19,7 +19,8 @@
 #     plus a manifest merge. `dist/` is just text — it is identical on amd64 and arm64 — so with the
 #     build outside the Dockerfile a single runner emits both platforms. Same reasoning as
 #     events-bff/Dockerfile, which also records the one exception: a named `apk upgrade`, which
-#     runs under the runner's emulation for arm64 and published from this file under #964 and #1118.
+#     runs under the runner's emulation for arm64 (#964, #1118). This file needs no such layer,
+#     for the reason on the `FROM` below.
 #  2. **CI already builds it.** `build-frontend.yml` runs `npm ci && npm run build` with a cached
 #     node_modules before it ever reaches this file. A builder stage here would be a second,
 #     uncached build of an artefact that already exists.
@@ -50,13 +51,18 @@
 #
 # **Verify the package, never the digest.** A rebuilt digest is not evidence: #770 was triaged
 # against a digest that had moved while still shipping the vulnerable openssl. What this pin has to
-# satisfy is `libssl3 >= 3.5.8-r0` (#770) and `libexpat >= 2.8.4-r0` (#1009), both checked with
-# `docker run --rm --entrypoint sh <ref> -c 'apk list | grep -E "^libssl3|^libexpat"'` and then with
+# satisfy is `libssl3 >= 3.5.8-r0` (#770), `libexpat >= 2.8.4-r0` (#1009) and
+# `libuuid >= 2.42.3-r1` (#1117), all checked with
+# `docker run --rm --entrypoint sh <ref> -c 'apk list | grep -E "^libssl3|^libexpat|^libuuid"'` and
+# then with
 # `trivy image <ref> --severity CRITICAL,HIGH --ignore-unfixed --ignorefile /dev/null`, which is the
 # form that reports on the image rather than on the waiver. **Both on `--platform linux/amd64`**:
 # the gate scans the amd64 image, and Alpine builds each architecture separately, so a package can
 # exist for arm64 and not yet for x86_64 — which is how #1118 verified clean and changed nothing.
-FROM nginxinc/nginx-unprivileged:1.31-alpine@sha256:aa8c9087d36d93e9d650c5365f883b421e8214aedbad24ade52b844c583358f1
+#
+# This digest carries all three, so no `apk upgrade` layer belongs here: an upgrade kept past its
+# purpose hides that the base has caught up and quietly becomes the thing choosing the version.
+FROM nginxinc/nginx-unprivileged:1.31-alpine@sha256:2ddec616f1cb58bcac057aa388f28cb81e35137641ef4226d321714499329bd1
 
 ARG VERSION=unspecified
 ARG REVISION=unknown
@@ -67,24 +73,6 @@ LABEL org.opencontainers.image.source="https://github.com/enorm-labs/event-junki
       org.opencontainers.image.licenses="Apache-2.0" \
       org.opencontainers.image.version="${VERSION}" \
       org.opencontainers.image.revision="${REVISION}"
-
-# **A base-image CVE fix that has not arrived upstream yet, and the release gate needs it now.**
-# Trivy fails the publish on HIGH findings, and `libuuid 2.42.1-r0` in this digest carries seven
-# util-linux advisories (CVE-2026-53612 and six siblings). Alpine 3.24 ships the fixed `2.42.3`
-# for both architectures now, so this layer is the whole fix (#1117 — the x86_64 build lagged
-# aarch64 by a day, and a waiver covered that day). Every mainline tag resolves to the digest
-# pinned above and `stable-alpine` carries the same package. Same shape as #964.
-#
-# **Delete this once the base ships the fix**, by the same rule `gradle.properties` states for a BOM
-# override: an upgrade kept past its purpose hides that the base has caught up and quietly becomes
-# the thing choosing the version. Check with
-# `docker run --rm --entrypoint sh <ref> -c 'apk list --installed | grep libuuid'`.
-#
-# `USER root` because the base runs as 101 and apk needs write access; `USER 10001:10001` below is
-# what the container actually runs as, and it is unaffected. Named rather than a blanket
-# `apk upgrade`, so what changes against the pinned digest stays reviewable.
-USER root
-RUN apk upgrade --no-cache libuuid
 
 # Config first, bundle second: the config changes rarely and the bundle changes every build, so
 # this ordering keeps the config layer cached.
