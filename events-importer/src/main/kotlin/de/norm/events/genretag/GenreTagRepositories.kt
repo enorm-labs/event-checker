@@ -7,9 +7,6 @@ import org.springframework.data.r2dbc.repository.Modifying
 import org.springframework.data.r2dbc.repository.Query
 import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 
-/**
- * Reactive repository for [GenreTagEntity] persistence via R2DBC.
- */
 interface GenreTagRepository : CoroutineCrudRepository<GenreTagEntity, Long> {
     /** Finds all genre tags with pagination and sorting applied via [pageable]. */
     fun findAllBy(pageable: Pageable): Flow<GenreTagEntity>

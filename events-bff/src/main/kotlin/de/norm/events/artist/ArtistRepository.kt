@@ -4,9 +4,6 @@ import kotlinx.coroutines.flow.Flow
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 
-/**
- * Reactive read repository for [ArtistEntity] via R2DBC.
- */
 interface ArtistRepository : CoroutineCrudRepository<ArtistEntity, Long> {
     /** Finds all artists with pagination and sorting applied via [pageable]. */
     fun findAllBy(pageable: Pageable): Flow<ArtistEntity>

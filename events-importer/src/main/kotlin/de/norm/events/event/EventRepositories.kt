@@ -8,9 +8,6 @@ import org.springframework.data.r2dbc.repository.Query
 import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 import java.time.LocalDate
 
-/**
- * Reactive repository for [EventEntity] persistence via R2DBC.
- */
 interface EventRepository : CoroutineCrudRepository<EventEntity, Long> {
     /** Batch-fetches events by their source IDs to avoid N+1 queries during upsert. */
     fun findBySourceIdIn(sourceIds: Collection<String>): Flow<EventEntity>

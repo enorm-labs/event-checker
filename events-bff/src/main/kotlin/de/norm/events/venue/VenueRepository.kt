@@ -4,9 +4,6 @@ import kotlinx.coroutines.flow.Flow
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 
-/**
- * Reactive read repository for [VenueEntity] via R2DBC.
- */
 interface VenueRepository : CoroutineCrudRepository<VenueEntity, Long> {
     /** Finds all venues with pagination and sorting applied via [pageable]. */
     fun findAllBy(pageable: Pageable): Flow<VenueEntity>

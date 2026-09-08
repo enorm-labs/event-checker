@@ -30,7 +30,6 @@ data class PageResponse<T>(
     val totalPages: Int
 ) {
     companion object {
-        /** Builds a [PageResponse] from the page [content], the requesting [pageable], and the overall [totalElements] count. */
         fun <T> of(
             content: List<T>,
             pageable: Pageable,
