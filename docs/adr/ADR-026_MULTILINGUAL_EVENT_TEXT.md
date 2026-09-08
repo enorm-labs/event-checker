@@ -13,6 +13,11 @@ one. Issue [#470](https://github.com/enorm-labs/event-junkie/issues/470) transla
 [#808](https://github.com/enorm-labs/event-junkie/issues/808) is where a grant comes from. Decided in
 [#469](https://github.com/enorm-labs/event-junkie/issues/469).
 
+**Rule 3 is superseded by [ADR-027](ADR-027_TRANSLATION_FOLLOWS_THE_DISPLAY_RULE.md) (2026-09-08), the same day.**
+Translation now follows the display rule, so silence permits it and only `PROHIBITED` withholds. **The § 23 UrhG
+reasoning below is not withdrawn.** It is the case against that change, and it is kept here in full. That is why
+ADR-027 is a separate document rather than an edit to this one. Rules 1, 2 and 4 stand.
+
 **Partially supersedes [ADR-013](ADR-013_LOCALISATION.md).** Its §3 table put event titles and descriptions in one row,
 _"third-party content, do not translate"_. This ADR replaces that row for descriptions and keeps it for titles. The
 other rows of that table stand. Venue, artist and district names stay as written. Event types are ours and are

@@ -131,7 +131,8 @@ class EventSourceService(
         // A licence field in the request means somebody reviewed the source, so the timestamp moves
         // with it rather than being sent by the caller. Sending it separately would let the two
         // disagree, and the whole value of the timestamp is that it cannot.
-        val licenceReviewed = request.descriptionLicence != null || request.imageLicence != null
+        val licenceReviewed =
+            request.descriptionLicence != null || request.imageLicence != null || request.translationLicence != null
         val updated =
             source.copy(
                 enabled = request.enabled ?: source.enabled,
@@ -139,6 +140,7 @@ class EventSourceService(
                 maxRetries = request.maxRetries ?: source.maxRetries,
                 descriptionLicence = request.descriptionLicence?.name ?: source.descriptionLicence,
                 imageLicence = request.imageLicence?.name ?: source.imageLicence,
+                translationLicence = request.translationLicence?.name ?: source.translationLicence,
                 licenceReviewedAt = if (licenceReviewed) Instant.now() else source.licenceReviewedAt,
                 licenceSourceUrl = request.licenceSourceUrl ?: source.licenceSourceUrl,
                 licenceNote = request.licenceNote ?: source.licenceNote
@@ -173,7 +175,7 @@ class EventSourceService(
      */
     private suspend fun clearProhibitedContent(source: EventSourceEntity) {
         val id = source.id ?: return
-        val licences = SourceLicences.of(source.descriptionLicence, source.imageLicence)
+        val licences = SourceLicences.of(source.descriptionLicence, source.imageLicence, source.translationLicence)
         if (licences.withholdsDescription()) {
             val cleared = eventRepository.clearDescriptions(id)
             if (cleared > 0) logger.info { "Cleared $cleared stored description(s) for prohibited source '${source.slug}'" }
@@ -181,6 +183,12 @@ class EventSourceService(
         if (licences.withholdsImage()) {
             val cleared = eventRepository.clearImageUrls(id)
             if (cleared > 0) logger.info { "Cleared $cleared stored image URL(s) for prohibited source '${source.slug}'" }
+        }
+        // A translation exists only while a grant does. Withdrawing the grant deletes the derived
+        // text on the spot, for the reason above: a past event is never scraped again.
+        if (!licences.allowsTranslation()) {
+            val cleared = eventRepository.clearTranslations(id)
+            if (cleared > 0) logger.info { "Cleared $cleared stored translation(s) for source '${source.slug}'" }
         }
     }
 

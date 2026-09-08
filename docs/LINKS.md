@@ -160,7 +160,21 @@ The site's own legal pages, once deployed, are `/legal/privacy`, `/legal/imprint
 
 ---
 
-## 7. Security and dependency scanning
+## 7. Anthropic — the one AI vendor
+
+Nothing is sent here today. The importer's translation engine is off in every environment, and even
+switched on it translates only for a source whose licence grants it (ADR-026). This is where the
+spend cap that makes that safe is set and read.
+
+| Link                                          | What it is                                                                         | Status                            |
+| --------------------------------------------- | ---------------------------------------------------------------------------------- | --------------------------------- |
+| <https://platform.claude.com/dashboard>       | **The Console.** Usage, spend and the limit on the `event-junkie` workspace        | In use since 2026-09-08           |
+| <https://platform.claude.com/settings/keys>   | Where `event-junkie-app` was created. A key is shown once — see CREDENTIALS.md #26 | In use                            |
+| <https://platform.claude.com/settings/limits> | The workspace spend cap. **The ceiling that makes a runaway loop harmless**        | Set on the workspace, not the key |
+
+---
+
+## 8. Security and dependency scanning
 
 | Link                                                 | What it is                                                                      |
 | ---------------------------------------------------- | ------------------------------------------------------------------------------- |
@@ -172,7 +186,7 @@ The site's own legal pages, once deployed, are `/legal/privacy`, `/legal/imprint
 
 ---
 
-## 8. Local development
+## 9. Local development
 
 Nothing here is a service you have an account with. It is the set of addresses `scripts/dev-env.sh up` produces.
 
@@ -185,7 +199,7 @@ Nothing here is a service you have an account with. It is the set of addresses `
 
 ---
 
-## 9. Stack reference documentation
+## 10. Stack reference documentation
 
 The docs actually consulted while working on this repository, rather than a link farm.
 
@@ -203,10 +217,11 @@ The docs actually consulted while working on this repository, rather than a link
 | <https://playwright.dev>                                                           | End-to-end tests                                                                      |
 | <https://sdkman.io/>                                                               | JDK management, see `.sdkmanrc`                                                       |
 | <https://www.conventionalcommits.org>                                              | Commit message format                                                                 |
+| <https://platform.claude.com/docs/en/api/messages>                                 | The Messages API, which Spring AI calls for translation (ADR-026)                     |
 
 ---
 
-## 10. Where the detail lives, in this repository
+## 11. Where the detail lives, in this repository
 
 | Document                                                    | Answers                                                                                       |
 | ----------------------------------------------------------- | --------------------------------------------------------------------------------------------- |

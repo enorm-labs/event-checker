@@ -28,6 +28,8 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/admin/event-sources")
 @Tag(name = "Admin: Event Sources", description = "Endpoints for managing event sources and triggering imports")
 class EventSourceController(
+    /** On-demand translation, gated on the source's own grant (ADR-026, #470). */
+    private val descriptionTranslationService: DescriptionTranslationService,
     private val importJobLauncher: ImportJobLauncher,
     private val eventSourceService: EventSourceService
 ) {
@@ -113,6 +115,23 @@ class EventSourceController(
     suspend fun getSource(
         @PathVariable slug: String
     ): EventSourceResponse = eventSourceService.findBySlug(slug)
+
+    /**
+     * Translates this source's missing descriptions now, or one event's when [eventSlug] names it.
+     *
+     * **The licence gate applies here exactly as it does during an import** (ADR-026). A source
+     * without a translation grant returns `permitted: false` and translates nothing, because the
+     * grant is a legal condition and not an operator convenience. Synchronous, unlike the import
+     * trigger: a run is bounded by `app.translation.max-per-run` and the caller wants the counts.
+     *
+     * @throws EventSourceNotFoundException if no source with the given slug exists.
+     */
+    @PostMapping("/{slug}/translate")
+    @Operation(summary = "Translate this source's descriptions now, or one event's, where its licence grants it")
+    suspend fun translate(
+        @PathVariable slug: String,
+        @RequestParam(required = false) eventSlug: String?
+    ): TranslationRunResponse = descriptionTranslationService.translateOnDemand(slug, eventSlug)
 
     /**
      * Partially updates an event source's configuration.

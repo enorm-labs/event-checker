@@ -135,6 +135,10 @@ spec:
           cpu: "1000m"
           memory: "640Mi"
     importer:
+      # **On here translates nothing.** A source also needs a PERMITTED `translation_licence`, and
+      # none holds one (ADR-026). The Secret is hand-made — docs/ops/SECRETS.md §The decision.
+      translation:
+        engine: anthropic
       resources:
         requests:
           cpu: "50m"

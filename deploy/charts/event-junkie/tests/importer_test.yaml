@@ -382,3 +382,49 @@ tests:
           path: spec.template.spec.containers[1].securityContext.readOnlyRootFilesystem
           value: true
 
+
+  # --- Translation: two switches, and the chart owns only the first ---------------------------
+  #
+  # A missing Secret must not be a broken cluster. Every environment starts with the engine off, so
+  # the deployment names no Secret at all and a cluster that never creates one is healthy (ADR-026).
+  - it: names no translation secret while the engine is off
+    set:
+      database.host: "10.0.1.2"
+      networkPolicy.databaseCidr: "10.0.1.2/32"
+      database.existingSecret: "events-db"
+      # Forced, because `cluster-assertions.sh` re-runs this suite under each cluster's own values
+      # and both clusters now set `anthropic`. Without it the case asserts the cluster, not the default.
+      importer.translation.engine: "none"
+    documentSelector:
+      path: kind
+      value: Deployment
+    asserts:
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: APP_TRANSLATION_ENGINE
+          any: true
+
+  - it: reads the key from the hand-made secret once the engine is anthropic
+    set:
+      database.host: "10.0.1.2"
+      networkPolicy.databaseCidr: "10.0.1.2/32"
+      database.existingSecret: "events-db"
+      importer.translation.engine: "anthropic"
+    documentSelector:
+      path: kind
+      value: Deployment
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: APP_TRANSLATION_ENGINE
+            value: "anthropic"
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: APP_TRANSLATION_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: event-junkie-translation
+                key: APP_TRANSLATION_API_KEY

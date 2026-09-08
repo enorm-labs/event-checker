@@ -1,0 +1,41 @@
+# Local application credentials, loaded by direnv.
+#
+#   cp .envrc.example .envrc && direnv allow
+#
+# **At the repository root, not in `events-importer/`, and that is forced rather than chosen.**
+# direnv loads a file when you enter its directory, and every way of starting the importer runs
+# `./gradlew` from here — `scripts/dev-env.sh` does, and so does the usual `:events-importer:bootRun`.
+# A file inside the module would never load.
+#
+# The cost is that this is in scope for every command you run in the repository, which
+# `infra/.envrc` deliberately avoids for the Hetzner token. That token has read and write over the
+# whole project; what is below reaches one vendor workspace with a spend cap on it. Do not add a
+# credential here that would not survive the same comparison — `infra/.envrc` is where a powerful one
+# belongs.
+#
+# Nothing secret belongs in this file. The values come out of the macOS Keychain, so the copy you
+# actually use stays safe to read over your shoulder and harmless in a screen share. Store it once:
+#
+#   security add-generic-password -a "$USER" -s event-junkie-translation-api-key -w
+#
+# `-w` with no value prompts for it, so the secret never reaches your shell history.
+#
+# direnv evaluates this with bash regardless of your login shell — keep it bash-compatible.
+
+keychain() { security find-generic-password -a "$USER" -s "$1" -w 2>/dev/null || true; }
+
+# The Claude API key the importer translates with (ADR-026). Its own key in its own Console
+# workspace, so it carries a spend limit of its own and can be revoked without touching anything
+# else. See docs/CREDENTIALS.md #26.
+export APP_TRANSLATION_API_KEY="$(keychain event-junkie-translation-api-key)"
+
+# **`none` is the default and the right value for ordinary work.** The key alone costs nothing.
+# Setting this to `anthropic` is what starts spending, and even then only for an event source whose
+# `translation_licence` is PERMITTED — no source holds that yet.
+export APP_TRANSLATION_ENGINE=none
+
+# An empty key produces a warning on the first translation rather than at startup, which is a long
+# way from the cause. Say so now instead.
+if [ -z "$APP_TRANSLATION_API_KEY" ]; then
+    echo "envrc: APP_TRANSLATION_API_KEY is empty — is it in the Keychain under the name above?" >&2
+fi

@@ -144,6 +144,18 @@ importer:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+  # importer.translation fills in the missing language for a source whose licence grants it
+  # (ADR-026, #470). **The engine is not the switch that spends money** — a source also needs
+  # `translation_licence = PERMITTED`, which only a venue's answer produces, so an environment with
+  # the engine on and no grant translates nothing and calls nobody.
+  translation:
+    # `none` or `anthropic`.
+    engine: "none"
+    # Read only when engine is `anthropic`. The Secret is **hand-made, never encrypted into this
+    # public repository** — docs/ops/SECRETS.md §The decision. A missing one is not a broken cluster:
+    # with engine `none` nothing reads it.
+    existingSecret: "event-junkie-translation"
+    model: "claude-haiku-4-5"
 
 frontend:
   # frontend.replicaCount is free to exceed 1: it serves static files.

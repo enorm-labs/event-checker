@@ -125,12 +125,14 @@ cannot justify displaying for that source.
 **What we do about it now:** §5 remains the answer for a venue that objects, and it is finer than it was. A venue that
 minds only its photographs no longer has to lose its whole listing.
 
-**We do not translate a description unless the source grants it.** A translation is an adaptation under § 23 UrhG,
-which needs the author's consent, and no statutory exception covers publishing one. So a machine translation of an
-`UNCLEAR` description would stack a third unjustified act on the two above.
-[ADR-026](adr/ADR-026_MULTILINGUAL_EVENT_TEXT.md) decides that translation waits for a `PERMITTED` verdict whose grant
-names it, and the [#808](https://github.com/enorm-labs/event-junkie/issues/808) mail asks for that as its own
-question. Serving a second language the publisher wrote is the same act as serving the first.
+**We machine-translate a description wherever we display it, and that is the weakest thing in this document.** A
+translation is an adaptation under § 23 UrhG, which needs the author's consent, and no statutory exception covers
+publishing one. So it is a third act on top of the two above, and it rests on the same reading of silence.
+[ADR-026](adr/ADR-026_MULTILINGUAL_EVENT_TEXT.md) sets out the case against it in full.
+[ADR-027](adr/ADR-027_TRANSLATION_FOLLOWS_THE_DISPLAY_RULE.md) is the decision to accept the risk. Two reasons:
+consistency with the display rule above, and §5 answering an objection the same day. Every translation is labelled as machine
+output and links to the source. `PROHIBITED` on either field removes it. Serving a second language the publisher wrote
+is a different matter: that is the same act as serving the first.
 
 ### 3.2 The database right (§§ 87a–87c UrhG)
 

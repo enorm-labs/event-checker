@@ -75,6 +75,13 @@ data class EventSourceUpdateRequest(
     )
     val imageLicence: SourceLicence? = null,
     @Schema(
+        description =
+            "Whether this source grants translation of its descriptions, which is a separate act " +
+                "from showing them. Only PERMITTED allows it, so silence and UNCLEAR both decline",
+        example = "PERMITTED"
+    )
+    val translationLicence: SourceLicence? = null,
+    @Schema(
         description = "The page the reviewer read. Worth recording even when the answer is UNCLEAR",
         example = "https://example.com/presse"
     )

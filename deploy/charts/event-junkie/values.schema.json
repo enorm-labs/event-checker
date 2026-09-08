@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
   "title": "event-junkie chart values",
-  "description": "Deliberately minimal: it constrains the values whose wrong setting is either unrecoverable or invisible, and nothing else. Documenting the whole value surface is values.yaml's job, and a schema that repeats it is a second thing to keep in step. Note that `database.host` and `database.existingSecret` are NOT required here even though the chart cannot render without them \u2014 the helpers reject them with a message that says what to do, which is more useful than a schema path.",
+  "description": "Deliberately minimal: it constrains the values whose wrong setting is either unrecoverable or invisible, and nothing else. Documenting the whole value surface is values.yaml's job, and a schema that repeats it is a second thing to keep in step. Note that `database.host` and `database.existingSecret` are NOT required here even though the chart cannot render without them — the helpers reject them with a message that says what to do, which is more useful than a schema path.",
   "type": "object",
   "required": [
     "image",
@@ -85,7 +85,7 @@
       ],
       "properties": {
         "runAsUser": {
-          "description": "Must be non-zero: `runAsNonRoot: true` and `runAsUser: 0` is a pod that fails to start, which is the good case \u2014 the bad one is a UID that exists in the image and is not the one it runs as.",
+          "description": "Must be non-zero: `runAsNonRoot: true` and `runAsUser: 0` is a pod that fails to start, which is the good case — the bad one is a UID that exists in the image and is not the one it runs as.",
           "type": "integer",
           "minimum": 1
         },
@@ -130,11 +130,12 @@
         "replicaCount",
         "image",
         "service",
-        "resources"
+        "resources",
+        "translation"
       ],
       "properties": {
         "replicaCount": {
-          "description": "Pinned to 1 by ADR-008, so that raising it fails at install time rather than in a review comment. Two schedulers means two concurrent imports of the same source: the 60-second tick skips sources marked RUNNING, but that check is a read-then-write with no lock. `SELECT \u2026 FOR UPDATE SKIP LOCKED` is the prerequisite for ever relaxing this, and relaxing it is an ADR change, not a values change.",
+          "description": "Pinned to 1 by ADR-008, so that raising it fails at install time rather than in a review comment. Two schedulers means two concurrent imports of the same source: the 60-second tick skips sources marked RUNNING, but that check is a read-then-write with no lock. `SELECT … FOR UPDATE SKIP LOCKED` is the prerequisite for ever relaxing this, and relaxing it is an ADR change, not a values change.",
           "const": 1
         },
         "service": {
@@ -144,6 +145,35 @@
           "type": "integer",
           "minimum": 25,
           "maximum": 90
+        },
+        "translation": {
+          "type": "object",
+          "description": "Machine translation of event descriptions, for a source whose licence grants it (ADR-026).",
+          "required": [
+            "engine",
+            "existingSecret",
+            "model"
+          ],
+          "properties": {
+            "engine": {
+              "type": "string",
+              "enum": [
+                "none",
+                "anthropic"
+              ],
+              "description": "none translates nothing and calls nobody. anthropic still needs a per-source PERMITTED grant."
+            },
+            "existingSecret": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Hand-made Secret holding APP_TRANSLATION_API_KEY. Read only when engine is anthropic."
+            },
+            "model": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "additionalProperties": false
         }
       }
     },
@@ -350,7 +380,7 @@
               "format": "uri"
             },
             "solver": {
-              "description": "http01 needs Let's Encrypt to reach the host; staging has no public address, so it uses dns01 (PLATFORM_SETUP \u00a74a).",
+              "description": "http01 needs Let's Encrypt to reach the host; staging has no public address, so it uses dns01 (PLATFORM_SETUP §4a).",
               "enum": [
                 "http01",
                 "dns01"
@@ -365,7 +395,7 @@
               ],
               "properties": {
                 "tokenSecret": {
-                  "description": "A Secret holding an hcloud API token, in cert-manager's namespace \u2014 a ClusterIssuer resolves references there, not in the release namespace.",
+                  "description": "A Secret holding an hcloud API token, in cert-manager's namespace — a ClusterIssuer resolves references there, not in the release namespace.",
                   "type": "object",
                   "required": [
                     "name",
@@ -401,7 +431,7 @@
       }
     },
     "networkPolicy": {
-      "description": "Default-deny for the release namespace plus one named allowance per real conversation (#416, PLATFORM_SETUP \u00a78 item 1).",
+      "description": "Default-deny for the release namespace plus one named allowance per real conversation (#416, PLATFORM_SETUP §8 item 1).",
       "type": "object",
       "required": [
         "enabled",
@@ -415,7 +445,7 @@
           "type": "boolean"
         },
         "databaseCidr": {
-          "description": "The /32 of PostgreSQL. NetworkPolicy speaks CIDRs and cannot resolve database.host, so this is a second setting that has to agree with it. Required when enabled \u2014 the template fails the render rather than letting pods hang on connect. Empty is allowed by the schema only because values.yaml is validated against it and there is no safe default for an address \u2014 the same reason database.host is untyped for length.",
+          "description": "The /32 of PostgreSQL. NetworkPolicy speaks CIDRs and cannot resolve database.host, so this is a second setting that has to agree with it. Required when enabled — the template fails the render rather than letting pods hang on connect. Empty is allowed by the schema only because values.yaml is validated against it and there is no safe default for an address — the same reason database.host is untyped for length.",
           "type": "string"
         },
         "dns": {

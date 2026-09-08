@@ -17,6 +17,7 @@ repositories {
 
 dependencyManagement {
     imports {
+        mavenBom("org.springframework.ai:spring-ai-bom:${property("spring-ai.version")}")
         mavenBom("org.springframework.modulith:spring-modulith-bom:${property("spring-modulith.version")}")
     }
 }
@@ -25,6 +26,15 @@ dependencies {
     // Shared domain model and utilities from the events-core library module
     implementation(project(":events-core"))
     testImplementation(testFixtures(project(":events-core")))
+
+    // Spring AI, for the Anthropic client behind `app.translation.engine=anthropic` (ADR-026).
+    //
+    // The model module rather than `spring-ai-starter-model-anthropic`, deliberately. The starter
+    // auto-configures a ChatModel from `spring.ai.anthropic.*`, and translation is off in every
+    // environment, so a bean built from configuration that is normally absent is a startup failure
+    // waiting for the first deployment that forgets it. This builds the model inside the one
+    // conditional bean instead, from `app.translation.*`, which is where the rest of the switch lives.
+    implementation("org.springframework.ai:spring-ai-anthropic")
 
     // Spring Modulith – enforces modular application structure and provides
     // event publication registry, observability, and documentation support.
