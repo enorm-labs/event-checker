@@ -76,8 +76,10 @@ app:
     # `none` or `anthropic`. Off everywhere until an operator chooses both an engine and a key —
     # translating sends a venue's text to a third party and is billed per character (ADR-026).
     #
-    # Switching it on translates nothing by itself: a source also needs `translation_licence` set to
-    # PERMITTED, which only a venue's answer to the #808 mail produces.
+    # Switching it on is not the whole gate: a source also needs `translation_licence` set to
+    # PERMITTED. Since ADR-027 that verdict follows the display rule, so an operator sets it wherever
+    # a venue has not prohibited the description, and the #808 mail is what turns silence into a
+    # real grant.
     engine: none
     api-key: ${APP_TRANSLATION_API_KEY:}
     model: claude-haiku-4-5

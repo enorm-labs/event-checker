@@ -249,8 +249,9 @@ The same command against `event-junkie-production`. One key serves both clusters
 workspace carries the spend cap, so a second key would split the budget without splitting the risk. Rotating is `kubectl delete secret` and this command again,
 followed by a restart of the importer.
 
-**Both clusters set `engine: anthropic` and neither translates anything**, because that switch is not the one that spends. A source needs
-`translation_licence = PERMITTED` as well, which only a venue's own answer produces, and none holds one.
+**Both clusters set `engine: anthropic`, and since ADR-027 both translate.** The engine is not the switch that spends. A source needs
+`translation_licence = PERMITTED` as well, and 84 of the 86 hold it. ADR-027 reads that verdict off the display rule, instead of waiting for a venue's own
+answer.
 
 ### `postgres-exporter` — a monitoring role, not the application's
 
