@@ -4,7 +4,6 @@ import { type LocationQueryRaw, useRoute, useRouter } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import BaseInput from '@/components/BaseInput.vue'
 import BaseSelect from '@/components/BaseSelect.vue'
-import SectionLabel from '@/components/SectionLabel.vue'
 import VenueCard from '@/components/VenueCard.vue'
 import { useVenueSearch, type VenueSearchParams } from '@/composables/useVenues'
 import { DISTRICTS } from '@/lib/districts'
@@ -67,7 +66,6 @@ const { t } = useI18n()
 <template>
   <main class="mx-auto max-w-5xl space-y-6 p-4 sm:p-8">
     <header class="space-y-1">
-      <SectionLabel as="p">{{ t('venues.eyebrow') }}</SectionLabel>
       <h1 class="text-3xl font-bold tracking-tight">{{ t('venues.title') }}</h1>
       <p class="text-muted-foreground">{{ t('venues.subtitle') }}</p>
     </header>

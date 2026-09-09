@@ -583,6 +583,10 @@ A sequence that also captures the §3–§5 design ideas not tracked in the chec
       above stays because it records what was true when it was ticked — the eyebrow labels it also names are untouched and still shipping.
 - [x] Refined event cards + a pulsing "live tonight" dot + hover-lift, gated by reduced-motion. _(§5.5)_
 - [x] Events & Calendar: eyebrow headers, filter-forward polish, accent-branded day markers. _(§5.6)_
+- [x] **Superseded 2026-09-09 (#1239).** The eyebrow headers are gone from Events, Venues and Calendar: each page now opens on its `h1`. The device was
+      spending itself four times on the way down a page, and a tracked-out kicker above a headline that says the same thing in more words is the single
+      most-named sign of generated design. `SectionLabel` itself is untouched and still separates the two feeds on the home page, labels the detail-page
+      sections, and names the entity kind above a venue or artist title, which is where it does real work.
 - [x] Detail pages: editorial layout + eyebrow section labels; desaturate-on-rest image treatment. _(§4, §5.4)_
 - [x] Empty / 404 / loading microcopy in the brand voice. _(§3)_
 

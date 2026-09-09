@@ -4,7 +4,6 @@ import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import EventCalendar from '@/components/EventCalendar.vue'
 import EventFilterBar from '@/components/EventFilterBar.vue'
-import SectionLabel from '@/components/SectionLabel.vue'
 import { describeError } from '@/api/client'
 import { fetchCalendarEvents } from '@/composables/useEvents'
 import { isPastEvent } from '@/lib/format'
@@ -67,7 +66,6 @@ const { t } = useI18n()
 <template>
   <main class="mx-auto max-w-5xl space-y-6 p-4 sm:p-8">
     <header class="space-y-1">
-      <SectionLabel as="p">{{ t('calendar.eyebrow') }}</SectionLabel>
       <h1 class="text-3xl font-bold tracking-tight">{{ t('calendar.title') }}</h1>
       <p class="text-muted-foreground">{{ t('calendar.subtitle') }}</p>
     </header>
