@@ -42,7 +42,7 @@ const { componentCount, groups, openGroups, toggle, versionSuffix } = useNotices
       <p>
         Event Junkie's source is published under the Apache License 2.0 and is available in full at
         <a href="https://github.com/enorm-labs/event-junkie" rel="noopener" target="_blank">
-          github.com/enorm-labs/event-junkie </a
+          github.com/enorm-labs/event-junkie</a
         >.
       </p>
     </section>

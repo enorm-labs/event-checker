@@ -45,15 +45,30 @@ One filterable feed of what is on across Berlin's venues, collected automaticall
 
 ## Background
 
-Berlin's scene is enormous and completely scattered. What's on lives across dozens of venue and promoter websites, each with its own layout and its own gaps, so
-answering something as ordinary as _what's on near me this weekend, in my genre, that I can afford?_ means a dozen browser tabs and a lot of guessing.
+Berlin's scene is huge and scattered. What's on lives across dozens of venue and promoter websites, each with its own layout and its own gaps, so answering
+something as ordinary as _what's on near me this weekend, in my genre, that I can afford?_ means a dozen browser tabs and a lot of guessing. I did exactly that
+for years, working through my favourite venues' sites by hand, one after the other.
 
-The existing options each solve a slice of it. Resident Advisor is excellent at electronic music and only that. Bandsintown and Songkick follow _artists_ — no
-help when you want to know what is happening on Thursday. Ticketing sites list what they sell, which quietly excludes free entry, door-only nights and the small
-rooms.
+The existing options each solve a slice of it. Resident Advisor is excellent at electronic music and only that. Bandsintown and Songkick follow _artists_, which
+is no help when you want to know what is happening on Thursday. Ticketing sites list what they sell, which quietly excludes free entry, door-only nights and the
+small rooms.
 
-Event Junkie is the thing none of them tries to be: **one feed for all of it** — every kind of venue, every genre, free and ticketed alike, always linking back
-to the venue's own page for tickets and the final word.
+Event Junkie is the thing none of them tries to be: **one feed for all of it**, every kind of venue, every genre, free and ticketed alike, always linking back to
+the venue's own page for tickets and the final word.
+
+### Why Berlin
+
+Berlin is one of the best cities on this planet: not always clean, more than a little mad, poor but sexy, and a place where you can live freely and be the
+person you actually are. The club culture that grew out of that exists nowhere else in the same form. Since 2024,
+[Berlin's techno culture](https://www.unesco.de/staette/technokultur-in-berlin/) has been listed in Germany's nationwide inventory of intangible cultural
+heritage. That inventory holds living practices rather than buildings, and living things can disappear.
+
+Which is what the [Clubcommission](https://www.clubcommission.de/), the association behind Berlin's club culture, calls the
+[Clubsterben](https://www.clubcommission.de/pressemitteilung-clubsterben-ist-wieder-an-der-tagesordnung/): rents going up, spaces going away, rooms closing
+after decades. A venue nobody can find any more is not the biggest part of that. It is the part this project can do something about, and if this site puts a few
+people in a small room they had never heard of, it has done its job.
+
+Does it help? Does anyone need it? I don't know. I want to try.
 
 The scope rule, in one line: **if a Berlin venue puts it on a stage in the evening, it is in scope.** What that includes, what is deliberately excluded and
 which coverage questions are still open is in
@@ -83,8 +98,9 @@ its upstream commit and the command that refreshes it.
 The vision, the product ideas, the architecture decisions and the priorities are mine. The agents implement against them; every change goes through review
 before it lands.
 
-This is also _why_ the project exists. It is a real application with real constraints, which turns out to be the only honest way to find out what this way of
-working is genuinely good at and where it still needs a human paying attention.
+This is also _why_ the project exists in this form. I wanted to build it for years and started several times, and as a hobby project alongside everything else
+every attempt was too much work for one person. AI agents are what made it possible. A real application with real constraints is then also where you find out what this way of working is good at, and where it
+still needs a human paying attention.
 
 ## Install
 

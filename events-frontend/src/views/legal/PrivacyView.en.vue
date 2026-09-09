@@ -264,9 +264,8 @@ const { t } = useI18n()
         in particular in the member state of your habitual residence, your place of work, or the
         place of the alleged infringement. The authority responsible for us is the
         <a :href="SUPERVISORY_AUTHORITY.url" rel="noopener" target="_blank">
-          {{ SUPERVISORY_AUTHORITY.name }}
-        </a>
-        .
+          {{ SUPERVISORY_AUTHORITY.name }}</a
+        >.
       </p>
     </section>
 

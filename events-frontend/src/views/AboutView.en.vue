@@ -60,6 +60,12 @@ const localePath = useLocalePath()
         <strong class="font-medium text-foreground">the event app Berlin deserves.</strong>
       </p>
       <p class="text-muted-foreground">
+        This started long before any code. I spent years at indie parties and gigs, and every week I
+        worked through my favourite venues' websites by hand, one after the other. I had not heard
+        of Resident Advisor back then, and whether an indie party in a small club would have turned
+        up there is another question.
+      </p>
+      <p class="text-muted-foreground">
         Berlin's scene is huge and scattered. What's on lives across dozens of venue and promoter
         websites, each with its own layout and its own gaps. Answering something as ordinary as
         <em>what's on near me this weekend, in my genre, that I can afford?</em> means a dozen
@@ -82,6 +88,63 @@ const localePath = useLocalePath()
         venue and every genre, free and ticketed alike. You filter by the things you decide on
         anyway (tonight, near me, my genre, under €15), and every entry links back to the venue's
         own page for tickets and the final word.
+      </p>
+      <p class="text-muted-foreground">
+        I wanted to build it for years. I started several times, and as a hobby project alongside
+        everything else it was simply too much work for one person every time. With AI agents it is
+        possible.
+      </p>
+    </section>
+
+    <section class="space-y-4 pt-4">
+      <h2 class="text-2xl font-bold tracking-tight">Why Berlin</h2>
+      <p class="text-muted-foreground">
+        Berlin is one of the best cities on this planet. Not always clean, more than a little mad,
+        poor but sexy. Above all it is a place where you can live freely and be the person you
+        actually are. The city is diverse and colourful, and in the evening that does not stop, it
+        starts properly.
+      </p>
+      <p class="text-muted-foreground">
+        The club culture that grew out of that exists nowhere else in the same form. Since 2024,
+        <a
+          class="text-foreground underline underline-offset-4"
+          href="https://www.unesco.de/staette/technokultur-in-berlin/"
+          rel="noopener"
+          target="_blank"
+        >
+          Berlin's techno culture
+        </a>
+        has been listed in Germany's nationwide inventory of intangible cultural heritage. That
+        inventory holds living practices instead of buildings. Living also means they can disappear.
+      </p>
+      <p class="text-muted-foreground">
+        Which is what is happening. The
+        <a
+          class="text-foreground underline underline-offset-4"
+          href="https://www.clubcommission.de/"
+          rel="noopener"
+          target="_blank"
+        >
+          Clubcommission</a
+        >, the association behind Berlin's club culture, calls it
+        <a
+          class="text-foreground underline underline-offset-4"
+          href="https://www.clubcommission.de/pressemitteilung-clubsterben-ist-wieder-an-der-tagesordnung/"
+          rel="noopener"
+          target="_blank"
+        >
+          Clubsterben</a
+        >, the dying of the clubs: rents going up, spaces going away, rooms closing after decades. A
+        venue nobody can find any more is not the biggest part of that. It is the part I can do
+        something about.
+      </p>
+      <p class="text-muted-foreground">
+        I want to give something back. If this site puts a few people in a small room they had never
+        heard of, it has done its job. The big names are findable without me. The others are not.
+      </p>
+      <p class="text-muted-foreground">
+        Does it really help? Does anyone need it? I don't know. But I want to try. Keeping the club
+        culture alive is something we only manage together, night after night, by turning up.
       </p>
     </section>
 
@@ -113,9 +176,8 @@ const localePath = useLocalePath()
           rel="noopener"
           target="_blank"
         >
-          open source
-        </a>
-        , conventions and prompts included, if you want to see how it was done.
+          open source</a
+        >, conventions and prompts included, if you want to see how it was done.
       </p>
     </section>
 
@@ -143,9 +205,8 @@ const localePath = useLocalePath()
           :to="localePath('/legal/privacy')"
           class="text-foreground underline underline-offset-4"
         >
-          privacy page
-        </RouterLink>
-        , in its short version.
+          privacy page</RouterLink
+        >, in its short version.
       </p>
       <p class="text-muted-foreground">
         Found something wrong? Telling us is the fastest way to get it fixed:
@@ -155,18 +216,16 @@ const localePath = useLocalePath()
           rel="noopener"
           target="_blank"
         >
-          open an issue
-        </a>
-        . What has changed lately is on the
+          open an issue</a
+        >. What has changed lately is on the
         <a
           class="text-foreground underline underline-offset-4"
           href="https://github.com/enorm-labs/event-junkie/releases"
           rel="noopener"
           target="_blank"
         >
-          releases page
-        </a>
-        .
+          releases page</a
+        >.
       </p>
     </section>
   </main>
