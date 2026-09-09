@@ -195,8 +195,8 @@ const { t } = useI18n()
       <p>
         <strong>Wenn du Künstler*in bist</strong> und möchtest, dass dein Name entfernt oder
         korrigiert wird, schreib an
-        <a :href="`mailto:${CONTROLLER.email}`">{{ CONTROLLER.email }}</a>
-        . Wir kümmern uns umgehend darum. Eine Begründung brauchst du nicht, und du musst das Thema
+        <a :href="`mailto:${CONTROLLER.email}`">{{ CONTROLLER.email }}</a
+        >. Wir kümmern uns umgehend darum. Eine Begründung brauchst du nicht, und du musst das Thema
         nicht öffentlich ansprechen.
       </p>
     </section>
@@ -281,7 +281,7 @@ const { t } = useI18n()
         insbesondere im Mitgliedstaat deines gewöhnlichen Aufenthaltsorts, deines Arbeitsplatzes
         oder des Orts des mutmaßlichen Verstoßes. Für uns zuständig ist die
         <a :href="SUPERVISORY_AUTHORITY.url" rel="noopener" target="_blank">
-          {{ SUPERVISORY_AUTHORITY.name }} </a
+          {{ SUPERVISORY_AUTHORITY.name }}</a
         >.
       </p>
     </section>

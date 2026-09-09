@@ -114,7 +114,7 @@ const { t } = useI18n()
           rel="noopener"
           target="_blank"
         >
-          Lizenztext </a
+          Lizenztext</a
         >. Veranstaltungsbeschreibungen, Bilder und sonstige Materialien, die von Locations,
         Veranstaltern und Künstler*innen stammen, bleiben Eigentum der jeweiligen Rechteinhaber und
         werden von dieser Lizenz nicht erfasst. Wer Rechte an hier gezeigtem Material hält und

@@ -68,6 +68,12 @@ const localePath = useLocalePath()
         >
       </p>
       <p class="text-muted-foreground">
+        Angefangen hat das lange vor dem Code. Ich war jahrelang auf Indie-Partys und Konzerten
+        unterwegs und habe dafür jede Woche die Seiten meiner Lieblingsclubs von Hand abgeklappert,
+        eine nach der anderen. Resident Advisor kannte ich damals noch nicht, und ob dort eine
+        Indie-Party in einem kleinen Club überhaupt aufgetaucht wäre, ist eine andere Frage.
+      </p>
+      <p class="text-muted-foreground">
         Berlins Szene ist riesig und verstreut. Was läuft, steht auf Dutzenden Websites von
         Locations und Veranstaltern, jede mit eigenem Layout und eigenen Lücken. Eine so gewöhnliche
         Frage wie
@@ -95,6 +101,64 @@ const localePath = useLocalePath()
         Location und jedes Genre, umsonst und mit Ticket gleichermaßen. Du filterst nach dem,
         worüber du ohnehin entscheidest (heute Abend, in der Nähe, mein Genre, unter 15 €), und
         jeder Eintrag verlinkt zurück auf die Seite der Location für Tickets und das letzte Wort.
+      </p>
+      <p class="text-muted-foreground">
+        Bauen wollte ich das seit Jahren. Angefangen habe ich mehrfach, und als Hobbyprojekt neben
+        allem anderen war es jedes Mal schlicht zu viel Arbeit für eine Person. Mit KI-Agenten geht
+        es jetzt.
+      </p>
+    </section>
+
+    <section class="space-y-4 pt-4">
+      <h2 class="text-2xl font-bold tracking-tight">Warum Berlin</h2>
+      <p class="text-muted-foreground">
+        Berlin ist eine der besten Städte auf diesem Planeten. Nicht immer sauber, ziemlich
+        verrückt, arm, aber sexy. Vor allem ist es ein Ort, an dem man frei leben und der Mensch
+        sein kann, der man ist. Diese Stadt ist divers und bunt, und abends hört das nicht auf,
+        sondern fängt erst richtig an.
+      </p>
+      <p class="text-muted-foreground">
+        Die Clubkultur, die daraus entstanden ist, gibt es so kein zweites Mal. Seit 2024 steht die
+        <a
+          class="text-foreground underline underline-offset-4"
+          href="https://www.unesco.de/staette/technokultur-in-berlin/"
+          rel="noopener"
+          target="_blank"
+        >
+          Technokultur in Berlin
+        </a>
+        im bundesweiten Verzeichnis des immateriellen Kulturerbes. Dort stehen keine Gebäude,
+        sondern lebendige Praktiken. Lebendig heißt auch: Sie können verschwinden.
+      </p>
+      <p class="text-muted-foreground">
+        Genau das passiert gerade. Die
+        <a
+          class="text-foreground underline underline-offset-4"
+          href="https://www.clubcommission.de/"
+          rel="noopener"
+          target="_blank"
+        >
+          Clubcommission</a
+        >, der Verband der Berliner Clubkultur, nennt es das
+        <a
+          class="text-foreground underline underline-offset-4"
+          href="https://www.clubcommission.de/pressemitteilung-clubsterben-ist-wieder-an-der-tagesordnung/"
+          rel="noopener"
+          target="_blank"
+        >
+          Clubsterben</a
+        >: steigende Mieten, wegfallende Räume, Häuser, die nach Jahrzehnten zumachen. Eine
+        Location, die niemand mehr findet, ist dabei nicht das größte Problem. Aber sie ist eines,
+        an dem ich etwas ändern kann.
+      </p>
+      <p class="text-muted-foreground">
+        Ich möchte etwas zurückgeben. Wenn diese Webseite dazu führt, dass ein paar Leute in einem
+        kleinen Laden landen, von dem sie noch nie gehört haben, hat sie ihren Zweck erfüllt. Die
+        großen Namen findet man auch ohne mich, die anderen nicht.
+      </p>
+      <p class="text-muted-foreground">
+        Hilft das wirklich? Braucht das jemand? Ich weiß es nicht. Aber ich will es versuchen. Am
+        Leben halten wir die Clubkultur ohnehin nur gemeinsam, Abend für Abend, indem wir hingehen.
       </p>
     </section>
 
@@ -126,9 +190,8 @@ const localePath = useLocalePath()
           rel="noopener"
           target="_blank"
         >
-          Open Source
-        </a>
-        , Konventionen und Prompts inklusive, falls du sehen willst, wie es gemacht wurde.
+          Open Source</a
+        >, Konventionen und Prompts inklusive, falls du sehen willst, wie es gemacht wurde.
       </p>
     </section>
 
@@ -162,9 +225,8 @@ const localePath = useLocalePath()
           :to="localePath('/legal/privacy')"
           class="text-foreground underline underline-offset-4"
         >
-          Datenschutzseite
-        </RouterLink>
-        .
+          Datenschutzseite</RouterLink
+        >.
       </p>
       <p class="text-muted-foreground">
         Etwas gefunden, das nicht stimmt? Uns Bescheid zu geben ist der schnellste Weg zur
@@ -175,18 +237,16 @@ const localePath = useLocalePath()
           rel="noopener"
           target="_blank"
         >
-          Issue eröffnen
-        </a>
-        . Was sich zuletzt geändert hat, steht auf der
+          Issue eröffnen</a
+        >. Was sich zuletzt geändert hat, steht auf der
         <a
           class="text-foreground underline underline-offset-4"
           href="https://github.com/enorm-labs/event-junkie/releases"
           rel="noopener"
           target="_blank"
         >
-          Releases-Seite
-        </a>
-        .
+          Releases-Seite</a
+        >.
       </p>
     </section>
   </main>

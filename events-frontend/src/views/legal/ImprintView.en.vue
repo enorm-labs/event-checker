@@ -107,9 +107,8 @@ const { t } = useI18n()
           rel="noopener"
           target="_blank"
         >
-          licence text
-        </a>
-        . Event descriptions, images and other material originating from venues, promoters and
+          licence text</a
+        >. Event descriptions, images and other material originating from venues, promoters and
         artists remain the property of their respective rights holders and are not covered by that
         licence. If you hold rights in material shown here and would like it removed, write to us
         and we will act promptly.
