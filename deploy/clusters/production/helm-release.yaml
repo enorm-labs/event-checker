@@ -83,6 +83,10 @@ spec:
       # 86 hold one since ADR-027. The Secret is hand-made — docs/ops/SECRETS.md §The decision.
       translation:
         engine: anthropic
+        # The nightly import adds more than the chart's 50 to a handful of sources — 92 on Uber
+        # Arena, measured — and a pass that stops at the cap leaves a tail no later pass clears. 250
+        # covers the largest night seen so far, with room, and still bounds a runaway.
+        maxPerRun: 250
     images:
       enabled: true
       serving:

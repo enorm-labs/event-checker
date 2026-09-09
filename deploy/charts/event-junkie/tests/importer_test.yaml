@@ -411,6 +411,7 @@ tests:
       networkPolicy.databaseCidr: "10.0.1.2/32"
       database.existingSecret: "events-db"
       importer.translation.engine: "anthropic"
+      importer.translation.maxPerRun: 50
     documentSelector:
       path: kind
       value: Deployment
@@ -428,3 +429,25 @@ tests:
               secretKeyRef:
                 name: event-junkie-translation
                 key: APP_TRANSLATION_API_KEY
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: APP_TRANSLATION_MAX_PER_RUN
+            value: "50"
+
+  - it: carries a raised per-run cap into the importer's environment
+    set:
+      database.host: "10.0.1.2"
+      networkPolicy.databaseCidr: "10.0.1.2/32"
+      database.existingSecret: "events-db"
+      importer.translation.engine: "anthropic"
+      importer.translation.maxPerRun: 250
+    documentSelector:
+      path: kind
+      value: Deployment
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: APP_TRANSLATION_MAX_PER_RUN
+            value: "250"
