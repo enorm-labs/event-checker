@@ -48,6 +48,8 @@ exception to configuration, and does not add a second place to look.
 | -------------------- | ------------------------------------------------------- | -------------------------------------------------------------- | ----- |
 | `walg-<environment>` | PostgreSQL backups are healthy                          | `walg check`, hourly via `walg-check.timer`, on success        | #518  |
 | `site-<environment>` | DNS, TLS, the ingress and the application, from outside | `.github/workflows/site-probe.yml`, **daily**, on success only | #889  |
+| `mail-hello`         | `hello@` still receives mail                            | `.github/workflows/mail-probe.yml`, **daily**, on delivery     | #637  |
+| `mail-security`      | `security@` still receives mail                         | the same workflow, its second mailbox                          | #637  |
 
 **A third row is not a healthchecks.io check at all.** The Better Stack monitor watches the same things as
 `site-<environment>`, every three minutes instead of once a day. It alerts on a failure rather than on silence. It is
@@ -93,6 +95,25 @@ moves, this must not move into the cluster.
 3. `/var/lib/postgresql` is below **85%**. A stalled `archive_command` does not stop backups. It fills `pg_wal`, and the volume is 10 GB.
 
 Only when all three pass does it ping. That conditionality is the whole design: an unconditional heartbeat proves only that the heartbeat ran.
+
+### What the mail probe actually asserts
+
+Conditional, for the third time on this page and for the same reason. `scripts/mail-probe.py` sends a message to the
+mailbox through Hetzner's SMTP, then polls IMAP for that exact subject before pinging. So it asserts
+
+1. SMTP accepts the mailbox credential and the submission.
+2. The message is delivered. That covers the MX, the hosting package and a mailbox that filled up.
+3. It is delivered inside a minute, so a queue that accepts and never delivers fails rather than passes.
+
+Then it deletes what it sent. A probe that fills the mailbox breaks the thing it watches. On a definite failure it
+pings `/fail` rather than waiting out the grace period.
+
+**Two mailboxes, two checks.** They have different audiences and different failure modes, and an alias would not have
+that property. The probe cannot see the forward that puts the mail in front of a person. That stays a dated manual
+step in [EMAIL.md](EMAIL.md) §7a.
+
+**It runs on GitHub, and that matters differently here.** The mail does not run on our node at all. It runs on
+Hetzner Webhosting. A probe inside the cluster would report cluster death as mail death.
 
 ## Creating a check for a new environment
 

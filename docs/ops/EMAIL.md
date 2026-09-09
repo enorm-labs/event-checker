@@ -279,9 +279,52 @@ Measured on 2026-08-21, from both addresses: `spf=pass` (`client-ip=167.235.121.
 `d=event-junkie.de`), `dmarc=pass (p=reject dis=none)`, SpamAssassin `-0.2`. **`dmarc=pass` while `p=reject` is displayed is the outcome to want**: the receiver
 read the strict policy, evaluated against it, and delivered anyway.
 
-**There is no monitoring on any of this.** A mailbox that stops receiving looks exactly like a quiet week. That is the same blindness
-[#618](https://github.com/enorm-labs/event-junkie/issues/618) records for importers, and [OPENOBSERVE.md](OPENOBSERVE.md) for dropped metrics. If these
-addresses matter, a periodic test message is the cheap version of watching them.
+## 7a. Monitoring — what is watched, and what is not
+
+**A mailbox that stops receiving looks exactly like a quiet week.** That is the blindness
+[#618](https://github.com/enorm-labs/event-junkie/issues/618) records for importers, and [OPENOBSERVE.md](OPENOBSERVE.md) for dropped metrics.
+[#637](https://github.com/enorm-labs/event-junkie/issues/637) closed it for these two addresses.
+
+`.github/workflows/mail-probe.yml` runs `scripts/mail-probe.py` once a day, once per mailbox. Each run sends a message to the mailbox through Hetzner's
+SMTP. It then waits for that message to arrive over IMAP, deletes it, and only then pings healthchecks.io. **The ping is conditional**
+([#271](https://github.com/enorm-labs/event-junkie/issues/271)). A bare login passes while the MX points nowhere, which is half of what can break here.
+
+|                       |                                                                                                                                           |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| **Checks**            | `mail-hello` and `mail-security`, period `24h`, grace `24h` — the same numbers and the same reasoning as the site probe                   |
+| **Secrets**           | `MAIL_PROBE_HELLO_PASSWORD` · `MAIL_PROBE_SECURITY_PASSWORD` · `HEALTHCHECKS_MAIL_HELLO_PING_URL` · `HEALTHCHECKS_MAIL_SECURITY_PING_URL` |
+| **Passwords**         | The mailbox passwords from §4, which the password manager holds under `Mailboxes/` ([CREDENTIALS.md](../CREDENTIALS.md) row 7a)           |
+| **It runs on GitHub** | The mail is on Hetzner Webhosting, not on the node. A check inside the cluster would report cluster death as mail death                   |
+
+**It sends through Hetzner's SMTP with the mailbox credential, and that is not a convenience.** SPF authorises the hosting server and nothing else. A
+message sent from a CI runner as `hello@` fails under `p=reject` and never arrives. That false alarm has the shape of the outage itself.
+
+### When the alert fires
+
+The check goes red for one of two reasons. A probe pinged `/fail`, which is a delivery failure the job log names hop by hop. Or nothing pinged at all, which
+is GitHub itself. Read the run first. The step summary names the mailbox and links this section.
+
+1. **Send a message from an outside account** and see whether it arrives. That separates a broken mailbox from a broken probe.
+2. **Check the MX and SPF records** with the four `dig` commands in §7. A stale `var.mail_host` breaks both at once.
+   2a. **Do not retry a failed login.** Hetzner blocks the service for that source address after one wrong password.
+   Measured on 2026-09-09: one deliberate failure left port 465 refusing this machine. Ports 25, 587 and 993 still
+   answered from the same address. A refusal on 465 alone is that block, not an outage. Wait it out, or test the
+   credential on 587 with STARTTLS.
+3. **Check konsoleH is paid.** The package and the €0.76 external-domain add-on fail as a billing problem, not a technical one. Nothing here can see that.
+4. **Check the mailbox is not full.** Mail counts against the 10 GB the whole package shares.
+
+### What it does not prove
+
+**That the `Kopie an` forward from §4 step 7 puts the mail in front of a person.** The probe stops at the mailbox. To prove the last hop automatically, we
+must forward every message to a monitoring service. That mailbox carries Art. 15 requests, Code of Conduct reports and security disclosure. Such content must
+not gain a processor for the sake of testing a rule.
+
+So it is a manual step, on the restore-drill cadence. **Send one message to each address from an outside account.
+Confirm that it lands in the inbox you read.** Record the date here.
+
+| Date       | Checked by     | Result                                              |
+| ---------- | -------------- | --------------------------------------------------- |
+| 2026-08-21 | the maintainer | Both addresses delivered to the mailbox and forward |
 
 ## 8. What else changes, and what is still open
 
