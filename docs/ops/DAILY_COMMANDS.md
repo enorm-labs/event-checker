@@ -9,6 +9,7 @@ reasoning rather than restating it.
 scripts/ej.sh up staging                           # tunnel, handshake check, and the three port-forwards
 scripts/ej.sh urls                                 # the Swagger UIs and OpenObserve, on localhost
 kubectl --context event-junkie-staging get pods -A
+scripts/cluster-state.sh staging                   # one read-only verdict: is this environment whole
 scripts/ej.sh down staging                         # the forwards it started, then the tunnel
 open docs/ops/dashboard/index.html                 # the operations page: every link above, with a dot per forward
 ```
@@ -21,6 +22,10 @@ each for the importer admin API, the BFF's Swagger UI and OpenObserve. The ports
 - **Two environments, and the difference matters more than the commands do.** Staging is not on the public internet at all. Production is running but **dark**:
   the domain resolves to nothing until `publish_dns` is flipped.
 - **Both are tunnel-only** for anything administrative.
+- **`cluster-state.sh` is the one-command answer to "is everything all right".** Nodes, every Flux object, the hand-made secrets nothing recreates, the
+  certificate's expiry, the row counts and the backups, with an exit code for the verdict. It writes nothing anywhere. `--out DIR` saves the raw answers too.
+  That is what makes a rebuild a comparison rather than an impression. It does not cover the OpenObserve dashboards and alert rules. Those are API objects on
+  the node's own disk, and `deploy/dashboards/apply.sh --diff` and `deploy/alerts/apply.sh --diff` are their check.
 - **Never `tofu plan/apply/destroy/import` on your own initiative.** [`infra/AGENTS.md`](../../infra/AGENTS.md) opens with that rule.
 
 ## Get in
