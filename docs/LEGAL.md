@@ -197,6 +197,21 @@ stating in advance. **Processing a category not listed below means the AVV needs
 contact form, a newsletter, or any stored email address or phone number would each do it. Updating the notice is the
 change everyone remembers, and the contract behind it is the one nobody does.
 
+**There are two processors since 2026-09-08, and the second one is outside the EU.** The importer sends an event's
+description to a machine-translation service, and the description names artists. The categories in the table below do
+not change, so the Hetzner AVV needs no revisiting. What was missing was the second processor's own contract and its
+disclosure, which is what [#1233](https://github.com/enorm-labs/event-junkie/issues/1233) found and closed:
+
+- **The Art. 28 contract exists through the terms the API is used under.** Anthropic's Data Processing Addendum is
+  incorporated into its Commercial Terms of Service, and accepting those accepts the DPA. Anthropic is the processor
+  and we are the controller, which its own documentation states in terms.
+- **The transfer rests on the standard contractual clauses**, which that DPA includes. Art. 46 (2) (c) is the
+  provision, and §5 of the notice names it.
+- **The same contract rules out training on the transmitted text.** The Commercial Terms state it as _"Anthropic may
+  not train models on Customer Content from Services"_.
+- **Only the description and the protected names go.** No log data, and nothing about a visitor. §5 of the notice says
+  that too, because a reader cannot check it.
+
 **Categories of personal data**, mapped to the vocabulary these forms use:
 
 | Category                        | Applies                      | What it actually is here                                                                                                                                                                                               |

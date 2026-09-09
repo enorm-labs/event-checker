@@ -189,6 +189,12 @@ const { t } = useI18n()
         nicht erneut geladen.
       </p>
       <p>
+        <strong>Übersetzungen:</strong> Beschreibungen werden maschinell übersetzt, damit die Seite
+        sie in beiden Sprachen zeigen kann. Dafür wird der Text an einen Dienstleister übermittelt,
+        den Abschnitt 5 nennt. Eine maschinell übersetzte Beschreibung ist auf der
+        Veranstaltungsseite als solche gekennzeichnet, und der Originaltext bleibt maßgeblich.
+      </p>
+      <p>
         <strong>Wenn du Künstlerin oder Künstler bist</strong> und möchtest, dass dein Name entfernt
         oder korrigiert wird, schreib an
         <a :href="`mailto:${CONTROLLER.email}`">{{ CONTROLLER.email }}</a>
@@ -200,7 +206,7 @@ const { t } = useI18n()
     <section>
       <h2>5. Wer sonst beteiligt ist</h2>
       <p>
-        Wir verkaufen nichts und geben nichts zu Werbezwecken weiter. Daten werden an genau einen
+        Wir verkaufen nichts und geben nichts zu Werbezwecken weiter. Daten werden an zwei
         Dienstleister übermittelt — Auftragsverarbeiter mit einem Vertrag nach Art. 28 DSGVO:
       </p>
       <ul>
@@ -208,12 +214,27 @@ const { t } = useI18n()
           <strong>Hosting</strong> — Hetzner Online GmbH, Gunzenhausen, Deutschland. Die Server
           stehen in Deutschland; eine Übermittlung außerhalb der EU findet dabei nicht statt.
         </li>
+        <li>
+          <strong>Maschinelle Übersetzung</strong> — Anthropic PBC, San Francisco, USA. Dorthin wird
+          der Beschreibungstext einer Veranstaltung übermittelt, damit er übersetzt werden kann.
+          Nennt eine Beschreibung Künstlerinnen und Künstler, werden diese Namen mit übermittelt; die
+          Namen des Line-ups und der Location werden zusätzlich ausdrücklich mitgesendet, damit die
+          Übersetzung sie unverändert lässt. Andere Daten erreichen diesen Dienst nicht: weder
+          Logdaten noch irgendetwas über dich.
+        </li>
       </ul>
+      <p>
+        <strong>Übermittlung in die USA.</strong> Anthropic verarbeitet diese Texte ausschließlich
+        nach unserer Weisung. Grundlage ist der Data Processing Addendum, der über die Commercial
+        Terms of Service Bestandteil des Vertrags ist und die Standardvertragsklauseln der
+        EU-Kommission einschließt (Art. 46 Abs. 2 lit. c DSGVO). Derselbe Vertrag schließt aus, dass
+        die übermittelten Texte zum Training von Modellen verwendet werden.
+      </p>
       <p>
         Es gibt kein Content-Delivery-Netzwerk, keinen Edge-Anbieter und keinen Proxy vor der Seite.
         Deine Anfrage erreicht unsere Server in Deutschland direkt. An der Auslieferung dieser Seite
-        ist damit kein Drittland beteiligt, und es gibt keinen Übermittlungsmechanismus, den wir
-        offenlegen müssten.
+        ist damit kein Drittland beteiligt — die Übersetzung oben ist der einzige Weg, auf dem Daten
+        die EU verlassen, und sie betrifft Veranstaltungstexte statt deines Besuchs.
       </p>
       <p>
         <strong>Für Bilder gilt das ebenso.</strong> Sie kommen von unseren Servern, weil Event

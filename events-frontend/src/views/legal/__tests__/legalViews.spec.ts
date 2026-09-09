@@ -103,10 +103,20 @@ const PRIVACY_ELEMENTS: Element[] = [
     en: /legitimate interest is operating/i,
     de: /berechtigtes Interesse ist der Betrieb/i,
   },
-  // Hetzner is the only Art. 28 processor since ADR-012's 2026-08-10 amendment dropped Cloudflare.
-  // The second half asserts the *absence* deliberately: a CDN reappearing in front of the site is a
-  // new recipient and a new third country, and it must not be able to arrive without this failing.
+  // Two Art. 28 processors since #1233: Hetzner hosts, and the translation engine receives event
+  // descriptions. Both are named because Art. 13 (1) (e) asks for the recipients, and a processor
+  // that runs while the notice names only the other one is exactly what #1233 found.
   { what: 'recipients', en: /Hetzner/, de: /Hetzner/ },
+  { what: 'the translation processor', en: /Anthropic/, de: /Anthropic/ },
+  // The transfer basis, because the second processor is in a third country. Art. 13 (1) (f) wants
+  // the mechanism named rather than the fact of a transfer alone.
+  {
+    what: 'the transfer mechanism for the third country',
+    en: /standard contractual clauses/i,
+    de: /Standardvertragsklauseln/,
+  },
+  // The absence is asserted deliberately: a CDN reappearing in front of the site is a new recipient
+  // and a new third country, and it must not be able to arrive without this failing.
   {
     what: 'no edge provider in front of the origin',
     en: /no content delivery network/i,

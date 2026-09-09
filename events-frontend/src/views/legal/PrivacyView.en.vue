@@ -175,6 +175,12 @@ const { t } = useI18n()
         again.
       </p>
       <p>
+        <strong>Translations:</strong> descriptions are machine translated, so that the site can show
+        them in both languages. The text is sent to a service provider for that, named in section 5.
+        A machine-translated description says so on the event page, and the original stays
+        authoritative.
+      </p>
+      <p>
         <strong>If you are an artist</strong> and would like your name removed or corrected, write
         to
         <a :href="`mailto:${CONTROLLER.email}`">{{ CONTROLLER.email }}</a>
@@ -186,19 +192,34 @@ const { t } = useI18n()
     <section>
       <h2>5. Who else is involved</h2>
       <p>
-        We sell nothing, and we share nothing for advertising. Data is disclosed to exactly one
-        service provider, a processor bound by a contract under Art. 28 GDPR:
+        We sell nothing, and we share nothing for advertising. Data is disclosed to two service
+        providers, each a processor bound by a contract under Art. 28 GDPR:
       </p>
       <ul>
         <li>
           <strong>Hosting</strong> — Hetzner Online GmbH, Gunzenhausen, Germany. Servers are located
           in Germany; no transfer outside the EU is involved.
         </li>
+        <li>
+          <strong>Machine translation</strong> — Anthropic PBC, San Francisco, USA. An event's
+          description is sent there so that it can be translated. Where a description names
+          performing artists, those names go with it, and the names of the line-up and the venue are
+          sent explicitly as well, so that the translation leaves them unchanged. Nothing else
+          reaches this service: no log data, and nothing about you.
+        </li>
       </ul>
+      <p>
+        <strong>Transfer to the USA.</strong> Anthropic processes these texts on our instruction
+        only. The basis is the Data Processing Addendum, which is part of the contract through the
+        Commercial Terms of Service and includes the European Commission's standard contractual
+        clauses (Art. 46 (2) (c) GDPR). The same contract rules out using the transmitted texts to
+        train models.
+      </p>
       <p>
         There is no content delivery network, no edge provider and no traffic proxy in front of the
         site. Your request reaches our servers in Germany directly, so no third country is involved
-        in delivering this site to you and there is no transfer mechanism to disclose.
+        in delivering this site to you. The translation above is the only path on which data leaves
+        the EU, and it carries event texts rather than anything about your visit.
       </p>
       <p>
         <strong>That holds for images as well.</strong> They come from our servers, because Event
