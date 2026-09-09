@@ -18,7 +18,6 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import java.time.DateTimeException
-import java.time.LocalDate
 import java.time.LocalTime
 
 /**
@@ -83,7 +82,7 @@ class ClashOverviewPageScraper {
 
         // Prefer the full `DD.MM.YY` date in the collapsed detail (carries the year);
         // the `.date-label` above it only shows day + English month abbreviation.
-        val eventDate = parseDate(item.textAt(".dateTwo"))
+        val eventDate = parseGermanShortDate(item.textAt(".dateTwo"))
         if (eventDate == null) {
             logger.warn { "Could not parse event date for '$title', skipping" }
             return null
@@ -156,9 +155,6 @@ class ClashOverviewPageScraper {
 
     /** Whether [subtitle] carries a lineup marker (a "Live:"/"DJ:" label or a `/`/`+` act separator). */
     private fun looksLikeLineup(subtitle: String): Boolean = LINEUP_LABEL_PREFIX.containsMatchIn(subtitle) || subtitle.contains('/') || subtitle.contains('+')
-
-    /** Parses a `DD.MM.YY` date (e.g. "29.06.26") via the shared [parseGermanShortDate]; two-digit years resolve to 2000–2099. */
-    private fun parseDate(text: String?): LocalDate? = parseGermanShortDate(text)
 
     /**
      * Parses the start time from the meta line (e.g. "Fri 20:00", "Mon 0:00").

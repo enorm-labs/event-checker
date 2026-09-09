@@ -204,7 +204,7 @@ internal fun parseAstraEventBlock(
         // Prefer the machine-readable `data-realdate` (full 4-digit year, no pivot
         // ambiguity); fall back to the human `DD.MM.YY` text where it is absent
         // (e.g. on detail pages, which carry no `data-realdate`).
-        eventDate = parseRealDate(root.attr("data-realdate")) ?: parseAstraDate(root.textAt(".event__date--full")),
+        eventDate = parseRealDate(root.attr("data-realdate")) ?: parseGermanShortDate(root.textAt(".event__date--full")),
         doorsTime = parseTime(root.textAt(".event__time--doors .event__time-value")),
         startTime = parseTime(root.textAt(".event__time--start .event__time-value")),
         eventType = mapEventType(root.textAt(".event__kind .event__label")),
@@ -235,13 +235,3 @@ internal fun splitSubtitleNotice(lines: List<String>): Pair<String?, String?> {
 
 /** True for a line written in capitals only — the venue's style for a notice, never for a tour name or an act. */
 private fun String.isShouted(): Boolean = any { it.isLetter() } && none { it.isLowerCase() }
-
-/**
- * Parses Astra's `DD.MM.YY` date format (e.g. "11.12.26") via the shared
- * [parseGermanShortDate][de.norm.events.scraper.parseGermanShortDate]. Two-digit
- * years resolve to 2000–2099. Returns `null` for missing or unparseable input.
- *
- * Used as the fallback when no `data-realdate` attribute is present (see
- * [parseRealDate][de.norm.events.scraper.parseRealDate]).
- */
-internal fun parseAstraDate(text: String?): LocalDate? = parseGermanShortDate(text)
