@@ -113,13 +113,15 @@
             ACCEPTED RISK, NOT a false positive. CVE-2026-53914 genuinely affects JetBrains
             Kotlin < 2.4.20 and this project is on 2.4.10.
 
-            It is suppressed only because there is nothing to upgrade to: as of 2026-08-19 the
-            newest build on Maven Central is 2.4.20-RC (checked against
-            repo1.maven.org/.../kotlin-gradle-plugin/maven-metadata.xml — the sequence is
-            Beta1, Beta2, RC, and no GA), and this project ships stable releases only. Upgrading is
-            the preferred fix and should replace this entry the moment 2.4.20 is released. The
-            progression Beta2 -> RC since this entry was written is the useful signal: GA is close,
-            and the `until` date below was set with room for it.
+            It is suppressed because the fixed version cannot be adopted yet, and the obstacle is
+            ktlint rather than JetBrains. Kotlin 2.4.20 is published and stable
+            (`<release>2.4.20</release>` in
+            repo1.maven.org/.../kotlin-gradle-plugin/maven-metadata.xml). Pinning it in
+            settings.gradle.kts fails `:events-bff:runKtlintCheckOver*` with
+            `IllegalStateException: Extensions storage is not registered`, which is ktlint's
+            embedded compiler rejecting the language version. Nothing can be bumped past it:
+            ktlint is on 1.8.0 and ktlint-gradle on 14.2.0, both the newest published. The upgrade
+            waits on a ktlint release that parses Kotlin 2.4.20.
 
             The severity is disputed between the two scoring bodies:
               - NVD/NIST:            9.8 CRITICAL  AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H
@@ -149,8 +151,8 @@
             into being triaged twice or accepted once and forgotten in the other place.
             Reopening it is one `gh api ... -f state=open` call if this reasoning stops holding.
 
-            REMOVAL: delete this entry when Kotlin 2.4.20 (or later) ships stable and is adopted
-            — see the kotlin("jvm") version in settings.gradle.kts. The `until` date is a
+            REMOVAL: delete this entry when Kotlin 2.4.20 or later is adopted — see the
+            kotlin("jvm") version in settings.gradle.kts. The `until` date is a
             backstop, not a target: on 2026-11-05 the suppression lapses and the finding returns
             for re-evaluation whether or not anyone remembered to revisit it.
         ]]></notes>
