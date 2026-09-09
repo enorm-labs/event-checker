@@ -19,7 +19,8 @@ the record. `scripts/apply-licence-review.py` writes it to a database.
 5. **This file is evidence, not a decision.** The display rule lives in
    [SCRAPING_POSITION.md](../SCRAPING_POSITION.md) §3.1.
 6. [#808](https://github.com/enorm-labs/event-junkie/issues/808) is how an `UNCLEAR` becomes a
-   `PERMITTED`. Nothing else moves it.
+   `PERMITTED`. Nothing else moves it. [ENQUIRY.md](ENQUIRY.md) is the mail it sends. It also holds
+   the first batch of twelve, and how an answer is written back.
 
 ## 1. What was read, per source
 

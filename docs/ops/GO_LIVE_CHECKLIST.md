@@ -90,19 +90,18 @@ before go-live. The drill covers staging only, so far.
 
 ### Monitoring and alerting
 
-| Done       | Item                                                         | Evidence                                        |
-| ---------- | ------------------------------------------------------------ | ----------------------------------------------- |
-| 2026-08-21 | `walg-production` fires                                      | drill log                                       |
-| 2026-08-30 | Production records its deploys                               | #872                                            |
-| 2026-08-31 | A decision on how the site is watched from outside           | ADR-021                                         |
-| 2026-08-31 | **The Better Stack monitor exists and polls production**     | ADR-021, HEALTHCHECKS.md                        |
-| 2026-08-31 | That monitor proven by inducing a failure                    | HEALTHCHECKS.md drill log                       |
-|            | The monitor and `SITE_URL` both name the apex                | Section 0, changes 3 and 4                      |
-|            | **Decide whether to publish an uptime badge** in `README.md` | HEALTHCHECKS.md § It is measured, not published |
-| 2026-09-06 | Decide how visitors and traffic are counted                  | #1126 — page loads, nothing new                 |
-| 2026-08-31 | **Production has any in-cluster monitoring**                 | #880, and the dashboard push below              |
-|            | Alerts reach a person                                        | #877                                            |
-| 2026-08-31 | An alert proven by breaking something on prod                | #285                                            |
+| Done       | Item                                                     | Evidence                           |
+| ---------- | -------------------------------------------------------- | ---------------------------------- |
+| 2026-08-21 | `walg-production` fires                                  | drill log                          |
+| 2026-08-30 | Production records its deploys                           | #872                               |
+| 2026-08-31 | A decision on how the site is watched from outside       | ADR-021                            |
+| 2026-08-31 | **The Better Stack monitor exists and polls production** | ADR-021, HEALTHCHECKS.md           |
+| 2026-08-31 | That monitor proven by inducing a failure                | HEALTHCHECKS.md drill log          |
+|            | The monitor and `SITE_URL` both name the apex            | Section 0, changes 3 and 4         |
+| 2026-09-06 | Decide how visitors and traffic are counted              | #1126 — page loads, nothing new    |
+| 2026-08-31 | **Production has any in-cluster monitoring**             | #880, and the dashboard push below |
+|            | Alerts reach a person                                    | #877                               |
+| 2026-08-31 | An alert proven by breaking something on prod            | #285                               |
 
 **Production has its own observability now** (#880, closed). It runs OpenObserve, the collector agent and gateway,
 the OTel operator and `postgres-exporter`. It carries all twelve alert rules. So the external layer below is no
@@ -197,27 +196,21 @@ same day. `PROHIBITED` on either licence field then removes every translation fo
 | ---------- | ------------------------------------ | -------- |
 | 2026-09-02 | The privacy notice matches what runs | #278     |
 |            | Legal review of the German notice    | #279     |
-|            | Venues asked, first batch of ten     | #808     |
 | 2026-08-30 | Copyright status per source          | #283     |
 
 ### SEO
 
-| Done       | Item                          | Evidence  |
-| ---------- | ----------------------------- | --------- |
-|            | `noindex` off, apex served    | Section 0 |
-|            | Search Console set up         | #288      |
-|            | Sitemap and hreflang accepted | #289      |
-| 2026-09-07 | Rich results tested           | #290      |
-|            | Link previews checked         | #291      |
-|            | Indexing watched afterwards   | #293      |
+| Done       | Item                | Evidence |
+| ---------- | ------------------- | -------- |
+| 2026-09-07 | Rich results tested | #290     |
 
 **The Rich Results Test passed on two real event pages, in code mode.** URL mode cannot run against
 `prod-check`: its `robots.txt` says `Disallow: /`, and the test reports the crawl as failed. The
 JSON-LD each page renders was submitted as is. Both a `MusicEvent` with an offer and a `SocialEvent`
 without one came back valid, with the breadcrumb list valid beside them. Every warning is optional
 and accepted. `endDate` and `offers.validFrom` are not in the data. `organizer` and `offers` are
-emitted when a promoter or a price exists. Structured data may only say what the page shows. Run URL
-mode once more against the apex after the flip.
+emitted when a promoter or a price exists. Structured data may only say what the page shows. URL mode
+runs again against the apex, in Section 2.
 
 ### Security
 
@@ -229,29 +222,71 @@ mode once more against the apex after the flip.
 
 ### Product
 
-| Done | Item                                                                                                                                 | Evidence    |
-| ---- | ------------------------------------------------------------------------------------------------------------------------------------ | ----------- |
-|      | The beta badge decision                                                                                                              | #295        |
-|      | Maintenance mode, if wanted first                                                                                                    | #296        |
-|      | The README says the site is live                                                                                                     | `README.md` |
-|      | The repo health files proof-read **by the maintainer** — README, CONTRIBUTING, SUPPORT, SECURITY, the Code of Conduct, the templates | #281        |
+| Done | Item                                                                                                                                 | Evidence |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------ | -------- |
+|      | Maintenance mode, if wanted first                                                                                                    | #296     |
+|      | The repo health files proof-read **by the maintainer** — README, CONTRIBUTING, SUPPORT, SECURITY, the Code of Conduct, the templates | #281     |
 
-**The README claims a status in two places, and both are wrong the moment the apex serves.** The badge near the top
-reads `Status-In Development`, and § Status opens with "In development — deployed, but not public yet." Change the
-badge to `Status-Live-brightgreen`, and rewrite the section around what production serves. One without the other
-leaves the page contradicting itself.
+## 2 · After go-live
 
-## 2 · What is deliberately not here
+The apex resolves and the site is public. These are the acts that could not happen before that. The
+section exists so they are not lost in the relief of the flip working.
+
+| Done | Item                                                                 | Evidence                 |
+| ---- | -------------------------------------------------------------------- | ------------------------ |
+|      | `noindex` off and the apex served, confirmed against the live origin | Section 0                |
+|      | Search Console set up                                                | #288                     |
+|      | Sitemap and hreflang accepted                                        | #289                     |
+|      | Rich Results Test re-run in URL mode against the apex                | #290                     |
+|      | Link previews checked in Slack, WhatsApp and iMessage                | #291                     |
+|      | The Better Stack monitor re-proved against the apex                  | ADR-021                  |
+|      | The first nightly plausibility run green against the apex            | `agent-plausibility.yml` |
+|      | The venue licence enquiry sent, first batch of twelve                | #808                     |
+|      | Launch marketing, venues first                                       | #481, Phase 2            |
+|      | The beta badge decision, and the README rewritten around it          | #295                     |
+|      | Whether to publish an uptime badge                                   | HEALTHCHECKS.md          |
+|      | Whether to turn HSTS `preload` on, once the domain is settled        | Section 4                |
+|      | Indexing watched, especially of detail pages                         | #293                     |
+|      | The k6 runs automated against a real origin                          | #298, Phase 2            |
+|      | Session weights re-derived from real traffic                         | #297                     |
+
+**The first five are launch day, or the morning after.** Each needs a name that resolves for somebody
+other than us. That is the whole reason they are here rather than in Section 1.
+
+**The licence enquiry waits for the apex because the mail links a venue's own page.** A link that
+fails makes an enquiry look like a pitch, and that reading is what § 7 UWG punishes.
+[`docs/licence-review/ENQUIRY.md`](../licence-review/ENQUIRY.md) carries the three mails, the first
+batch of twelve, and how a reply is written back.
+
+**The README claims a status in two places, and both are wrong the moment the apex serves.** The
+badge near the top reads `Status-In Development`, and § Status opens with "In development — deployed,
+but not public yet." Change the badge to `Status-Live-brightgreen`, and rewrite the section around
+what production serves. One without the other leaves the page contradicting itself.
+
+**Two of these prove that the flip did not break the watching.** Changes 3 and 4 in Section 0 repoint
+the monitor and the daily probe at the apex. Neither is proved by being repointed. The monitor gets a
+second induced failure, and the first nightly plausibility run has to come back green against the new
+name.
+
+**Three need weeks rather than hours.** Indexing, the k6 runs and the session weights are the items
+launch day cannot finish. The last two are `Phase 2` issues and sit here as acts, not as gates.
+
+**The two mails go in this order, and not together.** The licence enquiry is administrative. The
+marketing mail is not. § 7 UWG is the reason to keep them apart. #481 sits below #808 here for the
+same reason it moved to `Phase 2`. It is not a launch gate.
+
+## 3 · What is deliberately not here
 
 Items in `v1.0 — Go-live` with the `needs-deployment` label wait on a live origin. They are not
-blocked on effort. Listing them makes a checklist look permanently unfinished.
+blocked on effort, and Section 2 is where the ones that matter reappear as acts rather than as
+issues.
 
 **Four of them can run early**, because production serves a real hostname over a real certificate:
 #290, #291, #292 and #298. Point them at `prod-check`.
 
 Two cannot. #288 and #293 need the real domain.
 
-## 3 · Going dark again
+## 4 · Going dark again
 
 Revert both changes from Section 0. The apex stops resolving within one TTL, which is 300 seconds.
 
