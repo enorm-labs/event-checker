@@ -143,6 +143,12 @@ const { t } = useI18n()
         personal data.
       </p>
       <p>
+        <strong>Where this comes from.</strong> It does not come from you. It comes from the public
+        sources named above, so Art. 14 GDPR governs it rather than Art. 13. Telling every named
+        person individually would take disproportionate effort. Art. 14 (5) (b) GDPR accepts making
+        the information public instead, which is what this page does.
+      </p>
+      <p>
         <strong>Purpose:</strong> informing the public about publicly announced cultural events.
       </p>
       <p>

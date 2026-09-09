@@ -153,6 +153,13 @@ const { t } = useI18n()
         Person ist, sind der Name und die Platzierung im Line-up personenbezogene Daten.
       </p>
       <p>
+        <strong>Herkunft dieser Daten.</strong> Sie stammen nicht von dir, sondern aus den oben
+        genannten öffentlich zugänglichen Quellen. Für sie gilt deshalb Art. 14 DSGVO. Jede genannte
+        Person einzeln zu benachrichtigen wäre mit unverhältnismäßigem Aufwand verbunden; nach Art.
+        14 Abs. 5 lit. b DSGVO tritt an dessen Stelle, dass diese Informationen hier öffentlich
+        bereitstehen.
+      </p>
+      <p>
         <strong>Zweck:</strong> Information der Öffentlichkeit über öffentlich angekündigte
         kulturelle Veranstaltungen.
       </p>
