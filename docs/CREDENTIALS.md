@@ -33,7 +33,7 @@ Store the password, the TOTP seed, **and the recovery codes** for each. The reco
 | 5   | **Postflex**                                  | The rented imprint address (§ 5 DDG). **A lapsed renewal breaks § 5 silently**  | **In use** — since 2026-08-21          | Yes        |
 | 6   | **Signal**, on its own prepaid number         | The alert bridge's identity. Registration state also lives on a PVC             | **Decided, not built**                 | Yes        |
 | 7   | **Hetzner Webhosting S** (konsoleH)           | The hosting package the mailboxes live on. **Its own login, not the Cloud one** | **In use** — since 2026-08-21          | Yes        |
-| 7a  | **The two mailbox passwords**                 | `hello@` and `security@` — IMAP, SMTP and webmail, one password each            | **In use** — since 2026-08-21          | Yes        |
+| 7a  | **The two mailbox passwords**                 | `hello@` and `security@` — IMAP, SMTP and webmail, and the daily probe (#637)   | **In use** — since 2026-08-21          | Yes        |
 | 8   | **OpenObserve** admin login                   | Logs, metrics, dashboards, alert rules. Created at first start                  | **In use** — staging, since 2026-08-20 | Yes        |
 | 8a  | **Anthropic Console** (`platform.claude.com`) | The `event-junkie` workspace and the API key the importer translates with (#26) | **In use** — since 2026-09-08          | Yes        |
 
