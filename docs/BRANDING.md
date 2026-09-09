@@ -420,6 +420,23 @@ which is where it can be seen.
 
 Implemented in `EventCard.vue` and `VenueCard.vue`, transitioned over 300 ms.
 
+**The poster box is 3:2**, decided on 2026-09-09 (#1245) against the corpus rather than by taste. Of the 2506 stored images that carry both dimensions, 21.3%
+are portrait, 17.0% square, 5.2% around 4:3, 39.5% between 3:2 and 16:9, and 17.0% ultrawide. Cropping every one of them to four candidate boxes and measuring
+the area lost:
+
+| Box     | Mean area cropped | Images losing more than 40% |
+| ------- | ----------------- | --------------------------- |
+| 1:1     | 31.9%             | 999                         |
+| 4:3     | 28.4%             | 593                         |
+| **3:2** | **26.3%**         | **577**                     |
+| 16:9    | 26.5%             | 938                         |
+
+3:2 wins on both numbers. 16:9 matches it on the mean and destroys 938 images instead of 577, because it is brutal to the fifth of the corpus that is portrait.
+`CachedImage`'s placeholder already reserved `aspect-[3/2]`, so the empty state and the filled state now agree.
+
+**The stored file is never cropped.** imgproxy is called with `rs:fit:<width>:0`, which fits the width and lets the height follow, so a derivative keeps the
+shape the venue published. 3:2 is a box the browser fills with `object-cover`, which keeps a future layout free to want a different one.
+
 ### 5.5 Motion (subtle)
 
 `tw-animate-css` is available. Shipping: a gently **pulsing "live tonight" dot** and a soft card hover-lift, both gated behind

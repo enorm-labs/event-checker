@@ -65,6 +65,19 @@ class CachedImagesTest {
     }
 
     @Test
+    @DisplayName("a poster card is offered 512 upwards, not the thumbnail widths")
+    fun `the poster band starts at the step that was added for it`() {
+        // Without 512 among the generated widths this band would hold 768 alone, and a 1x laptop
+        // would download a 36 KB file for a slot that 512 serves in about 16 KB (#1245). 1536 is
+        // outside the band: 480 at 3x is 1440, so the widest file stays a detail-page one.
+        val served = serving().serve(poster, POSTER_CARD)
+
+        served.url shouldBe "/api/images/$HASH/512.jpg"
+        srcsetFor(served, "image/jpeg") shouldBe
+            "/api/images/$HASH/512.jpg 512w, /api/images/$HASH/768.jpg 768w"
+    }
+
+    @Test
     fun `the detail band covers the column at one and two times`() {
         val served = serving().serve(poster, DETAIL)
 
@@ -161,6 +174,13 @@ class CachedImagesTest {
         const val CARD = 96
         const val DETAIL = 704
 
-        val ALL_WIDTHS = setOf(192, 288, 768, 1536)
+        /**
+         * What a poster card will pass once #1246 rebuilds it: a two-column `max-w-5xl` grid puts
+         * the card at about 474 CSS px. Asserted here before the card exists, because the width
+         * step that serves it (512) ships now and nothing else would notice if the band broke.
+         */
+        const val POSTER_CARD = 480
+
+        val ALL_WIDTHS = setOf(192, 288, 512, 768, 1536)
     }
 }

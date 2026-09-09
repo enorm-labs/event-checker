@@ -458,8 +458,8 @@ class CachedImageServingTest : BaseControllerTest() {
         /** Not a real JPEG. Nothing here decodes it, and the assertion is byte equality. */
         private val POSTER = ByteArray(64) { it.toByte() }
 
-        /** What imgproxy generates: 96 px cards at 2x and 3x, then the detail column at 1x and 2x. */
-        private val ALL_WIDTHS = listOf(192, 288, 768, 1536)
+        /** What imgproxy generates: 96 px cards at 2x and 3x, the poster card, then the detail column at 1x and 2x. */
+        private val ALL_WIDTHS = listOf(192, 288, 512, 768, 1536)
 
         private val minio = MinIOContainer("minio/minio:RELEASE.2025-09-07T16-13-09Z")
 
