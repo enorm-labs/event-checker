@@ -888,8 +888,8 @@ window.EJ_LINKS = {
         {
           "url": "https://github.com/enorm-labs/event-junkie/blob/main/docs/ops/GO_LIVE_CHECKLIST.md",
           "label": "docs/ops/GO_LIVE_CHECKLIST.md",
-          "what": "What must be true before the domain resolves, and the four changes that make it",
-          "whatText": "What must be true before the domain resolves, and the four changes that make it",
+          "what": "What must be true before the domain resolves, the four changes that make it, and what follows",
+          "whatText": "What must be true before the domain resolves, the four changes that make it, and what follows",
           "status": "",
           "statusText": ""
         },
