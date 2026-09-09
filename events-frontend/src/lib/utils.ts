@@ -25,14 +25,14 @@ export const FIELD_CLASS =
 const SURFACE_CLASS = 'rounded-xl border border-border bg-card'
 
 /**
- * An interactive card — the event and venue tiles, which are links. It lifts on hover, gated
- * behind `motion-safe`.
+ * An interactive card — the event and venue tiles, which are links. The hover is the thumbnail
+ * turning from grayscale to colour and the border taking the accent. It also carried a resting
+ * shadow, a deeper one on hover and a lift until #1241: three ways of saying "hoverable" and none
+ * of saying what would happen.
  *
- * The two cards carried this verbatim in both files. Extracted for the same reason as
- * {@link FIELD_CLASS}: a 160-character class string copied twice drifts the first time only one
- * of them is touched.
+ * Extracted, like {@link FIELD_CLASS}, because both cards carried it verbatim.
  */
-export const CARD_CLASS = `group flex gap-4 ${SURFACE_CLASS} p-3 shadow-sm transition-all hover:border-primary/40 hover:shadow-md motion-safe:hover:-translate-y-0.5`
+export const CARD_CLASS = `group flex gap-4 ${SURFACE_CLASS} p-3 transition-colors hover:border-primary/40`
 
 /**
  * The two filter bars: chrome, not an object. It shared {@link SURFACE_CLASS} with the card until
