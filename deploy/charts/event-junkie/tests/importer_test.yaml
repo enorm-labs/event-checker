@@ -393,7 +393,7 @@ tests:
       networkPolicy.databaseCidr: "10.0.1.2/32"
       database.existingSecret: "events-db"
       # Forced, because `cluster-assertions.sh` re-runs this suite under each cluster's own values
-      # and both clusters now set `anthropic`. Without it the case asserts the cluster, not the default.
+      # and production sets `anthropic`. Without it the case asserts the cluster, not the default.
       importer.translation.engine: "none"
     documentSelector:
       path: kind
