@@ -84,7 +84,7 @@ const { t } = useI18n()
           <component
             :is="as"
             :title="eventLabel(event.title, event.venue?.name)"
-            class="truncate leading-tight font-semibold"
+            class="truncate text-card-title font-semibold"
           >
             {{ event.title }}
           </component>
@@ -103,11 +103,11 @@ const { t } = useI18n()
       <p
         v-if="event.subtitle"
         :title="event.subtitle"
-        class="truncate text-sm text-muted-foreground"
+        class="truncate text-body text-muted-foreground"
       >
         {{ event.subtitle }}
       </p>
-      <p class="text-sm text-muted-foreground">
+      <p class="text-meta text-muted-foreground">
         {{ formatDate(event.eventDate) }}
         <template v-if="event.startTime"> · {{ formatTime(event.startTime) }}</template>
         <template v-if="event.venue?.name"> · {{ event.venue.name }}</template>
@@ -122,7 +122,7 @@ const { t } = useI18n()
         <BaseBadge v-for="tag in event.genreTags" :key="tag">{{ tag }}</BaseBadge>
         <span
           v-if="formatPrice(event.pricePresale, event.priceCurrency)"
-          class="ml-auto text-sm font-medium"
+          class="ml-auto text-body font-medium"
         >
           {{ formatPrice(event.pricePresale, event.priceCurrency) }}
         </span>

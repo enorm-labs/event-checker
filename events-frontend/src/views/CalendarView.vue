@@ -66,7 +66,7 @@ const { t } = useI18n()
 <template>
   <main class="mx-auto max-w-5xl space-y-6 p-4 sm:p-8">
     <header class="space-y-1">
-      <h1 class="text-3xl font-bold tracking-tight">{{ t('calendar.title') }}</h1>
+      <h1 class="text-page font-bold tracking-tight">{{ t('calendar.title') }}</h1>
       <p class="text-muted-foreground">{{ t('calendar.subtitle') }}</p>
     </header>
     <!-- No date range here: FullCalendar's visible window already is the range. -->

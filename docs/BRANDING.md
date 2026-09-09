@@ -458,6 +458,31 @@ reason, and a fourth needs one before it is added.
 
 **Widths are already principled and unchanged:** `max-w-3xl` for reading (detail and prose), `max-w-5xl` for listings.
 
+### 5.8 Type scale
+
+**Six steps, named for the role rather than the size**, declared as `@theme` tokens in `main.css` so Tailwind generates `text-meta`, `text-body`,
+`text-card-title`, `text-lede`, `text-section` and `text-page` as real utilities.
+
+| Token             | Size / leading | Where                                            |
+| ----------------- | -------------- | ------------------------------------------------ |
+| `text-meta`       | 12 / 16 px     | Card meta line, the smallest live text           |
+| `text-body`       | 14 / 20 px     | Secondary copy — the role `text-sm` used to fill |
+| `text-card-title` | 17 / 22 px     | Card titles, with `font-semibold`                |
+| `text-lede`       | 20 / 28 px     | The detail-page subtitle                         |
+| `text-section`    | 24 / 30 px     | `h2`                                             |
+| `text-page`       | 30 / 36 px     | `h1`                                             |
+
+**The problem was the middle, not the ends.** The app used `text-sm` 63 times and `text-3xl` 8 times with almost nothing between them, so on an event card the
+title, the subtitle and the date line all sat within 2 px of each other and the grid read as a table. Both ends therefore keep the values they already had: 30 px
+page titles work, and 12 px is the floor for live text. What is new is a step at 17 px that a card title can take, which is a real level above 14 rather than the
+1 px nudge 15 would be.
+
+**Naming the role is the point.** A view says what a piece of text _is_, so the next size question has an answer other than a fresh `text-3xl`.
+
+**Two deliberate exclusions.** The About and legal pages are body copy at a reading measure and keep their own sizes, so `text-2xl` still appears in a grep of
+the tree. And the calendar sizes its own cells: FullCalendar renders day numbers at 11 px and the month title at 24 px through hashed class names, the grid fits
+390 px as it is, and reaching into those internals to impose a token would buy a number and risk the grid.
+
 ### 5.8 Iconography
 
 **Audited 2026-08-23, and it needed no code** — which is worth recording, because the alternative was inventing a pass that had nothing to fix.

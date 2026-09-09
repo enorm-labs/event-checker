@@ -108,7 +108,7 @@ useStructuredData((): JsonLd[] => {
     <p v-if="loading" class="text-sm text-muted-foreground">{{ t('common.states.loading') }}</p>
 
     <div v-else-if="notFound" class="space-y-3">
-      <h1 class="text-2xl font-bold tracking-tight">{{ t('events.detail.notFound') }}</h1>
+      <h1 class="text-section font-bold tracking-tight">{{ t('events.detail.notFound') }}</h1>
       <p class="text-muted-foreground">
         {{ t('events.detail.notFoundBody') }}
       </p>
@@ -123,8 +123,8 @@ useStructuredData((): JsonLd[] => {
       <!-- The poster belongs to the title, so it sits closer than the article's stride. `mb-5` wins
            over `space-y-8` because the latter is a zero-specificity `:where()` rule. -->
       <header class="mb-5 space-y-3">
-        <h1 class="text-3xl font-bold tracking-tight">{{ event.title }}</h1>
-        <p v-if="event.subtitle" class="text-lg text-muted-foreground">{{ event.subtitle }}</p>
+        <h1 class="text-page font-bold tracking-tight">{{ event.title }}</h1>
+        <p v-if="event.subtitle" class="text-lede text-muted-foreground">{{ event.subtitle }}</p>
         <div class="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
           <span>{{ formatDate(event.eventDate) }}</span>
           <span v-if="event.startTime">· {{ formatTime(event.startTime) }}</span>
