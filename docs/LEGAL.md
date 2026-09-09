@@ -168,6 +168,13 @@ The notice deliberately does **not** describe processing that does not happen: n
 no analytics section. A notice describing imaginary processing is as inaccurate as one omitting real processing, and
 generators produce exactly that (§7.8).
 
+**The checklist is Art. 13, and most personal data here is Art. 14.** Art. 13 governs data collected from the person
+reading the notice, which is the visitor and the server log. An artist's name is read from a venue's website, and that
+artist never came here. The one item Art. 14 adds is Art. 14 (2) (f), the source of the data, and §4 carried it in
+prose from the start. Since #279 it also names the article. It names the measure Art. 14 (5) (b) requires in place of
+telling each person: this page is public. Nothing else in Art. 14 differs from what the checklist already enforces, so
+the test stays keyed on Art. 13.
+
 ### 7.3 Artists are people
 
 Event data is mostly not personal data. But **where a performing artist is a natural person, their name and their
@@ -450,8 +457,14 @@ worthwhile _as a second opinion_. The German it produces is the idiom a German r
 substitute for the notice being written from what the system does. A generator emits boilerplate for processing you do
 not perform, which §7.2 rules out.
 
-**Done on 2026-09-03 (#279), against the generator's own published output and its Art. 13 checklist.** Comparison, not
-submission: nothing of ours was entered into the form. Three things came out of it.
+**Run twice.** The first run, on 2026-09-03, compared against the generator's own published output and its own Art. 13
+checklist. Nothing of ours was entered. The second, on 2026-09-09, filled the form with the imprint details the site
+already publishes. Every input and module is in
+[docs/legal-review/GENERATOR_INPUT.md](legal-review/GENERATOR_INPUT.md). The run can be repeated from it. The free version does not finish generating in an automated browser session. The
+output text is therefore a manual copy, which that file describes.
+[docs/legal-review/README.md](legal-review/README.md) is the review both runs support.
+
+Three things came out of the first pass.
 
 **One correction, applied.** Our Beschwerderecht named two fora — habitual residence and place of work. Art. 77 (1)
 names three. The notice now also names the place of the alleged infringement, in both languages.
