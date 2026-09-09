@@ -937,6 +937,10 @@ window.EJ_LINKS = {
           "note": ""
         },
         {
+          "command": "scripts/cluster-state.sh staging",
+          "note": "one read-only verdict: is this environment whole"
+        },
+        {
           "command": "scripts/ej.sh down staging",
           "note": "the forwards it started, then the tunnel"
         },
