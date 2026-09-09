@@ -24,7 +24,7 @@ const { t } = useI18n()
 
 <template>
   <LegalPage
-    intro="Welche Daten Event Junkie verarbeitet, wozu — und was du dagegen tun kannst."
+    intro="Welche Daten Event Junkie verarbeitet, wozu, und was du dagegen tun kannst."
     show-authoritative-version
     show-review-date
     title="Datenschutz"
@@ -84,17 +84,17 @@ const { t } = useI18n()
       </p>
       <p>
         <strong>Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. f DSGVO. Unser berechtigtes Interesse
-        ist der Betrieb einer funktionierenden und sicheren Website — ein Interesse, das
-        Erwägungsgrund 49 DSGVO ausdrücklich anerkennt. Wir nutzen diese Daten nicht, um dich zu
-        identifizieren oder ein Profil zu bilden, und führen sie mit keinen anderen Daten zusammen.
+        ist der Betrieb einer funktionierenden und sicheren Website. Erwägungsgrund 49 DSGVO erkennt
+        dieses Interesse ausdrücklich an. Wir nutzen diese Daten nicht, um dich zu identifizieren
+        oder ein Profil zu bilden, und führen sie mit keinen anderen Daten zusammen.
       </p>
       <p>
         <strong>Speicherdauer:</strong> Logdaten werden <strong>14 Tage</strong> aufbewahrt und
         danach automatisch gelöscht. Zwei unabhängige Mechanismen begrenzen sie, und meist greift
-        der kürzere: Auf dem Server selbst werden Einträge nach Volumen verdrängt — es wird eine
-        feste Menge vorgehalten und der jeweils älteste Eintrag überschrieben —, sodass eine Zeile
-        oft früher verschwindet; im Log-Speicher wird unabhängig davon alles gelöscht, was älter als
-        14 Tage ist. Ausgenommen sind Einträge, die wegen eines konkreten Sicherheitsvorfalls länger
+        der kürzere: Auf dem Server selbst werden Einträge nach Volumen verdrängt. Dort wird eine
+        feste Menge vorgehalten und der jeweils älteste Eintrag überschrieben, sodass eine Zeile oft
+        früher verschwindet. Im Log-Speicher wird unabhängig davon alles gelöscht, was älter als 14
+        Tage ist. Ausgenommen sind Einträge, die wegen eines konkreten Sicherheitsvorfalls länger
         aufbewahrt werden müssen. Genannt wird hier immer die tatsächlich konfigurierte Frist.
       </p>
       <p>
@@ -104,11 +104,10 @@ const { t } = useI18n()
         Angaben unterscheiden sich, weil zwei voneinander unabhängige Mechanismen löschen: die
         tägliche Bereinigung auf dem Server, die eine Sicherung so lange behält, wie sie zur
         Wiederherstellung der übrigen benötigt wird, und eine Regel des Speicherdienstes, die
-        unabhängig davon greift — auch dann, wenn der Server ausgefallen ist. Diese Frist ist von
-        der oben genannten unabhängig: Daten, die im laufenden Betrieb bereits gelöscht wurden,
-        können in einer Sicherung noch bis zu 35 Tage fortbestehen. Sicherungen dienen
-        ausschließlich der Wiederherstellung nach einem Ausfall — sie werden nicht durchsucht und
-        nicht ausgewertet.
+        unabhängig davon greift, auch dann, wenn der Server ausgefallen ist. Diese Frist ist von der
+        oben genannten unabhängig: Daten, die im laufenden Betrieb bereits gelöscht wurden, können
+        in einer Sicherung noch bis zu 35 Tage fortbestehen. Sicherungen dienen ausschließlich der
+        Wiederherstellung nach einem Ausfall. Sie werden nicht durchsucht und nicht ausgewertet.
       </p>
     </section>
 
@@ -132,7 +131,7 @@ const { t } = useI18n()
         Diese Werte verlassen dein Gerät nicht, werden weder an uns noch an Dritte übermittelt und
         sind für Dritte nicht auslesbar. Beide sind unbedingt erforderlich, um die von dir
         ausdrücklich gewählte Einstellung bereitzustellen, und bedürfen deshalb nach § 25 Abs. 2 Nr.
-        2 TDDDG keiner Einwilligung — weshalb du hier auch kein Banner wegklicken musst. Du kannst
+        2 TDDDG keiner Einwilligung. Deshalb musst du hier auch kein Banner wegklicken. Du kannst
         sie jederzeit über die Einstellungen deines Browsers löschen.
       </p>
       <p>
@@ -149,8 +148,8 @@ const { t } = useI18n()
       <p>
         Event Junkie sammelt öffentlich zugängliche Informationen über Veranstaltungen in Berlin von
         den Websites der Locations, Veranstalter und Ticketanbieter und führt sie an einer Stelle
-        zusammen. Soweit eine auftretende Künstlerin oder ein auftretender Künstler eine natürliche
-        Person ist, sind der Name und die Platzierung im Line-up personenbezogene Daten.
+        zusammen. Soweit auftretende Künstler*innen natürliche Personen sind, sind ihre Namen und
+        ihre Platzierung im Line-up personenbezogene Daten.
       </p>
       <p>
         <strong>Herkunft dieser Daten.</strong> Sie stammen nicht von dir, sondern aus den oben
@@ -167,7 +166,7 @@ const { t } = useI18n()
         <strong>Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. f DSGVO. Unser berechtigtes Interesse
         ist der Betrieb eines Veranstaltungskalenders. Die betroffenen Informationen wurden von den
         Veranstaltern bereits selbst veröffentlicht, und zwar ausdrücklich zur Bewerbung der
-        Veranstaltung; sie beschränken sich auf diesen beruflichen Kontext — wir speichern keine
+        Veranstaltung; sie beschränken sich auf diesen beruflichen Kontext. Wir speichern keine
         Kontaktdaten, keine Privatanschriften und nichts über das Privatleben.
       </p>
       <p>
@@ -175,18 +174,17 @@ const { t } = useI18n()
         gelöscht. Vergangene Veranstaltungen bleiben als Archiv erhalten, solange der Kalender
         betrieben wird; eine automatische Löschung nach Alter findet nicht statt. Das Kriterium ist
         also der Betrieb des Kalenders und nicht der Zeitablauf. Dein Name wird davon unabhängig
-        entfernt, sobald du der Verarbeitung nach Art. 21 DSGVO widersprichst — dafür genügt die
+        entfernt, sobald du der Verarbeitung nach Art. 21 DSGVO widersprichst. Dafür genügt die
         E-Mail im nächsten Absatz.
       </p>
       <p>
-        <strong>Bilder:</strong> Locations, Veranstalter und Künstlerinnen und Künstler
-        veröffentlichen Bilder — zu einzelnen Veranstaltungen und zu sich selbst. Event Junkie lädt
-        diese Bilder herunter und speichert eine Kopie auf eigenen Servern bei Hetzner, statt sie
-        bei jedem Seitenaufruf erneut beim Anbieter anzufragen. Rechtsgrundlage ist Art. 6 Abs. 1
-        lit. f DSGVO. Das berechtigte Interesse ist eine Auslieferung ohne Beteiligung Dritter und
-        eine geringere Last für die Server der Locations. Die Kopie wird gelöscht, sobald die
-        Location aussteigt oder eine Rechteinhaberin oder ein Rechteinhaber das verlangt, und danach
-        nicht erneut geladen.
+        <strong>Bilder:</strong> Locations, Veranstalter und Künstler*innen veröffentlichen Bilder,
+        zu einzelnen Veranstaltungen und zu sich selbst. Event Junkie lädt diese Bilder herunter und
+        speichert eine Kopie auf eigenen Servern bei Hetzner, statt sie bei jedem Seitenaufruf
+        erneut beim Anbieter anzufragen. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO. Das
+        berechtigte Interesse ist eine Auslieferung ohne Beteiligung Dritter und eine geringere Last
+        für die Server der Locations. Die Kopie wird gelöscht, sobald die Location aussteigt oder
+        Rechteinhaber*innen das verlangen, und danach nicht erneut geladen.
       </p>
       <p>
         <strong>Übersetzungen:</strong> Beschreibungen werden maschinell übersetzt, damit die Seite
@@ -195,10 +193,10 @@ const { t } = useI18n()
         Veranstaltungsseite als solche gekennzeichnet, und der Originaltext bleibt maßgeblich.
       </p>
       <p>
-        <strong>Wenn du Künstlerin oder Künstler bist</strong> und möchtest, dass dein Name entfernt
-        oder korrigiert wird, schreib an
+        <strong>Wenn du Künstler*in bist</strong> und möchtest, dass dein Name entfernt oder
+        korrigiert wird, schreib an
         <a :href="`mailto:${CONTROLLER.email}`">{{ CONTROLLER.email }}</a>
-        — wir kümmern uns umgehend darum. Eine Begründung brauchst du nicht, und du musst das Thema
+        . Wir kümmern uns umgehend darum. Eine Begründung brauchst du nicht, und du musst das Thema
         nicht öffentlich ansprechen.
       </p>
     </section>
@@ -207,18 +205,18 @@ const { t } = useI18n()
       <h2>5. Wer sonst beteiligt ist</h2>
       <p>
         Wir verkaufen nichts und geben nichts zu Werbezwecken weiter. Daten werden an zwei
-        Dienstleister übermittelt — Auftragsverarbeiter mit einem Vertrag nach Art. 28 DSGVO:
+        Dienstleister übermittelt, beide Auftragsverarbeiter mit einem Vertrag nach Art. 28 DSGVO:
       </p>
       <ul>
         <li>
-          <strong>Hosting</strong> — Hetzner Online GmbH, Gunzenhausen, Deutschland. Die Server
+          <strong>Hosting:</strong> Hetzner Online GmbH, Gunzenhausen, Deutschland. Die Server
           stehen in Deutschland; eine Übermittlung außerhalb der EU findet dabei nicht statt.
         </li>
         <li>
-          <strong>Maschinelle Übersetzung</strong> — Anthropic PBC, San Francisco, USA. Dorthin wird
+          <strong>Maschinelle Übersetzung:</strong> Anthropic PBC, San Francisco, USA. Dorthin wird
           der Beschreibungstext einer Veranstaltung übermittelt, damit er übersetzt werden kann.
-          Nennt eine Beschreibung Künstlerinnen und Künstler, werden diese Namen mit übermittelt; die
-          Namen des Line-ups und der Location werden zusätzlich ausdrücklich mitgesendet, damit die
+          Nennt eine Beschreibung Künstler*innen, werden diese Namen mit übermittelt; die Namen des
+          Line-ups und der Location werden zusätzlich ausdrücklich mitgesendet, damit die
           Übersetzung sie unverändert lässt. Andere Daten erreichen diesen Dienst nicht: weder
           Logdaten noch irgendetwas über dich.
         </li>
@@ -233,7 +231,7 @@ const { t } = useI18n()
       <p>
         Es gibt kein Content-Delivery-Netzwerk, keinen Edge-Anbieter und keinen Proxy vor der Seite.
         Deine Anfrage erreicht unsere Server in Deutschland direkt. An der Auslieferung dieser Seite
-        ist damit kein Drittland beteiligt — die Übersetzung oben ist der einzige Weg, auf dem Daten
+        ist damit kein Drittland beteiligt. Die Übersetzung oben ist der einzige Weg, auf dem Daten
         die EU verlassen, und sie betrifft Veranstaltungstexte statt deines Besuchs.
       </p>
       <p>
@@ -263,7 +261,7 @@ const { t } = useI18n()
       </ul>
       <p>
         <strong>Löschung und Sicherungskopien.</strong> Eine Löschung nach Art. 17 DSGVO wirkt
-        sofort im laufenden Betrieb. Sicherungskopien werden dabei nicht einzeln bearbeitet — eine
+        sofort im laufenden Betrieb. Sicherungskopien werden dabei nicht einzeln bearbeitet. Eine
         einzelne Person aus einer Sicherung herauszulösen würde deren Zweck zerstören und wäre
         technisch nur unter Inkaufnahme neuer Risiken möglich. Die Daten laufen daher mit der
         Sicherung selbst aus, also spätestens nach 35 Tagen. Muss eine Sicherung zwischenzeitlich
@@ -276,7 +274,7 @@ const { t } = useI18n()
         Daten Widerspruch einzulegen. Legst du Widerspruch ein, verarbeiten wir die betroffenen
         Daten nicht mehr, es sei denn, wir können zwingende schutzwürdige Gründe nachweisen, die
         deine Interessen, Rechte und Freiheiten überwiegen. Ein Widerspruch ist kostenlos und
-        formlos — eine E-Mail genügt.
+        formlos. Eine E-Mail genügt.
       </p>
       <p>
         <strong>Beschwerderecht.</strong> Du kannst dich bei einer Aufsichtsbehörde beschweren,
@@ -293,8 +291,8 @@ const { t } = useI18n()
       <p>
         Du bist weder gesetzlich noch vertraglich verpflichtet, personenbezogene Daten
         bereitzustellen. Technisch lässt sich eine Webseite allerdings nicht ohne die IP-Adresse
-        deines Geräts ausliefern — diese Seite zu nutzen, ohne dass sie verarbeitet wird, ist
-        deshalb nicht möglich. Alles Weitere ist freiwillig.
+        deines Geräts ausliefern. Diese Seite zu nutzen, ohne dass sie verarbeitet wird, ist deshalb
+        nicht möglich. Alles Weitere ist freiwillig.
       </p>
     </section>
 
@@ -309,7 +307,7 @@ const { t } = useI18n()
     <section>
       <h2>9. Änderungen dieser Erklärung</h2>
       <p>
-        Diese Erklärung beschreibt, was das System tatsächlich tut — sie ändert sich also, wenn das
+        Diese Erklärung beschreibt, was das System tatsächlich tut. Sie ändert sich also, wenn das
         System sich ändert. Das Prüfdatum oben auf dieser Seite sagt dir, wann sie zuletzt
         abgeglichen wurde.
       </p>

@@ -610,6 +610,13 @@ _Can't get enough of Berlin_ is a pun on the brand premise (§2), and a literal 
 **Still the owner's call.** It ships because a German page needs _a_ tagline, not because the question is closed — changing it is one line in
 `src/i18n/messages/de/footer.json` plus one e2e assertion.
 
+### Gendered nouns: the asterisk form
+
+German prose names people with the asterisk form: Künstler\*innen, Nutzer\*innen, Solist\*innen. It replaces the paired form _Künstlerinnen und Künstler_,
+which is correct but doubles the length of every sentence that needs it. **The asterisk is for natural persons only.** A venue, a promoter or a ticket seller is
+a business, so _Location_, _Veranstalter_, _Ticketanbieter_ and _Rechteinhaber_ keep the plain form. English needs none of this, so the two language versions
+differ here on purpose.
+
 ### What stays in English
 
 The brand name **Event Junkie** (never _Veranstaltungs-Junkie_), the **beta** marker, and everything sourced from third parties: event titles, venue and
@@ -620,7 +627,7 @@ promoter names, artist names, line-ups, genre tags, and Berlin district names. _
 
 The English examples in §3 have German counterparts written the same way — for the joke, not for the words. Shipping today:
 
-- Disclaimer: _"Die Event-Daten stammen aus öffentlichen Quellen — alle Angaben ohne Gewähr. Frag im Zweifel bei der Location nach, bevor du losziehst."_
+- Disclaimer: _"Die Event-Daten stammen aus öffentlichen Quellen, alle Angaben ohne Gewähr. Frag im Zweifel bei der Location nach, bevor du losziehst."_
 - Beta explanation: _"Warum da beta steht"_ — the section heading on the About page, phrased as the reader's question rather than as a status label.
 
 **Note the vocabulary choice:** _Location_, not _Veranstaltungsort_. It is what Berlin actually says, and the nav label uses it too.

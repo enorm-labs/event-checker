@@ -71,8 +71,8 @@ const { t } = useI18n()
         Delivering a web page necessarily means your browser sends a request, and the servers
         involved record it. The following may be processed: date and time of the request, the page
         or file requested, the HTTP status and amount of data transferred, the referring page, and
-        your browser and operating system identification. Your IP address is not among them: the
-        web server uses a log format that omits it, so no address is written in the first place.
+        your browser and operating system identification. Your IP address is not among them: the web
+        server uses a log format that omits it, so no address is written in the first place.
       </p>
       <p>
         <strong>Purpose:</strong> delivering the site, keeping it available and secure, defending
@@ -80,26 +80,26 @@ const { t } = useI18n()
       </p>
       <p>
         <strong>Legal basis:</strong> Art. 6 (1) (f) GDPR. Our legitimate interest is operating a
-        functioning, secure website — an interest recognised by Recital 49 GDPR. We do not use this
+        functioning, secure website. Recital 49 GDPR recognises that interest. We do not use this
         data to identify you or to build a profile, and it is not combined with anything else.
       </p>
       <p>
         <strong>Retention:</strong> log data is kept for <strong>14 days</strong> and then deleted
         automatically. Two independent mechanisms bound it, and the shorter one usually wins: on the
-        server itself entries rotate by volume — a fixed amount is held and the oldest overwritten —
-        so a line often disappears sooner, while the log store deletes everything older than 14 days
-        regardless. Entries are kept longer where a specific security incident requires it. This
-        page always states the period actually configured.
+        server itself entries rotate by volume, so a fixed amount is held and the oldest is
+        overwritten. A line often disappears sooner that way. The log store deletes everything older
+        than 14 days regardless. Entries are kept longer where a specific security incident requires
+        it. This page always states the period actually configured.
       </p>
       <p>
         <strong>Backups:</strong> the database is backed up. Those backups are normally kept for
         <strong>30 days</strong> and then deleted automatically, and in every case they are deleted
         <strong>within 35 days</strong>. The two figures differ because two independent mechanisms
         delete them: a daily sweep on the server, which keeps a backup for as long as the others
-        need it to remain restorable, and a rule on the storage service, which applies regardless —
+        need it to remain restorable, and a rule on the storage service, which applies regardless,
         including while the server is down. This period is separate from the one above: data already
         deleted from the live system can still exist in a backup for up to 35 days. Backups are used
-        solely to recover from a failure — they are not searched and not analysed.
+        solely to recover from a failure. They are not searched and not analysed.
       </p>
     </section>
 
@@ -122,13 +122,13 @@ const { t } = useI18n()
       <p>
         These values never leave your device, are not transmitted to us or to anyone else, and are
         not readable by any third party. Both are strictly necessary to provide the setting you
-        explicitly chose, so under § 25 (2) 2 TDDDG they require no consent — which is why you are
-        not being asked to dismiss a banner. You can clear them at any time through your browser
+        explicitly chose, so under § 25 (2) 2 TDDDG they require no consent. That is why you are not
+        being asked to dismiss a banner. You can clear them at any time through your browser
         settings.
       </p>
       <p>
-        Should cookies ever be introduced, they will be strictly necessary (essential) ones only —
-        no tracking, no analytics tools, no social-media plugins, no advertising trackers.
+        Should cookies ever be introduced, they will be strictly necessary (essential) ones only: no
+        tracking, no analytics tools, no social-media plugins, no advertising trackers.
       </p>
     </section>
 
@@ -139,7 +139,7 @@ const { t } = useI18n()
       <p>
         Event Junkie collects publicly available information about events in Berlin from the
         websites of venues, promoters and ticket sellers, and presents it in one place. Where a
-        performing artist is a natural person, their name — and their billing in a line-up — is
+        performing artist is a natural person, their name and their billing in a line-up are
         personal data.
       </p>
       <p>
@@ -154,7 +154,7 @@ const { t } = useI18n()
       <p>
         <strong>Legal basis:</strong> Art. 6 (1) (f) GDPR. Our legitimate interest is providing an
         events guide. The information concerned has already been published by the organiser for the
-        express purpose of promoting the event, and is limited to that professional context — we
+        express purpose of promoting the event, and is limited to that professional context. We
         store no contact details, no private addresses and no information about anyone's private
         life.
       </p>
@@ -163,11 +163,11 @@ const { t } = useI18n()
         kept as an archive for as long as the calendar is operated; there is no automatic deletion
         by age. The criterion is therefore the operation of the calendar rather than the passage of
         time. Your name is removed independently of that as soon as you object to the processing
-        under Art. 21 GDPR — the email address in the next paragraph is all it takes.
+        under Art. 21 GDPR. The email address in the next paragraph is all it takes.
       </p>
       <p>
-        <strong>Images:</strong> venues, promoters and artists publish images — with individual
-        events, and of themselves. Event Junkie downloads those images and stores a copy on its own
+        <strong>Images:</strong> venues, promoters and artists publish images, with individual
+        events and of themselves. Event Junkie downloads those images and stores a copy on its own
         servers at Hetzner, rather than asking the provider for the file again on every page view.
         The legal basis is Art. 6 (1) (f) GDPR. The legitimate interest is delivering the site
         without involving a third party, and placing less load on a venue's server. The copy is
@@ -175,10 +175,10 @@ const { t } = useI18n()
         again.
       </p>
       <p>
-        <strong>Translations:</strong> descriptions are machine translated, so that the site can show
-        them in both languages. The text is sent to a service provider for that, named in section 5.
-        A machine-translated description says so on the event page, and the original stays
-        authoritative.
+        <strong>Translations:</strong> descriptions are machine translated, so that the site can
+        show them in both languages. The text is sent to a service provider for that, named in
+        section 5. A machine-translated description says so on the event page, and the original
+        stays authoritative.
       </p>
       <p>
         <strong>If you are an artist</strong> and would like your name removed or corrected, write
@@ -197,11 +197,11 @@ const { t } = useI18n()
       </p>
       <ul>
         <li>
-          <strong>Hosting</strong> — Hetzner Online GmbH, Gunzenhausen, Germany. Servers are located
+          <strong>Hosting:</strong> Hetzner Online GmbH, Gunzenhausen, Germany. Servers are located
           in Germany; no transfer outside the EU is involved.
         </li>
         <li>
-          <strong>Machine translation</strong> — Anthropic PBC, San Francisco, USA. An event's
+          <strong>Machine translation:</strong> Anthropic PBC, San Francisco, USA. An event's
           description is sent there so that it can be translated. Where a description names
           performing artists, those names go with it, and the names of the line-up and the venue are
           sent explicitly as well, so that the translation leaves them unchanged. Nothing else
@@ -247,7 +247,7 @@ const { t } = useI18n()
       </ul>
       <p>
         <strong>Erasure and backups.</strong> An erasure under Art. 17 takes effect immediately in
-        the live system. Backups are not edited individually — extracting one person from a backup
+        the live system. Backups are not edited individually. Extracting one person from a backup
         would destroy its purpose, and would only be technically possible by accepting new risks.
         The data therefore expires with the backup itself, so within 35 days at most. If a backup
         has to be restored in the meantime, we re-apply the erasure afterwards.
@@ -257,7 +257,7 @@ const { t } = useI18n()
         under Art. 6 (1) (f), you have the right to object at any time, on grounds relating to your
         particular situation, to processing of your personal data. If you object, we will stop
         processing unless we can demonstrate compelling legitimate grounds that override your
-        interests, rights and freedoms. An objection is free and informal — an email is enough.
+        interests, rights and freedoms. An objection is free and informal, and an email is enough.
       </p>
       <p>
         <strong>Right to complain.</strong> You may lodge a complaint with a supervisory authority,
@@ -274,7 +274,7 @@ const { t } = useI18n()
       <h2>7. Is providing data required?</h2>
       <p>
         You are neither legally nor contractually obliged to provide personal data. Technically,
-        however, a web page cannot be delivered without your device's IP address — so browsing this
+        however, a web page cannot be delivered without your device's IP address, so browsing this
         site without that being processed is not possible. Everything else is voluntary.
       </p>
     </section>

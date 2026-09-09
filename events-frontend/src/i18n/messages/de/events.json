@@ -31,7 +31,7 @@
   },
   "detail": {
     "notFound": "Event nicht gefunden",
-    "notFoundBody": "Das ist vorbei — wie die letzte Runde. Draußen warten genug andere Nächte.",
+    "notFoundBody": "Das ist vorbei, wie die letzte Runde. Draußen warten genug andere Nächte.",
     "lineup": "Line-up",
     "venue": "Location",
     "tickets": "Tickets",
@@ -39,7 +39,7 @@
     "buyTickets": "Tickets kaufen",
     "eventPage": "Event-Seite",
     "descriptionElsewhere": "Die Beschreibung steht auf der Seite der Location.",
-    "machineTranslated": "Maschinell übersetzt. Den Originaltext veröffentlicht der Veranstalter.",
+    "machineTranslated": "Maschinell übersetzt. Den Originaltext veröffentlicht die Location.",
     "originalText": "Originaltext",
     "facebook": "Facebook",
     "kind": "Event",

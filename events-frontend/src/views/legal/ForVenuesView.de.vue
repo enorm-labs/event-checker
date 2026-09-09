@@ -25,7 +25,7 @@ const localePath = useLocalePath()
 
 <template>
   <LegalPage
-    intro="Wie Event Junkie eure Veranstaltungsseite liest — und wie ihr da wieder rauskommt."
+    intro="Wie Event Junkie eure Veranstaltungsseite liest, und wie ihr da wieder rauskommt."
     show-authoritative-version
     title="Für Locations"
   >
@@ -117,9 +117,9 @@ const localePath = useLocalePath()
     <section>
       <h2>Rechte an Texten und Bildern</h2>
       <p>
-        Beschreibungen, Bilder und anderes Material von Locations, Veranstaltern und Künstlerinnen
-        und Künstlern bleiben Eigentum der jeweiligen Rechteinhaber. Wer Rechte an etwas hält, das
-        hier zu sehen ist, und die Entfernung möchte, findet den Weg im
+        Beschreibungen, Bilder und anderes Material von Locations, Veranstaltern und Künstler*innen
+        bleiben Eigentum der jeweiligen Rechteinhaber. Wer Rechte an etwas hält, das hier zu sehen
+        ist, und die Entfernung möchte, findet den Weg im
         <RouterLink :to="localePath('/legal/imprint')">Impressum</RouterLink>. Bei einem Bild
         löschen wir dabei auch die Kopie, die auf unseren Servern liegt.
       </p>

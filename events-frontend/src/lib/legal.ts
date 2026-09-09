@@ -83,7 +83,7 @@ export const PROCESSOR_CONTRACTS_PENDING = false
  * `images.serving.enabled` had stopped three days earlier, and §3 claiming one stored key where the
  * site writes two.
  */
-export const LAST_REVIEWED = '2026-09-03'
+export const LAST_REVIEWED = '2026-09-09'
 
 /**
  * The supervisory authority named under Art. 13 (2) (d) GDPR.
