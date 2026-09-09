@@ -152,7 +152,8 @@
           "required": [
             "engine",
             "existingSecret",
-            "model"
+            "model",
+            "maxPerRun"
           ],
           "properties": {
             "engine": {
@@ -171,6 +172,12 @@
             "model": {
               "type": "string",
               "minLength": 1
+            },
+            "maxPerRun": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000,
+              "description": "Descriptions one source may translate in a single pass. It bounds a runaway, and it bounds catching up: a source that gains more in a night than this never closes the gap."
             }
           },
           "additionalProperties": false
