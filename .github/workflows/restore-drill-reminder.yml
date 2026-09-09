@@ -142,11 +142,13 @@ jobs:
               `The procedure is [\`docs/ops/RESTORE_RUNBOOK.md\`](${blob}/docs/ops/RESTORE_RUNBOOK.md) §4 and §5 — full replay, then ` +
                 'point-in-time recovery past a destructive statement. It restores into a **scratch cluster on port 5433** and never into live `PGDATA`.',
               '',
+              `[\`scripts/restore-drill.sh\`](${blob}/scripts/restore-drill.sh) runs both sections and the cleanup after them, and prints the table below.`,
+              '',
               '## Record the numbers here first',
               '',
               `Fill this in as you go, then copy it over the table in [\`docs/ops/BACKUPS.md\`](${blob}/docs/ops/BACKUPS.md) §9 — ` +
                 '**overwrite it, do not append**. The recorded figure should always be the one from the database\'s current size, ' +
-                'not the day it was first small. An RTO derived from 39 MB is not an RTO.',
+                'not the day it was first small. An RTO measured on a database that has since grown is not an RTO.',
               '',
               '| Step | Time |',
               '| --- | --- |',

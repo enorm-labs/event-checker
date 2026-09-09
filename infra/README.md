@@ -231,8 +231,8 @@ the node, the other survives a bad migration. You need both — and since
 
 Two drills, and they prove different halves. Write a row, replace the node, read the row is
 [docs/ops/CLUSTER_BOOTSTRAP.md](../docs/ops/CLUSTER_BOOTSTRAP.md) § _Proving the volume actually survives_ — done, 2026-08-17. Restore from the bucket alone into a
-scratch cluster is [docs/ops/RESTORE_RUNBOOK.md](../docs/ops/RESTORE_RUNBOOK.md) — done, 2026-08-18, both halves including point-in-time recovery past a `DROP TABLE`.
-Restore to serving took ~12 seconds on a 39 MB cluster, which is a number to re-measure rather than to trust as the database grows.
+scratch cluster is [docs/ops/RESTORE_RUNBOOK.md](../docs/ops/RESTORE_RUNBOOK.md) — done again on 2026-09-09, both halves including point-in-time recovery past a `DROP TABLE`.
+Restore to serving took ~12 seconds on a 40 MB cluster, which is a number to re-measure rather than to trust as the database grows.
 [docs/ops/BACKUPS.md](../docs/ops/BACKUPS.md) is the whole picture.
 
 ### Closing the door behind you

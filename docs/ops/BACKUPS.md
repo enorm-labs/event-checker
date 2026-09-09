@@ -17,9 +17,9 @@ and the single highest-risk item the decision creates**. Everything here exists 
 | **Where**       | `s3://event-junkie-backups/<environment>/`, Hetzner Object Storage, `fsn1`                                                 |
 | **Window**      | 30 days of point-in-time recovery                                                                                          |
 | **RPO**         | ≤ 5 minutes (`archive_timeout = 300`), lower under load                                                                    |
-| **RTO**         | ~12 s measured on a 39 MB cluster — see §8, and do not trust that number as it grows                                       |
+| **RTO**         | ~12 s measured on a 40 MB cluster — see §9, and do not trust that number as it grows                                       |
 | **Verified by** | `walg check`, hourly: a backup exists, is younger than 26 hours, and the volume is under 85%                               |
-| **Rehearsed**   | 2026-08-18, staging, both full replay and PITR — [#270](https://github.com/enorm-labs/event-junkie/issues/270)             |
+| **Rehearsed**   | 2026-09-09, staging, both full replay and PITR — [#862](https://github.com/enorm-labs/event-junkie/issues/862)             |
 
 ## 1. What is backed up, and what is not
 
@@ -296,32 +296,42 @@ scripts/issue-board.sh status <n> Ready
 **The PostgreSQL major version is the one trigger that stays a note rather than a gate.** It lives in `var.postgres_version`, in a variables file that moves for
 a dozen unrelated reasons. A path filter there would open a drill issue on every unrelated edit, and teach everyone to close them unread.
 
+**[`scripts/restore-drill.sh`](../../scripts/restore-drill.sh) is the run.** It follows RESTORE_RUNBOOK.md §4, §5 and §7 in order, asserts what each phase
+claims, and prints the timings this section records. The runbook stays the procedure a human reads during an incident. The script is the rehearsal of it. It
+refuses to run anywhere but staging without `--force`. §5 needs a destructive statement against a live database, which is the reason for that door.
+
 **Each run records its timings in its own issue first**, in the table the workflow puts there, and then overwrites the table below. That ordering matters: the
 numbers exist somewhere durable before anyone has to remember to update a document.
 
 ### Recorded runs
 
-**2026-08-18 — staging — passed, both halves.**
+**2026-09-09 — staging — passed, both halves.** Run for [#862](https://github.com/enorm-labs/event-junkie/issues/862), after
+[`78ca2ec`](https://github.com/enorm-labs/event-junkie/commit/78ca2ecfc8697ae92b2543f6b01d589bcd801d44) changed `postgres.sh`.
 
-A base backup taken at 09:58:26 was restored from the bucket alone into a scratch cluster and replayed forward. 3,310 events, 3,953 artists and 86 venues came
-back exactly, **including a marker row written at 09:58:43, after the base backup was taken**. That marker is what proves WAL archiving rather than file
-copying. Then `public.restore_drill` was dropped on the live database and recovered by PITR to a timestamp before the drop. The log said `recovery stopping before
-commit of transaction 1914`: table back, live database still without it.
+A base backup taken at 11:52:59 was restored from the bucket alone into a scratch cluster and replayed forward. 4,201 events, 5,275 artists and 86 venues came
+back exactly, **including a marker row written at 11:52:59, after the base backup was taken**. That marker is what proves WAL archiving rather than file
+copying. Then `public.restore_drill` was dropped on the live database and recovered by PITR to a timestamp before the drop. The log said `recovery stopping
+before commit of transaction 85748`: table back, live database still without it. Archiving stayed healthy throughout, at 508 archived segments and none failed.
 
 | Step                               | Time                          |
 | ---------------------------------- | ----------------------------- |
-| Base backup                        | 3.5 s                         |
-| `backup-fetch`                     | 10 s                          |
-| Replay and promote                 | ~2 s                          |
-| **Restore to serving, end to end** | **≈ 12 s** on a 39 MB cluster |
+| Base backup                        | 8 s                           |
+| `backup-fetch`                     | 11 s                          |
+| Replay and promote                 | 1 s                           |
+| **Restore to serving, end to end** | **≈ 12 s** on a 40 MB cluster |
 
-**None of this extrapolates linearly, and an RTO derived from 39 MB is not an RTO.** Re-measure every run and overwrite the table above. The recorded figure then always
+**The run found three errors in the runbook, and all three are fixed in the same pass.** `pg_ctl -w start` returns before a cluster under a recovery target
+promotes, so §5 asked `pg_is_in_recovery()` too early and read a healthy restore as a failure. `pg_ctl -w stop` returns before the postmaster is gone, so §7's
+`rm -rf` raced it and failed as `Directory not empty`. A `pgrep -f` on the data directory path matches the command line of whatever runs it, which over
+`ssh host '…'` makes the cleanup kill its own shell. Only running the procedure finds these.
+
+**None of this extrapolates linearly, and an RTO derived from 40 MB is not an RTO.** Re-measure every run and overwrite the table above. The recorded figure then always
 reflects the database's current size, rather than the day it was first small.
 
 ## 10. Known gaps, named rather than hidden
 
 - **No alerting yet.** §6 — [#518](https://github.com/enorm-labs/event-junkie/issues/518).
-- **The drill recurs, but only one has ever run.** §9 — the reminder workflow exists and is idempotent. What it cannot prove is that a quarter's issue gets
+- **The drill recurs, and the count is two.** §9 — the reminder workflow exists and is idempotent. What it cannot prove is that a quarter's issue gets
   worked rather than closed. That is what the open-issue-on-the-board visibility is for.
 - **Production runs all of this.** The gap that used to sit here is closed. `walg check` passes on its database node. Base backups run nightly on the timer,
   not by hand. The dead-man's switch points at a URL that fired in a drill.

@@ -318,9 +318,10 @@ and never into live `PGDATA`, and it is not optional before go-live.
 this is a gate rather than the note it used to be. The quarterly reminder comes from the same workflow. A **PostgreSQL major version** bump is the one that is
 still only a note: `var.postgres_version` lives in a file that moves for unrelated reasons, so it is on you to run the drill after one.
 
-**It has been run once: 2026-08-18, staging, both halves passed.** 3,310 events and 3,953 artists came back from the bucket alone, including a marker row
-written _after_ the base backup was taken — which is what proves WAL archiving rather than file copying — and a PITR restore recovered a table dropped
-afterwards. **Restore to serving: ~12 seconds on a 39 MB cluster.** That number does not extrapolate; re-measure when the database is meaningfully larger.
+**It has run twice, most recently on 2026-09-09, on staging, both halves passed.** 4,201 events and 5,275 artists came back from the bucket alone, including a
+marker row written _after_ the base backup was taken — which is what proves WAL archiving rather than file copying — and a PITR restore recovered a table
+dropped afterwards. **Restore to serving: ~12 seconds on a 40 MB cluster.** That number does not extrapolate; re-measure when the database is meaningfully
+larger.
 
 **What is still unproven, so do not describe it as verified: the cloud-init delivery path.** `backups.sh` was installed and run by hand on the live staging node
 rather than through a node replacement, deliberately — the alternative takes k3s, Flux and both secrets with it, and none of that was needed to prove a restore.
