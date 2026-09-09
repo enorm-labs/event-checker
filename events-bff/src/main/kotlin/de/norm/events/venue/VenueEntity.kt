@@ -26,6 +26,9 @@ data class VenueEntity(
     val websiteUrl: String? = null,
     val imageUrl: String? = null,
     val description: String? = null,
+    val descriptionLanguage: String? = null,
+    val descriptionAlt: String? = null,
+    val descriptionAltLanguage: String? = null,
     val createdAt: Instant? = null,
     val updatedAt: Instant? = null
 )

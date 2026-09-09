@@ -85,7 +85,7 @@ describe('the injector and the client write the same head', () => {
   })
 
   it('for a venue in English, with an address and no image', () => {
-    const meta = venuePageMeta(venue)
+    const meta = venuePageMeta(venue, 'en')
     serve(rewriteHead(shell, { meta, locale: 'en', path: '/venues/lido' }))
     const served = headState()
 

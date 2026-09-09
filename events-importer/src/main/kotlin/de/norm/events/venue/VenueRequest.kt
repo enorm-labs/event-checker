@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.DecimalMax
 import jakarta.validation.constraints.DecimalMin
 import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
 import java.math.BigDecimal
 
@@ -64,5 +65,17 @@ data class VenueRequest(
         description = "Short prose description of the venue, shown on the detail page",
         example = "A former power plant turned techno institution in Friedrichshain."
     )
-    val description: String? = null
+    val description: String? = null,
+    @field:Pattern(regexp = "de|en", message = "Description language must be 'de' or 'en'")
+    @Schema(description = "Language of `description`: `de` or `en`", example = "en")
+    val descriptionLanguage: String? = null,
+    @field:Size(max = 4000, message = "Alternate description must not exceed 4000 characters")
+    @Schema(
+        description = "The same description in the other language. Hand-written, not machine-translated (ADR-027 covers event text, not this).",
+        example = "Ein früheres Heizkraftwerk, heute eine Techno-Institution in Friedrichshain."
+    )
+    val descriptionAlt: String? = null,
+    @field:Pattern(regexp = "de|en", message = "Alternate description language must be 'de' or 'en'")
+    @Schema(description = "Language of `descriptionAlt`: `de` or `en`", example = "de")
+    val descriptionAltLanguage: String? = null
 )

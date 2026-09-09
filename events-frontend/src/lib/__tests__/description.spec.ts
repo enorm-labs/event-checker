@@ -90,3 +90,34 @@ describe('descriptionFor', () => {
     expect(chosen).toEqual({ text: 'Un dúo argentino', lang: null, machine: false })
   })
 })
+
+describe('descriptionFor, on a venue', () => {
+  const venue = {
+    description: 'A former cinema on the canal.',
+    descriptionLanguage: 'en',
+    descriptionAlt: 'Ein früheres Kino am Kanal.',
+    descriptionAltLanguage: 'de',
+  }
+
+  it('gives the visitor the text in their own language', () => {
+    expect(descriptionFor(venue, 'de')).toEqual({
+      text: 'Ein früheres Kino am Kanal.',
+      lang: 'de',
+      machine: false,
+    })
+  })
+
+  it('never marks a venue text as machine-made, because it carries no origin', () => {
+    expect(descriptionFor(venue, 'de')!.machine).toBe(false)
+    expect(descriptionFor(venue, 'en')!.machine).toBe(false)
+  })
+
+  it('falls back to the English original when there is no German', () => {
+    const english = { description: 'Only English here.', descriptionLanguage: 'en' }
+    expect(descriptionFor(english, 'de')).toEqual({
+      text: 'Only English here.',
+      lang: 'en',
+      machine: false,
+    })
+  })
+})

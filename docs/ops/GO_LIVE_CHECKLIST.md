@@ -139,17 +139,17 @@ OpenObserve to Signal). That is a different chain, and it stays unbuilt.
 
 ### Content and data
 
-| Done       | Item                                                                                                      | Evidence |
-| ---------- | --------------------------------------------------------------------------------------------------------- | -------- |
-| 2026-08-30 | Event sources registered **and enabled**, so the site has content                                         | #876     |
-| 2026-08-30 | Venue addresses, districts and coordinates audited                                                        | #329     |
-| 2026-09-07 | Venue descriptions read against the venue they describe                                                   | #1124    |
-|            | Venue descriptions proof-read once more **by the maintainer**, after #1124 and before the flip            | #1124    |
-|            | Every page read in both languages **by the maintainer**, as a reader — About and the legal texts included | #280     |
-| 2026-08-31 | Images served from our own cache, not hotlinked                                                           | #843     |
-| 2026-09-07 | Multilingual event text decided, so the translation question is answered before a venue is asked          | #469     |
-| 2026-09-08 | Every description a venue has not prohibited translated on production                                     | #470     |
-|            | Machine-translated descriptions read on the site **by the maintainer**, in German and English             | ADR-027  |
+| Done       | Item                                                                                                      | Evidence     |
+| ---------- | --------------------------------------------------------------------------------------------------------- | ------------ |
+| 2026-08-30 | Event sources registered **and enabled**, so the site has content                                         | #876         |
+| 2026-08-30 | Venue addresses, districts and coordinates audited                                                        | #329         |
+| 2026-09-07 | Venue descriptions read against the venue they describe                                                   | #1124        |
+|            | Venue descriptions proof-read once more **by the maintainer**, in both languages, before the flip         | #1124, #1210 |
+|            | Every page read in both languages **by the maintainer**, as a reader — About and the legal texts included | #280         |
+| 2026-08-31 | Images served from our own cache, not hotlinked                                                           | #843         |
+| 2026-09-07 | Multilingual event text decided, so the translation question is answered before a venue is asked          | #469         |
+| 2026-09-08 | Every description a venue has not prohibited translated on production                                     | #470         |
+|            | Machine-translated descriptions read on the site **by the maintainer**, in German and English             | ADR-027      |
 
 **Production serves the full catalogue.** All 86 sources are registered, enabled and carry their licence
 verdicts, and the importer runs on schedule (#876, #285). Two venues forbid their descriptions and images, and

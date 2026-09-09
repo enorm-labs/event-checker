@@ -101,16 +101,16 @@ export function eventPageMeta(event: EventDetail, locale: Locale): PageMeta {
 /**
  * A venue: its own description if we have one, otherwise the address, which is always useful.
  *
- * Takes no locale — nothing here is locale-dependent. Only the event builder formats a date, so
- * only it needs one; a uniform signature would be a parameter every caller has to pass and no
- * implementation reads.
+ * Takes the locale since #1210, because the description exists in both languages and the preview a
+ * visitor sees has to be the one the page shows.
  */
-export function venuePageMeta(venue: VenueDetail): PageMeta {
+export function venuePageMeta(venue: VenueDetail, locale: Locale): PageMeta {
   const address = join(', ', venue.address, join(' ', venue.postalCode, venue.city))
+  const description = descriptionFor(venue, locale)
 
   return {
     title: formatTitle(venue.name),
-    description: truncateOrUndefined(join(' — ', venue.description, address)),
+    description: truncateOrUndefined(join(' — ', description?.text, address)),
     image: absoluteImageUrl(venue.imageUrl),
   }
 }
