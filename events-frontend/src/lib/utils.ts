@@ -16,12 +16,11 @@ export const FIELD_CLASS =
   'h-8 rounded-lg border border-border bg-background px-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50'
 
 /**
- * The raised surface shared by the cards and the filter panels: what makes something read as
- * sitting above the page. Composed into the two below rather than repeated, so a change to the
- * surface is one edit.
+ * The raised surface: what makes something read as sitting above the page. Only the card gets it,
+ * which is the point — where everything is raised, nothing is.
  *
- * Tailwind still finds every class here — it scans for candidates in the source text, and each
- * utility appears literally in one of these three strings even though they are assembled.
+ * Tailwind still finds every class here: it scans the source text, and each utility appears
+ * literally in one of these strings even though they are assembled.
  */
 const SURFACE_CLASS = 'rounded-xl border border-border bg-card'
 
@@ -36,7 +35,8 @@ const SURFACE_CLASS = 'rounded-xl border border-border bg-card'
 export const CARD_CLASS = `group flex gap-4 ${SURFACE_CLASS} p-3 shadow-sm transition-all hover:border-primary/40 hover:shadow-md motion-safe:hover:-translate-y-0.5`
 
 /**
- * A static panel — the two filter bars. Same surface as a card and deliberately without the hover
- * treatment, because a panel is not a link and should not behave as though it were.
+ * The two filter bars: chrome, not an object. It shared {@link SURFACE_CLASS} with the card until
+ * #1240, which made a list page a bordered box of controls above a grid of bordered boxes. No
+ * horizontal padding, because the page's own `p-4 sm:p-8` already sets that edge.
  */
-export const PANEL_CLASS = `flex flex-wrap items-end gap-3 ${SURFACE_CLASS} p-4`
+export const PANEL_CLASS = 'flex flex-wrap items-end gap-3 border-b border-border pb-4'
