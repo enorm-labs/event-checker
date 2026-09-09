@@ -135,10 +135,10 @@ spec:
           cpu: "1000m"
           memory: "640Mi"
     importer:
-      # **On here translates.** A source also needs a PERMITTED `translation_licence`, and 84 of the
-      # 86 hold one since ADR-027. The Secret is hand-made — docs/ops/SECRETS.md §The decision.
+      # **Off here: production translates.** Running both billed the same 84 sources twice for a copy
+      # nobody reads. Off keeps what is stored; `translation_licence` stays PERMITTED (ADR-026, -027).
       translation:
-        engine: anthropic
+        engine: none
       resources:
         requests:
           cpu: "50m"
