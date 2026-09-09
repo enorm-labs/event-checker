@@ -44,16 +44,18 @@ declared for the Hetzner Art. 28 contract, and it says in terms that _"processin
 listed below means the AVV needs revisiting"_. ADR-026 and ADR-027 decide the copyright question and
 say nothing about data protection.
 
-**What has to happen, in this order.** Each step is a decision rather than an edit:
+**Closed by [#1233](https://github.com/enorm-labs/event-junkie/issues/1233) on 2026-09-09**, in the
+order the finding set out. The translation stays on, which was the first decision.
 
-1. Decide whether the translation stays on. Switching `engine` to `none` removes the finding, and it
-   also removes the feature.
-2. If it stays: conclude the processor contract with the engine's operator, and record which transfer
-   mechanism carries it.
-3. Then name the processor in §5 of both notices, and extend `LEGAL.md` §7.3a.
+**The Art. 28 contract turned out to exist already.** Anthropic's Data Processing Addendum is
+incorporated into the Commercial Terms of Service that the API runs under. It makes Anthropic the
+processor, and it carries the standard contractual clauses for the transfer. §5 of both notices now
+names the processor, what reaches it, and Art. 46 (2) (c) as the basis. `LEGAL.md` §7.3a carries the same facts for the
+processor forms. `legalViews.spec.ts` asserts both processors and the transfer mechanism in each
+language, so a third one cannot arrive unnoticed.
 
-[#1233](https://github.com/enorm-labs/event-junkie/issues/1233) carries it. **Nothing was changed in the notice for it here.** A
-notice that claims a contract nobody concluded is worse than one that omits the processor.
+**Nothing was written into the notice before those facts were checked.** A notice that claims a
+contract nobody concluded is worse than one that omits the processor.
 
 ## 2. Finding: the notice never names Art. 14
 
