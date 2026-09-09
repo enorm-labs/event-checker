@@ -7,6 +7,7 @@ import type { ImageSource } from '@/api/types'
 import CachedImage from '@/components/CachedImage.vue'
 import EventCard from '@/components/EventCard.vue'
 import SectionLabel from '@/components/SectionLabel.vue'
+import { CARD_GRID_CLASS } from '@/lib/utils'
 import { useLocalePath } from '@/composables/useLocalePath'
 import { useI18n } from 'vue-i18n'
 
@@ -103,7 +104,7 @@ const { t } = useI18n()
         <p v-else-if="!events?.content?.length" class="text-sm text-muted-foreground">
           {{ emptyText }}
         </p>
-        <div v-else class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div v-else :class="CARD_GRID_CLASS">
           <EventCard v-for="event in events.content" :key="event.slug" :event="event" />
         </div>
       </section>
@@ -115,7 +116,7 @@ const { t } = useI18n()
           <SectionLabel as="span">{{ t('common.pastEvents') }}</SectionLabel>
         </summary>
         <p class="pt-3 text-sm text-muted-foreground">{{ t('common.pastEventsNote') }}</p>
-        <div class="grid grid-cols-1 gap-3 pt-3 sm:grid-cols-2">
+        <div :class="[CARD_GRID_CLASS, 'pt-3']">
           <EventCard v-for="event in pastEvents.content" :key="event.slug" :event="event" />
         </div>
       </details>

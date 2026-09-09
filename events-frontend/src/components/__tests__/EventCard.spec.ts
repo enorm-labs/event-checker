@@ -57,8 +57,24 @@ describe('EventCard', () => {
     })
 
     expect(wrapper.get('source').attributes('type')).toBe('image/avif')
-    // 80 px is what the card actually draws, and it is how the browser reads those widths.
-    expect(wrapper.get('source').attributes('sizes')).toBe('80px')
+    // The slot the card actually draws: full width below `sm`, about 474 px in the two-column grid
+    // above it. Without this the browser reads the srcset widths against the wrong number.
+    expect(wrapper.get('source').attributes('sizes')).toBe('(min-width: 640px) 474px, calc(100vw - 2rem)')
+    // The box is reserved before the bytes arrive, so a portrait flyer landing in a 3:2 slot does
+    // not push the text below it (#1245).
+    expect(wrapper.get('picture').classes()).toContain('aspect-[3/2]')
+  })
+
+  it('draws the title as the poster when the event has no image', () => {
+    // Not an edge case: one upcoming event in nine has no flyer, so this is a normal card rather
+    // than a fallback nobody sees.
+    const wrapper = mount(EventCard, {
+      props: { event: { ...event, imageUrl: null, imageSources: [] } },
+      global: { stubs },
+    })
+
+    expect(wrapper.find('picture').exists()).toBe(false)
+    expect(wrapper.get('[aria-hidden="true"]').text()).toBe('Tonight Show')
   })
 
   it('links to the event detail route', () => {

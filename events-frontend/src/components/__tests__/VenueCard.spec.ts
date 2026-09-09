@@ -31,6 +31,16 @@ describe('VenueCard', () => {
     expect(wrapper.text()).not.toContain('friedrichshain-kreuzberg')
   })
 
+  it('draws the name as the poster when the venue has no image', () => {
+    const wrapper = mount(VenueCard, {
+      props: { venue: { ...venue, imageUrl: null, imageSources: [] } },
+      global: { stubs },
+    })
+
+    expect(wrapper.find('picture').exists()).toBe(false)
+    expect(wrapper.get('[aria-hidden="true"]').text()).toBe('Lido')
+  })
+
   it('links to the venue detail route', () => {
     const wrapper = mount(VenueCard, { props: { venue }, global: { stubs } })
     // Locale-prefixed: every in-app link carries the active locale (ADR-013 §Decision 2).

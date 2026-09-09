@@ -258,7 +258,7 @@ class EventService(
                 VenueSummaryResponse.fromEntity(venue, images.serve(venue.imageUrl, CARD_WIDTH)),
                 artistNames,
                 genreTags,
-                images.serve(event.imageUrl, CARD_WIDTH),
+                images.serve(event.imageUrl, POSTER_WIDTH),
                 imageWithheld = licensedEvent.imageWithheld
             )
         }
@@ -274,17 +274,20 @@ class EventService(
         private const val MAX_CALENDAR_DAYS = 92L
 
         /**
-         * How wide the image is drawn, in CSS pixels, which is what decides the derivatives offered.
+         * How wide each image is drawn, in CSS pixels, which is what decides the derivatives offered.
          *
-         * `EventCard` and `VenueCard` draw at 80 px and `BaseDetailView` at 96 px, so 96 covers the
-         * cards. `EventDetailView` draws the image at the full width of a `max-w-3xl` column, 704 px
-         * after padding ([#804](https://github.com/enorm-labs/event-junkie/issues/804) is why the
-         * detail page is on this list at all).
+         * An event card draws its poster at the card's own width — about 474 px in the two-column
+         * `max-w-5xl` grid — so [POSTER_WIDTH] is offered 512 and 768. The venue, artist and
+         * promoter thumbnails an event carries stay small, and `BaseDetailView` draws them at 96 px.
+         * `EventDetailView` draws the image at the full width of a `max-w-3xl` column, 704 px after
+         * padding ([#804](https://github.com/enorm-labs/event-junkie/issues/804) is why the detail
+         * page is on this list at all).
          *
          * **CSS pixels, not file widths.** The device pixel ratio is the browser's to know, and it
          * picks from the `srcset` this produces; a number here that already had a ratio baked in
          * would multiply it twice.
          */
+        private const val POSTER_WIDTH = 480
         private const val CARD_WIDTH = 96
         private const val DETAIL_WIDTH = 704
     }

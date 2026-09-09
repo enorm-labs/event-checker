@@ -54,7 +54,7 @@ class VenueService(
             }
         val images = cachedImageGate.forUrls(entities.map { it.imageUrl })
         return PageResponse.of(
-            entities.map { VenueSummaryResponse.fromEntity(it, images.serve(it.imageUrl, RENDERED_WIDTH)) },
+            entities.map { VenueSummaryResponse.fromEntity(it, images.serve(it.imageUrl, POSTER_WIDTH)) },
             safePageable,
             total
         )
@@ -76,9 +76,11 @@ class VenueService(
         /**
          * What the site draws one of these at, in CSS pixels.
          *
-         * `VenueCard` uses 80 and `BaseDetailView`'s header 96, so one number covers both — the
-         * gate offers everything from the slot up to three times it either way.
+         * A venue card draws its poster at the card's own width, about 474 px in the two-column
+         * `max-w-5xl` grid, so the gate offers 512 and 768. `BaseDetailView`'s header thumbnail is a
+         * different slot entirely and stays at 96.
          */
+        private const val POSTER_WIDTH = 480
         private const val RENDERED_WIDTH = 96
 
         /** Entity properties a client may sort the venue list by; anything else is ignored. */

@@ -4,6 +4,7 @@ import { RouterLink } from 'vue-router'
 import type { EventSummary } from '@/api/types'
 import BaseBadge from '@/components/BaseBadge.vue'
 import CachedImage from '@/components/CachedImage.vue'
+import EventPoster from '@/components/EventPoster.vue'
 import { eventLabel, formatPrice, formatTime, isPastEvent, todayIso } from '@/lib/format'
 import { useFormat } from '@/composables/useFormat'
 import { useLocalePath } from '@/composables/useLocalePath'
@@ -55,16 +56,22 @@ const { t } = useI18n()
     :to="localePath(`/events/${event.slug}`)"
     :class="CARD_CLASS"
   >
+    <!--
+      `sizes` describes the real slot: a `max-w-5xl` grid is one column below `sm` and two above it,
+      so a card is the viewport minus gutters, then about 474 px. A wrong value silently downloads
+      the wrong file.
+    -->
     <CachedImage
+      v-if="event.imageUrl"
       :src="event.imageUrl"
       :sources="event.imageSources"
-      :intrinsic-width="event.intrinsicWidth"
-      :intrinsic-height="event.intrinsicHeight"
       :alt="event.title ?? ''"
-      sizes="80px"
-      img-class="size-20 shrink-0 rounded-lg object-cover grayscale transition duration-300 group-hover:grayscale-0"
+      aspect="aspect-[3/2]"
+      sizes="(min-width: 640px) 474px, calc(100vw - 2rem)"
+      img-class="grayscale transition duration-300 group-hover:grayscale-0"
     />
-    <div class="min-w-0 flex-1 space-y-1">
+    <EventPoster v-else :title="event.title" />
+    <div class="min-w-0 space-y-1">
       <div class="flex items-start justify-between gap-2">
         <div class="flex min-w-0 items-center gap-2">
           <span v-if="isLive" class="relative flex size-2 shrink-0">

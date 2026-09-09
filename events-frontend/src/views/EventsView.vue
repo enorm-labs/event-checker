@@ -3,6 +3,7 @@ import { computed, onMounted, watch } from 'vue'
 import { type LocationQueryRaw, useRoute, useRouter } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import EventCard from '@/components/EventCard.vue'
+import { CARD_GRID_CLASS } from '@/lib/utils'
 import EventFilterBar from '@/components/EventFilterBar.vue'
 import { type EventSearchParams, useEventSearch } from '@/composables/useEvents'
 import { useEventFilters } from '@/composables/useEventFilters'
@@ -62,7 +63,7 @@ const { t } = useI18n()
       <p class="text-sm text-muted-foreground">
         {{ t('events.resultCount', { count: page.totalElements }) }}
       </p>
-      <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <div :class="CARD_GRID_CLASS">
         <!-- No section heading sits between the page `h1` and the grid here (unlike the home and
              detail pages), so the cards are the second level of the outline. -->
         <EventCard v-for="event in page.content" :key="event.slug" :event="event" as="h2" />
