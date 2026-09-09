@@ -134,9 +134,10 @@ app:
       # reads like a wrong key rather than a wrong encoding.
       key: ${IMGPROXY_KEY:}
       salt: ${IMGPROXY_SALT:}
-      # 192 and 288 cover the 80 px and 96 px cards at 2x and 3x. 768 covers EventDetailView's
-      # full-width image in a max-w-3xl column, and 1536 covers it at 2x (#804).
-      widths: 192,288,768,1536
+      # 192 and 288 cover the 80 px and 96 px cards at 2x and 3x. 512 is the poster card in the
+      # two-column grid (#1245). 768 covers EventDetailView's full-width image in a max-w-3xl
+      # column, and 1536 covers it at 2x (#804).
+      widths: 192,288,512,768,1536
       formats: avif,webp,jpg
 
 ---

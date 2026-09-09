@@ -27,6 +27,11 @@ data class ImgproxyProperties(
      * column — 704 px after padding — which 768 covers with headroom and 1536 covers at 2x
      * ([#804](https://github.com/enorm-labs/event-junkie/issues/804) is why that site is on the list
      * at all).
+     *
+     * **512 is for the poster card** ([#1245](https://github.com/enorm-labs/event-junkie/issues/1245)).
+     * A card in the two-column `max-w-5xl` grid is about 474 CSS px wide, and without this step the
+     * band from 474 to three times it holds only 768 — a 36 KB AVIF for a slot 512 serves in about
+     * 16 KB, twenty times on a page of cards.
      */
     val widths: List<Int> = DEFAULT_WIDTHS,
     /**
@@ -49,8 +54,8 @@ data class ImgproxyProperties(
     val expectedVariants: Int get() = widths.size * formats.size
 
     companion object {
-        /** 96 px at 2x and 3x for the cards, then the detail column at 1x and 2x. */
-        val DEFAULT_WIDTHS = listOf(192, 288, 768, 1536)
+        /** 96 px at 2x and 3x for the cards, 512 for the poster card, then the detail column at 1x and 2x. */
+        val DEFAULT_WIDTHS = listOf(192, 288, 512, 768, 1536)
         val DEFAULT_FORMATS = listOf("avif", "webp", "jpg")
     }
 }

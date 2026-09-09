@@ -14,7 +14,7 @@ import software.amazon.awssdk.services.s3.model.NoSuchKeyException
  * Reads one derivative out of the bucket.
  *
  * **Whole bytes rather than a streamed body, and the size bound is what makes that safe.** A
- * derivative is imgproxy output at one of four widths, so it is tens of kilobytes; the widest is not
+ * derivative is imgproxy output at one of five widths, so it is tens of kilobytes; the widest is not
  * megabytes. Buffering keeps `Content-Length` exact and the failure handling honest — a transport
  * fault surfaces here, before a single byte of a 200 response has been written, instead of
  * truncating a response that already claimed success.
