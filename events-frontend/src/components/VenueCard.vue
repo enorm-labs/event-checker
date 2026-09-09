@@ -36,11 +36,11 @@ const localePath = useLocalePath()
       img-class="size-20 shrink-0 rounded-lg object-cover grayscale transition duration-300 group-hover:grayscale-0"
     />
     <div class="min-w-0 flex-1 space-y-1">
-      <component :is="as" class="truncate leading-tight font-semibold">
+      <component :is="as" class="truncate text-card-title font-semibold">
         {{ venue.name }}
       </component>
-      <p v-if="location" class="truncate text-sm text-muted-foreground">{{ location }}</p>
-      <p v-else-if="venue.city" class="truncate text-sm text-muted-foreground">{{ venue.city }}</p>
+      <p v-if="location" class="truncate text-meta text-muted-foreground">{{ location }}</p>
+      <p v-else-if="venue.city" class="truncate text-meta text-muted-foreground">{{ venue.city }}</p>
     </div>
   </RouterLink>
 </template>

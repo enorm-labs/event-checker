@@ -23,6 +23,23 @@
   /* The editorial "eyebrow" tracking (SectionLabel, the hero tagline) — one value so the two
      can't drift apart the way `tracking-[0.18em]` and `tracking-[0.2em]` did. */
   --tracking-eyebrow: 0.18em;
+  /* The type scale (docs/BRANDING.md §5.8). Six steps, named for the role rather than the size, so
+     a view says what a piece of text is and the next size question has an answer that is not a
+     fresh `text-3xl`. Both ends keep the values the app already used — 30 px page titles work and
+     12 px is the floor for live text; the steps exist for the middle, where a card's title,
+     subtitle and meta line were all within 2 px of each other. */
+  --text-meta: 0.75rem;
+  --text-meta--line-height: 1rem;
+  --text-body: 0.875rem;
+  --text-body--line-height: 1.25rem;
+  --text-card-title: 1.0625rem;
+  --text-card-title--line-height: 1.375rem;
+  --text-lede: 1.25rem;
+  --text-lede--line-height: 1.75rem;
+  --text-section: 1.5rem;
+  --text-section--line-height: 1.875rem;
+  --text-page: 1.875rem;
+  --text-page--line-height: 2.25rem;
   --color-success: var(--success);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);

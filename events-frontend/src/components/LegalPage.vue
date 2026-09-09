@@ -31,7 +31,7 @@ const { t } = useI18n()
 <template>
   <main class="mx-auto max-w-3xl space-y-6 p-4 sm:p-8">
     <header class="space-y-2">
-      <h1 class="text-3xl font-bold tracking-tight">{{ title }}</h1>
+      <h1 class="text-page font-bold tracking-tight">{{ title }}</h1>
       <p v-if="intro" class="text-muted-foreground">{{ intro }}</p>
       <p v-if="showReviewDate" class="text-sm text-muted-foreground">
         {{ t('legal.lastReviewed') }} <time :datetime="LAST_REVIEWED">{{ LAST_REVIEWED }}</time>
