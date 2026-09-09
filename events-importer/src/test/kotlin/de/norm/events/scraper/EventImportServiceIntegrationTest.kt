@@ -131,12 +131,10 @@ class EventImportServiceIntegrationTest : BaseControllerTest() {
                 val source = eventSourceRepository.findBySlug("test-source")!!
                 val result = eventImportService.importFromSource(source)
 
-                // Verify import result
                 result.imported shouldBe true
                 result.eventCount shouldBe 1
                 result.error shouldBe null
 
-                // Verify event was persisted correctly
                 val events = eventRepository.findBySourceIdIn(listOf("cassiopeia:concert-night")).toList()
                 events shouldHaveSize 1
                 val event = events.first()
@@ -148,7 +146,6 @@ class EventImportServiceIntegrationTest : BaseControllerTest() {
                 event.doorsTime shouldBe LocalTime.of(19, 0)
                 event.startTime shouldBe LocalTime.of(20, 0)
 
-                // Verify artists were auto-created
                 val headliner = artistRepository.findBySlug("the-headliners")
                 headliner.shouldNotBeNull()
                 headliner.name shouldBe "The Headliners"
@@ -157,7 +154,6 @@ class EventImportServiceIntegrationTest : BaseControllerTest() {
                 support.shouldNotBeNull()
                 support.name shouldBe "Opening Act"
 
-                // Verify event-artist associations with correct roles and billing order
                 val associations = eventArtistRepository.findByEventId(requireNotNull(event.id)).toList()
                 associations shouldHaveSize 2
                 val headlinerAssoc = associations.first { it.artistId == headliner.id }
@@ -196,7 +192,6 @@ class EventImportServiceIntegrationTest : BaseControllerTest() {
                 val refreshedSource = eventSourceRepository.findBySlug("test-source")!!
                 eventImportService.importFromSource(refreshedSource)
 
-                // Verify event was NOT re-saved — updated_at should remain unchanged
                 val reloadedEvent = eventRepository.findBySourceIdIn(listOf("cassiopeia:stable-event")).toList().first()
                 reloadedEvent.id shouldBe originalEvent.id
                 reloadedEvent.updatedAt shouldBe originalUpdatedAt
@@ -243,7 +238,6 @@ class EventImportServiceIntegrationTest : BaseControllerTest() {
                 val refreshedSource = eventSourceRepository.findBySlug("test-source")!!
                 eventImportService.importFromSource(refreshedSource)
 
-                // Verify event was updated (same ID) not duplicated
                 val events = eventRepository.findBySourceIdIn(listOf("cassiopeia:updatable-event")).toList()
                 events shouldHaveSize 1
                 val updated = events.first()
@@ -278,12 +272,10 @@ class EventImportServiceIntegrationTest : BaseControllerTest() {
                 val source = eventSourceRepository.findBySlug("test-source")!!
                 eventImportService.importFromSource(source)
 
-                // Verify no duplicate artist was created
                 val artists = artistRepository.findBySlugIn(listOf("known-artist")).toList()
                 artists shouldHaveSize 1
                 artists.first().id shouldBe existingArtist.id
 
-                // Verify the association links to the existing artist
                 val event = eventRepository.findBySourceIdIn(listOf("cassiopeia:known-artist-show")).toList().first()
                 val associations = eventArtistRepository.findByEventId(requireNotNull(event.id)).toList()
                 associations shouldHaveSize 1
@@ -317,7 +309,6 @@ class EventImportServiceIntegrationTest : BaseControllerTest() {
                 val source = eventSourceRepository.findBySlug("test-source")!!
                 eventImportService.importFromSource(source)
 
-                // Verify both events exist
                 eventRepository
                     .findBySourceIdIn(listOf("cassiopeia:active", "cassiopeia:to-remove"))
                     .toList() shouldHaveSize 2
