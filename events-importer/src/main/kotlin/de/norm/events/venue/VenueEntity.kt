@@ -28,6 +28,9 @@ data class VenueEntity(
     val websiteUrl: String? = null,
     val imageUrl: String? = null,
     val description: String? = null,
+    val descriptionLanguage: String? = null,
+    val descriptionAlt: String? = null,
+    val descriptionAltLanguage: String? = null,
     @CreatedDate val createdAt: Instant? = null,
     @LastModifiedDate val updatedAt: Instant? = null
 ) {
@@ -45,6 +48,9 @@ data class VenueEntity(
             websiteUrl = websiteUrl,
             imageUrl = imageUrl,
             description = description,
+            descriptionLanguage = descriptionLanguage,
+            descriptionAlt = descriptionAlt,
+            descriptionAltLanguage = descriptionAltLanguage,
             createdAt = createdAt,
             updatedAt = updatedAt
         )
@@ -64,6 +70,9 @@ data class VenueEntity(
                 websiteUrl = venue.websiteUrl,
                 imageUrl = venue.imageUrl,
                 description = venue.description,
+                descriptionLanguage = venue.descriptionLanguage,
+                descriptionAlt = venue.descriptionAlt,
+                descriptionAltLanguage = venue.descriptionAltLanguage,
                 createdAt = venue.createdAt,
                 updatedAt = venue.updatedAt
             )

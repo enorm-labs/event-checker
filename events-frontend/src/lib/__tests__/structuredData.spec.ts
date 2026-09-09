@@ -208,6 +208,32 @@ describe('venueJsonLd', () => {
   it('omits coordinates rather than emitting a partial pair', () => {
     expect(venueJsonLd({ ...venue, longitude: null }, 'en')!.geo).toBeUndefined()
   })
+
+  it('declares the language of the text it serves, not the locale of the page', () => {
+    const described = {
+      ...venue,
+      description: 'A former cinema on the canal.',
+      descriptionLanguage: 'en',
+      descriptionAlt: 'Ein früheres Kino am Kanal.',
+      descriptionAltLanguage: 'de',
+    }
+    expect(venueJsonLd(described, 'de')).toMatchObject({
+      description: 'Ein früheres Kino am Kanal.',
+      inLanguage: 'de',
+    })
+    expect(venueJsonLd(described, 'en')).toMatchObject({
+      description: 'A former cinema on the canal.',
+      inLanguage: 'en',
+    })
+  })
+
+  it('shows the text it has when the venue has none in the visitor language', () => {
+    const described = { ...venue, description: 'Only English here.', descriptionLanguage: 'en' }
+    expect(venueJsonLd(described, 'de')).toMatchObject({
+      description: 'Only English here.',
+      inLanguage: 'en',
+    })
+  })
 })
 
 describe('breadcrumbJsonLd', () => {

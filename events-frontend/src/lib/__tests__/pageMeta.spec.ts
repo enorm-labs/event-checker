@@ -113,18 +113,31 @@ describe('venuePageMeta', () => {
   }
 
   it('falls back to the address when the venue has no description', () => {
-    expect(venuePageMeta(venue).description).toBe('Cuvrystr. 7, 10997 Berlin')
+    expect(venuePageMeta(venue, 'en').description).toBe('Cuvrystr. 7, 10997 Berlin')
   })
 
   it('puts its own description first and keeps the address after it', () => {
-    const described = { ...venue, description: 'A room by the canal.' }
-    expect(venuePageMeta(described).description).toBe(
+    const described = { ...venue, description: 'A room by the canal.', descriptionLanguage: 'en' }
+    expect(venuePageMeta(described, 'en').description).toBe(
       'A room by the canal. — Cuvrystr. 7, 10997 Berlin',
     )
   })
 
+  it('previews the German text on a German page', () => {
+    const described = {
+      ...venue,
+      description: 'A room by the canal.',
+      descriptionLanguage: 'en',
+      descriptionAlt: 'Ein Raum am Kanal.',
+      descriptionAltLanguage: 'de',
+    }
+    expect(venuePageMeta(described, 'de').description).toBe(
+      'Ein Raum am Kanal. — Cuvrystr. 7, 10997 Berlin',
+    )
+  })
+
   it('omits the description when there is neither', () => {
-    expect(venuePageMeta({ slug: 'x', name: 'X' }).description).toBeUndefined()
+    expect(venuePageMeta({ slug: 'x', name: 'X' }, 'en').description).toBeUndefined()
   })
 })
 

@@ -70,7 +70,10 @@ class VenueService(
                 longitude = request.longitude,
                 websiteUrl = request.websiteUrl,
                 imageUrl = request.imageUrl,
-                description = request.description
+                description = request.description,
+                descriptionLanguage = request.descriptionLanguage,
+                descriptionAlt = request.descriptionAlt,
+                descriptionAltLanguage = request.descriptionAltLanguage
             )
         val entity = VenueEntity.fromDomain(venue)
         val saved = venueRepository.save(entity)
@@ -110,7 +113,10 @@ class VenueService(
                 longitude = request.longitude,
                 websiteUrl = request.websiteUrl,
                 imageUrl = request.imageUrl,
-                description = request.description
+                description = request.description,
+                descriptionLanguage = request.descriptionLanguage,
+                descriptionAlt = request.descriptionAlt,
+                descriptionAltLanguage = request.descriptionAltLanguage
             )
         val saved = venueRepository.save(updated)
         logger.info { "Updated venue '${saved.name}' (id=${saved.id})" }

@@ -10,6 +10,7 @@ import { useVenue } from '@/composables/useVenue'
 import { useI18n } from 'vue-i18n'
 import { useStructuredData } from '@/composables/useStructuredData'
 import { breadcrumbJsonLd, type JsonLd, venueJsonLd } from '@/lib/structuredData'
+import { descriptionFor } from '@/lib/description'
 import type { Locale } from '@/i18n/locales'
 
 const route = useRoute()
@@ -49,6 +50,12 @@ watch(slug, reload)
 
 const { t, locale } = useI18n()
 
+// The visitor's language where the venue has a text in it, and the other one otherwise. The same
+// rule the event page uses, from the same function (#1210).
+const description = computed(() =>
+  venue.value ? descriptionFor(venue.value, locale.value as Locale) : null,
+)
+
 /** Entity label. A `computed` because a locale switch rewrites the URL without remounting this. */
 const kind = computed(() => t('detail.venue.kind'))
 
@@ -75,7 +82,7 @@ useStructuredData((): JsonLd[] => {
 // The same values the meta injector will need server-side later (ADR-014 §Decision 3).
 usePageMeta(() =>
   venue.value
-    ? venuePageMeta(venue.value)
+    ? venuePageMeta(venue.value, locale.value as Locale)
     : placeholderPageMeta(
         notFound.value ? t('detail.notFoundHeading', { kind: kind.value }) : kind.value,
       ),
@@ -114,8 +121,12 @@ usePageMeta(() =>
       </a>
     </template>
 
-    <p v-if="venue?.description" class="whitespace-pre-line text-foreground/90">
-      {{ venue.description }}
+    <p
+      v-if="description"
+      :lang="description.lang ?? undefined"
+      class="whitespace-pre-line text-foreground/90"
+    >
+      {{ description.text }}
     </p>
   </BaseDetailView>
 </template>

@@ -39,6 +39,12 @@ data class VenueResponse(
         example = "A former power plant turned techno institution in Friedrichshain."
     )
     val description: String?,
+    @Schema(description = "Language of `description`: `de` or `en`", example = "en")
+    val descriptionLanguage: String?,
+    @Schema(description = "The same description in the other language, hand-written", example = "Ein Konzertsaal in Friedrichshain.")
+    val descriptionAlt: String?,
+    @Schema(description = "Language of `descriptionAlt`: `de` or `en`. Null exactly when `descriptionAlt` is.", example = "de")
+    val descriptionAltLanguage: String?,
     @Schema(description = "Timestamp when this record was first created")
     val createdAt: Instant?,
     @Schema(description = "Timestamp when this record was last modified")
@@ -60,6 +66,9 @@ data class VenueResponse(
                 websiteUrl = venue.websiteUrl,
                 imageUrl = venue.imageUrl,
                 description = venue.description,
+                descriptionLanguage = venue.descriptionLanguage,
+                descriptionAlt = venue.descriptionAlt,
+                descriptionAltLanguage = venue.descriptionAltLanguage,
                 createdAt = venue.createdAt,
                 updatedAt = venue.updatedAt
             )

@@ -1,4 +1,3 @@
-import type { EventDetail } from '@/api/types'
 import type { Locale } from '@/i18n/locales'
 
 /**
@@ -22,22 +21,38 @@ export interface ChosenDescription {
   machine: boolean
 }
 
+/**
+ * Anything that carries a description in up to two languages.
+ *
+ * An event and a venue both do, and their rule is the same one, so this is structural rather than
+ * a union of the two response types. `descriptionAltOrigin` is optional because only event text can
+ * be machine-made: a venue description is our own prose in both languages (#1210), so a missing
+ * origin reads as "not a machine", which is exactly right.
+ */
+export interface Described {
+  description?: string | null
+  descriptionLanguage?: string | null
+  descriptionAlt?: string | null
+  descriptionAltLanguage?: string | null
+  descriptionAltOrigin?: string | null
+}
+
 const isLocale = (value: string | null | undefined): value is Locale =>
   value === 'de' || value === 'en'
 
 /**
- * The description for [locale], or null when the event has none.
+ * The description for [locale], or null when there is none.
  *
  * The locale's own text wins. Failing that the original is shown in its own language, because a
  * description a visitor cannot read still says who is playing and what kind of night it is.
  */
-export function descriptionFor(event: EventDetail, locale: Locale): ChosenDescription | null {
-  const original = event.description
-  const originalLang = isLocale(event.descriptionLanguage) ? event.descriptionLanguage : null
+export function descriptionFor(subject: Described, locale: Locale): ChosenDescription | null {
+  const original = subject.description
+  const originalLang = isLocale(subject.descriptionLanguage) ? subject.descriptionLanguage : null
 
-  const alt = event.descriptionAlt
-  const altLang = isLocale(event.descriptionAltLanguage) ? event.descriptionAltLanguage : null
-  const altIsMachine = event.descriptionAltOrigin === 'MACHINE'
+  const alt = subject.descriptionAlt
+  const altLang = isLocale(subject.descriptionAltLanguage) ? subject.descriptionAltLanguage : null
+  const altIsMachine = subject.descriptionAltOrigin === 'MACHINE'
 
   if (original && originalLang === locale) return { text: original, lang: locale, machine: false }
   if (alt && altLang === locale) return { text: alt, lang: locale, machine: altIsMachine }

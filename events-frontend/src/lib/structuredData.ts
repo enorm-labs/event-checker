@@ -187,12 +187,16 @@ export function eventJsonLd(event: EventDetail, locale: Locale): JsonLd | null {
 export function venueJsonLd(venue: VenueDetail, locale: Locale): JsonLd | null {
   if (!venue.name) return null
 
+  // The language of the text this page shows, for the same reason the event builder declares it.
+  const description = descriptionFor(venue, locale)
+
   return {
     '@context': 'https://schema.org',
     '@type': 'MusicVenue',
     name: venue.name,
     url: venue.slug ? canonicalUrl(locale, `/venues/${venue.slug}`) : undefined,
-    description: venue.description ?? undefined,
+    description: description?.text ?? undefined,
+    inLanguage: description?.lang ?? undefined,
     image: absoluteImageUrl(venue.imageUrl),
     sameAs: venue.websiteUrl ?? undefined,
     address: {

@@ -91,7 +91,18 @@ data class VenueDetailResponse(
     @Schema(description = INTRINSIC_HEIGHT_DESCRIPTION, example = "630")
     val intrinsicHeight: Int?,
     @Schema(description = "Short prose description of the venue")
-    val description: String?
+    val description: String?,
+    @Schema(description = "Language of `description`: `de` or `en`. Null when the language is unknown.", example = "en")
+    val descriptionLanguage: String?,
+    @Schema(
+        description =
+            "The same description in the other language. Written by hand, not machine-translated, " +
+                "so it carries no origin and needs no disclosure (#1210).",
+        example = "Ein Konzertsaal in Friedrichshain."
+    )
+    val descriptionAlt: String?,
+    @Schema(description = "Language of `descriptionAlt`: `de` or `en`. Null exactly when `descriptionAlt` is.", example = "de")
+    val descriptionAltLanguage: String?
 ) {
     companion object {
         fun fromEntity(
@@ -113,7 +124,10 @@ data class VenueDetailResponse(
                 imageSources = image.sources,
                 intrinsicWidth = image.intrinsicWidth,
                 intrinsicHeight = image.intrinsicHeight,
-                description = entity.description
+                description = entity.description,
+                descriptionLanguage = entity.descriptionLanguage,
+                descriptionAlt = entity.descriptionAlt,
+                descriptionAltLanguage = entity.descriptionAltLanguage
             )
     }
 }

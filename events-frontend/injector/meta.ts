@@ -53,7 +53,7 @@ export function entityMeta(kind: EntityKind, entity: unknown, locale: Locale): E
     }
     case 'venues': {
       const venue = entity as VenueDetail
-      return { meta: venuePageMeta(venue), image: imageSize(venue) }
+      return { meta: venuePageMeta(venue, locale), image: imageSize(venue) }
     }
     case 'artists': {
       const artist = entity as ArtistDetail

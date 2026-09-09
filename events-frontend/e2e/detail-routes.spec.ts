@@ -300,6 +300,27 @@ test.describe('a past event', () => {
   })
 })
 
+test('serves the venue description in the page language', async ({ page }) => {
+  // Our own prose in both languages (#1210), so both are shown as written and neither is
+  // disclosed as machine-made. The `lang` attribute is what a screen reader reads it with.
+  const bilingual = {
+    ...venueBody,
+    description: 'A former cinema on the canal.',
+    descriptionLanguage: 'en',
+    descriptionAlt: 'Ein früheres Kino am Kanal.',
+    descriptionAltLanguage: 'de',
+  }
+  await page.route(/\/api\/venues\//, (route) => json(route, bilingual))
+  await page.route(eventsFeed, (route) => json(route, emptyEventPage))
+
+  await page.goto('/de/venues/mock-venue')
+  await expect(page.getByText('Ein früheres Kino am Kanal.')).toHaveAttribute('lang', 'de')
+  await expect(page.getByText('Machine-translated.', { exact: false })).toHaveCount(0)
+
+  await page.goto('/en/venues/mock-venue')
+  await expect(page.getByText('A former cinema on the canal.')).toHaveAttribute('lang', 'en')
+})
+
 test('a venue with only past events shows them as an archive', async ({ page }) => {
   const pastEvent = {
     slug: 'past-night',
