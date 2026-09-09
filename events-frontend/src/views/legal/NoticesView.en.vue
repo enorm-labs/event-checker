@@ -24,7 +24,7 @@ const { componentCount, groups, openGroups, toggle, versionSuffix } = useNotices
     <section>
       <h2>What this lists</h2>
       <p>
-        Every dependency of this project — the backend's runtime libraries and the frontend's
+        Every dependency of this project: the backend's runtime libraries and the frontend's
         production packages, including their own transitive dependencies. It is generated from the
         build rather than maintained by hand, so it stays accurate as dependencies change.
       </p>
@@ -32,7 +32,7 @@ const { componentCount, groups, openGroups, toggle, versionSuffix } = useNotices
         Two caveats, so the list is not read as more than it is. It covers what the project
         <em>depends on</em>, which is broader than what is served to your browser: bundling drops a
         good deal of it. And it records each component's licence rather than reproducing the full
-        licence text or any <code>NOTICE</code> file the component ships — those travel with the
+        licence text or any <code>NOTICE</code> file the component ships. Those travel with the
         packages themselves, at the source links below.
       </p>
     </section>

@@ -7,7 +7,7 @@
     "calendar": "Calendar",
     "about": "About",
     "beta": "beta",
-    "betaLabel": "Event Junkie is in beta — data may be incomplete or out of date. See what that means.",
+    "betaLabel": "Event Junkie is in beta. Data may be incomplete or out of date. See what that means.",
     "sourceOnGitHub": "Source code on GitHub",
     "toLightMode": "Switch to light mode",
     "toDarkMode": "Switch to dark mode"
@@ -28,7 +28,7 @@
   },
   "upcomingEvents": "Upcoming events",
   "pastEvents": "Past events",
-  "pastEventsNote": "Our archive starts when we started watching — earlier nights never made it into the books.",
+  "pastEventsNote": "Our archive starts when we started watching. Earlier nights never made it into the books.",
   "locale": {
     "label": "Language"
   },

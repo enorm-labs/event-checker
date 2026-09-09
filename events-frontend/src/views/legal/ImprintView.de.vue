@@ -48,8 +48,8 @@ const { t } = useI18n()
         <a :href="`mailto:${CONTROLLER.email}`">{{ CONTROLLER.email }}</a>
       </p>
       <p>
-        Für alles, was die Seite selbst betrifft — falsche Event-Daten, ein Fehler, eine Location,
-        die wir aufnehmen sollten — erreicht uns ein Issue auf
+        Für alles, was die Seite selbst betrifft (falsche Event-Daten, ein Fehler, eine Location,
+        die wir aufnehmen sollten), erreicht uns ein Issue auf
         <a href="https://github.com/enorm-labs/event-junkie/issues" rel="noopener" target="_blank">
           GitHub
         </a>
@@ -108,7 +108,7 @@ const { t } = useI18n()
     <section>
       <h2>Urheberrecht</h2>
       <p>
-        Der Quellcode dieses Projekts steht unter der Apache License 2.0 — siehe den
+        Der Quellcode dieses Projekts steht unter der Apache License 2.0; siehe den
         <a
           href="https://github.com/enorm-labs/event-junkie/blob/main/LICENSE"
           rel="noopener"
@@ -116,9 +116,9 @@ const { t } = useI18n()
         >
           Lizenztext </a
         >. Veranstaltungsbeschreibungen, Bilder und sonstige Materialien, die von Locations,
-        Veranstaltern und Künstlerinnen und Künstlern stammen, bleiben Eigentum der jeweiligen
-        Rechteinhaber und werden von dieser Lizenz nicht erfasst. Wer Rechte an hier gezeigtem
-        Material hält und dessen Entfernung wünscht, schreibt uns — wir kümmern uns umgehend darum.
+        Veranstaltern und Künstler*innen stammen, bleiben Eigentum der jeweiligen Rechteinhaber und
+        werden von dieser Lizenz nicht erfasst. Wer Rechte an hier gezeigtem Material hält und
+        dessen Entfernung wünscht, schreibt uns. Wir kümmern uns umgehend darum.
       </p>
     </section>
   </LegalPage>

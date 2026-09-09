@@ -23,7 +23,7 @@ const localePath = useLocalePath()
 
 <template>
   <LegalPage
-    intro="How Event Junkie reads your event page — and how to get back off it."
+    intro="How Event Junkie reads your event page, and how to get back off it."
     show-authoritative-version
     title="For venues"
   >
@@ -85,7 +85,7 @@ const localePath = useLocalePath()
       <p>
         <strong>It does not have to be everything.</strong> If it is only the images you mind, or
         only the description texts, we remove exactly that and leave the events in place. We delete
-        the material you objected to from our database — for images, the stored copies too — and do
+        the material you objected to from our database (for images, the stored copies too) and do
         not import it again. The dates stay findable. Tell us which part you would rather we did not
         store.
       </p>

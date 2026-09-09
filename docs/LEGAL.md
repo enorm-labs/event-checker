@@ -441,8 +441,8 @@ Two registers, deliberately not literal translations of each other:
 
 <!-- ste-lint: allow the published wording of the disclaimer, quoted verbatim in both languages -->
 
-- **Footer** (brand voice): _"Event data is aggregated from public sources and provided without warranty — always
-  check with the venue before you go."_ / _"Die Event-Daten stammen aus öffentlichen Quellen — alle Angaben ohne
+- **Footer** (brand voice): _"Event data is aggregated from public sources and provided without warranty. Always
+  check with the venue before you go."_ / _"Die Event-Daten stammen aus öffentlichen Quellen, alle Angaben ohne
   Gewähr. Frag im Zweifel bei der Location nach, bevor du losziehst."_
 - **Imprint** (formal): _"…provided without warranty as to accuracy, completeness or timeliness."_ / _"Alle Angaben
   erfolgen ohne Gewähr für Richtigkeit, Vollständigkeit und Aktualität."_

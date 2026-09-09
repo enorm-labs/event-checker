@@ -24,7 +24,7 @@ const { componentCount, groups, openGroups, toggle, versionSuffix } = useNotices
     <section>
       <h2>Was hier aufgelistet ist</h2>
       <p>
-        Sämtliche Abhängigkeiten dieses Projekts — die Laufzeitbibliotheken des Backends und die
+        Sämtliche Abhängigkeiten dieses Projekts: die Laufzeitbibliotheken des Backends und die
         Produktionspakete des Frontends, jeweils samt ihrer eigenen transitiven Abhängigkeiten. Die
         Liste wird aus dem Build erzeugt und nicht von Hand gepflegt; sie bleibt also korrekt, wenn
         sich Abhängigkeiten ändern.
@@ -35,8 +35,8 @@ const { componentCount, groups, openGroups, toggle, versionSuffix } = useNotices
         <em>wovon</em> das Projekt abhängt, und das ist mehr als das, was an deinen Browser
         ausgeliefert wird: Beim Bundling fällt ein guter Teil davon weg. Und sie nennt die Lizenz
         jeder Komponente, gibt aber weder den vollständigen Lizenztext noch eine mitgelieferte
-        <code>NOTICE</code>-Datei wieder — beides liegt den Paketen selbst bei, unter den
-        Quell-Links weiter unten.
+        <code>NOTICE</code>-Datei wieder. Beides liegt den Paketen selbst bei, unter den Quell-Links
+        weiter unten.
       </p>
     </section>
 

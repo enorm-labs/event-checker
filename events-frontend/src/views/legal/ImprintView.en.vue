@@ -45,8 +45,8 @@ const { t } = useI18n()
         <a :href="`mailto:${CONTROLLER.email}`">{{ CONTROLLER.email }}</a>
       </p>
       <p>
-        For anything about the site itself — wrong event data, a bug, a venue we should be importing
-        — an issue on
+        For anything about the site itself (wrong event data, a bug, a venue we should be
+        importing), an issue on
         <a href="https://github.com/enorm-labs/event-junkie/issues" rel="noopener" target="_blank">
           GitHub
         </a>
@@ -101,7 +101,7 @@ const { t } = useI18n()
     <section>
       <h2>Copyright</h2>
       <p>
-        The source code of this project is published under the Apache License 2.0 — see the
+        The source code of this project is published under the Apache License 2.0; see the
         <a
           href="https://github.com/enorm-labs/event-junkie/blob/main/LICENSE"
           rel="noopener"
