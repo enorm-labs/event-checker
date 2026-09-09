@@ -4,7 +4,6 @@ import { type LocationQueryRaw, useRoute, useRouter } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import EventCard from '@/components/EventCard.vue'
 import EventFilterBar from '@/components/EventFilterBar.vue'
-import SectionLabel from '@/components/SectionLabel.vue'
 import { type EventSearchParams, useEventSearch } from '@/composables/useEvents'
 import { useEventFilters } from '@/composables/useEventFilters'
 import { useI18n } from 'vue-i18n'
@@ -48,7 +47,6 @@ const { t } = useI18n()
 <template>
   <main class="mx-auto max-w-5xl space-y-6 p-4 sm:p-8">
     <header class="space-y-1">
-      <SectionLabel as="p">{{ t('events.eyebrow') }}</SectionLabel>
       <h1 class="text-3xl font-bold tracking-tight">{{ t('events.title') }}</h1>
       <p class="text-muted-foreground">{{ t('events.subtitle') }}</p>
     </header>
