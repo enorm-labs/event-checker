@@ -197,6 +197,7 @@ same day. `PROHIBITED` on either licence field then removes every translation fo
 | ---------- | ------------------------------------ | -------- |
 | 2026-09-02 | The privacy notice matches what runs | #278     |
 |            | Legal review of the German notice    | #279     |
+|            | Venues asked, first batch of ten     | #808     |
 | 2026-08-30 | Copyright status per source          | #283     |
 
 ### SEO
