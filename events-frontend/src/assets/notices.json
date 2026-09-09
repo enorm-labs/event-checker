@@ -1,5 +1,5 @@
 {
-  "componentCount": 327,
+  "componentCount": 326,
   "licenses": [
     {
       "license": "Apache-2.0",
@@ -1785,12 +1785,6 @@
           "name": "tinyglobby",
           "version": "0.2.17",
           "url": "https://github.com/SuperchupuDev/tinyglobby",
-          "ecosystem": "frontend"
-        },
-        {
-          "name": "tw-animate-css",
-          "version": "1.4.0",
-          "url": "https://github.com/Wombosvideo/tw-animate-css",
           "ecosystem": "frontend"
         },
         {
