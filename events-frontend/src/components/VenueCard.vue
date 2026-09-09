@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
 import type { VenueSummary } from '@/api/types'
 import CachedImage from '@/components/CachedImage.vue'
+import EventPoster from '@/components/EventPoster.vue'
 import { districtLabel } from '@/lib/districts'
 import { useLocalePath } from '@/composables/useLocalePath'
 import { CARD_CLASS } from '@/lib/utils'
@@ -27,15 +28,16 @@ const localePath = useLocalePath()
 <template>
   <RouterLink :to="localePath(`/venues/${venue.slug}`)" :class="CARD_CLASS">
     <CachedImage
+      v-if="venue.imageUrl"
       :src="venue.imageUrl"
       :sources="venue.imageSources"
-      :intrinsic-width="venue.intrinsicWidth"
-      :intrinsic-height="venue.intrinsicHeight"
       :alt="venue.name ?? ''"
-      sizes="80px"
-      img-class="size-20 shrink-0 rounded-lg object-cover grayscale transition duration-300 group-hover:grayscale-0"
+      aspect="aspect-[3/2]"
+      sizes="(min-width: 640px) 474px, calc(100vw - 2rem)"
+      img-class="grayscale transition duration-300 group-hover:grayscale-0"
     />
-    <div class="min-w-0 flex-1 space-y-1">
+    <EventPoster v-else :title="venue.name" />
+    <div class="min-w-0 space-y-1">
       <component :is="as" class="truncate text-card-title font-semibold">
         {{ venue.name }}
       </component>

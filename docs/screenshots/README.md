@@ -2,9 +2,9 @@
 
 Pictures of the running product, for the README and anywhere else a reader needs to see it rather than read about it.
 
-| File                                 | What it shows                                                             | Taken      |
-| ------------------------------------ | ------------------------------------------------------------------------- | ---------- |
-| [`events-dark.png`](events-dark.png) | The events list — filter bar over the card grid, dark theme, 1400×900 @2× | 2026-08-23 |
+| File                                 | What it shows                                                               | Taken      |
+| ------------------------------------ | --------------------------------------------------------------------------- | ---------- |
+| [`events-dark.png`](events-dark.png) | The events list — filter bar over the poster grid, dark theme, 1400×900 @2× | 2026-09-09 |
 
 **The date is the point of the table.** Nothing here can go stale loudly. A screenshot of last year's UI renders
 exactly as well as one of today's. The date next to it is the only signal a reader gets. Update the date when you
@@ -19,7 +19,7 @@ reasons that have nothing to do with the product.
 They go stale when the **design** changes. Concretely, retake `events-dark.png` after any change to:
 
 - `src/App.vue` — the header and footer are in every shot
-- `src/components/EventCard.vue`, `EventFilterBar.vue` — the two things the events shot is actually of
+- `src/components/EventCard.vue`, `EventPoster.vue`, `EventFilterBar.vue` — the things the events shot is actually of
 - `src/assets/main.css` — the theme tokens, which move everything at once
 - `docs/branding/` — a new mark changes the header
 

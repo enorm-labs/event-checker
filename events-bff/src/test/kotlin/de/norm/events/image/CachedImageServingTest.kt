@@ -213,7 +213,8 @@ class CachedImageServingTest : BaseControllerTest() {
         }
 
     @Test
-    fun `the list response asks for the card width`(): Unit =
+    @DisplayName("the list response asks for the poster width, not a thumbnail's")
+    fun `the list response asks for the poster width`(): Unit =
         runBlocking {
             val venueId = insertVenue("Lido", "lido")
             insertEvent(venueId, "Show", "show", LocalDate.now().plusDays(3), imageUrl = POSTER_URL)
@@ -227,9 +228,9 @@ class CachedImageServingTest : BaseControllerTest() {
                 .isOk
                 .expectBody()
                 .jsonPath("$.content[0].imageUrl")
-                .isEqualTo("/api/images/$HASH/192.jpg")
+                .isEqualTo("/api/images/$HASH/512.jpg")
                 .jsonPath("$.content[0].imageSources[0].srcset")
-                .isEqualTo("/api/images/$HASH/192.avif 192w, /api/images/$HASH/288.avif 288w")
+                .isEqualTo("/api/images/$HASH/512.avif 512w, /api/images/$HASH/768.avif 768w")
         }
 
     @Test

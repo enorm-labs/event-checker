@@ -26,6 +26,15 @@ const props = defineProps<{
   sizes: string
   /** Goes on the `<img>`, never on the wrapper — see the `contents` note in the template. */
   imgClass?: string
+  /**
+   * A box to reserve, as a Tailwind aspect utility: `aspect-[3/2]`.
+   *
+   * **Only a fixed slot needs this.** The intrinsic dimensions below reserve the *original's* shape,
+   * which is right where the height is free and wrong where the caller crops to a box — a poster
+   * card would still jump as a portrait flyer arrived into a landscape slot. Given one, the picture
+   * becomes the box and the image fills it; given none, nothing about the old behaviour changes.
+   */
+  aspect?: string
   /** The original's pixel size. Both or neither — the API reports them together. */
   intrinsicWidth?: number | null
   intrinsicHeight?: number | null
@@ -50,11 +59,14 @@ const dimensions = computed(() =>
 
 <template>
   <!--
-    `contents` is load-bearing rather than tidy: it takes the <picture> out of the layout entirely,
-    so the <img> stays the flex item its classes were written for. Without it every caller would
-    have to split its classes across two elements.
+    Without an `aspect`, `contents` is load-bearing rather than tidy: it takes the <picture> out of
+    the layout entirely, so the <img> stays the flex item its classes were written for. Otherwise
+    every caller would have to split its classes across two elements.
+
+    With one, the opposite is wanted: the <picture> becomes the reserved box and the image fills it,
+    so it has to be a real element with a size.
   -->
-  <picture v-if="src" class="contents">
+  <picture v-if="src" :class="aspect ? [aspect, 'block w-full overflow-hidden'] : 'contents'">
     <!--
       `contents` dissolves the <picture> box and promotes every child into the caller's flex
       container. The <source>s land there too: zero-width flex items that each still claim a `gap`.
@@ -69,8 +81,17 @@ const dimensions = computed(() =>
       :sizes="sizes"
     />
     <!-- No `srcset` here: the last <source> is JPEG and matches every browser, so this is the
-         fallback for one that does not support <picture> at all. -->
-    <img v-bind="dimensions" :src="src" :alt="alt" :class="imgClass" loading="lazy" />
+         fallback for one that does not support <picture> at all.
+
+         `dimensions` is dropped when the caller reserved a box: the two disagree by definition, and
+         width/height on an element the box already sizes is a second answer to a settled question. -->
+    <img
+      v-bind="aspect ? {} : dimensions"
+      :src="src"
+      :alt="alt"
+      :class="[imgClass, aspect && 'size-full object-cover']"
+      loading="lazy"
+    />
   </picture>
   <!--
     One placeholder for both kinds of nothing. A viewer gains nothing from telling an image the

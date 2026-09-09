@@ -16,27 +16,27 @@ export const FIELD_CLASS =
   'h-8 rounded-lg border border-border bg-background px-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50'
 
 /**
- * The raised surface: what makes something read as sitting above the page. Only the card gets it,
- * which is the point — where everything is raised, nothing is.
+ * An interactive card — the event and venue tiles, which are links.
  *
- * Tailwind still finds every class here: it scans the source text, and each utility appears
- * literally in one of these strings even though they are assembled.
+ * No border, fill, shadow or radius: the poster is the card, and a container drawn around a picture
+ * competes with it. Space is what separates one card from the next (see #1246). The hover is the
+ * poster turning from grayscale to colour, which the cards own.
+ *
+ * Extracted, like {@link FIELD_CLASS}, because both cards carry it verbatim.
  */
-const SURFACE_CLASS = 'rounded-xl border border-border bg-card'
+export const CARD_CLASS = 'group flex flex-col gap-3'
 
 /**
- * An interactive card — the event and venue tiles, which are links. The hover is the thumbnail
- * turning from grayscale to colour and the border taking the accent. It also carried a resting
- * shadow, a deeper one on hover and a lift until #1241: three ways of saying "hoverable" and none
- * of saying what would happen.
+ * A grid of {@link CARD_CLASS} cards.
  *
- * Extracted, like {@link FIELD_CLASS}, because both cards carried it verbatim.
+ * The two gaps differ because they separate different things. Across, a gap parts two posters, and
+ * a poster has its own edge. Down, it parts one card's last line of text from the next card's
+ * poster, which without chrome would otherwise read as one running column.
  */
-export const CARD_CLASS = `group flex gap-4 ${SURFACE_CLASS} p-3 transition-colors hover:border-primary/40`
+export const CARD_GRID_CLASS = 'grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2'
 
 /**
- * The two filter bars: chrome, not an object. It shared {@link SURFACE_CLASS} with the card until
- * #1240, which made a list page a bordered box of controls above a grid of bordered boxes. No
- * horizontal padding, because the page's own `p-4 sm:p-8` already sets that edge.
+ * The two filter bars: chrome, not an object (see #1240). One hairline rule, which is the only line
+ * on a list page. No horizontal padding, because the page's own `p-4 sm:p-8` sets that edge.
  */
 export const PANEL_CLASS = 'flex flex-wrap items-end gap-3 border-b border-border pb-4'

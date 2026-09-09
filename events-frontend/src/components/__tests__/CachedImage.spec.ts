@@ -100,6 +100,16 @@ describe('CachedImage', () => {
     expect(wrapper.get('img').attributes('height')).toBe('630')
   })
 
+  // A caller that crops to a fixed box needs the box reserved, not the original's shape: a portrait
+  // flyer in a 3:2 slot would still push the text below it (#1245).
+  it('reserves the caller box instead of the original shape when given one', () => {
+    const wrapper = mount_({ sources, intrinsicWidth: 1200, intrinsicHeight: 630, aspect: 'aspect-[3/2]' })
+
+    expect(wrapper.get('picture').classes()).toContain('aspect-[3/2]')
+    expect(wrapper.get('img').attributes('width')).toBeUndefined()
+    expect(wrapper.get('img').classes()).toContain('object-cover')
+  })
+
   // 16% of the stored images have no dimensions: a stock JVM reads neither WebP nor AVIF, so
   // nothing measured them at import.
   it('omits both attributes when it has no dimensions', () => {

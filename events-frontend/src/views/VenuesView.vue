@@ -8,7 +8,7 @@ import VenueCard from '@/components/VenueCard.vue'
 import { useVenueSearch, type VenueSearchParams } from '@/composables/useVenues'
 import { DISTRICTS } from '@/lib/districts'
 import { useI18n } from 'vue-i18n'
-import { PANEL_CLASS } from '@/lib/utils'
+import { CARD_GRID_CLASS, PANEL_CLASS } from '@/lib/utils'
 
 const PAGE_SIZE = 24
 
@@ -102,7 +102,7 @@ const { t } = useI18n()
       <p class="text-sm text-muted-foreground">
         {{ t('venues.resultCount', { count: page.totalElements }) }}
       </p>
-      <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <div :class="CARD_GRID_CLASS">
         <!-- Second level of the outline: nothing sits between the page `h1` and this grid. -->
         <VenueCard v-for="venue in page.content" :key="venue.slug" :venue="venue" as="h2" />
       </div>
