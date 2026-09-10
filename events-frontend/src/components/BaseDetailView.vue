@@ -5,8 +5,10 @@ import { Button } from '@/components/ui/button'
 import type { ImageSource } from '@/api/types'
 
 import CachedImage from '@/components/CachedImage.vue'
+import ImageCreditLine from '@/components/ImageCreditLine.vue'
 import EventCard from '@/components/EventCard.vue'
 import SectionLabel from '@/components/SectionLabel.vue'
+import type { ImageCredit } from '@/lib/imageCredit'
 import { CARD_GRID_CLASS } from '@/lib/utils'
 import { useLocalePath } from '@/composables/useLocalePath'
 import { useI18n } from 'vue-i18n'
@@ -37,6 +39,8 @@ defineProps<{
   imageSources?: ImageSource[] | null
   intrinsicWidth?: number | null
   intrinsicHeight?: number | null
+  /** Who to credit for the image, or null where it carries no credit (#1275). */
+  credit?: ImageCredit | null
   /** Upcoming-events feed state (from `useEventSearch`). */
   events: EventPage | null
   eventsLoading: boolean
@@ -66,7 +70,9 @@ const { t } = useI18n()
     <div v-else-if="notFound" class="space-y-3">
       <!-- Interpolated rather than concatenated: German puts the negation last ("Location nicht
            gefunden"), so the two halves cannot be separate strings. -->
-      <h1 class="text-section font-bold tracking-tight">{{ t('detail.notFoundHeading', { kind }) }}</h1>
+      <h1 class="text-section font-bold tracking-tight">
+        {{ t('detail.notFoundHeading', { kind }) }}
+      </h1>
       <p class="text-muted-foreground">{{ notFoundText }}</p>
       <Button as-child variant="outline">
         <RouterLink :to="localePath('/events')">{{ t('common.actions.browseEvents') }}</RouterLink>
@@ -92,6 +98,10 @@ const { t } = useI18n()
           <slot name="meta" />
         </div>
       </header>
+
+      <!-- Under the header rather than under the image: the hero is 96 px wide, and a credit
+           wrapped into that column is unreadable. -->
+      <ImageCreditLine v-if="credit" :credit="credit" />
 
       <slot />
 

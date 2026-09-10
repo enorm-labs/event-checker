@@ -152,7 +152,7 @@ class ImageRemovalServiceIntegrationTest : BaseControllerTest() {
             emptyBucket()
             val venue = seedVenue("cassiopeia")
             seedImage("vvv", "https://mine.test/logo.jpg", venue, withEvent = false)
-            databaseClient.sql("UPDATE events.venue SET image_url = 'https://mine.test/logo.jpg' WHERE id = $venue").await()
+            databaseClient.sql("UPDATE events.venue SET image_url = 'https://mine.test/logo.jpg', $IMAGE_CREDIT_SET WHERE id = $venue").await()
 
             service().sweep().images shouldBe 0
 
@@ -165,7 +165,7 @@ class ImageRemovalServiceIntegrationTest : BaseControllerTest() {
             emptyBucket()
             val venue = seedVenue("cassiopeia")
             seedImage("vvv", "https://mine.test/logo.jpg", venue, withEvent = false)
-            databaseClient.sql("UPDATE events.venue SET image_url = 'https://mine.test/logo.jpg' WHERE id = $venue").await()
+            databaseClient.sql("UPDATE events.venue SET image_url = 'https://mine.test/logo.jpg', $IMAGE_CREDIT_SET WHERE id = $venue").await()
 
             service().takeDown("cassiopeia").images shouldBe 1
 

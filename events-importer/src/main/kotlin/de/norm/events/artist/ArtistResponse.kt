@@ -21,6 +21,12 @@ data class ArtistResponse(
     val description: String?,
     @Schema(description = "URL of the artist's photo or band logo", example = "https://example.com/adicts.jpg")
     val imageUrl: String?,
+    @Schema(description = "Who to credit for `imageUrl`", example = "Photographer Name, via Wikimedia Commons")
+    val imageAttribution: String?,
+    @Schema(description = "SPDX identifier of the licence `imageUrl` is published under", example = "CC-BY-SA-4.0")
+    val imageLicenceId: String?,
+    @Schema(description = "The image's description page, which the rendered credit links to", example = "https://commons.wikimedia.org/wiki/File:Example.jpg")
+    val imageSourceUrl: String?,
     @Schema(description = "URL of the artist's official homepage", example = "https://theadicts.net/")
     val websiteUrl: String?,
     @Schema(description = "URL of the artist's Facebook page", example = "https://www.facebook.com/theadicts")
@@ -42,6 +48,9 @@ data class ArtistResponse(
                 slug = artist.slug,
                 description = artist.description,
                 imageUrl = artist.imageUrl,
+                imageAttribution = artist.imageAttribution,
+                imageLicenceId = artist.imageLicenceId,
+                imageSourceUrl = artist.imageSourceUrl,
                 websiteUrl = artist.websiteUrl,
                 facebookUrl = artist.facebookUrl,
                 instagramUrl = artist.instagramUrl,

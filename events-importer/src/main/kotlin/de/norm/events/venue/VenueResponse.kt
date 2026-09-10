@@ -34,6 +34,12 @@ data class VenueResponse(
     val websiteUrl: String?,
     @Schema(description = "URL of the venue's logo or photo", example = "https://example.com/astra-logo.jpg")
     val imageUrl: String?,
+    @Schema(description = "Who to credit for `imageUrl`", example = "Photographer Name, via Wikimedia Commons")
+    val imageAttribution: String?,
+    @Schema(description = "SPDX identifier of the licence `imageUrl` is published under", example = "CC-BY-SA-4.0")
+    val imageLicenceId: String?,
+    @Schema(description = "The image's description page, which the rendered credit links to", example = "https://commons.wikimedia.org/wiki/File:Example.jpg")
+    val imageSourceUrl: String?,
     @Schema(
         description = "Short prose description of the venue, shown on the detail page",
         example = "A former power plant turned techno institution in Friedrichshain."
@@ -64,6 +70,9 @@ data class VenueResponse(
                 longitude = venue.longitude,
                 websiteUrl = venue.websiteUrl,
                 imageUrl = venue.imageUrl,
+                imageAttribution = venue.imageAttribution,
+                imageLicenceId = venue.imageLicenceId,
+                imageSourceUrl = venue.imageSourceUrl,
                 description = venue.description,
                 descriptionLanguage = venue.descriptionLanguage,
                 descriptionAlt = venue.descriptionAlt,

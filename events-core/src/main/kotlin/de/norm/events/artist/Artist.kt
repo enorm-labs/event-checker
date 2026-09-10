@@ -19,6 +19,12 @@ data class Artist(
     val description: String? = null,
     /** URL of the artist's photo or band logo. */
     val imageUrl: String? = null,
+    /** Who to credit for [imageUrl], worded as the archive publishes it. Null exactly when [imageUrl] is. */
+    val imageAttribution: String? = null,
+    /** SPDX identifier of the licence [imageUrl] is published under. Example: `"CC-BY-SA-4.0"` */
+    val imageLicenceId: String? = null,
+    /** The image's description page, which the rendered credit links to. */
+    val imageSourceUrl: String? = null,
     /** URL of the artist's official homepage. */
     val websiteUrl: String? = null,
     /** URL of the artist's Facebook page. */

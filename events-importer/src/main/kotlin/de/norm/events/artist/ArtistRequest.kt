@@ -1,5 +1,7 @@
 package de.norm.events.artist
 
+import de.norm.events.common.AttributableImage
+import de.norm.events.common.AttributedImage
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
@@ -13,6 +15,7 @@ import jakarta.validation.constraints.Size
  * part of the request DTO.
  */
 @Schema(description = "Request body for creating or updating an artist")
+@AttributedImage
 data class ArtistRequest(
     @field:NotBlank(message = "Artist name must not be blank")
     @field:Size(max = 255, message = "Artist name must not exceed 255 characters")
@@ -23,7 +26,19 @@ data class ArtistRequest(
     val description: String? = null,
     @field:Size(max = 2048, message = "Image URL must not exceed 2048 characters")
     @Schema(description = "URL of the artist's photo or band logo", example = "https://example.com/adicts.jpg")
-    val imageUrl: String? = null,
+    override val imageUrl: String? = null,
+    @field:Size(max = 500, message = "Image attribution must not exceed 500 characters")
+    @Schema(description = "Who to credit for `imageUrl`, worded as the archive publishes it", example = "Photographer Name, via Wikimedia Commons")
+    override val imageAttribution: String? = null,
+    @field:Size(max = 40, message = "Image licence identifier must not exceed 40 characters")
+    @Schema(description = "SPDX identifier of the licence `imageUrl` is published under", example = "CC-BY-SA-4.0")
+    override val imageLicenceId: String? = null,
+    @field:Size(max = 2048, message = "Image source URL must not exceed 2048 characters")
+    @Schema(
+        description = "The image's description page, which the rendered credit links to",
+        example = "https://commons.wikimedia.org/wiki/File:Example.jpg"
+    )
+    override val imageSourceUrl: String? = null,
     @field:Size(max = 2048, message = "Website URL must not exceed 2048 characters")
     @Schema(description = "URL of the artist's official homepage", example = "https://theadicts.net/")
     val websiteUrl: String? = null,
@@ -36,4 +51,4 @@ data class ArtistRequest(
     @field:Size(max = 2048, message = "YouTube URL must not exceed 2048 characters")
     @Schema(description = "URL of the artist's YouTube channel", example = "https://www.youtube.com/@theadictsofficial")
     val youtubeUrl: String? = null
-)
+) : AttributableImage

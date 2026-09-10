@@ -63,7 +63,10 @@ class PromoterService(
                 name = request.name,
                 slug = slug,
                 websiteUrl = request.websiteUrl,
-                imageUrl = request.imageUrl
+                imageUrl = request.imageUrl,
+                imageAttribution = request.imageAttribution,
+                imageLicenceId = request.imageLicenceId,
+                imageSourceUrl = request.imageSourceUrl
             )
         val entity = PromoterEntity.fromDomain(promoter)
         val saved = promoterRepository.save(entity)
@@ -96,7 +99,10 @@ class PromoterService(
                 name = request.name,
                 slug = slug,
                 websiteUrl = request.websiteUrl,
-                imageUrl = request.imageUrl
+                imageUrl = request.imageUrl,
+                imageAttribution = request.imageAttribution,
+                imageLicenceId = request.imageLicenceId,
+                imageSourceUrl = request.imageSourceUrl
             )
         val saved = promoterRepository.save(updated)
         logger.info { "Updated promoter '${saved.name}' (id=${saved.id})" }

@@ -108,7 +108,7 @@ class ImageCacheServiceIntegrationTest : BaseControllerTest() {
             // These three columns are written by the admin API and no scraper touches them, so no
             // `event_source` licence applies (#833). Missing them left four render sites hotlinking
             // after the event path had stopped.
-            databaseClient.sql("UPDATE events.venue SET image_url = 'https://venue.test/logo.jpg'").await()
+            databaseClient.sql("UPDATE events.venue SET image_url = 'https://venue.test/logo.jpg', $IMAGE_CREDIT_SET").await()
             insertArtist("https://artist.test/photo.jpg")
             insertPromoter("https://promoter.test/logo.jpg")
 
@@ -126,7 +126,7 @@ class ImageCacheServiceIntegrationTest : BaseControllerTest() {
     fun `one URL on an event and on its venue is a single fetch`(): Unit =
         runBlocking {
             // `UNION` rather than `UNION ALL`, so the same file under two columns is one object.
-            databaseClient.sql("UPDATE events.venue SET image_url = 'https://venue.test/poster-one.jpg'").await()
+            databaseClient.sql("UPDATE events.venue SET image_url = 'https://venue.test/poster-one.jpg', $IMAGE_CREDIT_SET").await()
 
             repository.findUncachedImageUrls(100).toList() shouldContainExactlyInAnyOrder
                 listOf("https://venue.test/poster-one.jpg", "https://venue.test/poster-two.jpg")
@@ -312,13 +312,17 @@ class ImageCacheServiceIntegrationTest : BaseControllerTest() {
 
     private suspend fun insertArtist(imageUrl: String) =
         databaseClient
-            .sql("INSERT INTO events.artist (name, slug, image_url) VALUES ('Act', 'act', '$imageUrl')")
-            .await()
+            .sql(
+                "INSERT INTO events.artist (name, slug, image_url, $IMAGE_CREDIT_COLUMNS) " +
+                    "VALUES ('Act', 'act', '$imageUrl', $IMAGE_CREDIT_VALUES)"
+            ).await()
 
     private suspend fun insertPromoter(imageUrl: String) =
         databaseClient
-            .sql("INSERT INTO events.promoter (name, slug, image_url) VALUES ('Promo', 'promo', '$imageUrl')")
-            .await()
+            .sql(
+                "INSERT INTO events.promoter (name, slug, image_url, $IMAGE_CREDIT_COLUMNS) " +
+                    "VALUES ('Promo', 'promo', '$imageUrl', $IMAGE_CREDIT_VALUES)"
+            ).await()
 
     private suspend fun insertEvent(
         key: String,

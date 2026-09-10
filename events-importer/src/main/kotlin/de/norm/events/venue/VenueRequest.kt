@@ -1,5 +1,7 @@
 package de.norm.events.venue
 
+import de.norm.events.common.AttributableImage
+import de.norm.events.common.AttributedImage
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.DecimalMax
 import jakarta.validation.constraints.DecimalMin
@@ -17,6 +19,7 @@ import java.math.BigDecimal
  * part of the request DTO.
  */
 @Schema(description = "Request body for creating or updating a venue")
+@AttributedImage
 data class VenueRequest(
     @field:NotBlank(message = "Venue name must not be blank")
     @field:Size(max = 255, message = "Venue name must not exceed 255 characters")
@@ -59,7 +62,19 @@ data class VenueRequest(
     val websiteUrl: String? = null,
     @field:Size(max = 2048, message = "Image URL must not exceed 2048 characters")
     @Schema(description = "URL of the venue's logo or photo", example = "https://example.com/astra-logo.jpg")
-    val imageUrl: String? = null,
+    override val imageUrl: String? = null,
+    @field:Size(max = 500, message = "Image attribution must not exceed 500 characters")
+    @Schema(description = "Who to credit for `imageUrl`, worded as the archive publishes it", example = "Photographer Name, via Wikimedia Commons")
+    override val imageAttribution: String? = null,
+    @field:Size(max = 40, message = "Image licence identifier must not exceed 40 characters")
+    @Schema(description = "SPDX identifier of the licence `imageUrl` is published under", example = "CC-BY-SA-4.0")
+    override val imageLicenceId: String? = null,
+    @field:Size(max = 2048, message = "Image source URL must not exceed 2048 characters")
+    @Schema(
+        description = "The image's description page, which the rendered credit links to",
+        example = "https://commons.wikimedia.org/wiki/File:Example.jpg"
+    )
+    override val imageSourceUrl: String? = null,
     @field:Size(max = 4000, message = "Description must not exceed 4000 characters")
     @Schema(
         description = "Short prose description of the venue, shown on the detail page",
@@ -78,4 +93,4 @@ data class VenueRequest(
     @field:Pattern(regexp = "de|en", message = "Alternate description language must be 'de' or 'en'")
     @Schema(description = "Language of `descriptionAlt`: `de` or `en`", example = "de")
     val descriptionAltLanguage: String? = null
-)
+) : AttributableImage

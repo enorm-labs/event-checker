@@ -16,6 +16,9 @@ data class PromoterEntity(
     val slug: String,
     val websiteUrl: String? = null,
     val imageUrl: String? = null,
+    val imageAttribution: String? = null,
+    val imageLicenceId: String? = null,
+    val imageSourceUrl: String? = null,
     @CreatedDate val createdAt: Instant? = null,
     @LastModifiedDate val updatedAt: Instant? = null
 ) {
@@ -26,6 +29,9 @@ data class PromoterEntity(
             slug = slug,
             websiteUrl = websiteUrl,
             imageUrl = imageUrl,
+            imageAttribution = imageAttribution,
+            imageLicenceId = imageLicenceId,
+            imageSourceUrl = imageSourceUrl,
             createdAt = createdAt,
             updatedAt = updatedAt
         )
@@ -38,6 +44,9 @@ data class PromoterEntity(
                 slug = promoter.slug,
                 websiteUrl = promoter.websiteUrl,
                 imageUrl = promoter.imageUrl,
+                imageAttribution = promoter.imageAttribution,
+                imageLicenceId = promoter.imageLicenceId,
+                imageSourceUrl = promoter.imageSourceUrl,
                 createdAt = promoter.createdAt,
                 updatedAt = promoter.updatedAt
             )

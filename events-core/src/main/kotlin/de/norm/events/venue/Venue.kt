@@ -32,6 +32,12 @@ data class Venue(
     val websiteUrl: String? = null,
     /** URL of the venue's logo or photo. */
     val imageUrl: String? = null,
+    /** Who to credit for [imageUrl], worded as the archive publishes it. Null exactly when [imageUrl] is. */
+    val imageAttribution: String? = null,
+    /** SPDX identifier of the licence [imageUrl] is published under. Example: `"CC-BY-SA-4.0"` */
+    val imageLicenceId: String? = null,
+    /** The image's description page, which the rendered credit links to. */
+    val imageSourceUrl: String? = null,
     /** Short prose description of the venue, shown on the detail page. */
     val description: String? = null,
     /** Language of [description]: `de` or `en`. */

@@ -240,10 +240,16 @@ full.
 it was gone everywhere. Now something of ours has to delete it, and §5 is that route — a working endpoint rather than
 an intention.
 
-**Three of the four columns carry no licence, and that is a different question rather than a gap.** `venue.image_url`,
+**Three of the four columns carry their own licence, and it is a different licence from the fourth.** `venue.image_url`,
 `artist.image_url` and `promoter.image_url` are written through the admin API. No venue's terms are interpreted here,
-because nothing scraped them. A maintainer chose the URL, and that choice is the justification a per-source column
-records for the other column. An image nobody can justify is one nobody enters.
+because nothing scraped them. Each carries `image_attribution`, `image_licence_id` and `image_source_url` beside it, and the
+request that sets an image URL without all three is refused ([#1275](https://github.com/enorm-labs/event-junkie/issues/1275)).
+So the justification is the file's own licence, an SPDX identifier such as `CC-BY-SA-4.0`, rather than a reading of a
+venue's terms. The credit is displayed beside the image, because CC BY and CC BY-SA both require that.
+
+**`image_licence_id` is not `event_source.image_licence`.** The latter is our own reading of whether a source's material may
+be shown at all. The former is what a third party published a file under. Two vocabularies, and confusing them shows
+something that should be withheld.
 
 ## 4. The gaps we know about
 

@@ -306,6 +306,21 @@ export interface components {
             district?: string | null;
             /** @description URL of the venue's logo or photo */
             imageUrl?: string | null;
+            /**
+             * @description Who to credit for `imageUrl`, worded as the archive publishes it. Present whenever `imageUrl` is, and it must be shown beside the image.
+             * @example Photographer Name, via Wikimedia Commons
+             */
+            imageAttribution?: string | null;
+            /**
+             * @description SPDX identifier of the licence `imageUrl` is published under, or `PD` where no identifier applies. Example values: `CC0-1.0`, `CC-BY-4.0`, `CC-BY-SA-4.0`.
+             * @example CC-BY-SA-4.0
+             */
+            imageLicenceId?: string | null;
+            /**
+             * @description The image's description page, which the rendered credit links to
+             * @example https://commons.wikimedia.org/wiki/File:Example.jpg
+             */
+            imageSourceUrl?: string | null;
             /** @description Alternative formats of the same image, best first, for a <picture> element. Empty when the image is not cached, in which case `imageUrl` is all there is. */
             imageSources?: components["schemas"]["ImageSourceResponse"][];
             /**
@@ -373,6 +388,21 @@ export interface components {
             websiteUrl?: string | null;
             /** @description URL of the venue's logo or photo */
             imageUrl?: string | null;
+            /**
+             * @description Who to credit for `imageUrl`, worded as the archive publishes it. Present whenever `imageUrl` is, and it must be shown beside the image.
+             * @example Photographer Name, via Wikimedia Commons
+             */
+            imageAttribution?: string | null;
+            /**
+             * @description SPDX identifier of the licence `imageUrl` is published under, or `PD` where no identifier applies. Example values: `CC0-1.0`, `CC-BY-4.0`, `CC-BY-SA-4.0`.
+             * @example CC-BY-SA-4.0
+             */
+            imageLicenceId?: string | null;
+            /**
+             * @description The image's description page, which the rendered credit links to
+             * @example https://commons.wikimedia.org/wiki/File:Example.jpg
+             */
+            imageSourceUrl?: string | null;
             /** @description Alternative formats of the same image, best first, for a <picture> element. Empty when the image is not cached, in which case `imageUrl` is all there is. */
             imageSources?: components["schemas"]["ImageSourceResponse"][];
             /**
@@ -456,6 +486,21 @@ export interface components {
             websiteUrl?: string | null;
             /** @description URL of the promoter's logo image */
             imageUrl?: string | null;
+            /**
+             * @description Who to credit for `imageUrl`, worded as the archive publishes it. Present whenever `imageUrl` is, and it must be shown beside the image.
+             * @example Photographer Name, via Wikimedia Commons
+             */
+            imageAttribution?: string | null;
+            /**
+             * @description SPDX identifier of the licence `imageUrl` is published under, or `PD` where no identifier applies. Example values: `CC0-1.0`, `CC-BY-4.0`, `CC-BY-SA-4.0`.
+             * @example CC-BY-SA-4.0
+             */
+            imageLicenceId?: string | null;
+            /**
+             * @description The image's description page, which the rendered credit links to
+             * @example https://commons.wikimedia.org/wiki/File:Example.jpg
+             */
+            imageSourceUrl?: string | null;
             /** @description Alternative formats of the same image, best first, for a <picture> element. Empty when the image is not cached, in which case `imageUrl` is all there is. */
             imageSources?: components["schemas"]["ImageSourceResponse"][];
             /**
@@ -493,6 +538,21 @@ export interface components {
             websiteUrl?: string | null;
             /** @description URL of the promoter's logo image */
             imageUrl?: string | null;
+            /**
+             * @description Who to credit for `imageUrl`, worded as the archive publishes it. Present whenever `imageUrl` is, and it must be shown beside the image.
+             * @example Photographer Name, via Wikimedia Commons
+             */
+            imageAttribution?: string | null;
+            /**
+             * @description SPDX identifier of the licence `imageUrl` is published under, or `PD` where no identifier applies. Example values: `CC0-1.0`, `CC-BY-4.0`, `CC-BY-SA-4.0`.
+             * @example CC-BY-SA-4.0
+             */
+            imageLicenceId?: string | null;
+            /**
+             * @description The image's description page, which the rendered credit links to
+             * @example https://commons.wikimedia.org/wiki/File:Example.jpg
+             */
+            imageSourceUrl?: string | null;
             /** @description Alternative formats of the same image, best first, for a <picture> element. Empty when the image is not cached, in which case `imageUrl` is all there is. */
             imageSources?: components["schemas"]["ImageSourceResponse"][];
             /**
@@ -713,6 +773,21 @@ export interface components {
             name?: string;
             /** @description URL of the artist's photo or band logo */
             imageUrl?: string | null;
+            /**
+             * @description Who to credit for `imageUrl`, worded as the archive publishes it. Present whenever `imageUrl` is, and it must be shown beside the image.
+             * @example Photographer Name, via Wikimedia Commons
+             */
+            imageAttribution?: string | null;
+            /**
+             * @description SPDX identifier of the licence `imageUrl` is published under, or `PD` where no identifier applies. Example values: `CC0-1.0`, `CC-BY-4.0`, `CC-BY-SA-4.0`.
+             * @example CC-BY-SA-4.0
+             */
+            imageLicenceId?: string | null;
+            /**
+             * @description The image's description page, which the rendered credit links to
+             * @example https://commons.wikimedia.org/wiki/File:Example.jpg
+             */
+            imageSourceUrl?: string | null;
             /** @description Alternative formats of the same image, best first, for a <picture> element. Empty when the image is not cached, in which case `imageUrl` is all there is. */
             imageSources?: components["schemas"]["ImageSourceResponse"][];
             /**
@@ -946,6 +1021,21 @@ export interface components {
             description?: string | null;
             /** @description URL of the artist's photo or band logo */
             imageUrl?: string | null;
+            /**
+             * @description Who to credit for `imageUrl`, worded as the archive publishes it. Present whenever `imageUrl` is, and it must be shown beside the image.
+             * @example Photographer Name, via Wikimedia Commons
+             */
+            imageAttribution?: string | null;
+            /**
+             * @description SPDX identifier of the licence `imageUrl` is published under, or `PD` where no identifier applies. Example values: `CC0-1.0`, `CC-BY-4.0`, `CC-BY-SA-4.0`.
+             * @example CC-BY-SA-4.0
+             */
+            imageLicenceId?: string | null;
+            /**
+             * @description The image's description page, which the rendered credit links to
+             * @example https://commons.wikimedia.org/wiki/File:Example.jpg
+             */
+            imageSourceUrl?: string | null;
             /** @description Alternative formats of the same image, best first, for a <picture> element. Empty when the image is not cached, in which case `imageUrl` is all there is. */
             imageSources?: components["schemas"]["ImageSourceResponse"][];
             /**

@@ -27,6 +27,13 @@ const props = defineProps<{
   /** Goes on the `<img>`, never on the wrapper — see the `contents` note in the template. */
   imgClass?: string
   /**
+   * The image's credit, as one line of plain text, for a slot too small to caption (#1275).
+   *
+   * A detail page renders `ImageCreditLine` instead, which links the author and the licence. A card
+   * at 3:2 in a two-column grid has no room for either, and a `title` is what is left.
+   */
+  title?: string | null
+  /**
    * A box to reserve, as a Tailwind aspect utility: `aspect-[3/2]`.
    *
    * **Only a fixed slot needs this.** The intrinsic dimensions below reserve the *original's* shape,
@@ -89,6 +96,7 @@ const dimensions = computed(() =>
       v-bind="aspect ? {} : dimensions"
       :src="src"
       :alt="alt"
+      :title="title ?? undefined"
       :class="[imgClass, aspect && 'size-full object-cover']"
       loading="lazy"
     />
