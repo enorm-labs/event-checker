@@ -16,7 +16,9 @@ exists rather than what it contains.
 
 ## Where the candidates came from
 
-Three searches, each weaker than the one before, and the hit rates say by how much.
+Two rounds. Wikimedia Commons ran first, over all 86 venues. Openverse ran second, over the 46 Commons could not picture.
+
+**Round 1 — Wikimedia Commons.** Three searches, each weaker than the one before, and the hit rates say by how much.
 
 | Found by         | Method                                                            | Reviewed | Confirmed | Hit rate |
 | ---------------- | ----------------------------------------------------------------- | -------- | --------- | -------- |
@@ -25,25 +27,35 @@ Three searches, each weaker than the one before, and the hit rates say by how mu
 | `commons-nearby` | A Commons file photographed within 150 m of the venue             | 22       | 2         | **9%**   |
 |                  |                                                                   | **86**   | **40**    | 47%      |
 
-**One venue counts under a round it was not first found in.** `Tresor` had a `P18` image, and Commons
-names no author for it, so it was replaced by a file a title search found. The row records where the
-picture in use came from, not every candidate a venue ever had.
-
 **Proximity is worth about a ninth of a name.** That is the finding worth keeping. A coordinate is a weak way to find a picture of a building, and that
 argues against a coordinate-only archive next.
+
+**Round 2 — Openverse.** One search over the 46 venues round 1 left empty. Openverse aggregates Flickr, Europeana, Smithsonian and more behind one API,
+so it answers "is there supply outside Commons" in a single pass.
+
+| Found by           | Method                                                       | Reviewed | Confirmed | Hit rate |
+| ------------------ | ------------------------------------------------------------ | -------- | --------- | -------- |
+| `openverse-flickr` | An Openverse file whose title names the venue, plus `Berlin` | 46       | 4         | **9%**   |
+
+**Flickr is not empty, but it is thin.** The probe found a candidate for 13 of the 46, and 127 candidates in total. A person kept 4. Most of the rest are
+gig photographs. A band on the stage answers a different question than a venue card asks.
+
+**Both denominators are the venues a round reviewed, not what `found_by` now counts.** Four venues were rejected in round 1 and confirmed in round 2, so their
+rows moved to `openverse-flickr`. The column records where the picture in use came from, not every candidate a venue had. `Tresor` moved the same way
+inside round 1. It had a `P18` image, Commons names no author for it, and a title search found the file used instead.
 
 **Commons is exhausted.** All three searches it supports ran, and a person read every result. A fourth pass returns what these three rejected.
 
 ## What the columns hold
 
-| Column              | Meaning                                                                  |
-| ------------------- | ------------------------------------------------------------------------ |
-| `venue`             | The venue name as `http/importer/dev-seed.http` seeds it                 |
-| `decision`          | `CONFIRMED` or `REJECTED`. Every venue has one                           |
-| `file`              | The Commons file name, without the `File:` prefix. Empty for a rejection |
-| `licence_at_review` | The Commons licence template as it read when the picture was judged      |
-| `file_page`         | The file's description page, which the rendered credit links to          |
-| `found_by`          | Which of the three searches proposed it                                  |
+| Column              | Meaning                                                                                                                     |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `venue`             | The venue name as `http/importer/dev-seed.http` seeds it                                                                    |
+| `decision`          | `CONFIRMED` or `REJECTED`. Every venue has one                                                                              |
+| `file`              | How the archive names the picture: a Commons file name without the `File:` prefix, a Flickr photo id. Empty for a rejection |
+| `licence_at_review` | The licence as the archive stated it, worded the way the `SPDX` map in the script keys on                                   |
+| `file_page`         | The file's description page, which the rendered credit links to                                                             |
+| `found_by`          | Which search proposed it                                                                                                    |
 
 ## What is still open
 
@@ -51,5 +63,11 @@ argues against a coordinate-only archive next.
   `Velodrom`. The script stops on each rather than guessing, so those three venues stay without a picture until the licences are read. `FAL` is copyleft and its
   share-alike is **not** the CC 4.0 § 2(a)(4) reading that ADR-019 and #1276 rely on. Owned by
   [#1281](https://github.com/enorm-labs/event-junkie/issues/1281).
-- **46 venues have nothing.** They are the hard half — a room in a courtyard, a bar with no frontage, a rooftop over a car park. Few people photograph them,
-  which is as true of Flickr as of Commons. Asking the venues is [#808](https://github.com/enorm-labs/event-junkie/issues/808).
+- **The script writes Commons rows only.** An `openverse-flickr` row stops with a message saying so. Flickr states a licence through its own API, which
+  needs a key. Openverse cannot answer instead, because it indexes Flickr rather than speaks for it, and ADR-019 asks for the licence at write time. The
+  four confirmed Flickr pictures stay unwritten until that is built.
+- **One Flickr picture carries the Public Domain Mark.** `Klunkerkranich`. The mark says a work is out of copyright, which a 2015 rooftop photograph is not, so
+  the uploader more probably meant "take it". The credit names the photographer and links the source either way, which is why it is recorded rather than
+  refused.
+- **42 venues have nothing.** They are the hard half — a room in a courtyard, a bar with no frontage, a rooftop over a car park. Few people photograph them,
+  and two archives say so. Asking the venues is [#808](https://github.com/enorm-labs/event-junkie/issues/808).
