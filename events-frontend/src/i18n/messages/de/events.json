@@ -44,7 +44,9 @@
     "kind": "Event",
     "presale": "Vorverkauf",
     "boxOffice": "Abendkasse",
-    "hasTakenPlace": "Dieses Event hat bereits stattgefunden."
+    "hasTakenPlace": "Dieses Event hat bereits stattgefunden.",
+    "upcomingAtVenue": "Schau, was bei {venue} als Nächstes läuft.",
+    "browseUpcoming": "Schau, was gerade läuft."
   },
   "role": {
     "HEADLINER": "Headliner",

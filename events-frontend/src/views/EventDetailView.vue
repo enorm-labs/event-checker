@@ -144,8 +144,26 @@ useStructuredData((): JsonLd[] => {
             · {{ t('events.card.free') }}
           </span>
         </div>
+        <!--
+          A past event is where a search engine sends people, and it kept ranking for the act's name
+          long after the night. Saying only that it is over left the venue's own site as the nearest
+          onward link (#1268), so the sentence carries one that stays here — the venue if we know
+          it, since the visitor has already shown interest in it, and the list otherwise.
+        -->
         <p v-if="isPast" class="text-sm text-muted-foreground">
           {{ t('events.detail.hasTakenPlace') }}
+          <RouterLink
+            v-if="event.venue?.slug"
+            :to="localePath(`/venues/${event.venue.slug}`)"
+            class="text-foreground underline underline-offset-4"
+            >{{ t('events.detail.upcomingAtVenue', { venue: event.venue.name }) }}</RouterLink
+          >
+          <RouterLink
+            v-else
+            :to="localePath('/events')"
+            class="text-foreground underline underline-offset-4"
+            >{{ t('events.detail.browseUpcoming') }}</RouterLink
+          >
         </p>
       </header>
 
