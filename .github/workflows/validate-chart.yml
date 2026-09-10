@@ -67,7 +67,7 @@ env:
   # premise lapsed and the pin then cost something: Helm 4's `--strict` rejects an unknown `Chart.yaml`
   # key and Helm 3's does not, so a malformed chart failed the pre-commit hook and passed here. **The
   # gate must not be weaker than the hook in front of it.** All three copies move together.
-  HELM_VERSION: v4.2.4
+  HELM_VERSION: 4.3.0
   # `flux schema validate` replaced kubeconform in #414. Both pinned, both invisible to Dependabot —
   # they are strings in YAML, not a manifest — so Renovate's `customManagers` watch them (ADR-024).
   FLUX_VERSION: 2.9.5
