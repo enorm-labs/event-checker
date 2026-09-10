@@ -134,7 +134,6 @@ data class EventArtistResponse(
     val stage: String? = null
 ) {
     companion object {
-        /** Converts an [EventArtistEntity] join-table row to its API response representation. */
         fun fromEntity(entity: EventArtistEntity): EventArtistResponse =
             EventArtistResponse(
                 artistId = entity.artistId,

@@ -27,7 +27,6 @@ data class PromoterResponse(
     val updatedAt: Instant?
 ) {
     companion object {
-        /** Converts a domain [Promoter] to its API response representation. */
         fun fromDomain(promoter: Promoter): PromoterResponse =
             PromoterResponse(
                 id = requireNotNull(promoter.id) { "Persisted promoter must have an ID" },

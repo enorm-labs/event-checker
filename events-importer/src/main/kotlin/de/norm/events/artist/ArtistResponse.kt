@@ -35,7 +35,6 @@ data class ArtistResponse(
     val updatedAt: Instant?
 ) {
     companion object {
-        /** Converts a domain [Artist] to its API response representation. */
         fun fromDomain(artist: Artist): ArtistResponse =
             ArtistResponse(
                 id = requireNotNull(artist.id) { "Persisted artist must have an ID" },

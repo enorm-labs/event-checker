@@ -51,7 +51,6 @@ data class VenueResponse(
     val updatedAt: Instant?
 ) {
     companion object {
-        /** Converts a domain [Venue] to its API response representation. */
         fun fromDomain(venue: Venue): VenueResponse =
             VenueResponse(
                 id = requireNotNull(venue.id) { "Persisted venue must have an ID" },
