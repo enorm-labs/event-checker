@@ -34,6 +34,13 @@ const props = defineProps<{
    */
   title?: string | null
   /**
+   * `lazy` everywhere but the one image that is the LCP element on its page.
+   *
+   * A lazily loaded largest-contentful-paint image is the defect #1207 reports, so a caller that
+   * knows its image opens the page says so rather than leaving the browser to discover it late.
+   */
+  loading?: 'lazy' | 'eager'
+  /**
    * A box to reserve, as a Tailwind aspect utility: `aspect-[3/2]`.
    *
    * **Only a fixed slot needs this.** The intrinsic dimensions below reserve the *original's* shape,
@@ -98,7 +105,7 @@ const dimensions = computed(() =>
       :alt="alt"
       :title="title ?? undefined"
       :class="[imgClass, aspect && 'size-full object-cover']"
-      loading="lazy"
+      :loading="loading ?? 'lazy'"
     />
   </picture>
   <!--
