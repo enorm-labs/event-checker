@@ -55,10 +55,24 @@ const current = computed<Locale>(() => {
   return isLocale(fromUrl) ? fromUrl : DEFAULT_LOCALE
 })
 
-/** The current path with its locale segment swapped, so the switch stays on this page. */
+/**
+ * The current path with its locale segment swapped, so the switch stays on this page.
+ *
+ * The query goes with it. Without it, switching language on a filtered list dropped every filter
+ * and returned an unfiltered page (#1249) — the visitor had asked a question in one language and
+ * got the whole catalogue back in the other.
+ */
 function pathIn(locale: Locale): string {
   const rest = stripLocale(route?.path ?? '/')
-  return `${`/${locale}${rest}`.replace(/\/$/, '')}${route?.hash ?? ''}`
+  const params = new URLSearchParams()
+  for (const [key, value] of Object.entries(route?.query ?? {})) {
+    // A repeated parameter arrives as an array — `sort` is one, and the filters may become several.
+    for (const one of Array.isArray(value) ? value : [value]) {
+      if (one != null) params.append(key, String(one))
+    }
+  }
+  const search = params.toString()
+  return `${`/${locale}${rest}`.replace(/\/$/, '')}${search ? `?${search}` : ''}${route?.hash ?? ''}`
 }
 </script>
 

@@ -41,6 +41,18 @@ test('html lang matches the locale in the URL', async ({ page }) => {
   await expect(page.locator('html')).toHaveAttribute('lang', 'en')
 })
 
+test('switching language keeps the filters', async ({ page }) => {
+  // Found by walking the flows (#1249): the switcher swapped the locale segment and kept the hash,
+  // but dropped the query, so a filtered list answered in the other language with the whole
+  // catalogue. A visitor who has narrowed a list has done work that survives a language change.
+  await page.goto('/en/events?q=Tresor&type=PARTY')
+
+  await page.getByRole('link', { name: 'Deutsch' }).first().click()
+
+  await expect(page).toHaveURL(/\/de\/events\?.*q=Tresor/)
+  await expect(page).toHaveURL(/type=PARTY/)
+})
+
 test('an unknown path under a published locale does not loop', async ({ page }) => {
   // The catch-all prefixes unprefixed paths. Without a guard, an unmatched *prefixed* path would
   // be prefixed again — `/en/en/nonsense` — and redirect forever. It lands on the locale home.
