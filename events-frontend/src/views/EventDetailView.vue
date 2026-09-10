@@ -173,18 +173,23 @@ useStructuredData((): JsonLd[] => {
         `srcset`'s pixel widths into a choice, so they track the `<main>` classes above.
 
         The wrapper is the spacing. `space-y-8` puts its margin on the child that precedes the gap,
-        and `CachedImage` renders a `display: contents` <picture>, which has no box to carry one — so
-        the picture sat flush against the description while the placeholder, a real <div>, did not.
+        and `CachedImage` renders a `display: contents` <picture>, which has no box to carry one.
+
+        No poster, no placeholder. #811 draws one on a card, where a hole in a grid reads as broken.
+        Here the title is the content, and a full-width 3:2 void would push it off the screen.
+
+        `eager` because the poster is the LCP element on this page, which is what #1207 reports.
       -->
-      <div>
+      <div v-if="event.imageUrl">
         <CachedImage
           :src="event.imageUrl"
           :sources="event.imageSources"
           :intrinsic-width="event.intrinsicWidth"
           :intrinsic-height="event.intrinsicHeight"
           :alt="event.title ?? ''"
+          loading="eager"
           sizes="(min-width: 768px) 704px, (min-width: 640px) calc(100vw - 4rem), calc(100vw - 2rem)"
-          img-class="w-full rounded-lg border border-border object-cover"
+          img-class="w-full border border-border object-cover"
         />
       </div>
 

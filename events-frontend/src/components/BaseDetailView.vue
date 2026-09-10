@@ -82,26 +82,42 @@ const { t } = useI18n()
     <p v-else-if="error" class="text-sm text-destructive">{{ error }}</p>
 
     <template v-else-if="ready">
-      <header class="flex gap-4">
+      <!--
+        The same three lengths as the event poster, because this is the same column: `max-w-3xl`
+        less `sm:p-8` is 704 px, and the viewport less its padding below that. They are what turn
+        `srcset`'s widths into a choice, so they track the `<main>` classes above.
+
+        The wrapper carries the spacing and the caption. `space-y-8` puts its margin on the child
+        before the gap, and `CachedImage` renders a `display: contents` <picture> with no box to
+        hold one.
+
+        `eager` because this is the largest element above the fold, and a lazy LCP is the defect
+        #1207 reports on the event card.
+      -->
+      <div v-if="imageUrl" class="space-y-2">
         <CachedImage
           :src="imageUrl"
           :sources="imageSources"
           :intrinsic-width="intrinsicWidth"
           :intrinsic-height="intrinsicHeight"
           :alt="name ?? ''"
-          sizes="96px"
-          img-class="size-24 shrink-0 rounded-lg border border-border object-cover"
+          loading="eager"
+          sizes="(min-width: 768px) 704px, (min-width: 640px) calc(100vw - 4rem), calc(100vw - 2rem)"
+          img-class="w-full border border-border object-cover"
         />
-        <div class="space-y-2">
-          <SectionLabel as="p">{{ kind }}</SectionLabel>
-          <h1 class="text-page font-bold tracking-tight">{{ name }}</h1>
-          <slot name="meta" />
-        </div>
-      </header>
+        <ImageCreditLine v-if="credit" :credit="credit" />
+      </div>
 
-      <!-- Under the header rather than under the image: the hero is 96 px wide, and a credit
-           wrapped into that column is unreadable. -->
-      <ImageCreditLine v-if="credit" :credit="credit" />
+      <!--
+        No picture, no placeholder. #811 draws one on a card, where a hole in a grid reads as
+        broken, and that reasoning does not reach a detail page: the name is the content, and a
+        full-width 3:2 void would push it off the screen for the venues that have no photograph.
+      -->
+      <header class="space-y-2">
+        <SectionLabel as="p">{{ kind }}</SectionLabel>
+        <h1 class="text-page font-bold tracking-tight">{{ name }}</h1>
+        <slot name="meta" />
+      </header>
 
       <slot />
 
