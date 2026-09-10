@@ -61,6 +61,29 @@ describe('VenueCard', () => {
     expect(onAListPage.find('h3').exists()).toBe(false)
   })
 
+  it('carries the image credit as a title, because the card has no room for a caption', () => {
+    const wrapper = mount(VenueCard, {
+      props: {
+        venue: {
+          ...venue,
+          imageAttribution: 'Photographer Name, via Wikimedia Commons',
+          imageLicenceId: 'CC-BY-SA-4.0',
+          imageSourceUrl: 'https://commons.wikimedia.org/wiki/File:Example.jpg',
+        },
+      },
+      global: { stubs },
+    })
+
+    expect(wrapper.get('img').attributes('title')).toBe(
+      'Photo: Photographer Name, via Wikimedia Commons · CC BY-SA 4.0',
+    )
+  })
+
+  it('leaves the title off an image with no credit', () => {
+    const wrapper = mount(VenueCard, { props: { venue }, global: { stubs } })
+    expect(wrapper.get('img').attributes('title')).toBeUndefined()
+  })
+
   it('falls back to the city when address and district are missing', () => {
     const wrapper = mount(VenueCard, {
       props: { venue: { slug: 'x', name: 'Somewhere', city: 'Berlin' } },

@@ -7,6 +7,7 @@ import { APP_NAME, placeholderPageMeta, venuePageMeta } from '@/lib/pageMeta'
 import { useEventSearch } from '@/composables/useEvents'
 import { yesterdayIso } from '@/lib/format'
 import { useVenue } from '@/composables/useVenue'
+import { imageCredit } from '@/lib/imageCredit'
 import { useI18n } from 'vue-i18n'
 import { useStructuredData } from '@/composables/useStructuredData'
 import { breadcrumbJsonLd, type JsonLd, venueJsonLd } from '@/lib/structuredData'
@@ -87,6 +88,8 @@ usePageMeta(() =>
         notFound.value ? t('detail.notFoundHeading', { kind: kind.value }) : kind.value,
       ),
 )
+
+const credit = computed(() => imageCredit(venue.value))
 </script>
 
 <template>
@@ -97,6 +100,7 @@ usePageMeta(() =>
     :events-error="eventsError"
     :events-loading="eventsLoading"
     :image-url="venue?.imageUrl"
+    :credit="credit"
     :image-sources="venue?.imageSources"
     :intrinsic-width="venue?.intrinsicWidth"
     :intrinsic-height="venue?.intrinsicHeight"

@@ -7,6 +7,7 @@ import { artistPageMeta, placeholderPageMeta } from '@/lib/pageMeta'
 import { useArtist } from '@/composables/useArtist'
 import { useEventSearch } from '@/composables/useEvents'
 import { yesterdayIso } from '@/lib/format'
+import { imageCredit } from '@/lib/imageCredit'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
@@ -59,6 +60,8 @@ usePageMeta(() =>
         notFound.value ? t('detail.notFoundHeading', { kind: kind.value }) : kind.value,
       ),
 )
+
+const credit = computed(() => imageCredit(artist.value))
 </script>
 
 <template>
@@ -69,6 +72,7 @@ usePageMeta(() =>
     :events-error="eventsError"
     :events-loading="eventsLoading"
     :image-url="artist?.imageUrl"
+    :credit="credit"
     :image-sources="artist?.imageSources"
     :intrinsic-width="artist?.intrinsicWidth"
     :intrinsic-height="artist?.intrinsicHeight"

@@ -7,6 +7,7 @@ import { placeholderPageMeta, promoterPageMeta } from '@/lib/pageMeta'
 import { useEventSearch } from '@/composables/useEvents'
 import { yesterdayIso } from '@/lib/format'
 import { usePromoter } from '@/composables/usePromoter'
+import { imageCredit } from '@/lib/imageCredit'
 import { useI18n } from 'vue-i18n'
 
 const route = useRoute()
@@ -55,6 +56,8 @@ usePageMeta(() =>
         notFound.value ? t('detail.notFoundHeading', { kind: kind.value }) : kind.value,
       ),
 )
+
+const credit = computed(() => imageCredit(promoter.value))
 </script>
 
 <template>
@@ -65,6 +68,7 @@ usePageMeta(() =>
     :events-error="eventsError"
     :events-loading="eventsLoading"
     :image-url="promoter?.imageUrl"
+    :credit="credit"
     :image-sources="promoter?.imageSources"
     :intrinsic-width="promoter?.intrinsicWidth"
     :intrinsic-height="promoter?.intrinsicHeight"

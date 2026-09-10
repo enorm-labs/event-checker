@@ -1,6 +1,9 @@
 package de.norm.events.artist
 
+import de.norm.events.image.IMAGE_ATTRIBUTION_DESCRIPTION
+import de.norm.events.image.IMAGE_LICENCE_ID_DESCRIPTION
 import de.norm.events.image.IMAGE_SOURCES_DESCRIPTION
+import de.norm.events.image.IMAGE_SOURCE_URL_DESCRIPTION
 import de.norm.events.image.INTRINSIC_HEIGHT_DESCRIPTION
 import de.norm.events.image.INTRINSIC_WIDTH_DESCRIPTION
 import de.norm.events.image.ImageSourceResponse
@@ -20,6 +23,12 @@ data class ArtistSummaryResponse(
     val name: String,
     @Schema(description = "URL of the artist's photo or band logo")
     val imageUrl: String?,
+    @Schema(description = IMAGE_ATTRIBUTION_DESCRIPTION, example = "Photographer Name, via Wikimedia Commons")
+    val imageAttribution: String?,
+    @Schema(description = IMAGE_LICENCE_ID_DESCRIPTION, example = "CC-BY-SA-4.0")
+    val imageLicenceId: String?,
+    @Schema(description = IMAGE_SOURCE_URL_DESCRIPTION, example = "https://commons.wikimedia.org/wiki/File:Example.jpg")
+    val imageSourceUrl: String?,
     @Schema(description = IMAGE_SOURCES_DESCRIPTION)
     val imageSources: List<ImageSourceResponse>,
     @Schema(description = INTRINSIC_WIDTH_DESCRIPTION, example = "1200")
@@ -37,6 +46,9 @@ data class ArtistSummaryResponse(
                 slug = entity.slug,
                 name = entity.name,
                 imageUrl = image.url,
+                imageAttribution = entity.imageAttribution,
+                imageLicenceId = entity.imageLicenceId,
+                imageSourceUrl = entity.imageSourceUrl,
                 imageSources = image.sources,
                 intrinsicWidth = image.intrinsicWidth,
                 intrinsicHeight = image.intrinsicHeight
@@ -62,6 +74,12 @@ data class ArtistDetailResponse(
     val description: String?,
     @Schema(description = "URL of the artist's photo or band logo")
     val imageUrl: String?,
+    @Schema(description = IMAGE_ATTRIBUTION_DESCRIPTION, example = "Photographer Name, via Wikimedia Commons")
+    val imageAttribution: String?,
+    @Schema(description = IMAGE_LICENCE_ID_DESCRIPTION, example = "CC-BY-SA-4.0")
+    val imageLicenceId: String?,
+    @Schema(description = IMAGE_SOURCE_URL_DESCRIPTION, example = "https://commons.wikimedia.org/wiki/File:Example.jpg")
+    val imageSourceUrl: String?,
     @Schema(description = IMAGE_SOURCES_DESCRIPTION)
     val imageSources: List<ImageSourceResponse>,
     @Schema(description = INTRINSIC_WIDTH_DESCRIPTION, example = "1200")
@@ -88,6 +106,9 @@ data class ArtistDetailResponse(
                 name = entity.name,
                 description = entity.description,
                 imageUrl = image.url,
+                imageAttribution = entity.imageAttribution,
+                imageLicenceId = entity.imageLicenceId,
+                imageSourceUrl = entity.imageSourceUrl,
                 imageSources = image.sources,
                 intrinsicWidth = image.intrinsicWidth,
                 intrinsicHeight = image.intrinsicHeight,

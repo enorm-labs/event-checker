@@ -126,13 +126,15 @@ abstract class BaseControllerTest {
     ): Long =
         databaseClient
             .sql(
-                "INSERT INTO events.venue (name, slug, city, address, image_url, district, description) " +
-                    "VALUES (:name, :slug, :city, :address, :imageUrl, :district, :description) RETURNING id"
+                "INSERT INTO events.venue " +
+                    "(name, slug, city, address, image_url, image_attribution, image_licence_id, image_source_url, district, description) " +
+                    "VALUES (:name, :slug, :city, :address, :imageUrl, :attribution, :licenceId, :sourceUrl, :district, :description) RETURNING id"
             ).bind("name", name)
             .bind("slug", slug)
             .bind("city", city)
             .bindOrNull("address", address)
             .bindOrNull("imageUrl", imageUrl)
+            .bindCredit(imageUrl)
             .bindOrNull("district", district)
             .bindOrNull("description", description)
             .mapId()
@@ -145,11 +147,12 @@ abstract class BaseControllerTest {
     ): Long =
         databaseClient
             .sql(
-                "INSERT INTO events.artist (name, slug, image_url, description) " +
-                    "VALUES (:name, :slug, :imageUrl, :description) RETURNING id"
+                "INSERT INTO events.artist (name, slug, image_url, image_attribution, image_licence_id, image_source_url, description) " +
+                    "VALUES (:name, :slug, :imageUrl, :attribution, :licenceId, :sourceUrl, :description) RETURNING id"
             ).bind("name", name)
             .bind("slug", slug)
             .bindOrNull("imageUrl", imageUrl)
+            .bindCredit(imageUrl)
             .bindOrNull("description", description)
             .mapId()
 
@@ -159,10 +162,13 @@ abstract class BaseControllerTest {
         imageUrl: String? = null
     ): Long =
         databaseClient
-            .sql("INSERT INTO events.promoter (name, slug, image_url) VALUES (:name, :slug, :imageUrl) RETURNING id")
-            .bind("name", name)
+            .sql(
+                "INSERT INTO events.promoter (name, slug, image_url, image_attribution, image_licence_id, image_source_url) " +
+                    "VALUES (:name, :slug, :imageUrl, :attribution, :licenceId, :sourceUrl) RETURNING id"
+            ).bind("name", name)
             .bind("slug", slug)
             .bindOrNull("imageUrl", imageUrl)
+            .bindCredit(imageUrl)
             .mapId()
 
     protected suspend fun insertGenreTag(
@@ -311,6 +317,17 @@ abstract class BaseControllerTest {
     }
 
     private suspend fun DatabaseClient.GenericExecuteSpec.mapId(): Long = map { row: Readable -> row.get(0, Long::class.javaObjectType)!! }.one().awaitSingle()
+
+    /**
+     * The credit every image row owes, or nulls where the fixture has no image.
+     *
+     * V020 refuses a row with an `image_url` and no attribution, so a fixture that gives a venue,
+     * artist or promoter an image supplies one here rather than at each call site.
+     */
+    private fun DatabaseClient.GenericExecuteSpec.bindCredit(imageUrl: String?): DatabaseClient.GenericExecuteSpec =
+        bindOrNull("attribution", imageUrl?.let { "Fixture Photographer" })
+            .bindOrNull("licenceId", imageUrl?.let { "CC-BY-SA-4.0" })
+            .bindOrNull("sourceUrl", imageUrl?.let { "https://commons.wikimedia.org/wiki/File:Fixture.jpg" })
 
     private fun DatabaseClient.GenericExecuteSpec.bindOrNull(
         name: String,

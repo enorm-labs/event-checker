@@ -17,6 +17,9 @@ data class PromoterEntity(
     val slug: String,
     val websiteUrl: String? = null,
     val imageUrl: String? = null,
+    val imageAttribution: String? = null,
+    val imageLicenceId: String? = null,
+    val imageSourceUrl: String? = null,
     val createdAt: Instant? = null,
     val updatedAt: Instant? = null
 )

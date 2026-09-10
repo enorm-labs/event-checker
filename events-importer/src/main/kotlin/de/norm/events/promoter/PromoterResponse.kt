@@ -21,6 +21,12 @@ data class PromoterResponse(
     val websiteUrl: String?,
     @Schema(description = "URL of the promoter's logo image", example = "https://example.com/36-concerts-logo.jpg")
     val imageUrl: String?,
+    @Schema(description = "Who to credit for `imageUrl`", example = "Photographer Name, via Wikimedia Commons")
+    val imageAttribution: String?,
+    @Schema(description = "SPDX identifier of the licence `imageUrl` is published under", example = "CC-BY-SA-4.0")
+    val imageLicenceId: String?,
+    @Schema(description = "The image's description page, which the rendered credit links to", example = "https://commons.wikimedia.org/wiki/File:Example.jpg")
+    val imageSourceUrl: String?,
     @Schema(description = "Timestamp when this record was first created")
     val createdAt: Instant?,
     @Schema(description = "Timestamp when this record was last modified")
@@ -34,6 +40,9 @@ data class PromoterResponse(
                 slug = promoter.slug,
                 websiteUrl = promoter.websiteUrl,
                 imageUrl = promoter.imageUrl,
+                imageAttribution = promoter.imageAttribution,
+                imageLicenceId = promoter.imageLicenceId,
+                imageSourceUrl = promoter.imageSourceUrl,
                 createdAt = promoter.createdAt,
                 updatedAt = promoter.updatedAt
             )

@@ -37,5 +37,9 @@
   },
   "pagination": {
     "pageOf": "Page {current} of {total}"
+  },
+  "imageCredit": {
+    "photo": "Photo:",
+    "title": "Photo: {attribution} · {licence}"
   }
 }
