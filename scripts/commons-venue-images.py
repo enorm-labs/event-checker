@@ -1,0 +1,290 @@
+#!/usr/bin/env python3
+"""Write the reviewed Wikimedia Commons images onto the venues (#1277).
+
+Dry run by default. `--apply` is what writes, because a venue PUT replaces every field and a wrong
+picture on a venue page is worse than the placeholder #811 already draws.
+
+    python3 scripts/commons-venue-images.py                      # show the plan
+    python3 scripts/commons-venue-images.py --apply              # write it
+    python3 scripts/commons-venue-images.py --host http://localhost:18081 --apply
+    python3 scripts/commons-venue-images.py --venue Tresor       # one venue
+
+Reads docs/venue-images/REVIEWED.tsv, which records a person's verdict on every one of the 86
+venues. Only a CONFIRMED row is written. A REJECTED row is never proposed again, which is the point
+of recording it.
+
+The licence and the credit are read from the Commons API at run time and never from the file above,
+because a Commons file can be relicensed after a review. `licence_at_review` is compared against
+what the API returns now, and a difference stops that venue rather than writing a stale credit.
+
+Three things are stored per venue: the image URL, the credit, and the licence. All three or none --
+V020 rejects a row with an image and no credit, and so does the admin API.
+
+The URL stored is a Commons thumbnail, never the original file. Commons renders one on demand at
+any width, it is the same image under the same licence, and the originals run to 18 MB where
+`images.fetch.max-bytes` stops at 8 MiB.
+
+Standard library only, and no key: the Commons API needs none.
+"""
+
+import argparse
+import csv
+import html
+import json
+import re
+import sys
+import unicodedata
+import urllib.error
+import urllib.parse
+import urllib.request
+
+REVIEWED = "docs/venue-images/REVIEWED.tsv"
+COMMONS = "https://commons.wikimedia.org/w/api.php"
+AGENT = "event-junkie/1.0 (https://github.com/enorm-labs/event-junkie)"
+LOCAL_HOST = "http://localhost:8081"
+PAGE_SIZE = 100
+MAX_PAGES = 100
+
+# Wide enough for the largest render site and small enough to stay well inside the fetcher's cap.
+# Advisory rather than exact: Commons rounds up to a cached bucket, so asking for 1600 serves 1920.
+# It also serves the original where the bucket would meet or exceed it, which is why MAX_BYTES below
+# is checked rather than assumed.
+THUMB_WIDTH = 1600
+
+# `images.fetch.max-bytes` in events-importer/src/main/resources/application.yaml. The fetcher
+# rejects on the declared Content-Length, so a URL above this is one the importer can never read.
+MAX_BYTES = 8 * 1024 * 1024
+
+# Commons publishes a licence as a template name. `image_licence_id` holds an SPDX identifier, so
+# the mapping is written out rather than derived: a pattern over "CC BY-…" also produces an
+# identifier for a template Creative Commons never published, and a wrong licence is worse than a
+# refused write. A name absent here stops that venue and is reported.
+SPDX = {
+    "CC0": "CC0-1.0",
+    "CC BY 2.0": "CC-BY-2.0",
+    "CC BY 2.5": "CC-BY-2.5",
+    "CC BY 3.0": "CC-BY-3.0",
+    "CC BY 3.0 de": "CC-BY-3.0-DE",
+    "CC BY 4.0": "CC-BY-4.0",
+    "CC BY-SA 2.0": "CC-BY-SA-2.0",
+    "CC BY-SA 2.0 de": "CC-BY-SA-2.0-DE",
+    "CC BY-SA 2.5": "CC-BY-SA-2.5",
+    "CC BY-SA 3.0": "CC-BY-SA-3.0",
+    "CC BY-SA 3.0 de": "CC-BY-SA-3.0-DE",
+    "CC BY-SA 4.0": "CC-BY-SA-4.0",
+    "Public domain": "PD",
+}
+
+# Every field a venue PUT carries. The admin API has no PATCH, so anything missing here is erased
+# from the row it writes.
+VENUE_FIELDS = (
+    "name",
+    "address",
+    "city",
+    "postalCode",
+    "district",
+    "latitude",
+    "longitude",
+    "websiteUrl",
+    "imageUrl",
+    "imageAttribution",
+    "imageLicenceId",
+    "imageSourceUrl",
+    "description",
+    "descriptionLanguage",
+    "descriptionAlt",
+    "descriptionAltLanguage",
+)
+
+
+def fold(s):
+    """Casefold and strip accents, for the last-resort match only."""
+    n = unicodedata.normalize("NFKD", s)
+    return "".join(c for c in n if not unicodedata.combining(c)).casefold().strip()
+
+
+# What Commons puts in `Artist` when nobody filled it in. A credit built from one of these names
+# nobody, and "No machine-readable author provided. X assumed (based on copyright claims)." on a
+# venue card is a sentence about copyright metadata rather than an author.
+NOT_AN_AUTHOR = ("no machine-readable author", "uploaded", "unknown", "see file page", "self")
+
+
+def plain(value):
+    """`Artist` arrives as HTML with a link in it; `image_attribution` holds a plain string."""
+    text = re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", value or ""))).strip()
+    # A label, not part of the name: "Photo: Andreas Praefcke" credits Andreas Praefcke.
+    return re.sub(r"^(photo|foto|bild|image)\s*[:\-]\s*", "", text, flags=re.IGNORECASE).strip()
+
+
+def names_an_author(credit):
+    lowered = credit.casefold()
+    return bool(credit) and not any(marker in lowered for marker in NOT_AN_AUTHOR)
+
+
+def without_query(url):
+    """Commons appends `utm_*` parameters to a thumbnail URL. They are ours to drop, not to store:
+    the column holds the identity of an image, and the importer would send them on every fetch."""
+    return urllib.parse.urlsplit(url)._replace(query="").geturl()
+
+
+def get_json(url, headers=None):
+    request = urllib.request.Request(url, headers={"Accept": "application/json", **(headers or {})})
+    with urllib.request.urlopen(request, timeout=30) as response:
+        return json.load(response)
+
+
+def read_reviewed(only=None):
+    with open(REVIEWED, encoding="utf-8", newline="") as handle:
+        rows = list(csv.DictReader(handle, delimiter="\t"))
+    confirmed = [r for r in rows if r["decision"] == "CONFIRMED"]
+    if only:
+        confirmed = [r for r in confirmed if fold(r["venue"]) == fold(only)]
+    return rows, confirmed
+
+
+def fetch_venues(host):
+    """Every venue the target holds, keyed by name and by folded name."""
+    venues = []
+    for page in range(MAX_PAGES):
+        url = f"{host}/api/admin/venues?page={page}&size={PAGE_SIZE}&sort=name,asc"
+        body = get_json(url)
+        venues.extend(body.get("content", []))
+        if body.get("last", True):
+            break
+    return venues
+
+
+def commons_file(title):
+    """Thumbnail URL, licence and credit for one Commons file, as the API states them."""
+    params = {
+        "action": "query",
+        "titles": "File:" + title,
+        "prop": "imageinfo",
+        "iiprop": "url|extmetadata|size|mime",
+        "iiurlwidth": THUMB_WIDTH,
+        "format": "json",
+    }
+    body = get_json(f"{COMMONS}?{urllib.parse.urlencode(params)}", {"User-Agent": AGENT})
+    page = next(iter(body.get("query", {}).get("pages", {}).values()), {})
+    if "missing" in page:
+        return None, "no such file on Commons"
+    info = next(iter(page.get("imageinfo") or []), {})
+    if not info.get("thumburl"):
+        return None, "Commons rendered no thumbnail"
+    # Commons serves the original file, not a rendering, where the requested width meets or exceeds
+    # it. That is correct and it is also the one path that can hand back something over the cap.
+    served_original = info.get("thumburl") == info.get("url")
+    if served_original and info.get("size", 0) > MAX_BYTES:
+        return None, f"Commons serves the original at {info['size'] // 1024 // 1024} MB, over the fetcher's cap"
+
+    meta = info.get("extmetadata", {})
+    return {
+        "thumb": without_query(info["thumburl"]),
+        "licence": plain(meta.get("LicenseShortName", {}).get("value")),
+        "artist": plain(meta.get("Artist", {}).get("value")),
+        "page": info.get("descriptionurl"),
+    }, None
+
+
+def plan_one(row, venue):
+    """What this venue would be written, or the reason it will not be."""
+    file_info, problem = commons_file(row["file"])
+    if problem:
+        return None, problem
+
+    if file_info["licence"] != row["licence_at_review"]:
+        return None, f"licence changed since review: {row['licence_at_review']} -> {file_info['licence']}"
+
+    spdx = SPDX.get(file_info["licence"])
+    if not spdx:
+        return None, f"no SPDX identifier for {file_info['licence']!r}"
+    if not names_an_author(file_info["artist"]):
+        stated = file_info["artist"] or "nothing"
+        return None, f"Commons names no author, it states {stated[:60]!r}"
+
+    body = {field: venue.get(field) for field in VENUE_FIELDS}
+    body["imageUrl"] = file_info["thumb"]
+    body["imageAttribution"] = f"{file_info['artist']}, via Wikimedia Commons"
+    body["imageLicenceId"] = spdx
+    body["imageSourceUrl"] = file_info["page"] or row["file_page"]
+    return body, None
+
+
+def put_venue(host, venue_id, body):
+    request = urllib.request.Request(
+        f"{host}/api/admin/venues/{venue_id}",
+        data=json.dumps(body).encode(),
+        headers={"Content-Type": "application/json"},
+        method="PUT",
+    )
+    with urllib.request.urlopen(request, timeout=30) as response:
+        return response.status
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Write the reviewed Commons images onto the venues.")
+    parser.add_argument("--host", default=LOCAL_HOST, help=f"importer admin API (default {LOCAL_HOST})")
+    parser.add_argument("--apply", action="store_true", help="write; without it nothing is changed")
+    parser.add_argument("--venue", help="only this venue, by name")
+    parser.add_argument("--force", action="store_true", help="also replace an image a venue already has")
+    args = parser.parse_args()
+
+    rows, confirmed = read_reviewed(args.venue)
+    if not confirmed:
+        print(f"no CONFIRMED row in {REVIEWED}" + (f" for {args.venue!r}" if args.venue else ""))
+        return 1
+    print(f"{len(rows)} reviewed, {len(confirmed)} confirmed\n")
+
+    try:
+        venues = fetch_venues(args.host)
+    except (urllib.error.URLError, OSError) as error:
+        print(f"cannot reach {args.host}: {error}")
+        return 1
+
+    by_name = {v["name"]: v for v in venues}
+    by_fold = {fold(v["name"]): v for v in venues}
+
+    written = skipped = stopped = 0
+    for row in confirmed:
+        venue = by_name.get(row["venue"]) or by_fold.get(fold(row["venue"]))
+        if not venue:
+            print(f"  STOP    {row['venue']:<26} no venue of that name on {args.host}")
+            stopped += 1
+            continue
+        if venue.get("imageUrl") and not args.force:
+            print(f"  skip    {row['venue']:<26} already has an image")
+            skipped += 1
+            continue
+
+        try:
+            body, problem = plan_one(row, venue)
+        except (urllib.error.URLError, OSError) as error:
+            body, problem = None, f"Commons unreachable: {error}"
+        if problem:
+            print(f"  STOP    {row['venue']:<26} {problem}")
+            stopped += 1
+            continue
+
+        if not args.apply:
+            print(f"  would   {row['venue']:<26} {body['imageLicenceId']:<16} {body['imageAttribution']}")
+            written += 1
+            continue
+
+        try:
+            put_venue(args.host, venue["id"], body)
+        except urllib.error.HTTPError as error:
+            print(f"  STOP    {row['venue']:<26} {error.code} {error.read().decode()[:160]}")
+            stopped += 1
+            continue
+        print(f"  wrote   {row['venue']:<26} {body['imageLicenceId']:<16} {body['imageAttribution']}")
+        written += 1
+
+    verb = "written" if args.apply else "would be written"
+    print(f"\n{written} {verb}, {skipped} skipped, {stopped} stopped")
+    if not args.apply and written:
+        print("Nothing was changed. Re-run with --apply.")
+    return 1 if stopped else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
