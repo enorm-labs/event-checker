@@ -88,6 +88,22 @@ test('shows an empty state when no venues match', async ({ page }) => {
   await expect(page.getByText(/no venues match/i)).toBeVisible()
 })
 
+test('the empty state offers a way out of the search', async ({ page }) => {
+  // A sentence with no control is a dead end, the same one the events list had (#1266).
+  await page.route(venuesList, (route) => {
+    const q = new URL(route.request().url()).searchParams.get('q')
+    return json(route, q ? pageBody([]) : pageBody([venue('lido', 'Lido')]))
+  })
+
+  await page.goto('/venues?q=nothing')
+  await expect(page.getByText(/no venues match/i)).toBeVisible()
+
+  await page.getByRole('button', { name: 'Clear the search' }).click()
+
+  await expect(page).toHaveURL(/\/venues$/)
+  await expect(page.getByRole('link', { name: /Lido/ })).toBeVisible()
+})
+
 test('paginates when there is more than one page', async ({ page }) => {
   await page.route(venuesList, (route) => {
     const pageParam = Number(new URL(route.request().url()).searchParams.get('page') ?? '0')

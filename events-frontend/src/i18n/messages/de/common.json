@@ -15,6 +15,9 @@
   "actions": {
     "search": "Suchen",
     "apply": "Anwenden",
+    "clearFilters": "Filter zurücksetzen",
+    "clearSearch": "Suche zurücksetzen",
+    "browseTonight": "Schau, was heute läuft",
     "previous": "Zurück",
     "next": "Weiter",
     "website": "Website",

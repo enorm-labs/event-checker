@@ -57,6 +57,22 @@ function goToPage(target: number) {
   router.push({ query: next })
 }
 
+/** Whether anything narrows the list, which is what a "clear" control has to have to offer. */
+const isFiltered = computed(() => Object.keys(route.query).some((key) => key !== 'page'))
+
+// A `page` past the last one is not an empty search, so it is clamped rather than reported as one
+// (#1267). `replace` keeps the dead number out of the history.
+watch(page, (loaded) => {
+  const last = (loaded?.totalPages ?? 0) - 1
+  if (!loaded || loaded.content?.length || last < 0 || currentPage.value <= last) return
+  router.replace({ query: { ...route.query, page: last > 0 ? String(last) : undefined } })
+})
+
+function clearSearch() {
+  search.value = ''
+  router.push({ query: {} })
+}
+
 onMounted(run)
 watch(() => route.query, run, { deep: true })
 
@@ -95,9 +111,13 @@ const { t } = useI18n()
       {{ t('common.states.loadingVenues') }}
     </p>
     <p v-else-if="error" class="text-sm text-destructive">{{ error }}</p>
-    <p v-else-if="!page?.content?.length" class="text-sm text-muted-foreground">
-      {{ t('venues.empty') }}
-    </p>
+    <!-- An empty result offers a control, not only a sentence (#1266). -->
+    <div v-else-if="!page?.content?.length" class="space-y-3">
+      <p class="text-sm text-muted-foreground">{{ t('venues.empty') }}</p>
+      <Button v-if="isFiltered" variant="outline" @click="clearSearch">
+        {{ t('common.actions.clearSearch') }}
+      </Button>
+    </div>
     <template v-else>
       <p class="text-sm text-muted-foreground">
         {{ t('venues.resultCount', { count: page.totalElements }) }}

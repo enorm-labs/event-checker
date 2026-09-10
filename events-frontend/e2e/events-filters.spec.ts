@@ -76,7 +76,11 @@ function eventsResponseFor(sp: URLSearchParams) {
   if (sp.get('from') && sp.get('to')) return eventPage(['Gig In Range'])
   if (sp.get('from')) return eventPage(['Gig From Date'])
 
-  return Number(sp.get('page') ?? '0') >= 1
+  const page = Number(sp.get('page') ?? '0')
+  // Past the last page the BFF answers with no content and the real totals, which is what makes an
+  // out-of-range page distinguishable from an empty result (#1267).
+  if (page >= 2) return eventPage([], { page, totalPages: 2, totalElements: 21 })
+  return page >= 1
     ? eventPage(['Second Page Event'], { page: 1, totalPages: 2, totalElements: 21 })
     : eventPage(['Default Event A', 'Default Event B'], {
         page: 0,
@@ -307,6 +311,30 @@ test('shows the empty state when no events match', async ({ page }) => {
   // Brand-voice empty state; match a stable substring so the wording can flex.
   await expect(page.getByText(/nothing matches/i)).toBeVisible()
   await expect(eventHeading(page, 'Default Event A')).toHaveCount(0)
+})
+
+test('the empty state offers a way out of the filters', async ({ page }) => {
+  // The message alone was a dead end: under a filter bar six rows tall on a phone, the visitor had
+  // to work out which of eight inputs to undo (#1266).
+  await page.goto('/events?q=nothing')
+  await expect(page.getByText(/nothing matches/i)).toBeVisible()
+
+  await expect(page.getByRole('link', { name: /tonight/i })).toBeVisible()
+  await page.getByRole('button', { name: 'Clear filters' }).click()
+
+  await expect(page).toHaveURL(/\/events$/)
+  await expect(eventHeading(page, 'Default Event A')).toBeVisible()
+})
+
+test('a page past the last one lands on the last page, not on an empty state', async ({ page }) => {
+  // The list shortens every night as events pass, so a shared link or a crawler's `?page=` can
+  // outlive its own range. Saying "nothing matches those filters" names a cause that is not the
+  // cause, and leaves no pager to step back with (#1267).
+  await page.goto('/events?page=99999')
+
+  await expect(page).toHaveURL(/[?&]page=1(&|$)/)
+  await expect(eventHeading(page, 'Second Page Event')).toBeVisible()
+  await expect(page.getByText(/nothing matches/i)).toHaveCount(0)
 })
 
 test('paginates through results, preserving no filter', async ({ page }) => {
