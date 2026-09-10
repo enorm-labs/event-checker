@@ -33,7 +33,7 @@ export const CARD_CLASS = 'group flex flex-col gap-3'
  * a poster has its own edge. Down, it parts one card's last line of text from the next card's
  * poster, which without chrome would otherwise read as one running column.
  */
-export const CARD_GRID_CLASS = 'grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2'
+export const CARD_GRID_CLASS = 'grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2'
 
 /**
  * The two filter bars: chrome, not an object (see #1240). One hairline rule, which is the only line
