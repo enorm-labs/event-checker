@@ -30,16 +30,31 @@ export interface ImageCredit {
  *
  * Listed rather than derived from the identifier. A pattern over `CC-BY-…` would also produce a URL
  * for an identifier Creative Commons does not publish, and a wrong licence link is worse than none.
+ * It is the same reason the `-DE` ports are spelled out: they are separate licences with their own
+ * deeds, not a suffix on the international ones.
+ *
+ * **Every identifier `SPDX` in `scripts/commons-venue-images.py` can write appears here.** A file
+ * whose licence resolves there but not here still credits its author and shows the identifier, with
+ * no deed to click -- correct, and it reads as a raw code rather than a licence.
  */
 const LICENCES: Record<string, { label: string; url: string | null }> = {
   'CC0-1.0': { label: 'CC0 1.0', url: 'https://creativecommons.org/publicdomain/zero/1.0/' },
   'CC-BY-2.0': { label: 'CC BY 2.0', url: 'https://creativecommons.org/licenses/by/2.0/' },
   'CC-BY-2.5': { label: 'CC BY 2.5', url: 'https://creativecommons.org/licenses/by/2.5/' },
   'CC-BY-3.0': { label: 'CC BY 3.0', url: 'https://creativecommons.org/licenses/by/3.0/' },
+  'CC-BY-3.0-DE': { label: 'CC BY 3.0 DE', url: 'https://creativecommons.org/licenses/by/3.0/de/' },
   'CC-BY-4.0': { label: 'CC BY 4.0', url: 'https://creativecommons.org/licenses/by/4.0/' },
   'CC-BY-SA-2.0': { label: 'CC BY-SA 2.0', url: 'https://creativecommons.org/licenses/by-sa/2.0/' },
+  'CC-BY-SA-2.0-DE': {
+    label: 'CC BY-SA 2.0 DE',
+    url: 'https://creativecommons.org/licenses/by-sa/2.0/de/',
+  },
   'CC-BY-SA-2.5': { label: 'CC BY-SA 2.5', url: 'https://creativecommons.org/licenses/by-sa/2.5/' },
   'CC-BY-SA-3.0': { label: 'CC BY-SA 3.0', url: 'https://creativecommons.org/licenses/by-sa/3.0/' },
+  'CC-BY-SA-3.0-DE': {
+    label: 'CC BY-SA 3.0 DE',
+    url: 'https://creativecommons.org/licenses/by-sa/3.0/de/',
+  },
   'CC-BY-SA-4.0': { label: 'CC BY-SA 4.0', url: 'https://creativecommons.org/licenses/by-sa/4.0/' },
   PD: { label: 'Public domain', url: null },
 }
