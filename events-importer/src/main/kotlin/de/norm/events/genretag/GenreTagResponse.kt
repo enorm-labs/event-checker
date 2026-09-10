@@ -20,7 +20,6 @@ data class GenreTagResponse(
     val updatedAt: Instant?
 ) {
     companion object {
-        /** Converts a [GenreTag] domain object to its API response representation. */
         fun fromDomain(genreTag: GenreTag): GenreTagResponse =
             GenreTagResponse(
                 id = requireNotNull(genreTag.id) { "GenreTag must be persisted before converting to response" },
