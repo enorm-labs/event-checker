@@ -13,6 +13,10 @@ Reads docs/venue-images/REVIEWED.tsv, which records a person's verdict on every 
 venues. Only a CONFIRMED row is written. A REJECTED row is never proposed again, which is the point
 of recording it.
 
+Commons rows only. The file also holds rows an Openverse search confirmed on Flickr, and each of
+those stops with a message: Flickr states its licence through an API that needs a key, so the
+run-time licence check below cannot be met for one yet.
+
 The licence and the credit are read from the Commons API at run time and never from the file above,
 because a Commons file can be relicensed after a review. `licence_at_review` is compared against
 what the API returns now, and a difference stops that venue rather than writing a stale credit.
@@ -192,6 +196,8 @@ def commons_file(title):
 
 def plan_one(row, venue):
     """What this venue would be written, or the reason it will not be."""
+    if not row["found_by"].startswith(("commons-", "wikidata-")):
+        return None, f"{row['found_by']} is not a Commons row, and only Commons is implemented"
     file_info, problem = commons_file(row["file"])
     if problem:
         return None, problem
