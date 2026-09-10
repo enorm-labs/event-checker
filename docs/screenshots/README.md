@@ -2,9 +2,10 @@
 
 Pictures of the running product, for the README and anywhere else a reader needs to see it rather than read about it.
 
-| File                                 | What it shows                                                               | Taken      |
-| ------------------------------------ | --------------------------------------------------------------------------- | ---------- |
-| [`events-dark.png`](events-dark.png) | The events list — filter bar over the poster grid, dark theme, 1400×900 @2× | 2026-09-09 |
+| File                                   | What it shows                                                               | Taken      |
+| -------------------------------------- | --------------------------------------------------------------------------- | ---------- |
+| [`events-dark.png`](events-dark.png)   | The events list — filter bar over the poster grid, dark theme, 1400×900 @2× | 2026-09-09 |
+| [`events-light.png`](events-light.png) | The same list in the light theme, which the toggle is the only way into     | 2026-09-10 |
 
 **The date is the point of the table.** Nothing here can go stale loudly. A screenshot of last year's UI renders
 exactly as well as one of today's. The date next to it is the only signal a reader gets. Update the date when you
@@ -29,7 +30,8 @@ Three things are easy to get wrong, and all three shipped a worse picture the fi
 
 1. **Clear the stored theme, do not toggle it.** `localStorage.removeItem('theme')` and reload. Toggling gives you
    whatever this machine was last set to. Clearing gives you what a first-time visitor gets, which is dark by default
-   (BRANDING §5.2).
+   (BRANDING §5.2). The light shot is the exception and needs `localStorage.setItem('theme', 'light')` before the
+   first paint, because nothing else reaches that palette.
 2. **Hide the Vue devtools overlay.** The dev server injects `#__vue-devtools-container__` and
    `#vue-inspector-container`, and both render a floating button into the middle of the frame. Set `display: none` on
    them before capturing.
