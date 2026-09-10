@@ -78,7 +78,7 @@ env:
   # are: Flux's `deployed-versions.sh` borrows Helm's own solver precisely to reproduce the selection
   # helm-controller makes, so this client has to be that SDK — Helm 4 since helm-controller v1.6.x.
   # A Helm 3 client answers a slightly different question.
-  HELM_VERSION: v4.2.4
+  HELM_VERSION: 4.3.0
   # **Must match release.yml's.** The two scans are meant to be comparable — a finding here that the
   # publish gate did not raise should mean the advisory is new, not that the scanners are.
   # Invisible to Dependabot (a string in YAML). Renovate watches it and groups by `depName`, so both

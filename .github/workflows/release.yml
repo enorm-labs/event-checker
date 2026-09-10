@@ -87,7 +87,7 @@ env:
   # Pinned for the same reason validate-chart.yml is, and to the same version: it matches the Helm
   # SDK helm-controller embeds, so the client that packages the chart is the one that installs it.
   # Was v3.21.4 until #1006, on a premise about a Helm 3 SDK that had lapsed.
-  HELM_VERSION: v4.2.4
+  HELM_VERSION: 4.3.0
   TRIVY_VERSION: 0.74.0
 
 jobs:
