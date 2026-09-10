@@ -178,6 +178,29 @@ test.describe('a past event', () => {
     await expect(page.getByRole('link', { name: 'Buy tickets' })).toHaveCount(0)
   })
 
+  test('points at what is coming up at the venue', async ({ page }) => {
+    // A search engine keeps sending people here after the night has passed (#293), and the page
+    // used to offer the venue's own site as its nearest onward link (#1268).
+    await page.route(/\/api\/events\/[^/?]+/, (route) => json(route, pastEventBody))
+
+    await page.goto('/events/mock-event')
+
+    const onward = page.getByRole('link', { name: /coming up at Mock Venue/i })
+    await expect(onward).toBeVisible()
+    await onward.click()
+    await expect(page).toHaveURL(/\/venues\/mock-venue$/)
+  })
+
+  test('falls back to the list when the event has no venue', async ({ page }) => {
+    await page.route(/\/api\/events\/[^/?]+/, (route) =>
+      json(route, { ...pastEventBody, venue: undefined }),
+    )
+
+    await page.goto('/events/mock-event')
+
+    await expect(page.getByRole('link', { name: /what is on now/i })).toBeVisible()
+  })
+
   test('an upcoming event still offers its tickets', async ({ page }) => {
     await page.route(/\/api\/events\/[^/?]+/, (route) => json(route, eventBody))
 

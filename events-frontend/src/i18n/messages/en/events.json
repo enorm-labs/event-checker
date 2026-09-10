@@ -44,7 +44,9 @@
     "kind": "Event",
     "presale": "Presale",
     "boxOffice": "Box office",
-    "hasTakenPlace": "This event has already taken place."
+    "hasTakenPlace": "This event has already taken place.",
+    "upcomingAtVenue": "See what is coming up at {venue}.",
+    "browseUpcoming": "See what is on now."
   },
   "role": {
     "HEADLINER": "Headliner",
