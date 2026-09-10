@@ -500,7 +500,7 @@ page titles work, and 12 px is the floor for live text. What is new is a step at
 the tree. And the calendar sizes its own cells: FullCalendar renders day numbers at 11 px and the month title at 24 px through hashed class names, the grid fits
 390 px as it is, and reaching into those internals to impose a token would buy a number and risk the grid.
 
-### 5.8 Iconography
+### 5.9 Iconography
 
 **Audited 2026-08-23, and it needed no code** — which is worth recording, because the alternative was inventing a pass that had nothing to fix.
 
@@ -521,7 +521,7 @@ Two rules follow, and the second is the one that will be needed first:
 Decorative icons take `aria-hidden="true"`; the surrounding control carries the accessible name. That rule lives in
 [`events-frontend/AGENTS.md`](../events-frontend/AGENTS.md) §Accessibility with the rest of the a11y conventions.
 
-### 5.9 Components
+### 5.10 Components
 
 **Audited 2026-08-23.** Most of what a component pass usually finds was already absent: **no arbitrary Tailwind values** outside `ui/`, **no colour literals**,
 and the two hand-rolled form controls already share their chrome through `FIELD_CLASS`. The two findings that remained:
@@ -722,3 +722,37 @@ kept because older sections still use it, not because it still exists.
 - **Token** — a CSS-variable design value (colour, radius, font) in `main.css` (`:root` + `.dark`); re-theming means editing tokens, not components. See §6.
 - **Wordmark** — "Event Junkie" set as type (accent on "Junkie"), as distinct from the badge. Used alone in the header from `sm` up and in the footer, and set
   in Rubik Distressed inside the club stamp.
+
+### 5.11 Pills and state
+
+**One test decides whether something may be a pill**: if the text would not survive as a sentence, it was decoration wearing information's clothes. Every
+badge in the tree was put through it on 2026-09-10 (#1248), and **none failed on content** — each one is a fact. The form failed: five pills under one title
+read as decoration even when each is true, and they do not fit under a poster.
+
+| Pill                         | Where                        | Outcome                                                 |
+| ---------------------------- | ---------------------------- | ------------------------------------------------------- |
+| `Past` / `Sold out` / `Free` | Event card, detail header    | One coloured word in the meta line                      |
+| Event type                   | Event card                   | Flattened into the meta line                            |
+| Genre tags                   | Event card, several per card | Flattened into the meta line                            |
+| Stage                        | Detail page lineup           | Flattened beside the role, which was already plain text |
+| Status (`Cancelled`, …)      | Detail page header           | **Stays a pill**                                        |
+| `beta`                       | Header, beside the wordmark  | **Stays a pill**                                        |
+
+**The two survivors are the two exceptions, and both are deliberate.** A cancelled event is the one thing on its page that must not read as another word in a
+grey row. The `beta` badge is a link to the paragraph that explains what beta means here, so it is a control rather than an ornament, and a pill is the right
+shape for a small link outside the navigation.
+
+**Colour is emphasis on the word, never instead of it** (WCAG 1.4.1). `Sold out` stays the word `Sold out`. The three state colours were measured as text on
+the page ground rather than assumed, since they were chosen against a tinted chip: `--success` is 5.37:1 in light and 10.24:1 in dark, `--destructive` 4.76:1
+and 6.84:1, `--muted-foreground` 4.73:1 and 7.63:1. All clear 4.5:1.
+
+**A long list wraps, it does not truncate.** The worst card in the corpus carries seven genres plus a type. Cutting them off would lose filter values a reader
+can act on, so the meta line runs to a second line instead.
+
+**A card is set one step larger than the rest of the page.** Its title takes `text-lede` and everything under it — subtitle, date line, meta line — takes
+`text-body`, so the separation below the title comes from colour and weight rather than from a fourth size. At 12 px the date, venue and genres were the
+smallest live text on a page whose whole job is to answer "what is on tonight".
+
+**The card grid parts its columns by 32 px and its rows by 48 px.** Both are larger than they were when a card had a border to end it, and they stay
+asymmetric for the reason §5.7 gives: across, a gap parts two posters that each have their own edge; down, it parts one card's last line of text from the next
+card's poster.

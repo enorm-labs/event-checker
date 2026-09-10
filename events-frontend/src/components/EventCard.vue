@@ -2,7 +2,6 @@
 import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
 import type { EventSummary } from '@/api/types'
-import BaseBadge from '@/components/BaseBadge.vue'
 import CachedImage from '@/components/CachedImage.vue'
 import EventPoster from '@/components/EventPoster.vue'
 import { eventLabel, formatPrice, formatTime, isPastEvent, todayIso } from '@/lib/format'
@@ -46,6 +45,23 @@ const isLive = computed(
 
 const isPast = computed(() => isPastEvent(props.event.eventDate))
 
+/**
+ * The one word on a card that changes what the reader does next, and the only coloured thing in the
+ * meta line. Past wins the slot: "Sold out" on last month's gig is stale, not informative.
+ *
+ * The colour is emphasis on top of the word, never instead of it (WCAG 1.4.1).
+ */
+const state = computed(() => {
+  if (isPast.value) return { label: t('events.card.past'), class: 'text-muted-foreground' }
+  if (props.event.soldOut) return { label: t('events.card.soldOut'), class: 'text-destructive' }
+  if (props.event.free) return { label: t('events.card.free'), class: 'text-success' }
+  return null
+})
+
+// Type and genre are different taxonomies — one kind of night, many kinds of music — but both are
+// filter values in the query string, so they read as one list rather than two rows of pills (#1248).
+const taxonomy = computed(() => [eventType.value, ...(props.event.genreTags ?? [])].filter(Boolean))
+
 const localePath = useLocalePath()
 
 const { t } = useI18n()
@@ -72,8 +88,7 @@ const { t } = useI18n()
     />
     <EventPoster v-else :title="event.title" />
     <div class="min-w-0 space-y-1">
-      <div class="flex items-start justify-between gap-2">
-        <div class="flex min-w-0 items-center gap-2">
+      <div class="flex min-w-0 items-center gap-2">
           <span v-if="isLive" class="relative flex size-2 shrink-0">
             <span
               class="absolute inline-flex size-full rounded-full bg-primary opacity-75 motion-safe:animate-ping"
@@ -91,21 +106,10 @@ const { t } = useI18n()
           <component
             :is="as"
             :title="eventLabel(event.title, event.venue?.name)"
-            class="truncate text-card-title font-semibold"
+            class="truncate text-lede font-semibold"
           >
             {{ event.title }}
           </component>
-        </div>
-        <!-- Past wins this slot: "Sold out" on last month's gig is stale, not informative. -->
-        <BaseBadge v-if="isPast" class="shrink-0" variant="muted">{{
-          t('events.card.past')
-        }}</BaseBadge>
-        <BaseBadge v-else-if="event.soldOut" class="shrink-0" variant="destructive">{{
-          t('events.card.soldOut')
-        }}</BaseBadge>
-        <BaseBadge v-else-if="event.free" class="shrink-0" variant="success">{{
-          t('events.card.free')
-        }}</BaseBadge>
       </div>
       <p
         v-if="event.subtitle"
@@ -114,26 +118,25 @@ const { t } = useI18n()
       >
         {{ event.subtitle }}
       </p>
-      <p class="text-meta text-muted-foreground">
+      <p class="text-body text-muted-foreground">
         {{ formatDate(event.eventDate) }}
         <template v-if="event.startTime"> · {{ formatTime(event.startTime) }}</template>
         <template v-if="event.venue?.name"> · {{ event.venue.name }}</template>
       </p>
-      <div class="flex flex-wrap items-center gap-1.5 pt-0.5">
-        <!--
-          Type and genre are different taxonomies — one kind of night, many kinds of music — so
-          the type pill is outlined rather than filled. Same row, same size, but the eye can tell
-          "Club night" from "Techno" without reading them.
-        -->
-        <BaseBadge v-if="eventType" variant="outline">{{ eventType }}</BaseBadge>
-        <BaseBadge v-for="tag in event.genreTags" :key="tag">{{ tag }}</BaseBadge>
+      <p
+        v-if="state || taxonomy.length || formatPrice(event.pricePresale, event.priceCurrency)"
+        class="flex flex-wrap items-baseline gap-x-2 text-body text-muted-foreground"
+      >
+        <span v-if="state" :class="['font-medium', state.class]">{{ state.label }}</span>
+        <span v-if="state && taxonomy.length" aria-hidden="true">·</span>
+        <span v-if="taxonomy.length">{{ taxonomy.join(' · ') }}</span>
         <span
           v-if="formatPrice(event.pricePresale, event.priceCurrency)"
-          class="ml-auto text-body font-medium"
+          class="ml-auto text-body font-medium text-foreground"
         >
           {{ formatPrice(event.pricePresale, event.priceCurrency) }}
         </span>
-      </div>
+      </p>
     </div>
   </RouterLink>
 </template>

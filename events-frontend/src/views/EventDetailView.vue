@@ -129,16 +129,20 @@ useStructuredData((): JsonLd[] => {
           <span>{{ formatDate(event.eventDate) }}</span>
           <span v-if="event.startTime">· {{ formatTime(event.startTime) }}</span>
           <span v-if="event.venue?.name">· {{ event.venue.name }}</span>
+          <!--
+            The status pill is the exception the rest of #1248 flattened: a cancelled event is the
+            one thing on this page that must not read as another word in a grey row.
+          -->
           <BaseBadge v-if="event.status && event.status !== 'SCHEDULED'" variant="destructive">
             {{ enumLabel('events.status', event.status) }}
           </BaseBadge>
-          <BaseBadge v-if="isPast" variant="muted">{{ t('events.card.past') }}</BaseBadge>
-          <BaseBadge v-else-if="event.soldOut" variant="destructive">{{
-            t('events.card.soldOut')
-          }}</BaseBadge>
-          <BaseBadge v-else-if="event.free" variant="success">{{
-            t('events.card.free')
-          }}</BaseBadge>
+          <span v-if="isPast">· {{ t('events.card.past') }}</span>
+          <span v-else-if="event.soldOut" class="font-medium text-destructive">
+            · {{ t('events.card.soldOut') }}
+          </span>
+          <span v-else-if="event.free" class="font-medium text-success">
+            · {{ t('events.card.free') }}
+          </span>
         </div>
         <p v-if="isPast" class="text-sm text-muted-foreground">
           {{ t('events.detail.hasTakenPlace') }}
@@ -219,8 +223,9 @@ useStructuredData((): JsonLd[] => {
               {{ entry.artist.name }}
             </RouterLink>
             <span v-else class="font-medium">{{ entry.artist?.name }}</span>
-            <div class="flex items-center gap-2 text-xs text-muted-foreground">
-              <BaseBadge v-if="entry.stage" variant="outline">{{ entry.stage }}</BaseBadge>
+            <div class="flex items-center gap-2 text-meta text-muted-foreground">
+              <span v-if="entry.stage">{{ entry.stage }}</span>
+              <span v-if="entry.stage && showRoles && entry.role" aria-hidden="true">·</span>
               <span v-if="showRoles && entry.role">
                 {{ enumLabel('events.role', entry.role) }}
               </span>
