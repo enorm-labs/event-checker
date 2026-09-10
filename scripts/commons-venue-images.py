@@ -103,10 +103,14 @@ def fold(s):
     return "".join(c for c in n if not unicodedata.combining(c)).casefold().strip()
 
 
-# What Commons puts in `Artist` when nobody filled it in. A credit built from one of these names
-# nobody, and "No machine-readable author provided. X assumed (based on copyright claims)." on a
-# venue card is a sentence about copyright metadata rather than an author.
-NOT_AN_AUTHOR = ("no machine-readable author", "uploaded", "unknown", "see file page", "self")
+# What Commons writes in `Artist` when the file has no author. A credit built from it names nobody,
+# and "No machine-readable author provided. X assumed (based on copyright claims)." on a venue card
+# is a sentence about copyright metadata rather than an author.
+#
+# Exactly this one phrase, and no guesses beside it. `Uploaded` reads like boilerplate and is the
+# Flickr handle of the photographer who took the Astra Kulturhaus picture, so a wider list refuses
+# real authors whose names happen to look generic.
+NOT_AN_AUTHOR = ("no machine-readable author",)
 
 
 def plain(value):

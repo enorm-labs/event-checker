@@ -20,10 +20,14 @@ Three searches, each weaker than the one before, and the hit rates say by how mu
 
 | Found by         | Method                                                            | Reviewed | Confirmed | Hit rate |
 | ---------------- | ----------------------------------------------------------------- | -------- | --------- | -------- |
-| `wikidata-p18`   | The venue's Wikidata item, property `P18`                         | 23       | 18        | **78%**  |
-| `commons-title`  | A Commons file whose title names the venue, constrained to Berlin | 41       | 20        | **49%**  |
+| `wikidata-p18`   | The venue's Wikidata item, property `P18`                         | 22       | 17        | **77%**  |
+| `commons-title`  | A Commons file whose title names the venue, constrained to Berlin | 42       | 21        | **50%**  |
 | `commons-nearby` | A Commons file photographed within 150 m of the venue             | 22       | 2         | **9%**   |
 |                  |                                                                   | **86**   | **40**    | 47%      |
+
+**One venue counts under a round it was not first found in.** `Tresor` had a `P18` image, and Commons
+names no author for it, so it was replaced by a file a title search found. The row records where the
+picture in use came from, not every candidate a venue ever had.
 
 **Proximity is worth about a ninth of a name.** That is the finding worth keeping. A coordinate is a weak way to find a picture of a building, and that
 argues against a coordinate-only archive next.
@@ -35,7 +39,7 @@ argues against a coordinate-only archive next.
 | Column              | Meaning                                                                  |
 | ------------------- | ------------------------------------------------------------------------ |
 | `venue`             | The venue name as `http/importer/dev-seed.http` seeds it                 |
-| `decision`          | `CONFIRMED`, `REJECTED` or `UNSURE`                                      |
+| `decision`          | `CONFIRMED` or `REJECTED`. Every venue has one                           |
 | `file`              | The Commons file name, without the `File:` prefix. Empty for a rejection |
 | `licence_at_review` | The Commons licence template as it read when the picture was judged      |
 | `file_page`         | The file's description page, which the rendered credit links to          |
@@ -43,9 +47,9 @@ argues against a coordinate-only archive next.
 
 ## What is still open
 
-- **`Theater im Delphi` is `UNSURE`.** One row, neither written nor closed.
 - **Two licences have no SPDX identifier the script accepts.** `FAL` on `Admiralspalast` and `Parkbühne Wuhlheide`, and a bare `Attribution` template on
   `Velodrom`. The script stops on each rather than guessing, so those three venues stay without a picture until the licences are read. `FAL` is copyleft and its
-  share-alike is **not** the CC 4.0 § 2(a)(4) reading that ADR-019 and #1276 rely on.
-- **45 venues have nothing.** They are the hard half — a room in a courtyard, a bar with no frontage, a rooftop over a car park. Few people photograph them,
+  share-alike is **not** the CC 4.0 § 2(a)(4) reading that ADR-019 and #1276 rely on. Owned by
+  [#1281](https://github.com/enorm-labs/event-junkie/issues/1281).
+- **46 venues have nothing.** They are the hard half — a room in a courtyard, a bar with no frontage, a rooftop over a car park. Few people photograph them,
   which is as true of Flickr as of Commons. Asking the venues is [#808](https://github.com/enorm-labs/event-junkie/issues/808).
