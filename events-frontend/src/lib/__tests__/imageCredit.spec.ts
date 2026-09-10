@@ -33,6 +33,15 @@ describe('imageCredit', () => {
     expect(credit?.licenceUrl).toBeNull()
   })
 
+  it('links a German port to its own deed, not the international one', () => {
+    // Two of the confirmed venue images are ported licences (#1277). They are separate licences
+    // with their own deeds, so a suffix-stripping guess would send the reader to the wrong text.
+    const credit = imageCredit({ ...complete, imageLicenceId: 'CC-BY-SA-3.0-DE' })
+
+    expect(credit?.licenceLabel).toBe('CC BY-SA 3.0 DE')
+    expect(credit?.licenceUrl).toBe('https://creativecommons.org/licenses/by-sa/3.0/de/')
+  })
+
   it('shows an unknown identifier as it stands rather than guessing a deed', () => {
     const credit = imageCredit({ ...complete, imageLicenceId: 'CC-BY-NC-4.0' })
 
