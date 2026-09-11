@@ -15,6 +15,7 @@ it produces an alert that never fires rather than an error.
     a source that never worked     -> ej-source-never-succeeded   (#618)
     a source that emptied out      -> ej-source-emptied           (#700)
     metrics being dropped          -> ej-ingest-shedding          (#625)
+    translation failing open       -> ej-translations-failing      (#1301)
 
 **The zero-events failure is two rules, not one, and they see different things.**
 ADR-015's criterion 1 is per-source: a venue whose scraper still returns 200 while
@@ -295,6 +296,39 @@ rule(
     period_minutes=15,
     frequency_minutes=30,
     silence_minutes=24 * 60,
+)
+
+# The engine fails open (#1301): `AnthropicTranslationEngine.translate` catches
+# everything, logs a warning and returns null, so the event keeps its German text
+# and the English page shows German. Nothing crashes, which is why nothing tells
+# anybody. An exhausted credit balance looks exactly like a healthy quiet night.
+#
+# **NO DATA here is the healthy state**, for `ej-robots-disallowed`'s reason: a
+# counter that never incremented is absent from the exposition. Production today
+# exports `outcome="written"` alone — measured, 69 of them, no `skipped` series.
+#
+# **A ratio of skipped to written was the obvious shape and is the wrong one.**
+# Its `written` side empties exactly when everything is failing, and a binary
+# operation with an empty side yields an empty result rather than the other
+# side's value. Trap 4 below. The rule would go silent when it matters most.
+#
+# Ten in six hours clears the occasional refusal or timeout and sits far under a
+# failing night: production allows 250 translations a run, and `max-retries: 2`
+# makes each failure three requests.
+rule(
+    "ej-translations-failing",
+    "More than ten descriptions failed to translate in six hours. The engine fails open, so "
+    "the page shows German to an English reader and nothing else says a word. An exhausted "
+    "credit balance, a rejected key and a model outage all land here. Counts skips rather "
+    "than comparing them to successes, because the failure series does not exist until the "
+    "first failure and an empty side would make the rule silent when everything is failing.",
+    'sum(increase(importer_translations_total{outcome="skipped"}[6h]))',
+    ">",
+    10,
+    stream_name="importer_translations_total",
+    period_minutes=15,
+    frequency_minutes=30,
+    silence_minutes=12 * 60,
 )
 
 # --- The platform underneath --------------------------------------------------
