@@ -2,7 +2,7 @@
 
 Which of the 86 venues has a photograph, where it came from, and who said so.
 
-`REVIEWED.tsv` is the record. `scripts/commons-venue-images.py` reads it and writes the confirmed rows through the admin API. Everything below is why the file
+`REVIEWED.tsv` is the record. `scripts/venue-images.py` reads it and writes the confirmed rows through the admin API. Everything below is why the file
 exists rather than what it contains.
 
 ## The short version
@@ -11,6 +11,9 @@ exists rather than what it contains.
   often, the building next door.
 - **`CONFIRMED` means somebody looked at the picture and recognised the venue.** `REJECTED` means they looked and did not. Both are results. The second is what
   stops a search re-proposing the same wrong file.
+- **`WITHDRAWN` means the archive removed a picture a person confirmed.** It is not a verdict, and `REJECTED` would read as one. One row holds it today:
+  `Schokoladen`, whose Flickr page answered 404 the first time the fetcher asked. The row keeps the file it named, so a later search knows the picture existed
+  and where.
 - **The licence is not taken from this file.** The script reads it from the Commons API on every run. `licence_at_review` is here so a file relicensed since the
   review stops that venue instead of being written with a stale credit.
 
@@ -33,9 +36,11 @@ argues against a coordinate-only archive next.
 **Round 2 — Openverse.** One search over the 46 venues round 1 left empty. Openverse aggregates Flickr, Europeana, Smithsonian and more behind one API,
 so it answers "is there supply outside Commons" in a single pass.
 
-| Found by           | Method                                                       | Reviewed | Confirmed | Hit rate |
-| ------------------ | ------------------------------------------------------------ | -------- | --------- | -------- |
-| `openverse-flickr` | An Openverse file whose title names the venue, plus `Berlin` | 46       | 4         | **9%**   |
+| Found by           | Method                                                       | Reviewed | Confirmed | Usable | Hit rate |
+| ------------------ | ------------------------------------------------------------ | -------- | --------- | ------ | -------- |
+| `openverse-flickr` | An Openverse file whose title names the venue, plus `Berlin` | 46       | 4         | 3      | **7%**   |
+
+**Confirmed and usable differ by one.** Flickr withdrew the `Schokoladen` picture after the review. The section below says what happened.
 
 **Flickr is not empty, but it is thin.** The probe found a candidate for 13 of the 46, and 127 candidates in total. A person kept 4. Most of the rest are
 gig photographs. A band on the stage answers a different question than a venue card asks.
@@ -57,15 +62,27 @@ inside round 1. It had a `P18` image, Commons names no author for it, and a titl
 | `file_page`         | The file's description page, which the rendered credit links to                                                             |
 | `found_by`          | Which search proposed it                                                                                                    |
 
+## Asking the archive is what finds a dead picture
+
+The script reads the licence from the archive on every run, never from this file. That check was
+written for a relicensing. The first Flickr run showed what else it catches.
+
+`Schokoladen` was confirmed in the review. Its Flickr page answered **404** when the fetcher asked.
+Flickr deleted it, or made it private, in the weeks between. Openverse still indexes it, and the
+image file still serves from Flickr's CDN. Only Flickr itself says the picture is gone. The row is
+`WITHDRAWN`.
+
+Ask the source, not the index. The number says it better than the principle: one Flickr picture of
+four, on the first run.
+
 ## What is still open
 
 - **Two licences have no SPDX identifier the script accepts.** `FAL` on `Admiralspalast` and `Parkbühne Wuhlheide`, and a bare `Attribution` template on
   `Velodrom`. The script stops on each rather than guessing, so those three venues stay without a picture until the licences are read. `FAL` is copyleft and its
   share-alike is **not** the CC 4.0 § 2(a)(4) reading that ADR-019 and #1276 rely on. Owned by
   [#1281](https://github.com/enorm-labs/event-junkie/issues/1281).
-- **The script writes Commons rows only.** An `openverse-flickr` row stops with a message saying so. Flickr states a licence through its own API, which
-  needs a key. Openverse cannot answer instead, because it indexes Flickr rather than speaks for it, and ADR-019 asks for the licence at write time. The
-  four confirmed Flickr pictures stay unwritten until that is built.
+- **One archive answers at 1024 px.** Commons renders a thumbnail to order, and the script asks for 1600. Flickr publishes a fixed ladder of sizes and
+  everything above 1024 needs a signed secret, so a Flickr picture is stored at 1024. The 1536 px derivative is then wider than its original.
 - **One Flickr picture carries the Public Domain Mark.** `Klunkerkranich`. The mark says a work is out of copyright, which a 2015 rooftop photograph is not, so
   the uploader more probably meant "take it". The credit names the photographer and links the source either way, which is why it is recorded rather than
   refused.

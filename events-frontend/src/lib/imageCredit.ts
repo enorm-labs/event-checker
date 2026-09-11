@@ -33,7 +33,7 @@ export interface ImageCredit {
  * It is the same reason the `-DE` ports are spelled out: they are separate licences with their own
  * deeds, not a suffix on the international ones.
  *
- * **Every identifier `SPDX` in `scripts/commons-venue-images.py` can write appears here.** A file
+ * **Every identifier `SPDX` in `scripts/venue-images.py` can write appears here.** A file
  * whose licence resolves there but not here still credits its author and shows the identifier, with
  * no deed to click -- correct, and it reads as a raw code rather than a licence.
  */
