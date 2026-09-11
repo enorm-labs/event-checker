@@ -26,7 +26,7 @@ B-Come	b-come	unverified		B-Come			3	Frannz, Lido
 Bad Ideas	bad-ideas	unverified		Bad Ideas			1	Astra
 Badehaus	badehaus	venue	https://badehaus-berlin.com/	Badehaus			3	
 beav boloney	beav-boloney	promoter		beav boloney			2	Schokoladen collective
-Bedroomdisco	bedroomdisco	media	https://www.bedroomdisco.de/	Bedroomdisco			4	
+Bedroomdisco	bedroomdisco	media		Bedroomdisco			4	bedroomdisco.de served casino spam above the magazine on 2026-09-11; site dropped until it is clean
 Bergson	bergson	unverified		Bergson			1	Heimathafen
 Berlin En Salsa	berlin-en-salsa	party		Berlin En Salsa			1	
 Berlin Folk Festival	berlin-folk-festival	promoter		Berlin Folk Festival			1	festival
@@ -38,11 +38,11 @@ Bossa FM	bossa-fm	promoter	https://www.bossafm.com/	Bossa FM	Bossa FM ist eine B
 bricks	bricks	promoter	https://bricks-berlin.de/	BRICKS			2	
 Brighter	brighter	promoter		Brighter			1	Brighter Agency, Schokoladen co-billing
 Bum	bum	junk		Bum			1	Badehaus; deleted by V026
-ByteFM	bytefm	media	https://www.byte.fm/	ByteFM			6	
+ByteFM	bytefm	media	https://www.byte.fm/	ByteFM	"ByteFM ist ein Internetradio aus Hamburg „für gute Musik"", werbefrei und getragen von seinen Hörer:innen. Der Sender präsentiert Konzerte, in Berlin vor allem im Columbia Theater."	"ByteFM is an internet radio station from Hamburg ""for good music"", ad-free and funded by its listeners. It presents concerts, in Berlin mostly at Columbia Theater."	6	
 Casius	casius	unverified		Casius			1	Privatclub
 Channel	channel	junk		Channel			1	Hole 44; deleted by V026
 Chicha	chicha	party		Chicha			2	
-Chimperator	chimperator	promoter	https://chimperator.de/	Chimperator			1	
+Chimperator	chimperator	promoter	https://chimperator.de/	Chimperator	Chimperator ist ein Label, eine Talentschmiede und ein Live-Veranstalter aus Stuttgart, Heimat von Die Orsons, Maeckes, Tua, Teesy und OG Keemo. In Berlin laufen die Shows unter anderem im Bi Nuu.	Chimperator is a label, talent house and live promoter from Stuttgart, home to Die Orsons, Maeckes, Tua, Teesy and OG Keemo. Its Berlin shows run at Bi Nuu, among others.	1	
 Chnsw!	chnsw	party		CHNSW!			4	source writes CHNSW!
 Coming Home	coming-home	unverified		Coming Home			1	
 Como Esta Wally Producciones Y Management Sl	como-esta-wally-producciones-y-management-sl	promoter		Como Esta Wally Producciones Y Management Sl			3	Spanish company, Cosmic Comedy
@@ -51,7 +51,7 @@ Concertbüro Zahlmann	concertburo-zahlmann	promoter	https://www.cbz.events/	Conc
 Contigo	contigo	unverified		Contigo			1	Cosmic Comedy
 Contra	contra	unverified		Contra			2	Columbia Theater
 Cornershop	cornershop	unverified		Cornershop			2	Cosmic Comedy
-Cosmic Comedy Berlin	cosmic-comedy-berlin	venue	https://www.cosmiccomedyclub.com/	Cosmic Comedy Berlin			25	club own shows
+Cosmic Comedy Berlin	cosmic-comedy-berlin	venue	https://www.cosmiccomedyclub.com/	Cosmic Comedy Berlin	Cosmic Comedy Berlin ist ein Comedy-Club für Stand-up auf Englisch. An mehreren Abenden pro Woche laufen Open Mics und Showcases, mit Pizza und Shots für das Publikum.	Cosmic Comedy Berlin is a comedy club for stand-up in English. Open mics and showcases run several nights a week, with pizza and shots for the crowd.	25	club own shows
 Cosmic Romance	cosmic-romance	promoter	https://cosmic-romance.com	Cosmic Romance			1	RA: https://ra.co/promoters/110970
 Crunch Tapes	crunch-tapes	promoter	https://www.crunchtapes.com/	Crunch Tapes			1	site writes CRUNCH TAPES
 Cyberfunk + Urban Spree	cyberfunk-urban-spree	party		Cyberfunk + Urban Spree			1	co-billing not split (+)
@@ -64,7 +64,7 @@ Deputamadre Berlin	deputamadre-berlin	unverified		Deputamadre Berlin			1
 Destiny Tourbooking	destiny-tourbooking	promoter	https://www.destiny-tourbooking.com/	Destiny Tourbooking			1	
 Deutsches Polen-Institut	deutsches-polen-institut	sponsor	https://www.deutsches-polen-institut.de/	Deutsches Polen-Institut			1	
 die lesebühne	die-lesebuhne	promoter	https://www.dielesebuehne.de/	die lesebühne			3	
-Diffus	diffus	media	https://diffus.de/	DIFFUS			4	site writes DIFFUS
+Diffus	diffus	media	https://diffus.de/	DIFFUS	DIFFUS ist ein Musik- und Kulturmagazin für Deutschland, Österreich und die Schweiz, seit 2014 in Berlin-Kreuzberg, mit Videos, Podcasts und zwei Printausgaben im Jahr. Es präsentiert Konzerte in Berlin, unter anderem in der Zitadelle, im Frannz Club und im Columbia Theater.	DIFFUS is a music and culture magazine for Germany, Austria and Switzerland, based in Berlin-Kreuzberg since 2014, with videos, podcasts and two print issues a year. It presents concerts in Berlin, at the Zitadelle, Frannz Club and Columbia Theater among others.	4	site writes DIFFUS
 Dirty Dancing Party	dirty-dancing-party	party		Dirty Dancing Party			2	
 DJ Rebel	dj-rebel	party		DJ Rebel			5	
 Dlf	deutschlandfunk	media	https://www.deutschlandfunk.de/	Deutschlandfunk			1	stored as Dlf
@@ -84,13 +84,13 @@ F-Cat	f-cat	unverified		F-Cat			1
 Fandom Night	fandom-night	party		Fandom Night			3	Badehaus; no site
 Fania Brava	fania-brava	party	https://instagram.com/faniabravaparty/	Fania Brava			1	RA: Instagram is the only site
 Feinster HipHop	feinster-hiphop	party		Feinster HipHop			1	
-Festsaal Kreuzberg	festsaal-kreuzberg	venue	https://festsaal-kreuzberg.de/	Festsaal Kreuzberg			8	Festsaal Kreuzberg Booking
+Festsaal Kreuzberg	festsaal-kreuzberg	venue	https://festsaal-kreuzberg.de/	Festsaal Kreuzberg	Der Festsaal Kreuzberg ist ein Konzert- und Veranstaltungshaus mit Festsaal, Kaminzimmer, Ostflügel und Biergarten. Als Veranstalter bucht das Haus auch Shows im Bi Nuu.	Festsaal Kreuzberg is a concert and event house with a main hall, a fireside room, an east wing and a beer garden. As a promoter it also books shows at Bi Nuu.	8	Festsaal Kreuzberg Booking
 Fever & Nova Sky Stories	fever-nova-sky-stories	promoter		Fever & Nova Sky Stories			1	drone show co-billing
 FKP Scorpio	fkp-scorpio	promoter	https://fkpscorpio.com/	FKP Scorpio	FKP Scorpio ist einer der größten Konzertveranstalter Europas, mit Sitz in Hamburg – vom Clubkonzert über Arena-Tourneen bis zu Festivals wie Hurricane und Southside. In Berlin veranstaltet FKP unter anderem im Quasimodo, Hole 44 und Velodrom.	FKP Scorpio is one of Europe's largest concert promoters, based in Hamburg, from club shows and arena tours to festivals such as Hurricane and Southside. In Berlin it promotes at Quasimodo, Hole 44 and the Velodrom, among others.	6	
-FluxFM	fluxfm	media	https://www.fluxfm.de/	FluxFM			5	logo: press page offers a logo download (fluxfm.de/presse), no usage terms stated
+FluxFM	fluxfm	media	https://www.fluxfm.de/	FluxFM	"FluxFM ist ein Berliner Radiosender – „Radio so bunt wie Berlin"" – mit handverlesener Musik jenseits des Mainstreams und Popkultur, im Radio, im Livestream und in der eigenen App. Der Sender präsentiert Konzerte in der Stadt, unter anderem in der Zitadelle und im Frannz Club."	"FluxFM is a Berlin radio station – ""radio as colourful as Berlin"" – with hand-picked music beyond the mainstream and pop culture, on air, on its livestream and in its own app. It presents concerts across the city, at the Zitadelle and Frannz Club among others."	5	logo: press page offers a logo download (fluxfm.de/presse), no usage terms stated
 Frack & Spitzenhöschen	frack-spitzenhoschen	artist		Frack & Spitzenhöschen			1	show name
 Frank Martini	frank-martini	party		Frank Martini			1	
-Friendly Reminder	friendly-reminder	promoter	https://www.friendlyreminder.live/	Friendly Reminder			4	was listenagency
+Friendly Reminder	friendly-reminder	promoter	https://www.friendlyreminder.live/	Friendly Reminder	Friendly Reminder ist eine internationale Booking-Agentur für ausgewählte Acts, veranstaltet Tourneen in Deutschland und ist in Berlin lokaler Veranstalter für nationale und internationale Partner. Bis 2026 hieß die Agentur listenagency.	Friendly Reminder is an international booking agency for selected acts, promotes tours in Germany and is a local promoter in Berlin for national and international partners. Until 2026 the agency was called listenagency.	4	was listenagency
 Fritz	fritz	media	https://www.fritz.de/	Fritz			1	rbb radio
 Frontstage Magazine	frontstage-magazine	media	https://frontstage-magazine.de/	Frontstage Magazine			2	
 Full Contact Safari	full-contact-safari	unverified		Full Contact Safari			1	
@@ -119,18 +119,18 @@ Karsten Jahnke Konzertdirektion	karsten-jahnke-konzertdirektion	promoter	https:/
 Katharsis	katharsis	unverified		Katharsis			1	
 Kiezpoeten	kiezpoeten	promoter	https://kiezpoeten.com/	Kiezpoeten			3	
 King David Soundsystem	king-david-soundsystem	artist		King David Soundsystem			1	
-King Kong Kicks	king-kong-kicks	party	https://kingkongkicks.com/	King Kong Kicks			14	site writes KING KONG KICKS
+King Kong Kicks	king-kong-kicks	party	https://kingkongkicks.com/	King Kong Kicks	"King Kong Kicks ist eine Indie-Pop-Party – „Tanzen, Trinken, Knutschen"" – die seit Jahren in Berlin und einem Dutzend weiterer Städte läuft, mit Giant Rooks, Two Door Cinema Club und Kraftklub auf den Playlists. Die Schwesterpartys heißen Wilde Herzen und Team 80s."	"King Kong Kicks is an indie-pop party – ""dance, drink, kiss"" – that has run for years in Berlin and a dozen other cities, with Giant Rooks, Two Door Cinema Club and Kraftklub on the playlists. Its sister parties are Wilde Herzen and Team 80s."	14	site writes KING KONG KICKS
 Kingstar	kingstar-music	promoter	https://www.kingstar-music.com/	Kingstar Music			2	Kingstar GmbH, Hamburg
 Kinky Hub	kinkyhub-berlin	party	https://www.kinkyhub.de/	KinkyHub Berlin			1	
 kj der käpt'n	kj-der-kapt-n	artist		kj der käpt'n			1	karaoke host
-KKT	kkt	promoter	https://kkt.berlin/	KKT			4	
+KKT	kkt	promoter	https://kkt.berlin/	KKT	KKT – Kikis Kleiner Tourneeservice – ist eine Berliner Tourneeagentur aus Kreuzberg. Auf der Liste stehen Die Ärzte, Die Toten Hosen, Tocotronic, Feine Sahne Fischfilet, Danger Dan und die Einstürzenden Neubauten.	KKT – Kikis Kleiner Tourneeservice – is a Berlin touring agency based in Kreuzberg. Its roster includes Die Ärzte, Die Toten Hosen, Tocotronic, Feine Sahne Fischfilet, Danger Dan and Einstürzende Neubauten.	4	
 klassix	klassix	unverified		klassix			1	
 Kneipenabend	kneipenabend	junk		Kneipenabend			3	Schokoladen bar night; deleted by V026
 Kommune	kommune	unverified		Kommune			1	
 Kontramarka	kontramarka	promoter	https://www.kontramarka.de/	Kontramarka			1	Russian-language ticket agency
 Konzertbüro Schoneberg	konzertburo-schoneberg	promoter	https://www.schoneberg.de/	Konzertbüro Schoneberg	Das Konzertbüro Schoneberg veranstaltet Rock und Pop, Klassik, Kabarett und Comedy, mit Büros in Berlin, Hamburg, Köln, Frankfurt, München und Münster. In Berlin laufen die Shows unter anderem im Lido, Privatclub und Huxleys Neue Welt.	Konzertbüro Schoneberg promotes rock and pop, classical, cabaret and comedy, with offices in Berlin, Hamburg, Cologne, Frankfurt, Munich and Münster. In Berlin its shows run at Lido, Privatclub and Huxleys Neue Welt, among others.	18	
-Kulturalarm	kulturalarm	venue	https://kulturalarm.com/	kulturALARM			6	e.V. behind Kulturhaus Insel
-Kulturnews	kulturnews	media	https://kulturnews.de/	kulturnews			7	site lowercase
+Kulturalarm	kulturalarm	venue	https://kulturalarm.com/	kulturALARM	kulturALARM e.V. wurde 2008 gegründet, um Kunst, Nachwuchs und Musikkultur zu fördern, und betreibt seit 2010 das Kulturhaus Insel Berlin auf der Insel der Jugend in Treptow. Dort veranstaltet der Verein Konzerte und Festivals, darunter das Monkey Island Festival.	kulturALARM e.V. was founded in 2008 to support art, new talent and music culture, and has run Kulturhaus Insel Berlin on the Insel der Jugend in Treptow since 2010. It promotes concerts and festivals there, among them the Monkey Island Festival.	6	e.V. behind Kulturhaus Insel
+Kulturnews	kulturnews	media	https://kulturnews.de/	kulturnews	kulturnews ist ein Kulturmagazin aus Hamburg mit täglichen Tipps zu Kino, Serien, Musik, Literatur, Kunst und Bühne. Es präsentiert Konzerte in Berlin, unter anderem in der Zitadelle, im Columbia Theater und im Frannz Club.	kulturnews is a culture magazine from Hamburg with daily tips on film, series, music, books, art and stage. It presents concerts in Berlin, at the Zitadelle, Columbia Theater and Frannz Club among others.	7	site lowercase
 Kunst&Krawall	kunst-krawall	promoter		Kunst&Krawall			1	Insel slam series
 Kuratorin Anika Meier	kuratorin-anika-meier	junk		Kuratorin Anika Meier			1	role + person; deleted by V026
 Känguruh Production	kanguruh-production	promoter	https://www.kaenguruh.de/	Känguruh Production			2	Halle
@@ -145,7 +145,7 @@ Lido Berlin	lido-berlin	venue	https://www.lido-berlin.de/	Lido Berlin			1
 Light The Blind	light-the-blind	artist	https://www.lighttheblind.de/	Light The Blind			1	band
 Listen	listen	promoter	https://www.listencollective.com/	Listen			1	Listen Collective, not listenagency
 Live Embassy	live-embassy	unverified		Live Embassy			1	
-Live Nation	live-nation	promoter	https://www.livenation.de/	Live Nation			4	
+Live Nation	live-nation	promoter	https://www.livenation.de/	Live Nation	Live Nation Germany ist die deutsche Tochter von Live Nation Entertainment, dem größten Live-Entertainment-Unternehmen der Welt, und veranstaltet Tourneen und Shows von der Clubgröße bis zur Arena. In Berlin laufen die Konzerte unter anderem im Velodrom, UFO im Velodrom und Frannz Club.	Live Nation Germany is the German arm of Live Nation Entertainment, the world's largest live-entertainment company, and promotes tours and shows from club size to arena. In Berlin its concerts run at the Velodrom, UFO im Velodrom and Frannz Club, among others.	4	
 Local Advisor	local-advisor	unverified		Local Advisor			1	
 Loft Concerts	loft-concerts	promoter	https://loft.de/	Loft Concerts	Loft Concerts geht auf den Club „Loft“ zurück, den Monika Döring 1982 über dem Metropol am Nollendorfplatz gründete. Heute ist Loft eine Berliner Konzertagentur für Indie, Pop und Singer-Songwriter, mit Shows von der Kantine am Berghain bis zur Columbiahalle.	"Loft Concerts goes back to the ""Loft"", the club Monika Döring opened above the Metropol on Nollendorfplatz in 1982. Today Loft is a Berlin concert agency for indie, pop and singer-songwriters, with shows from Kantine am Berghain to the Columbiahalle."	68	
 Luv`n Musiq	luv-n-musiq	unverified		Luv`n Musiq			1	
@@ -172,7 +172,7 @@ Mind Enterprises	mind-enterprises	promoter		Mind Enterprises			1	wrestling
 Morabeza	morabeza	party		Morabeza			1	
 More Zvukov	more-zvukov	promoter	https://morezvukov.nl	More Zvukov			1	RA lists it as More Zvukov Agency
 Mup	mup	junk		Mup			1	deleted by V026
-MusikBlog	musikblog	media	https://www.musikblog.de/	MusikBlog			6	
+MusikBlog	musikblog	media	https://www.musikblog.de/	MusikBlog	MusikBlog ist ein Online-Magazin für neue Musik, Konzerttermine und Newcomer, mit Alben, Videos, Interviews und Ticketverlosungen. Es präsentiert Konzerte in Berlin, unter anderem im Columbia Theater, Bi Nuu und Frannz Club.	MusikBlog is an online magazine for new music, concert dates and newcomers, with albums, videos, interviews and ticket giveaways. It presents concerts in Berlin, at Columbia Theater, Bi Nuu and Frannz Club among others.	6	
 Musikexpress	musikexpress	media	https://www.musikexpress.de/	Musikexpress			1	
 Musikparade	musikparade	promoter		Musikparade			3	site 500
 Musikschule Béla Bartók	musikschule-bela-bartok	sponsor		Musikschule Béla Bartók			1	
@@ -199,7 +199,7 @@ Paranoid	paranoid	party		Paranoid			2	Lido
 Patchanka	patchanka	promoter	https://patchanka-booking.com	Patchanka			2	RA lists it as Patchanka Booking Agency; patchanka.de is a parked default page
 Peter Edel & www.stummfilmkonzerte.de	peter-edel-www-stummfilmkonzerte-de	junk		Peter Edel & www.stummfilmkonzerte.de			1	venue + URL; deleted by V026
 Picky Magazine	picky-magazine	media	https://pickymagazine.de/	Picky Magazine			1	
-Pluswelt	pluswelt	promoter	https://www.pluswelt.com/	Pluswelt			4	PLUSWELT PROMOTION, Hamburg
+Pluswelt	pluswelt	promoter	https://www.pluswelt.com/	Pluswelt	Pluswelt Promotion ist eine Hamburger Agentur für Management, Promotion und Booking, von einzelnen Shows bis zu Tourneen und Festivals in Europa, mit Schwerpunkt auf Synthpop, Dark Wave und Electro. In Berlin laufen die Shows im Privatclub und Frannz Club.	Pluswelt Promotion is a Hamburg agency for management, promotion and booking, from single shows to European tours and festivals, focused on synth-pop, dark wave and electro. Its Berlin shows run at Privatclub and Frannz Club.	4	PLUSWELT PROMOTION, Hamburg
 polenta	polenta	artist		polenta			1	
 Popmonitor	popmonitor	media	http://www.popmonitor.de/	Popmonitor			4	
 Positive Transmitter	positive-transmitter	promoter	https://www.facebook.com/PositiveTransmitterAgency/	Positive Transmitter			1	RA: Facebook page is the only site
@@ -215,8 +215,8 @@ Quasimodo	quasimodo	venue	https://quasimodo.de/	Quasimodo			2
 Quiero Stand Up!	quiero-stand-up	promoter		Quiero Stand Up!			1	
 Radio Bob	radio-bob	media	https://www.radiobob.de/	RADIO BOB!			1	site writes RADIO BOB!
 Radio France International	radio-france-internationale	media	https://www.rfi.fr/	Radio France Internationale			1	
-radioeins	radioeins	media	https://www.radioeins.de/	radioeins			8	
-Rausgegangen	rausgegangen	media	https://rausgegangen.de/	Rausgegangen			5	event platform
+radioeins	radioeins	media	https://www.radioeins.de/	radioeins	radioeins ist das Erwachsenenprogramm des rbb, auf 95,8 MHz in Berlin und Potsdam. Der Sender präsentiert Konzerte in der Stadt, vom Frannz Club bis zur Zitadelle.	radioeins is rbb's grown-up station, on 95.8 MHz in Berlin and Potsdam. It presents concerts across the city, from Frannz Club to the Zitadelle.	8	
+Rausgegangen	rausgegangen	media	https://rausgegangen.de/	Rausgegangen	Rausgegangen ist eine Plattform für Veranstaltungstipps, in Berlin und anderen deutschen Städten, mit Programm, Tickets und eigenen Empfehlungen. Sie präsentiert Konzerte in der Stadt, unter anderem in der Zitadelle und im Urban Spree.	Rausgegangen is an event-discovery platform, in Berlin and other German cities, with listings, tickets and its own picks. It presents concerts across the city, at the Zitadelle and Urban Spree among others.	5	event platform
 rbb 88.8	rbb-88-8	media	https://www.rbb888.de/	rbb 88.8			1	
 reverberation	reverberation	promoter		reverberation			1	Schokoladen collective
 Rockitsessions,	rockitsessions	promoter		Rockitsessions			1	stored with trailing comma
@@ -225,11 +225,11 @@ Root Pgr	root-pgr	unverified		Root Pgr			1
 Rough Trade Europe	rough-trade-europe	promoter		Rough Trade Europe			1	now Believe
 Rudelsingen - Das Original aus Münster	rudelsingen	promoter	https://rudelsingen.de/	Rudelsingen			3	
 Schubert	schubert	unverified		Schubert			1	
-Selective Artists	selective-artists	promoter	https://selectiveartists.com/	Selective Artists			1	
+Selective Artists	selective-artists	promoter	https://selectiveartists.com/	Selective Artists	Selective Artists ist eine Konzertagentur und Tourneeveranstalter. In Berlin laufen die Shows unter anderem im Heimathafen Neukölln.	Selective Artists is a concert agency and touring promoter. Its Berlin shows run at Heimathafen Neukölln, among others.	1	
 Semmel	semmel-concerts	promoter	https://semmel.de/	Semmel Concerts	Semmel Concerts ist einer der größten Konzertveranstalter Europas, mit Sitz in Bayreuth und einem Büro in Berlin, Teil des Netzwerks EVENTIM LIVE. Über 1.500 Veranstaltungen im Jahr, von Tourneen bis zu eigenen Shows.	Semmel Concerts is one of Europe's largest concert promoters, based in Bayreuth with an office in Berlin and part of the EVENTIM LIVE network. It stages more than 1,500 events a year, from tours to its own productions.	11	
 Semtainment	semtainment	unverified		Semtainment			1	
-silent green	silent-green	venue	https://www.silent-green.net/	silent green			50	
-Simply Quiz	simply-quiz	promoter		Simply Quiz			13	FB/IG only
+silent green	silent-green	venue	https://www.silent-green.net/	silent green	silent green ist ein Kulturquartier im ehemaligen Krematorium Wedding, seit 2013 in privater Trägerschaft. Das eigene Programm reicht von Konzerten und Klanginstallationen bis zu Ausstellungen und Diskursformaten, quer durch die Disziplinen.	silent green is a cultural quarter in the former Wedding crematorium, privately run since 2013. Its own programme runs from concerts and sound installations to exhibitions and talks, across disciplines.	50	
+Simply Quiz	simply-quiz	promoter		Simply Quiz	Simply Quiz veranstaltet Pubquiz-Abende im Badehaus, mehrmals im Monat und auf Spendenbasis: mehr als 40 Fragen, Reservierung per Nachricht, Einlass ab 19:30.	Simply Quiz runs pub-quiz nights at Badehaus, several times a month and donation-based: more than 40 questions, reservation by message, doors at 19:30.	13	FB/IG only
 Skyline Green	skyline-green	artist	https://www.skylinegreen.de/	Skyline Green			1	band
 Slam	slam	junk		Slam			1	deleted by V026
 Sonic Boom	sonic-boom	promoter		Sonic Boom			1	Schokoladen
@@ -242,7 +242,7 @@ Spokes	spokes	unverified		Spokes			1	Cosmic Comedy
 Stand in Front	stand-in-front	promoter	https://standinfront.de/	Stand in Front	Stand in Front ist eine Berliner Management- und Tourneeagentur für deutschen Rap, mit Künstlern wie Prinz Pi, Genetikk und Omar76. Die Berliner Shows laufen in der Columbiahalle und im Hole 44.	Stand in Front is a Berlin management and touring company for German rap, with acts such as Prinz Pi, Genetikk and Omar76. Its Berlin shows run at the Columbiahalle and Hole 44.	6	
 Starving Artist	starving-artist	unverified		Starving Artist			1	
 Stiftung WissensArt	stiftung-wissensart	sponsor	https://stiftung-wissensart.de/	Stiftung Wissensart			1	stored WissensArt
-Streetlife International	streetlife-international	promoter	https://street.life/	Streetlife International			4	
+Streetlife International	streetlife-international	promoter	https://street.life/	Streetlife International	Streetlife International ist ein Berliner Tourneeveranstalter und eine Künstleragentur, seit 2009 in Schöneberg. In Berlin laufen die Shows unter anderem im Hole 44, Gretchen und Metropol.	Streetlife International is a Berlin touring promoter and artist agency, based in Schöneberg since 2009. Its Berlin shows run at Hole 44, Gretchen and Metropol, among others.	4	
 Subacuatica	subacuatica	unverified		Subacuatica			1	
 Subway Event Berlin	subway-event-berlin	promoter	https://www.subwayevent-berlin.com/	Subway Event Berlin			2	
 Sunday-Matinee	sunday-matinee	junk		Sunday-Matinee			1	series label; deleted by V026
