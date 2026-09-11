@@ -27,6 +27,7 @@ Data quality is enforced by **deterministic, curated-list normalizers applied at
 | ------------------- | --------------------------------------------------------------------------------------- | -------------------------------- |
 | Artist display name | `canonicalArtistName` — de-shout, casing-only                                           | `artist/ArtistNormalizer.kt`     |
 | Promoter identity   | `canonicalPromoterName` — strip trailing descriptors, fold typos via `NAME_CORRECTIONS` | `promoter/PromoterNormalizer.kt` |
+| De-shouting         | `deshoutWord` and the `ACRONYMS` it keeps in capitals, shared by both of the above      | `common/NameCasing.kt`           |
 | Non-artist titles   | `isNonArtistName` (`NON_ARTIST_NAMES` denylist), `stripArtistSuffix`                    | `scraper/ArtistNameMapping.kt`   |
 | Title-as-headliner  | `buildArtistsForEventType` / `buildArtistList`                                          | `scraper/ArtistNameMapping.kt`   |
 | Genre tags          | `GenreNormalizer` — synonym map + `NON_GENRE_TOKENS` stop-list + `looksLikeGenre` gate  | `genretag/GenreNormalizer.kt`    |
