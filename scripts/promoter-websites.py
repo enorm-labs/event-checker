@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Write the reviewed promoter websites onto the promoters (#328).
+"""Write the reviewed promoter websites and descriptions onto the promoters (#328).
 
 Dry run by default. `--apply` is what writes, because a promoter PUT replaces every field.
 
@@ -9,9 +9,12 @@ Dry run by default. `--apply` is what writes, because a promoter PUT replaces ev
     python3 scripts/promoter-websites.py --promoter loft-concerts
 
 Reads docs/promoters/REVIEWED.tsv, one row per promoter the site holds, with the kind a person
-gave it, the site they found, and the spelling that site uses. Only a row with a `website` is
-written, and only `website_url` changes: the request carries the promoter's current name and
-image fields back unchanged.
+gave it, the site they found, the spelling that site uses, and a description in each language
+where one was written. A row with a `website`, a `description_de` or a `description_en` is
+written; only those fields change, and the request carries the promoter's current name and
+image fields back unchanged. German is the description and English the alternate, because
+German is the site's authoritative language (ADR-013); a row with one language and not the
+other stores that one as the description.
 
 A row whose stored name differs from the reviewed one is reported and skipped. The name is not
 written here, because a PUT that changes the name changes the slug, and the next import then
@@ -66,10 +69,42 @@ def put_promoter(host, promoter_id, body):
 def read_reviewed(only=None):
     with open(REVIEWED, encoding="utf-8", newline="") as handle:
         rows = list(csv.DictReader(handle, delimiter="\t"))
-    with_site = [r for r in rows if r["website"]]
+    to_write = [r for r in rows if r["website"] or r["description_de"] or r["description_en"]]
     if only:
-        with_site = [r for r in with_site if r["slug"] == only]
-    return rows, with_site
+        to_write = [r for r in to_write if r["slug"] == only]
+    return rows, to_write
+
+
+def described(row):
+    """The four description fields for [row]: German first, English as the alternate."""
+    texts = [(row["description_de"], "de"), (row["description_en"], "en")]
+    texts = [(text, language) for text, language in texts if text]
+    if not texts:
+        return {}
+    (text, language), *rest = texts
+    alt, alt_language = rest[0] if rest else (None, None)
+    return {
+        "description": text,
+        "descriptionLanguage": language,
+        "descriptionAlt": alt,
+        "descriptionAltLanguage": alt_language,
+    }
+
+
+def changes(promoter, row):
+    """The fields the row would change on [promoter], as {field: (current, wanted)}."""
+    wanted = dict(described(promoter_as_row(promoter)))
+    wanted.update(described(row))
+    if row["website"]:
+        wanted["websiteUrl"] = row["website"]
+    return {field: (promoter.get(field), value) for field, value in wanted.items() if promoter.get(field) != value}
+
+
+def promoter_as_row(promoter):
+    """What the target already holds, in the TSV's shape, so an unwritten column keeps its value."""
+    by_language = {promoter.get("descriptionLanguage"): promoter.get("description")}
+    by_language[promoter.get("descriptionAltLanguage")] = promoter.get("descriptionAlt")
+    return {"description_de": by_language.get("de") or "", "description_en": by_language.get("en") or ""}
 
 
 def main():
@@ -77,14 +112,20 @@ def main():
     parser.add_argument("--host", default=LOCAL_HOST, help=f"importer admin API (default {LOCAL_HOST})")
     parser.add_argument("--apply", action="store_true", help="write; without it nothing is changed")
     parser.add_argument("--promoter", help="only this promoter, by slug")
-    parser.add_argument("--force", action="store_true", help="also replace a website a promoter already has")
+    parser.add_argument(
+        "--force", action="store_true", help="also replace a website or description a promoter already has"
+    )
     args = parser.parse_args()
 
-    rows, with_site = read_reviewed(args.promoter)
-    if not with_site:
-        print(f"no row with a website in {REVIEWED}" + (f" for {args.promoter!r}" if args.promoter else ""))
+    rows, to_write = read_reviewed(args.promoter)
+    if not to_write:
+        print(
+            f"no row with a website or a description in {REVIEWED}"
+            + (f" for {args.promoter!r}" if args.promoter else "")
+        )
         return 1
-    print(f"{len(rows)} reviewed, {len(with_site)} with a website\n")
+    described_rows = sum(1 for r in rows if r["description_de"] or r["description_en"])
+    print(f"{len(rows)} reviewed, {sum(1 for r in rows if r['website'])} with a website, {described_rows} described\n")
 
     try:
         promoters = fetch_promoters(args.host)
@@ -93,7 +134,7 @@ def main():
         return 1
 
     written = skipped = 0
-    for row in with_site:
+    for row in to_write:
         promoter = promoters.get(row["slug"])
         if promoter is None:
             print(f"  skip  {row['slug']}: not on the target")
@@ -103,23 +144,34 @@ def main():
             print(f"  skip  {row['slug']}: stored as {promoter['name']!r}, reviewed as {row['name']!r}")
             skipped += 1
             continue
-        current = promoter.get("websiteUrl")
-        if current == row["website"]:
+        changed = changes(promoter, row)
+        if not changed:
             continue
-        if current and not args.force:
-            print(f"  skip  {row['slug']}: already {current} (--force replaces it)")
+        # A target older than V024 answers without the field and would drop it from a PUT in silence.
+        if "description" not in promoter and any(field.startswith("description") for field in changed):
+            print(f"  skip  {row['slug']}: the target has no description field yet")
+            skipped += 1
+            continue
+        replaced = [field for field, (current, _) in changed.items() if current]
+        if replaced and not args.force:
+            print(f"  skip  {row['slug']}: already has {', '.join(replaced)} (--force replaces it)")
             skipped += 1
             continue
         body = {
             "name": promoter["name"],
-            "websiteUrl": row["website"],
+            "websiteUrl": promoter.get("websiteUrl"),
             "imageUrl": promoter.get("imageUrl"),
             "imageAttribution": promoter.get("imageAttribution"),
             "imageLicenceId": promoter.get("imageLicenceId"),
             "imageSourceUrl": promoter.get("imageSourceUrl"),
+            "description": promoter.get("description"),
+            "descriptionLanguage": promoter.get("descriptionLanguage"),
+            "descriptionAlt": promoter.get("descriptionAlt"),
+            "descriptionAltLanguage": promoter.get("descriptionAltLanguage"),
         }
+        body.update({field: wanted for field, (_, wanted) in changed.items()})
         verb = "write" if args.apply else "would write"
-        print(f"  {verb}  {row['slug']}: {row['website']}")
+        print(f"  {verb}  {row['slug']}: {', '.join(changed)}")
         if args.apply:
             try:
                 put_promoter(args.host, promoter["id"], body)
