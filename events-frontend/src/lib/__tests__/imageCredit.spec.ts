@@ -42,6 +42,20 @@ describe('imageCredit', () => {
     expect(credit?.licenceUrl).toBe('https://creativecommons.org/licenses/by-sa/3.0/de/')
   })
 
+  it('names the Free Art License rather than printing its identifier', () => {
+    const credit = imageCredit({ ...complete, imageLicenceId: 'LAL-1.3' })
+
+    expect(credit?.licenceLabel).toBe('Free Art License 1.3')
+    expect(credit?.licenceUrl).toBe('https://artlibre.org/licence/lal/en/')
+  })
+
+  it('links the Commons attribution-only template, which is its own licence statement', () => {
+    const credit = imageCredit({ ...complete, imageLicenceId: 'LicenseRef-Commons-Attribution' })
+
+    expect(credit?.licenceLabel).toBe('Attribution only')
+    expect(credit?.licenceUrl).toBe('https://commons.wikimedia.org/wiki/Template:Attribution')
+  })
+
   it('shows an unknown identifier as it stands rather than guessing a deed', () => {
     const credit = imageCredit({ ...complete, imageLicenceId: 'CC-BY-NC-4.0' })
 

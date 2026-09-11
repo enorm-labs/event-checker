@@ -77,10 +77,10 @@ four, on the first run.
 
 ## What is still open
 
-- **Two licences have no SPDX identifier the script accepts.** `FAL` on `Admiralspalast` and `Parkbühne Wuhlheide`, and a bare `Attribution` template on
-  `Velodrom`. The script stops on each rather than guessing, so those three venues stay without a picture until the licences are read. `FAL` is copyleft and its
-  share-alike is **not** the CC 4.0 § 2(a)(4) reading that ADR-019 and #1276 rely on. Owned by
-  [#1281](https://github.com/enorm-labs/event-junkie/issues/1281).
+- **A thumbnail is a copy, not a modification.** 19 images said so before FAL asked. `FAL` reached us on `Admiralspalast` and `Parkbühne Wuhlheide`. It has
+  no clause like CC 4.0 § 2(a)(4), which says a format change never produces adapted material. Neither has any CC licence older than 4.0, and 19 of the
+  live images are on one. Treating FAL differently would be one rule for two pictures and another for nineteen. Its article 4 also keeps the site out of FAL,
+  because each image is reachable on its own. Settled in [#1281](https://github.com/enorm-labs/event-junkie/issues/1281).
 - **One archive answers at 1024 px.** Commons renders a thumbnail to order, and the script asks for 1600. Flickr publishes a fixed ladder of sizes and
   everything above 1024 needs a signed secret, so a Flickr picture is stored at 1024. The 1536 px derivative is then wider than its original.
 - **One Flickr picture carries the Public Domain Mark.** `Klunkerkranich`. The mark says a work is out of copyright, which a 2015 rooftop photograph is not, so
