@@ -305,4 +305,17 @@ class PromoterNormalizerTest {
             canonicalPromoterName("Metal.de") shouldBe "metal.de"
         }
     }
+
+    // #307: a two-letter initial in front of a stripped descriptor came out title-cased.
+    @Test
+    fun `restores the trading name behind an initialism the strip exposed`() {
+        assertSoftly {
+            canonicalPromoterName("JB Freie Musik") shouldBe "JB Freie Musik"
+            canonicalPromoterName("Jb Freie") shouldBe "JB Freie Musik"
+            canonicalPromoterName("JM Audio Entertainment") shouldBe "JM Audio Entertainment"
+            canonicalPromoterName("Jm Audio") shouldBe "JM Audio Entertainment"
+            // The venue itself writes "We Artists", so that one was right all along.
+            canonicalPromoterName("We Artists") shouldBe "We Artists"
+        }
+    }
 }
