@@ -127,8 +127,16 @@ const PRIVACY_ELEMENTS: Element[] = [
   // § 16 UrhG, so a notice that describes the storage is the price of that decision.
   {
     what: 'that images are downloaded and stored, not only linked',
-    en: /downloads those images and stores a copy/i,
-    de: /lädt\s+diese Bilder herunter und speichert eine Kopie/i,
+    en: /downloads both kinds and stores a copy/i,
+    de: /lädt\s+beides herunter und speichert eine Kopie/i,
+  },
+  // 43 of the 86 venue images come from Wikimedia Commons or Flickr (#1275). The venue neither took
+  // nor published them, so a notice naming only the venue as the source is wrong about half of
+  // them, and wrong about who a removal request comes from.
+  {
+    what: 'that venue photographs also come from open archives',
+    en: /open archives such as Wikimedia Commons and Flickr/i,
+    de: /offenen Archiven wie Wikimedia Commons\s+und Flickr/i,
   },
   // The inverse of #792's item, which this replaces. That one pinned the disclosure that images
   // were fetched from venue servers, and said to delete it once `images.serving.enabled` was on in

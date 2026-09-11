@@ -214,15 +214,15 @@ disclosure, which is what [#1233](https://github.com/enorm-labs/event-junkie/iss
 
 **Categories of personal data**, mapped to the vocabulary these forms use:
 
-| Category                        | Applies                      | What it actually is here                                                                                                                                                                                               |
-| ------------------------------- | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Personal master data**        | **yes**                      | Artist names, and each artist's `description`, `imageUrl`, `websiteUrl`, `facebookUrl`, `instagramUrl`, `youtubeUrl`. The largest category by far, and see §7.3 for why it counts                                      |
-| **Image files**                 | **yes**                      | Copies of the images venues, promoters and artists publish, stored in `event-junkie-images` at Hetzner (ADR-019, #833). An artist photograph shows an identifiable person, so this is personal data in its own right   |
-| **Communication data**          | **yes, on a strict reading** | No phone numbers and no email addresses are stored anywhere. The artist profile and social URLs are what a strict reading catches. Declared deliberately: the cost was nil and omitting it would have left a scope gap |
-| Contractual master data         | no                           | There is no contract with any data subject                                                                                                                                                                             |
-| **Log data**                    | **yes**                      | Timestamp, requested path, HTTP status, bytes transferred, referrer, browser and OS. **No IP address** since §7.5 was settled on 2026-08-19. Retention is a size bound, not a period — see §7.5.1                      |
-| **Connection data**             | **yes, transient only**      | The visitor's IP address, held in memory by Traefik's per-source rate limiter for a one-second window and written nowhere (#268). Declared for the same reason log data was — see below and §7.5.1                     |
-| Contract, invoicing and payment | no                           | Nothing is sold and no payment is processed                                                                                                                                                                            |
+| Category                        | Applies                      | What it actually is here                                                                                                                                                                                                                                                  |
+| ------------------------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Personal master data**        | **yes**                      | Artist names, and each artist's `description`, `imageUrl`, `websiteUrl`, `facebookUrl`, `instagramUrl`, `youtubeUrl`. The largest category by far, and see §7.3 for why it counts                                                                                         |
+| **Image files**                 | **yes**                      | Copies of the images venues, promoters and artists publish, and of venue photographs from open archives (#1275), stored in `event-junkie-images` at Hetzner (ADR-019, #833). An artist photograph shows an identifiable person, so this is personal data in its own right |
+| **Communication data**          | **yes, on a strict reading** | No phone numbers and no email addresses are stored anywhere. The artist profile and social URLs are what a strict reading catches. Declared deliberately: the cost was nil and omitting it would have left a scope gap                                                    |
+| Contractual master data         | no                           | There is no contract with any data subject                                                                                                                                                                                                                                |
+| **Log data**                    | **yes**                      | Timestamp, requested path, HTTP status, bytes transferred, referrer, browser and OS. **No IP address** since §7.5 was settled on 2026-08-19. Retention is a size bound, not a period — see §7.5.1                                                                         |
+| **Connection data**             | **yes, transient only**      | The visitor's IP address, held in memory by Traefik's per-source rate limiter for a one-second window and written nowhere (#268). Declared for the same reason log data was — see below and §7.5.1                                                                        |
+| Contract, invoicing and payment | no                           | Nothing is sold and no payment is processed                                                                                                                                                                                                                               |
 
 **Log data was declared even though §7.5 is open**, and the reasoning generalises. A processor agreement should cover
 the maximum that might be processed. Narrowing it later is trivial, and discovering that something was processed
@@ -259,6 +259,9 @@ under § 16 UrhG and a processing operation under the DSGVO. Two consequences fo
 - **An artist photograph is erased through §7.3, not through the venue opt-out.** An artist plays many venues. The
   takedown deliberately covers a venue's own image and its events' images, and stops there. Deleting a performer's
   photograph on one venue's request would remove it from every other listing.
+- **A venue photograph from an open archive answers to its photographer.** 43 of the 86 venue images come from
+  Wikimedia Commons or Flickr (#1275). The venue neither took nor published them, so a request to remove one reaches
+  us from the photographer. The credit under each picture names that person and links the original.
 
 **`images.serving.enabled` is a published claim, the way `ZO_COMPACT_DATA_RETENTION_DAYS` is.** With it on, the API
 hands out our own URL and the visitor's browser contacts no venue. §5 of the notice says so, and `legalViews.spec.ts`
