@@ -154,8 +154,36 @@ class PromoterNormalizerTest {
     @Test
     fun `keeps Presents where it is part of the brand name`() {
         // "AEG Presents" is the company's actual trading name, not a verb — stripping it would
-        // leave the unusable "Aeg".
-        canonicalPromoterName("AEG Presents") shouldBe "Aeg Presents"
+        // leave the bare "AEG".
+        canonicalPromoterName("AEG Presents") shouldBe "AEG Presents"
+    }
+
+    // #304: the de-shout is the artist normalizer's, so its acronym list applies to promoters.
+    @Test
+    fun `keeps a genuine acronym in its capitals when de-shouting`() {
+        assertSoftly {
+            canonicalPromoterName("TV NOIR") shouldBe "TV Noir"
+            canonicalPromoterName("TV Noir") shouldBe "TV Noir"
+            canonicalPromoterName("BOSSA FM") shouldBe "Bossa FM"
+            canonicalPromoterName("Bossa FM") shouldBe "Bossa FM"
+            // Three letters and not on the list: nothing distinguishes it from a shouted word.
+            canonicalPromoterName("MIND Enterprises") shouldBe "Mind Enterprises"
+        }
+    }
+
+    @Test
+    fun `keeps a trailing descriptor when the remaining name is a bare initialism`() {
+        assertSoftly {
+            // Stripping "Music" would leave "HB", and de-shouting that leaves "Hb": a display name
+            // that no longer names anything. The descriptor stays, and the initialism keeps its
+            // capitals.
+            canonicalPromoterName("HB Music") shouldBe "HB Music"
+            canonicalPromoterName("HB MUSIC") shouldBe "HB Music"
+            canonicalPromoterName("HB Music GmbH") shouldBe "HB Music"
+            canonicalPromoterName("HB") shouldBe "HB"
+            // A short shouted word in front of a real name is still a word.
+            canonicalPromoterName("MY Concerts Berlin") shouldBe "My Concerts Berlin"
+        }
     }
 
     // Audit T-10: spelling variants that fragmented one promoter into several rows.
@@ -166,7 +194,11 @@ class PromoterNormalizerTest {
             canonicalPromoterName("Radio Eins") shouldBe "radioeins"
             canonicalPromoterName("tipBerlin") shouldBe "tip Berlin"
             canonicalPromoterName("tip Berlin") shouldBe "tip Berlin"
+            // Zitadelle prints the magazine as a bare "Tip" (#304).
+            canonicalPromoterName("Tip") shouldBe "tip Berlin"
+            canonicalPromoterName("TIP") shouldBe "tip Berlin"
             canonicalPromoterName("KKT") shouldBe "KKT"
+            canonicalPromoterName("Kkt") shouldBe "KKT"
             canonicalPromoterName("KKT GmbH – Kikis Kleiner Tourneeservice") shouldBe "KKT"
         }
     }

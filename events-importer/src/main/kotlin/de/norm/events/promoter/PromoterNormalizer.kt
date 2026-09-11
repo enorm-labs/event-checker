@@ -1,5 +1,8 @@
 package de.norm.events.promoter
 
+import de.norm.events.common.deshoutWord
+import de.norm.events.common.isShortInitialism
+
 // Promoter-name canonicalization for the scraper pipeline.
 //
 // The same real-world promoter is written many ways across venue websites: an abbreviated label on
@@ -12,15 +15,19 @@ package de.norm.events.promoter
 //      "Konzerte", "Music", "Events", …). Only trailing words, so a name whose descriptor is
 //      load-bearing and not at the end — "Concert Concept" — is left intact.
 //   2. De-shout ALL-CAPS words ("SIMPLY QUIZ" → "Simply Quiz") for an order-independent display
-//      name; intentional mixed casing ("GreyZone") is preserved.
+//      name, with the [deshoutWord] the artist normalizer uses, so its acronym list and stylised
+//      tokens apply here too ("TV NOIR" → "TV Noir"); intentional mixed casing ("GreyZone") is
+//      preserved.
 //   3. Fold known source typos and spacing variants onto one canonical spelling via a curated map
 //      ("Trinty" → "Trinity", "Allrooms" → "All Rooms"). The lookup key is punctuation- and
 //      space-insensitive, so one entry covers "All Rooms", "Allrooms" and "ALLROOMS" alike. Only
 //      exact (normalized) matches are corrected — fuzzy matching would risk merging genuinely
 //      distinct promoters.
 //
-// At least one word is always kept and stripping never removes the last letter-bearing word, so
-// "Records" keeps its single word and "36 Concerts" does not collapse to the unusable "36".
+// At least one word is always kept, and stripping never leaves a residue nobody would search for:
+// "Records" keeps its single word, "36 Concerts" does not collapse to the bare number "36", and
+// "HB Music" does not collapse to the bare initialism "HB". That last residue is also kept in its
+// capitals rather than de-shouted to "Hb", which is what the strip-then-de-shout order used to do.
 //
 // Accepted: a *leading* descriptor is not stripped, so "Konzertbüro Schoneberg" does not merge with
 // "Schoneberg Konzerte" without an explicit correction-map entry. Artists are deliberately not
@@ -47,19 +54,26 @@ fun canonicalPromoterName(raw: String): String {
             .toMutableList()
     if (tokens.isEmpty()) return raw.trim()
 
-    // Drop the trailing run of legal-form / descriptor / connector tokens, but always keep at
-    // least one *letter-bearing* word: stripping "Concerts" off "36 Concerts" would otherwise
-    // leave the bare number "36", which is not a usable promoter name.
-    while (tokens.size > 1 &&
-        tokens.last().isStrippableTrailingWord() &&
-        tokens.dropLast(1).any { word -> word.any(Char::isLetter) }
-    ) {
+    // Drop the trailing run of legal-form / descriptor / connector tokens, but always keep a
+    // usable name: stripping "Concerts" off "36 Concerts" would leave the bare number "36", and
+    // stripping "Music" off "HB Music" the bare initialism "HB".
+    while (tokens.size > 1 && tokens.last().isStrippableTrailingWord() && tokens.dropLast(1).isUsableName()) {
         tokens.removeAt(tokens.lastIndex)
     }
 
-    val canonical = tokens.joinToString(" ") { it.deshout() }.ifBlank { raw.trim() }
+    // The initialism the guard above kept a descriptor for is an initialism, so it keeps its
+    // capitals ("HB Music", not "Hb Music"). Every other token de-shouts as usual.
+    val keepFirst = tokens.first().isShortInitialism() && tokens.drop(1).all { it.isStrippableTrailingWord() }
+    val canonical =
+        tokens
+            .mapIndexed { index, token -> if (index == 0 && keepFirst) token else token.deshoutWord() }
+            .joinToString(" ")
+            .ifBlank { raw.trim() }
     return NAME_CORRECTIONS[canonical.normalizedKey()] ?: canonical
 }
+
+/** Whether these tokens still name something: a letter-bearing word that is not a lone initialism. */
+private fun List<String>.isUsableName(): Boolean = any { word -> word.any(Char::isLetter) } && !(size == 1 && first().isShortInitialism())
 
 /**
  * Whether [raw] is not a real promoter but a bare generic label — a name that, once a
@@ -87,14 +101,6 @@ private fun String.isStrippableTrailingWord(): Boolean {
     val key = lowercase().replace(NON_WORD_REGEX, "")
     return key.isEmpty() || key in STRIP_WORDS
 }
-
-/** Title-cases an ALL-CAPS word (>= 2 letters); leaves any word with lowercase letters untouched. */
-private fun String.deshout(): String =
-    if (length >= 2 && any { it.isLetter() } && none { it.isLowerCase() }) {
-        this[0] + substring(1).lowercase()
-    } else {
-        this
-    }
 
 private val WHITESPACE_REGEX = Regex("""\s+""")
 
@@ -191,12 +197,13 @@ private val NAME_CORRECTIONS: Map<String, String> =
         // The station spells itself in one lowercase word; one venue writes it "Radio Eins".
         // Both share this key, so the entry folds them onto the broadcaster's own branding.
         "radioeins" to "radioeins",
-        // "tipBerlin" (one venue) and "tip Berlin" (another) are the city magazine. The bare "Tip"
-        // a third venue prints is deliberately **not** folded in — too ambiguous a word to key on
-        // safely, so it stays a second promoter row.
+        // "tipBerlin" (one venue), "tip Berlin" (another) and the bare "Tip" Zitadelle prints are
+        // the city magazine, and no other promoter in the corpus is called "Tip" (#304).
         "tipberlin" to "tip Berlin",
-        // The tour agency appears both abbreviated and under its full trading name. De-shouting
-        // lowercases the acronym to "Kkt", so the entry also restores its own capitals.
+        "tip" to "tip Berlin",
+        // The tour agency appears both abbreviated and under its full trading name. The shared
+        // acronym list keeps "KKT" in its capitals; the first entry still catches a "Kkt" that
+        // an earlier import stored before it did (#304).
         "kkt" to "KKT",
         "kktgmbhkikiskleinertourneeservice" to "KKT"
     )
