@@ -83,6 +83,11 @@ SPDX = {
     "CC BY-SA 4.0": "CC-BY-SA-4.0",
     "Public domain": "PD",
     "Public Domain Mark": "PD",
+    # Two archive templates SPDX does not name the way Commons does. `FAL` is the Free Art License,
+    # whose identifier is `LAL-1.3`. The bare `Attribution` template is on no SPDX list at all, so
+    # it takes the `LicenseRef-` form SPDX publishes for exactly that case (#1281).
+    "FAL": "LAL-1.3",
+    "Attribution": "LicenseRef-Commons-Attribution",
 }
 
 # Every field a venue PUT carries. The admin API has no PATCH, so anything missing here is erased

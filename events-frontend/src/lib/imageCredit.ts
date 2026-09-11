@@ -57,6 +57,14 @@ const LICENCES: Record<string, { label: string; url: string | null }> = {
   },
   'CC-BY-SA-4.0': { label: 'CC BY-SA 4.0', url: 'https://creativecommons.org/licenses/by-sa/4.0/' },
   PD: { label: 'Public domain', url: null },
+  'LAL-1.3': { label: 'Free Art License 1.3', url: 'https://artlibre.org/licence/lal/en/' },
+  // The licence statement is the Commons template itself, which is why the link goes there rather
+  // than to a deed. No deed exists: the template is a grant an uploader wrote, not a published
+  // licence (#1281).
+  'LicenseRef-Commons-Attribution': {
+    label: 'Attribution only',
+    url: 'https://commons.wikimedia.org/wiki/Template:Attribution',
+  },
 }
 
 /**
