@@ -69,6 +69,7 @@ class LidoWebsiteImporter(
             soldOut = primary.soldOut || fallback.soldOut,
             status = primary.status.takeIf { it != EventStatus.SCHEDULED.name } ?: fallback.status,
             promoters = primary.promoters.ifEmpty { fallback.promoters },
+            promoterWebsites = primary.promoterWebsites.ifEmpty { fallback.promoterWebsites },
             // Artists are only extracted on the overview page (needs subtitle + type).
             artists = primary.artists.ifEmpty { fallback.artists }
         )

@@ -57,6 +57,7 @@ class AstraDetailPageScraperTest {
     @Test
     fun `parses the local promoter`() {
         greenLung.promoters shouldContainExactly listOf("Landstreicher Konzerte")
+        greenLung.promoterWebsites shouldBe mapOf("Landstreicher Konzerte" to "http://www.landstreicher-konzerte.de")
     }
 
     @Test

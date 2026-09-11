@@ -249,7 +249,31 @@ class AssociationSyncService(
             .distinctBy { SlugGenerator.slugify(it) }
             .forEach { resolveOrCreatePromoter(it, promoterCache) }
 
+        fillPromoterWebsites(scrapedEvents, promoterCache)
         return promoterCache
+    }
+
+    /**
+     * Writes the website a venue links a promoter credit to onto a promoter row that has none.
+     *
+     * Fill-if-empty, never replace: the venue's link is as often the promoter's ticket shop as its
+     * site, and a reviewed `website_url` (docs/promoters/REVIEWED.tsv) must not lose to it (#1319).
+     */
+    private suspend fun fillPromoterWebsites(
+        scrapedEvents: List<ScrapedEvent>,
+        promoterCache: MutableMap<String, PromoterEntity>
+    ) {
+        val websitesBySlug =
+            scrapedEvents
+                .flatMap { it.promoterWebsites.entries }
+                .filterNot { (raw, _) -> isNonPromoterName(raw) }
+                .associate { (raw, url) -> SlugGenerator.slugify(canonicalPromoterName(raw)) to url }
+        websitesBySlug
+            .mapNotNull { (slug, url) -> promoterCache[slug]?.takeIf { it.websiteUrl == null }?.let { it to url } }
+            .forEach { (promoter, url) ->
+                promoterCache[promoter.slug] = promoterRepository.save(promoter.copy(websiteUrl = url))
+                logger.info { "Filled website of promoter '${promoter.slug}' from the venue's credit: $url" }
+            }
     }
 
     /**

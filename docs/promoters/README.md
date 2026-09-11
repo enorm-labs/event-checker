@@ -45,6 +45,11 @@ day the image decision in #328 is taken.
 the venue prints and a reader may search for. The kind is what a later enrichment reads to decide
 whether a row gets a description at all. Nothing deletes a row for its kind.
 
-**Not read yet.** Bi Nuu, Lido, Astra and Festsaal ship each promoter's URL in the event JSON
-their scrapers already parse. The importer could write that URL itself, for the credits this
-table left empty.
+**Resident Advisor was checked too.** Every row was searched on ra.co (promoter index, Berlin).
+31 of 246 are there, 19 under the same name. RA is an electronic-music index, and most of this
+table is not. Seven rows gained a site from it. Four of those are a Facebook or Instagram page,
+because that is all the promoter has. No name disagreed. The `note` says which.
+
+**Bi Nuu, Lido and Astra link each promoter credit to its site.** The importer reads that link
+and writes it onto a promoter row that has none (#1319). A reviewed site in this table is never
+replaced by it.

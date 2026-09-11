@@ -65,6 +65,7 @@ class LidoOverviewPageScraperTest {
     @Test
     fun `parses the presenter as a promoter`() {
         event("Sorry").promoters shouldContainExactly listOf("Puschen")
+        event("Sorry").promoterWebsites shouldBe mapOf("Puschen" to "http://www.puschen.net")
     }
 
     @Test

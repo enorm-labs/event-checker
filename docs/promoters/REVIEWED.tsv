@@ -52,7 +52,7 @@ Contigo	contigo	unverified		Contigo			1	Cosmic Comedy
 Contra	contra	unverified		Contra			2	Columbia Theater
 Cornershop	cornershop	unverified		Cornershop			2	Cosmic Comedy
 Cosmic Comedy Berlin	cosmic-comedy-berlin	venue	https://www.cosmiccomedyclub.com/	Cosmic Comedy Berlin			25	club own shows
-Cosmic Romance	cosmic-romance	unverified		Cosmic Romance			1	
+Cosmic Romance	cosmic-romance	promoter	https://cosmic-romance.com	Cosmic Romance			1	RA: https://ra.co/promoters/110970
 Crunch Tapes	crunch-tapes	promoter	https://www.crunchtapes.com/	Crunch Tapes			1	site writes CRUNCH TAPES
 Cyberfunk + Urban Spree	cyberfunk-urban-spree	party		Cyberfunk + Urban Spree			1	co-billing not split (+)
 d2mberlin	d2mberlin	promoter	https://d2mberlin.de/	d2mberlin			1	
@@ -82,7 +82,7 @@ Estetica Torta	estetica-torta	unverified		Estetica Torta			1
 Europe Deadheads	europe-deadheads	promoter	https://europedeadheads.com/	Europe Deadheads			3	fan community
 F-Cat	f-cat	unverified		F-Cat			1	
 Fandom Night	fandom-night	party		Fandom Night			3	Badehaus; no site
-Fania Brava	fania-brava	party		Fania Brava			1	
+Fania Brava	fania-brava	party	https://instagram.com/faniabravaparty/	Fania Brava			1	RA: Instagram is the only site
 Feinster HipHop	feinster-hiphop	party		Feinster HipHop			1	
 Festsaal Kreuzberg	festsaal-kreuzberg	venue	https://festsaal-kreuzberg.de/	Festsaal Kreuzberg			8	Festsaal Kreuzberg Booking
 Fever & Nova Sky Stories	fever-nova-sky-stories	promoter		Fever & Nova Sky Stories			1	drone show co-billing
@@ -170,7 +170,7 @@ Milchsalon	milchsalon	promoter	https://milchsalon.de/	Milchsalon			1
 Miller-Zillmer Foundation	miller-zillmer-foundation	sponsor		Miller-Zillmer Foundation			3	site not found
 Mind Enterprises	mind-enterprises	promoter		Mind Enterprises			1	wrestling
 Morabeza	morabeza	party		Morabeza			1	
-More Zvukov	more-zvukov	unverified		More Zvukov			1	
+More Zvukov	more-zvukov	promoter	https://morezvukov.nl	More Zvukov			1	RA lists it as More Zvukov Agency
 Mup	mup	junk		Mup			1	deleted by V026
 MusikBlog	musikblog	media	https://www.musikblog.de/	MusikBlog			6	
 Musikexpress	musikexpress	media	https://www.musikexpress.de/	Musikexpress			1	
@@ -196,17 +196,17 @@ Out4fame	out4fame	promoter	https://out4fame.ticket.io/	Out4fame			2
 Ox-Fancine	ox-fanzine	media	https://www.ox-fanzine.de/	Ox-Fanzine			1	stored as Ox-Fancine
 Papke Luhr	papke-luhr	unverified		Papke Luhr			1	
 Paranoid	paranoid	party		Paranoid			2	Lido
-Patchanka	patchanka	promoter		Patchanka			2	
+Patchanka	patchanka	promoter	https://patchanka-booking.com	Patchanka			2	RA lists it as Patchanka Booking Agency; patchanka.de is a parked default page
 Peter Edel & www.stummfilmkonzerte.de	peter-edel-www-stummfilmkonzerte-de	junk		Peter Edel & www.stummfilmkonzerte.de			1	venue + URL; deleted by V026
 Picky Magazine	picky-magazine	media	https://pickymagazine.de/	Picky Magazine			1	
 Pluswelt	pluswelt	promoter	https://www.pluswelt.com/	Pluswelt			4	PLUSWELT PROMOTION, Hamburg
 polenta	polenta	artist		polenta			1	
 Popmonitor	popmonitor	media	http://www.popmonitor.de/	Popmonitor			4	
-Positive Transmitter	positive-transmitter	promoter		Positive Transmitter			1	
+Positive Transmitter	positive-transmitter	promoter	https://www.facebook.com/PositiveTransmitterAgency/	Positive Transmitter			1	RA: Facebook page is the only site
 Potalonu	potalonu	unverified		Potalonu			1	
 Powerline	powerline-agency	promoter	https://powerline-agency.com/	Powerline Agency	Powerline Agency ist eine Berliner Booking-Agentur und Veranstalter für Indie, Garage und Psychedelic. Die Berliner Shows laufen im Urban Spree, Schokoladen und in der Columbiahalle.	Powerline Agency is a Berlin booking agency and promoter for indie, garage and psychedelic acts. Its Berlin shows run at Urban Spree, Schokoladen and the Columbiahalle.	10	
 PRK DreamHaus	prk-dreamhaus	promoter	https://www.prk-dreamhaus.com/	PRK DreamHaus	PRK DreamHaus entstand 2024 aus der Fusion der Kölner PRK Peter Rieger Konzertagentur (seit 1983) mit dem Berliner DreamHaus (seit 2020), beide Teil der CTS Eventim. Die Agentur veranstaltet Arena- und Hallentourneen, in Berlin etwa im Velodrom und Astra Kulturhaus.	PRK DreamHaus was formed in 2024 by merging Cologne's PRK Peter Rieger Konzertagentur (founded 1983) with Berlin's DreamHaus (founded 2020), both part of CTS Eventim. It promotes arena and hall tours, in Berlin at the Velodrom and Astra Kulturhaus among others.	10	
-psychberg affairs	psychberg-affairs	promoter		psychberg affairs			1	Schokoladen collective
+psychberg affairs	psychberg-affairs	promoter	https://www.instagram.com/psychberg_affairs	psychberg affairs			1	Schokoladen collective; RA: Instagram is the only site
 punkfilmfest berlin	punkfilmfest-berlin	promoter		punkfilmfest berlin			7	
 Pure Obsessions & Red Nights	pure-obsessions-red-nights	party		Pure Obsessions & Red Nights			1	
 Puschen	puschen	promoter	https://puschen.net/	Puschen	Puschen ist eine Booking- und Promotion-Agentur aus Neukölln, gegründet von Andreas Oberschelp, mit einem Roster aus Indie, Folk und Alternative. Die Berliner Shows laufen unter anderem in Huxleys Neue Welt, silent green und Schokoladen.	Puschen is a booking and promotion agency in Neukölln, founded by Andreas Oberschelp, with a roster of indie, folk and alternative acts. Its Berlin shows run at Huxleys Neue Welt, silent green and Schokoladen, among others.	16	
@@ -258,7 +258,7 @@ The Swag	the-swag	party		The Swag			2	jam session
 thirsty & miserable	thirsty-miserable	promoter		thirsty & miserable			1	Schokoladen
 Tilos Rádió	tilos-radio	media	https://tilos.hu/	Tilos Rádió			1	
 tipBerlin	tipberlin	media	https://www.tip-berlin.de/	tipBerlin			5	
-Tiq	tiq	unverified		Tiq			3	Duncker Club
+Tiq	tiq	promoter	https://www.facebook.com/tiqberlinquadraticwave	Tiq			3	RA lists it as TIQ Berlin; Facebook is the only site
 Tirnanog	tirnanog	artist		Tirnanog			1	
 TOP90s Berlin	top90s-berlin	party		TOP90s Berlin			1	
 Topline Berlin	topline-berlin	unverified		Topline Berlin			1	

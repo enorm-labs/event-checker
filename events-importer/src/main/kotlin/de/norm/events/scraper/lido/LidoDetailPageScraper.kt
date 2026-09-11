@@ -72,7 +72,8 @@ class LidoDetailPageScraper {
             priceBoxOffice = priceBoxOffice,
             soldOut = block.soldOut,
             status = block.status,
-            promoters = block.promoters
+            promoters = block.promoters,
+            promoterWebsites = block.promoterWebsites
         )
     }
 

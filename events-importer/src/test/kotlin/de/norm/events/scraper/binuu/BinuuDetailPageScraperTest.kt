@@ -57,6 +57,8 @@ class BinuuDetailPageScraperTest {
             "https://festsaal.shop/produkte/535-tickets-arch-enemy-bi-nuu-berlin-am-19-07-2026"
         archEnemy.soldOut shouldBe true
         archEnemy.promoters shouldContainExactly listOf("Cobra Agency", "Festsaal Kreuzberg Booking")
+        archEnemy.promoterWebsites shouldBe
+            mapOf("Cobra Agency" to "https://cobra-agency.net", "Festsaal Kreuzberg Booking" to "https://festsaal.shop")
         archEnemy.description!! shouldContain "ARCH ENEMY return to small"
     }
 

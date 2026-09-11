@@ -5,6 +5,7 @@ import de.norm.events.event.EventArtistRepository
 import de.norm.events.event.EventEntity
 import de.norm.events.event.EventPromoterRepository
 import de.norm.events.event.EventRepository
+import de.norm.events.promoter.PromoterRepository
 import de.norm.events.venue.VenueEntity
 import de.norm.events.venue.VenueRepository
 import io.kotest.matchers.shouldBe
@@ -43,6 +44,9 @@ class AssociationSyncDuplicateNamesIntegrationTest : BaseControllerTest() {
     @Autowired
     private lateinit var eventPromoterRepository: EventPromoterRepository
 
+    @Autowired
+    private lateinit var promoterRepository: PromoterRepository
+
     private suspend fun persistEvent(sourceId: String): EventEntity {
         val venue = venueRepository.save(VenueEntity(name = "Test Venue", slug = "test-venue-$sourceId"))
         return eventRepository.save(
@@ -59,7 +63,8 @@ class AssociationSyncDuplicateNamesIntegrationTest : BaseControllerTest() {
     private fun scraped(
         sourceId: String,
         artists: List<ScrapedArtist> = emptyList(),
-        promoters: List<String> = emptyList()
+        promoters: List<String> = emptyList(),
+        promoterWebsites: Map<String, String> = emptyMap()
     ) = ScrapedEvent(
         title = "Test Event",
         eventDate = LocalDate.of(2026, 9, 1),
@@ -68,7 +73,8 @@ class AssociationSyncDuplicateNamesIntegrationTest : BaseControllerTest() {
         eventType = "CONCERT",
         status = "SCHEDULED",
         artists = artists,
-        promoters = promoters
+        promoters = promoters,
+        promoterWebsites = promoterWebsites
     )
 
     // Block bodies, not `= runBlocking { … }`: an expression body whose last statement returns
@@ -85,6 +91,27 @@ class AssociationSyncDuplicateNamesIntegrationTest : BaseControllerTest() {
             )
 
             eventPromoterRepository.findByEventIdIn(listOf(requireNotNull(event.id))).toList().size shouldBe 1
+        }
+    }
+
+    // #1319: the venue's link fills an empty website and never replaces a reviewed one.
+    @Test
+    fun `a promoter credit with a link fills the website of a row that has none`() {
+        runBlocking {
+            val sourceId = "promoter-site:1"
+            val event = persistEvent(sourceId)
+
+            associationSyncService.resolveAndSyncAssociations(
+                listOf(event),
+                listOf(scraped(sourceId, promoters = listOf("Wild Nights GmbH"), promoterWebsites = mapOf("Wild Nights GmbH" to "https://wild.example")))
+            )
+            promoterRepository.findBySlug("wild-nights")?.websiteUrl shouldBe "https://wild.example"
+
+            associationSyncService.resolveAndSyncAssociations(
+                listOf(event),
+                listOf(scraped(sourceId, promoters = listOf("Wild Nights"), promoterWebsites = mapOf("Wild Nights" to "https://shop.example")))
+            )
+            promoterRepository.findBySlug("wild-nights")?.websiteUrl shouldBe "https://wild.example"
         }
     }
 
