@@ -13,7 +13,7 @@
 # Pinned by tag *and* digest, like every base image here; Dependabot's `docker` ecosystem updates
 # both. `24-alpine` because Node 24 is the engine `package.json` declares, and the bundle targets
 # it. Alpine for the same reason nginx is on it: fewer packages in the scan.
-FROM node:24-alpine@sha256:e67514e5d0f6c46656005e1b693b2ec9d52e80b641307de684d4a015ba7a4eaf
+FROM node:24-alpine@sha256:50c8e8ca1d27439048670df5883f32d57cf81cff6233222c893fd0d9884cbd81
 
 ARG VERSION=unspecified
 ARG REVISION=unknown
