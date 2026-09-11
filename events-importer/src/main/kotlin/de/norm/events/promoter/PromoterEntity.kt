@@ -23,6 +23,7 @@ data class PromoterEntity(
     val descriptionLanguage: String? = null,
     val descriptionAlt: String? = null,
     val descriptionAltLanguage: String? = null,
+    val reviewedAt: Instant? = null,
     @CreatedDate val createdAt: Instant? = null,
     @LastModifiedDate val updatedAt: Instant? = null
 ) {
@@ -40,6 +41,7 @@ data class PromoterEntity(
             descriptionLanguage = descriptionLanguage,
             descriptionAlt = descriptionAlt,
             descriptionAltLanguage = descriptionAltLanguage,
+            reviewedAt = reviewedAt,
             createdAt = createdAt,
             updatedAt = updatedAt
         )
@@ -59,6 +61,7 @@ data class PromoterEntity(
                 descriptionLanguage = promoter.descriptionLanguage,
                 descriptionAlt = promoter.descriptionAlt,
                 descriptionAltLanguage = promoter.descriptionAltLanguage,
+                reviewedAt = promoter.reviewedAt,
                 createdAt = promoter.createdAt,
                 updatedAt = promoter.updatedAt
             )

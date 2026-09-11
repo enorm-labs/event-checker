@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
+import java.time.Instant
 
 /**
  * Request body for creating or updating a promoter.
@@ -57,5 +58,12 @@ data class PromoterRequest(
     val descriptionAlt: String? = null,
     @field:Pattern(regexp = "de|en", message = "Alternate description language must be 'de' or 'en'")
     @Schema(description = "Language of `descriptionAlt`: `de` or `en`", example = "de")
-    val descriptionAltLanguage: String? = null
+    val descriptionAltLanguage: String? = null,
+    @Schema(
+        description =
+            "When a person last reviewed this row: name as the promoter spells it, kind decided, website recorded or absent " +
+                "on purpose. Null for a row nobody looked at. Set by the review, never by an import (#1336).",
+        example = "2026-09-11T18:00:00Z"
+    )
+    val reviewedAt: Instant? = null
 ) : AttributableImage

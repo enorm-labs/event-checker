@@ -35,6 +35,8 @@ data class PromoterResponse(
     val descriptionAlt: String?,
     @Schema(description = "Language of `descriptionAlt`: `de` or `en`. Null exactly when `descriptionAlt` is.", example = "de")
     val descriptionAltLanguage: String?,
+    @Schema(description = "When a person last reviewed this row; null for a row nobody looked at (#1336)")
+    val reviewedAt: Instant?,
     @Schema(description = "Timestamp when this record was first created")
     val createdAt: Instant?,
     @Schema(description = "Timestamp when this record was last modified")
@@ -55,6 +57,7 @@ data class PromoterResponse(
                 descriptionLanguage = promoter.descriptionLanguage,
                 descriptionAlt = promoter.descriptionAlt,
                 descriptionAltLanguage = promoter.descriptionAltLanguage,
+                reviewedAt = promoter.reviewedAt,
                 createdAt = promoter.createdAt,
                 updatedAt = promoter.updatedAt
             )

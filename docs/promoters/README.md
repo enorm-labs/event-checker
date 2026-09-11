@@ -17,7 +17,10 @@ person decided about that promoter.
 | `note`           | What decided the row                                                                                                                                                                                                                                                                                        |
 
 **What reads it.** `scripts/promoter-websites.py` writes the `website` and the two description
-columns onto the promoters through the admin API, and nothing else. German goes in as the
+columns onto the promoters through the admin API. It also stamps `reviewed_at` on every row it
+finds under a matching name, because a row in this table is a review (#1336). The importer never
+sets that column. So `GET /api/admin/promoters?reviewed=false` and
+`promoter-duplicates.py --unreviewed` list what an import minted since. Nothing else is written. German goes in as the
 description and English as the alternate, because German is the site's authoritative language
 (ADR-013). The `name` column reaches the database through V023 and
 the normalizer. A rename through the API changes the slug, and the next import would then mint

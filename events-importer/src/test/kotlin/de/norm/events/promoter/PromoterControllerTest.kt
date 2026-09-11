@@ -2,11 +2,15 @@ package de.norm.events.promoter
 
 import de.norm.events.BaseControllerTest
 import de.norm.events.common.PageResponse
+import io.kotest.assertions.assertSoftly
 import io.kotest.matchers.collections.shouldContain
+import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.ints.shouldBeGreaterThanOrEqual
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.test.web.reactive.server.expectBody
+import java.time.Instant
 
 class PromoterControllerTest : BaseControllerTest() {
     /** Creates a promoter via the API and returns the persisted [PromoterResponse]. */
@@ -84,6 +88,34 @@ class PromoterControllerTest : BaseControllerTest() {
             .exchange()
             .expectStatus()
             .isNotFound
+    }
+
+    // #1336: the review stamps a row; the weekly list is the rows without a stamp.
+    @Test
+    fun `GET promoters filters on whether a person reviewed the row`() {
+        val reviewed = createPromoter(PromoterRequestFixtures.create(name = "Reviewed One", reviewedAt = Instant.parse("2026-09-11T18:00:00Z")))
+        val minted = createPromoter(PromoterRequestFixtures.create(name = "Minted One"))
+
+        fun slugsWhere(query: String): List<String> =
+            webTestClient
+                .get()
+                .uri("/api/admin/promoters?$query")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody<PageResponse<PromoterResponse>>()
+                .returnResult()
+                .responseBody!!
+                .content
+                .map { it.slug }
+
+        assertSoftly {
+            slugsWhere("reviewed=false") shouldContainExactly listOf(minted.slug)
+            slugsWhere("reviewed=true") shouldContainExactly listOf(reviewed.slug)
+            slugsWhere("size=50") shouldContainExactlyInAnyOrder listOf(reviewed.slug, minted.slug)
+            reviewed.reviewedAt shouldBe Instant.parse("2026-09-11T18:00:00Z")
+            minted.reviewedAt shouldBe null
+        }
     }
 
     @Test
