@@ -33,6 +33,11 @@ data class Promoter(
     val descriptionAlt: String? = null,
     /** Language of [descriptionAlt]: `de` or `en`. Null exactly when [descriptionAlt] is. */
     val descriptionAltLanguage: String? = null,
+    /**
+     * When a person last reviewed this row: name as the promoter spells it, kind decided, website
+     * recorded or absent on purpose. Null for every row an import minted and nobody looked at.
+     */
+    val reviewedAt: Instant? = null,
     /** Timestamp when this record was first created. Set by the database. */
     val createdAt: Instant? = null,
     /** Timestamp when this record was last modified. Set by the database. */

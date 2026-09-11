@@ -16,6 +16,15 @@ interface PromoterRepository : CoroutineCrudRepository<PromoterEntity, Long> {
     /** Finds all promoters with pagination and sorting applied via [pageable]. */
     fun findAllBy(pageable: Pageable): Flow<PromoterEntity>
 
+    /** The rows a person reviewed, or the rows nobody looked at yet — the weekly list (#1336). */
+    fun findAllByReviewedAtIsNotNull(pageable: Pageable): Flow<PromoterEntity>
+
+    fun findAllByReviewedAtIsNull(pageable: Pageable): Flow<PromoterEntity>
+
+    suspend fun countByReviewedAtIsNotNull(): Long
+
+    suspend fun countByReviewedAtIsNull(): Long
+
     /**
      * Inserts a promoter only if its [slug] is not already taken, returning the number of rows
      * inserted (`1` if created, `0` if it already existed).

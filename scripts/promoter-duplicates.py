@@ -10,6 +10,7 @@ nothing: the promoter normalizer's own KDoc says why a merge is a person's call,
     python3 scripts/promoter-duplicates.py --host http://localhost:8080
     python3 scripts/promoter-duplicates.py --tsv > build/promoter-duplicates.tsv
     python3 scripts/promoter-duplicates.py --no-counts            # skip the per-row event query
+    python3 scripts/promoter-duplicates.py --unreviewed           # only rows nobody reviewed, via the admin API
 
 Five signals put two rows in one group, and each row of the output says which one fired:
 
@@ -30,6 +31,10 @@ scraper split rather than a merge.
 The event count is one request per promoter, from `/api/events?promoter=<slug>&from=2000-01-01`,
 which is the number of events that would move in a merge. `--no-counts` skips it.
 
+`--unreviewed` reads the promoters from the importer's admin API instead, with `reviewed=false`
+(#1336): the rows an import minted since a person last went through the table, which is the
+weekly list. A group then needs at least one unreviewed member to be reported.
+
 Standard library only, and no key: the BFF is unauthenticated.
 """
 
@@ -44,6 +49,7 @@ import urllib.parse
 import urllib.request
 
 LOCAL_HOST = "http://localhost:18080"
+ADMIN_HOST = "http://localhost:18081"
 AGENT = "event-junkie/1.0 (https://github.com/enorm-labs/event-junkie)"
 PAGE_SIZE = 100
 MAX_PAGES = 100
@@ -112,10 +118,10 @@ def get_json(host, path, query):
         return json.load(response)
 
 
-def fetch_promoters(host):
+def fetch_promoters(host, path="/api/promoters", query=None):
     rows = []
     for page in range(MAX_PAGES):
-        body = get_json(host, "/api/promoters", {"size": PAGE_SIZE, "page": page})
+        body = get_json(host, path, {"size": PAGE_SIZE, "page": page, **(query or {})})
         rows.extend(body.get("content", []))
         if page + 1 >= body.get("totalPages", 0):
             break
@@ -184,16 +190,26 @@ def main():
     parser.add_argument("--host", default=LOCAL_HOST, help=f"public BFF API (default {LOCAL_HOST})")
     parser.add_argument("--tsv", action="store_true", help="tab-separated rows instead of tables")
     parser.add_argument("--no-counts", action="store_true", help="skip the per-promoter event count")
+    parser.add_argument("--unreviewed", action="store_true", help="only groups with a row nobody reviewed yet")
+    parser.add_argument(
+        "--admin-host", default=ADMIN_HOST, help=f"importer admin API, for --unreviewed (default {ADMIN_HOST})"
+    )
     args = parser.parse_args()
 
     try:
         promoters = fetch_promoters(args.host)
+        unreviewed = None
+        if args.unreviewed:
+            new_rows = fetch_promoters(args.admin_host, "/api/admin/promoters", {"reviewed": "false"})
+            unreviewed = {p["id"] for p in new_rows}
     except (urllib.error.URLError, OSError) as error:
-        print(f"cannot reach {args.host}: {error}", file=sys.stderr)
+        print(f"cannot reach the API: {error}", file=sys.stderr)
         return 1
     by_id = {p["id"]: p for p in promoters}
     groups = group(promoters)
     members = sorted(groups.members(), key=lambda ids: by_id[ids[0]]["name"].lower())
+    if unreviewed is not None:
+        members = [ids for ids in members if any(pid in unreviewed for pid in ids)]
 
     counts = {}
     if not args.no_counts:
@@ -219,7 +235,8 @@ def main():
         for pid in ids:
             p = by_id[pid]
             count = f"{counts[pid]:>4}" if pid in counts else "   ?"
-            print(f"  {count}  {reason_for(groups, pid, ids):6}  {p['name']}  ({p['slug']})")
+            flag = "  new" if unreviewed is not None and pid in unreviewed else ""
+            print(f"  {count}  {reason_for(groups, pid, ids):6}  {p['name']}  ({p['slug']}){flag}")
         print()
     if co_billed:
         print(f"{len(co_billed)} co-billings, one row for two or more promoters (a scraper split, not a merge):")

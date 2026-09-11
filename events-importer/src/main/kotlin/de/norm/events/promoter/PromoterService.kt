@@ -26,15 +26,22 @@ class PromoterService(
      * resolves from `page`, `size`, and `sort` query parameters
      * (e.g. `?page=0&size=20&sort=name,asc`).
      *
-     * The total comes from a separate `count()`, which is exact because this listing takes no
-     * filter. It is what lets a caller tell one page from the whole table (#810).
+     * The total comes from a separate count over the same filter, so a caller can tell one page
+     * from the whole table (#810). [reviewed] narrows to the rows a person reviewed, or to the
+     * rows nobody looked at yet (#1336); null is the whole table.
      */
-    suspend fun findAll(pageable: Pageable): PageResponse<PromoterResponse> =
-        PageResponse.of(
-            promoterRepository.findAllBy(pageable).map { PromoterResponse.fromDomain(it.toDomain()) }.toList(),
-            pageable,
-            promoterRepository.count()
-        )
+    suspend fun findAll(
+        pageable: Pageable,
+        reviewed: Boolean? = null
+    ): PageResponse<PromoterResponse> {
+        val (rows, total) =
+            when (reviewed) {
+                null -> promoterRepository.findAllBy(pageable) to promoterRepository.count()
+                true -> promoterRepository.findAllByReviewedAtIsNotNull(pageable) to promoterRepository.countByReviewedAtIsNotNull()
+                false -> promoterRepository.findAllByReviewedAtIsNull(pageable) to promoterRepository.countByReviewedAtIsNull()
+            }
+        return PageResponse.of(rows.map { PromoterResponse.fromDomain(it.toDomain()) }.toList(), pageable, total)
+    }
 
     /**
      * Finds a single promoter by [id].
@@ -70,7 +77,8 @@ class PromoterService(
                 description = request.description,
                 descriptionLanguage = request.descriptionLanguage,
                 descriptionAlt = request.descriptionAlt,
-                descriptionAltLanguage = request.descriptionAltLanguage
+                descriptionAltLanguage = request.descriptionAltLanguage,
+                reviewedAt = request.reviewedAt
             )
         val entity = PromoterEntity.fromDomain(promoter)
         val saved = promoterRepository.save(entity)
@@ -110,7 +118,8 @@ class PromoterService(
                 description = request.description,
                 descriptionLanguage = request.descriptionLanguage,
                 descriptionAlt = request.descriptionAlt,
-                descriptionAltLanguage = request.descriptionAltLanguage
+                descriptionAltLanguage = request.descriptionAltLanguage,
+                reviewedAt = request.reviewedAt
             )
         val saved = promoterRepository.save(updated)
         logger.info { "Updated promoter '${saved.name}' (id=${saved.id})" }

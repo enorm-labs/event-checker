@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 
@@ -27,10 +28,11 @@ class PromoterController(
     private val promoterService: PromoterService
 ) {
     @GetMapping
-    @Operation(summary = "List all promoters with pagination")
+    @Operation(summary = "List all promoters with pagination; `reviewed=false` lists the rows nobody looked at yet")
     suspend fun findAll(
-        @PageableDefault(size = 20, sort = ["name"]) pageable: Pageable
-    ): PageResponse<PromoterResponse> = promoterService.findAll(pageable)
+        @PageableDefault(size = 20, sort = ["name"]) pageable: Pageable,
+        @RequestParam(required = false) reviewed: Boolean?
+    ): PageResponse<PromoterResponse> = promoterService.findAll(pageable, reviewed)
 
     @GetMapping("/{id}")
     @Operation(summary = "Get a single promoter by ID")

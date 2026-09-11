@@ -16,6 +16,10 @@ image fields back unchanged. German is the description and English the alternate
 German is the site's authoritative language (ADR-013); a row with one language and not the
 other stores that one as the description.
 
+Every row in the table is a review, so every row the target holds under a matching name gets
+`reviewed_at` stamped with the time of the run, whether or not another field changes (#1336).
+A row already stamped and otherwise unchanged is left alone; `--restamp` moves the date on all.
+
 A row whose stored name differs from the reviewed one is reported and skipped. The name is not
 written here, because a PUT that changes the name changes the slug, and the next import then
 creates the old row again unless `PromoterNormalizer` maps the raw credit onto the new spelling.
@@ -27,6 +31,7 @@ Standard library only, and no key: the admin API is unauthenticated inside the c
 
 import argparse
 import csv
+import datetime
 import json
 import sys
 import urllib.error
@@ -69,9 +74,7 @@ def put_promoter(host, promoter_id, body):
 def read_reviewed(only=None):
     with open(REVIEWED, encoding="utf-8", newline="") as handle:
         rows = list(csv.DictReader(handle, delimiter="\t"))
-    to_write = [r for r in rows if r["website"] or r["description_de"] or r["description_en"]]
-    if only:
-        to_write = [r for r in to_write if r["slug"] == only]
+    to_write = [r for r in rows if r["slug"] == only] if only else list(rows)
     return rows, to_write
 
 
@@ -91,13 +94,16 @@ def described(row):
     }
 
 
-def changes(promoter, row):
+def changes(promoter, row, stamp, restamp=False):
     """The fields the row would change on [promoter], as {field: (current, wanted)}."""
     wanted = dict(described(promoter_as_row(promoter)))
     wanted.update(described(row))
     if row["website"]:
         wanted["websiteUrl"] = row["website"]
-    return {field: (promoter.get(field), value) for field, value in wanted.items() if promoter.get(field) != value}
+    changed = {field: (promoter.get(field), value) for field, value in wanted.items() if promoter.get(field) != value}
+    if changed or restamp or not promoter.get("reviewedAt"):
+        changed["reviewedAt"] = (promoter.get("reviewedAt"), stamp)
+    return changed
 
 
 def promoter_as_row(promoter):
@@ -115,14 +121,13 @@ def main():
     parser.add_argument(
         "--force", action="store_true", help="also replace a website or description a promoter already has"
     )
+    parser.add_argument("--restamp", action="store_true", help="move reviewed_at to now on every row, changed or not")
     args = parser.parse_args()
+    stamp = datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
     rows, to_write = read_reviewed(args.promoter)
     if not to_write:
-        print(
-            f"no row with a website or a description in {REVIEWED}"
-            + (f" for {args.promoter!r}" if args.promoter else "")
-        )
+        print(f"no row in {REVIEWED}" + (f" for {args.promoter!r}" if args.promoter else ""))
         return 1
     described_rows = sum(1 for r in rows if r["description_de"] or r["description_en"])
     print(f"{len(rows)} reviewed, {sum(1 for r in rows if r['website'])} with a website, {described_rows} described\n")
@@ -144,15 +149,16 @@ def main():
             print(f"  skip  {row['slug']}: stored as {promoter['name']!r}, reviewed as {row['name']!r}")
             skipped += 1
             continue
-        changed = changes(promoter, row)
+        changed = changes(promoter, row, stamp, args.restamp)
         if not changed:
             continue
-        # A target older than V024 answers without the field and would drop it from a PUT in silence.
-        if "description" not in promoter and any(field.startswith("description") for field in changed):
-            print(f"  skip  {row['slug']}: the target has no description field yet")
+        # A target older than the column answers without the field and would drop it from a PUT in silence.
+        missing = [field for field in changed if field not in promoter]
+        if missing:
+            print(f"  skip  {row['slug']}: the target has no {', '.join(missing)} field yet")
             skipped += 1
             continue
-        replaced = [field for field, (current, _) in changed.items() if current]
+        replaced = [field for field, (current, _) in changed.items() if current and field != "reviewedAt"]
         if replaced and not args.force:
             print(f"  skip  {row['slug']}: already has {', '.join(replaced)} (--force replaces it)")
             skipped += 1
@@ -168,6 +174,7 @@ def main():
             "descriptionLanguage": promoter.get("descriptionLanguage"),
             "descriptionAlt": promoter.get("descriptionAlt"),
             "descriptionAltLanguage": promoter.get("descriptionAltLanguage"),
+            "reviewedAt": promoter.get("reviewedAt"),
         }
         body.update({field: wanted for field, (_, wanted) in changed.items()})
         verb = "write" if args.apply else "would write"

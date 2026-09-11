@@ -1,5 +1,7 @@
 package de.norm.events.promoter
 
+import java.time.Instant
+
 /**
  * Test fixture factory for [PromoterRequest] DTOs.
  *
@@ -33,11 +35,13 @@ object PromoterRequestFixtures {
     fun create(
         name: String = "Test Promoter",
         websiteUrl: String? = null,
-        imageUrl: String? = null
+        imageUrl: String? = null,
+        reviewedAt: Instant? = null
     ): PromoterRequest =
         PromoterRequest(
             name = name,
             websiteUrl = websiteUrl,
-            imageUrl = imageUrl
+            imageUrl = imageUrl,
+            reviewedAt = reviewedAt
         )
 }
