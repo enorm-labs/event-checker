@@ -8,9 +8,9 @@ class GenreTagControllerTest : BaseControllerTest() {
     @Test
     fun `GET genres lists all genre tags alphabetically`(): Unit =
         runBlocking {
-            insertGenreTag("Techno", "techno")
-            insertGenreTag("Hip Hop", "hip-hop")
-            insertGenreTag("Punk", "punk")
+            insertGenreTag("Techno", "techno", family = "electronic")
+            insertGenreTag("Hip Hop", "hip-hop", family = "hip-hop")
+            insertGenreTag("Ping Pong", "ping-pong")
 
             webTestClient
                 .get()
@@ -23,9 +23,16 @@ class GenreTagControllerTest : BaseControllerTest() {
                 .isEqualTo(3)
                 .jsonPath("$[0].name")
                 .isEqualTo("Hip Hop")
+                .jsonPath("$[0].family")
+                .isEqualTo("hip-hop")
                 .jsonPath("$[1].name")
-                .isEqualTo("Punk")
+                .isEqualTo("Ping Pong")
+                // A tag the importer places in no family says so, and the frontend hides it.
+                .jsonPath("$[1].family")
+                .isEqualTo(null)
                 .jsonPath("$[2].name")
                 .isEqualTo("Techno")
+                .jsonPath("$[2].family")
+                .isEqualTo("electronic")
         }
 }

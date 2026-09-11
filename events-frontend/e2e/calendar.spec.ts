@@ -60,7 +60,9 @@ test.beforeEach(async ({ page }) => {
       totalPages: 1,
     }),
   )
-  await page.route(/\/api\/genres/, (route) => json(route, [{ slug: 'techno', name: 'Techno' }]))
+  await page.route(/\/api\/genres/, (route) =>
+    json(route, [{ slug: 'techno', name: 'Techno', family: 'electronic' }]),
+  )
 
   // Place a single event on the first visible day of whatever range is requested, so it
   // renders in every view (month/week/list) without depending on the current date. The

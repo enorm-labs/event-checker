@@ -189,8 +189,8 @@ async function mockBff(page: Page): Promise<void> {
   )
   await page.route(/\/api\/genres/, (route) =>
     json(route, [
-      { slug: 'techno', name: 'Techno' },
-      { slug: 'jazz', name: 'Jazz' },
+      { slug: 'techno', name: 'Techno', family: 'electronic' },
+      { slug: 'jazz', name: 'Jazz', family: 'jazz-blues' },
     ]),
   )
 }

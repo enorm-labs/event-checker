@@ -12,14 +12,17 @@ data class GenreTagResponse(
     @Schema(description = "URL-friendly identifier", example = "hip-hop")
     val slug: String,
     @Schema(description = "Canonical display name", example = "Hip Hop")
-    val name: String
+    val name: String,
+    @Schema(description = "Slug of the filter family the tag belongs to; null means the tag is offered in neither select", example = "hip-hop")
+    val family: String?
 ) {
     companion object {
         fun fromEntity(entity: GenreTagEntity): GenreTagResponse =
             GenreTagResponse(
                 id = requireNotNull(entity.id) { "Persisted genre tag must have an ID" },
                 slug = entity.slug,
-                name = entity.name
+                name = entity.name,
+                family = entity.family
             )
     }
 }

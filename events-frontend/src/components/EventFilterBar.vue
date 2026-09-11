@@ -8,7 +8,7 @@
  * two free-text drafts (search box, price range) that are applied on submit rather than on every
  * keystroke; selects and checkboxes apply immediately.
  */
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import BaseInput from '@/components/BaseInput.vue'
@@ -18,6 +18,7 @@ import { useGenres } from '@/composables/useGenres'
 import { useAllVenues } from '@/composables/useVenues'
 import { DATE_PRESETS, type DateRange } from '@/lib/dateRanges'
 import { DISTRICTS } from '@/lib/districts'
+import { GENRE_FAMILIES } from '@/lib/genreFamilies'
 import { useFormat } from '@/composables/useFormat'
 import { useI18n } from 'vue-i18n'
 import { PANEL_CLASS } from '@/lib/utils'
@@ -69,6 +70,33 @@ function isPresetActive(range: DateRange): boolean {
 
 const genres = useGenres()
 const venues = useAllVenues()
+
+/**
+ * The family the bar shows as chosen: the URL's, or — for a link from before families existed,
+ * which carries only `genre=` — the family of that style, so the two selects still say what the
+ * results are filtered by.
+ */
+const activeFamily = computed(() => {
+  const family = queryString('family')
+  if (family) return family
+  const genre = queryString('genre')
+  return (genres.data.value ?? []).find((tag) => tag.slug === genre)?.family ?? ''
+})
+
+/**
+ * The styles inside the chosen family — the second level of the genre filter (#363). Empty when
+ * no family is chosen, which is what hides the select; a tag without a family belongs to no list
+ * and so is offered nowhere, deliberately.
+ */
+const stylesInFamily = computed(() => {
+  if (!activeFamily.value) return []
+  return (genres.data.value ?? []).filter((tag) => tag.family === activeFamily.value)
+})
+
+/** A new family invalidates the style, which is the one filter that depends on another. */
+function applyFamily(family: string) {
+  applyFilters({ family, genre: '' })
+}
 
 // Drafts are seeded from the URL and re-synced whenever it changes elsewhere (back/forward,
 // a link with filters, another control resetting the query).
@@ -179,13 +207,31 @@ const { t } = useI18n()
         </option>
       </BaseSelect>
 
+      <!--
+        Genre is two levels: thirteen families, then the styles of the chosen one. The family list
+        is the constant rather than what /api/genres happens to hold, so it is complete before the
+        tags load and a family link never lands on an empty select. Style options carry the tag
+        slug, so `genre=` in the URL means what it always did and older links keep working.
+      -->
       <BaseSelect
         :aria-label="t('events.filters.byGenre')"
+        :model-value="activeFamily"
+        @change="applyFamily(($event.target as HTMLSelectElement).value)"
+      >
+        <option value="">{{ t('events.filters.allGenres') }}</option>
+        <option v-for="family in GENRE_FAMILIES" :key="family" :value="family">
+          {{ t(`events.filters.families.${family}`) }}
+        </option>
+      </BaseSelect>
+
+      <BaseSelect
+        v-if="stylesInFamily.length"
+        :aria-label="t('events.filters.bySubgenre')"
         :model-value="queryString('genre')"
         @change="applyFilters({ genre: ($event.target as HTMLSelectElement).value })"
       >
-        <option value="">{{ t('events.filters.allGenres') }}</option>
-        <option v-for="tag in genres.data.value ?? []" :key="tag.slug" :value="tag.slug ?? ''">
+        <option value="">{{ t('events.filters.allSubgenres') }}</option>
+        <option v-for="tag in stylesInFamily" :key="tag.slug" :value="tag.slug ?? ''">
           {{ tag.name }}
         </option>
       </BaseSelect>

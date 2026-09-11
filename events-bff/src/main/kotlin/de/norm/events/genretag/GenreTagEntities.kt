@@ -14,6 +14,8 @@ data class GenreTagEntity(
     @Id val id: Long? = null,
     val name: String,
     val slug: String,
+    /** A `GenreFamily` slug, or `null` when the importer places the tag in no family. */
+    val family: String? = null,
     val createdAt: Instant? = null,
     val updatedAt: Instant? = null
 )

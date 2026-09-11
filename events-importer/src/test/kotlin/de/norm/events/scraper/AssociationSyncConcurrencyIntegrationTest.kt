@@ -46,8 +46,8 @@ class AssociationSyncConcurrencyIntegrationTest : BaseControllerTest() {
             val name = "Drum & Bass"
             val slug = SlugGenerator.slugify(name)
 
-            genreTagRepository.insertIfAbsent(name, slug) shouldBe 1
-            genreTagRepository.insertIfAbsent(name, slug) shouldBe 0
+            genreTagRepository.insertIfAbsent(name, slug, null) shouldBe 1
+            genreTagRepository.insertIfAbsent(name, slug, null) shouldBe 0
 
             genreTagRepository.findBySlugIn(setOf(slug)).toList() shouldHaveSize 1
             genreTagRepository.findBySlug(slug).shouldNotBeNull()
@@ -70,7 +70,7 @@ class AssociationSyncConcurrencyIntegrationTest : BaseControllerTest() {
                         .map {
                             async(Dispatchers.IO) {
                                 transactionalOperator.executeAndAwait {
-                                    genreTagRepository.insertIfAbsent(name, slug)
+                                    genreTagRepository.insertIfAbsent(name, slug, null)
                                     genreTagRepository.findBySlug(slug)
                                 }
                             }

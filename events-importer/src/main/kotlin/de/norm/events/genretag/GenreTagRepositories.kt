@@ -26,10 +26,24 @@ interface GenreTagRepository : CoroutineCrudRepository<GenreTagEntity, Long> {
      * `created_at`/`updated_at` fall back to their `DEFAULT now()`.
      */
     @Modifying
-    @Query("INSERT INTO $EVENTS_SCHEMA.genre_tag (name, slug) VALUES (:name, :slug) ON CONFLICT (slug) DO NOTHING")
+    @Query(
+        "INSERT INTO $EVENTS_SCHEMA.genre_tag (name, slug, family) VALUES (:name, :slug, :family) ON CONFLICT (slug) DO NOTHING"
+    )
     suspend fun insertIfAbsent(
         name: String,
-        slug: String
+        slug: String,
+        family: String?
+    ): Int
+
+    /**
+     * Sets the family of the tag with this [id], returning the number of rows changed. A derived
+     * `updateBy*` is not available in R2DBC, hence the raw statement.
+     */
+    @Modifying
+    @Query("UPDATE $EVENTS_SCHEMA.genre_tag SET family = :family, updated_at = now() WHERE id = :id")
+    suspend fun updateFamily(
+        id: Long,
+        family: String?
     ): Int
 }
 
