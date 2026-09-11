@@ -609,6 +609,11 @@ export interface components {
              * @example Hip Hop
              */
             name?: string;
+            /**
+             * @description Slug of the filter family the tag belongs to; null means the tag is offered in neither select
+             * @example hip-hop
+             */
+            family?: string | null;
         };
         /** @description Compact event summary for lists and calendar */
         EventSummaryResponse: {
@@ -1267,6 +1272,8 @@ export interface operations {
                 promoter?: string;
                 /** @description Genre tag slug filter — only events tagged with the matching genre. */
                 genre?: string;
+                /** @description Genre family slug filter (e.g. electronic) — only events tagged with a genre in that family. */
+                family?: string;
                 /** @description Minimum presale price (inclusive). Excludes events with an unknown (null) price. */
                 minPrice?: number;
                 /** @description Maximum presale price (inclusive). Excludes events with an unknown (null) price. */
@@ -1366,6 +1373,8 @@ export interface operations {
                 promoter?: string;
                 /** @description Genre tag slug filter — only events tagged with the matching genre. */
                 genre?: string;
+                /** @description Genre family slug filter (e.g. electronic) — only events tagged with a genre in that family. */
+                family?: string;
                 /** @description Minimum presale price (inclusive). Excludes events with an unknown (null) price. */
                 minPrice?: number;
                 /** @description Maximum presale price (inclusive). Excludes events with an unknown (null) price. */

@@ -90,6 +90,7 @@ classDiagram
         Long id
         String name
         String slug
+        GenreFamily family
         Instant createdAt
         Instant updatedAt
     }
@@ -282,8 +283,13 @@ raw text is preserved for display, and these tags enable frontend filtering.
 | `id`         | `BIGINT`      | No       | Auto-generated primary key  | `1`       |
 | `name`       | `TEXT`        | No       | Canonical display name      | `Hip Hop` |
 | `slug`       | `TEXT` (UQ)   | No       | URL-friendly identifier     | `hip-hop` |
+| `family`     | `TEXT`        | Yes      | `GenreFamily` slug, or none | `hip-hop` |
 | `created_at` | `TIMESTAMPTZ` | No       | Record creation timestamp   |           |
 | `updated_at` | `TIMESTAMPTZ` | No       | Last modification timestamp |           |
+
+`family` is the filter's first level: one of the thirteen `GenreFamily` values in `events-core`. The importer assigns it from `GenreFamilies.kt` on
+insert and reconciles every row on each start, so a remap needs no re-import. A tag the map does not name has no family. The filter offers it in neither
+select, and the importer logs those tags at start.
 
 ### EventGenreTag (Join Table)
 
@@ -344,6 +350,8 @@ normalized genre tags for structured filtering. This approach was chosen over an
 - The `GenreNormalizer` maps known synonyms to canonical names while preserving unknown genres as-is
 - The raw genre text is kept on the event for display, and normalized tags enable structured filtering
 - Genre tags are auto-created during imports — no manual curation required
+- The tags are too many to filter by directly: 173 in September 2026, 110 of them on fewer than three events. Each carries a `family` from a closed enum,
+  and the filter offers the family first, then the styles inside it (#363)
 
 ### External Ticket URL
 

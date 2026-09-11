@@ -29,7 +29,7 @@ private val logger = KotlinLogging.logger {}
  * When adding new venues, extend this map with any new semantic synonyms
  * encountered in their genre labelling.
  */
-private val GENRE_SYNONYMS: Map<String, String> =
+internal val GENRE_SYNONYMS: Map<String, String> =
     mapOf(
         // Hip Hop family
         "hiphop" to "Hip Hop",

@@ -14,6 +14,8 @@ data class GenreTagResponse(
     val name: String,
     @Schema(description = "URL-friendly identifier", example = "hip-hop")
     val slug: String,
+    @Schema(description = "Slug of the filter family the tag belongs to, or null when it belongs to none", example = "hip-hop")
+    val family: String?,
     @Schema(description = "Timestamp when this record was first created")
     val createdAt: Instant?,
     @Schema(description = "Timestamp when this record was last modified")
@@ -25,6 +27,7 @@ data class GenreTagResponse(
                 id = requireNotNull(genreTag.id) { "GenreTag must be persisted before converting to response" },
                 name = genreTag.name,
                 slug = genreTag.slug,
+                family = genreTag.family?.slug,
                 createdAt = genreTag.createdAt,
                 updatedAt = genreTag.updatedAt
             )

@@ -12,6 +12,7 @@ import de.norm.events.genretag.EventGenreTagEntity
 import de.norm.events.genretag.EventGenreTagRepository
 import de.norm.events.genretag.GenreTagEntity
 import de.norm.events.genretag.GenreTagRepository
+import de.norm.events.genretag.genreFamily
 import de.norm.events.genretag.normalizeGenre
 import de.norm.events.promoter.PromoterEntity
 import de.norm.events.promoter.PromoterRepository
@@ -387,7 +388,7 @@ class AssociationSyncService(
         resolveOrCreate(
             name = name,
             cache = genreTagCache,
-            insertIfAbsent = { slug -> genreTagRepository.insertIfAbsent(name, slug) },
+            insertIfAbsent = { slug -> genreTagRepository.insertIfAbsent(name, slug, genreFamily(slug)?.slug) },
             findBySlug = { slug -> genreTagRepository.findBySlug(slug) }
         )
 

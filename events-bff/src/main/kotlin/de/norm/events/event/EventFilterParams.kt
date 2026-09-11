@@ -33,6 +33,8 @@ data class EventFilterParams(
     val promoter: String? = null,
     @field:Parameter(description = "Genre tag slug filter — only events tagged with the matching genre.")
     val genre: String? = null,
+    @field:Parameter(description = "Genre family slug filter (e.g. electronic) — only events tagged with a genre in that family.")
+    val family: String? = null,
     @field:Parameter(description = "Minimum presale price (inclusive). Excludes events with an unknown (null) price.")
     val minPrice: BigDecimal? = null,
     @field:Parameter(description = "Maximum presale price (inclusive). Excludes events with an unknown (null) price.")
@@ -58,6 +60,7 @@ data class EventFilterParams(
             artistSlug = artist,
             promoterSlug = promoter,
             genreSlug = genre,
+            familySlug = family,
             minPrice = minPrice,
             maxPrice = maxPrice,
             query = q,

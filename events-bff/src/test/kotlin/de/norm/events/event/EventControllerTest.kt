@@ -150,6 +150,59 @@ class EventControllerTest : BaseControllerTest() {
         }
 
     @Test
+    fun `GET events filters by genre family, and narrows with a genre inside it`(): Unit =
+        runBlocking {
+            val venueId = insertVenue("Astra", "astra")
+            val techno = insertGenreTag("Techno", "techno", family = "electronic")
+            val house = insertGenreTag("House", "house", family = "electronic")
+            val metal = insertGenreTag("Metal", "metal", family = "metal")
+
+            val technoNight = insertEvent(venueId, "Techno Night", "techno-night", LocalDate.now())
+            linkGenre(technoNight, techno)
+            val houseNight = insertEvent(venueId, "House Night", "house-night", LocalDate.now().plusDays(1))
+            linkGenre(houseNight, house)
+            val metalNight = insertEvent(venueId, "Metal Night", "metal-night", LocalDate.now().plusDays(2))
+            linkGenre(metalNight, metal)
+
+            webTestClient
+                .get()
+                .uri("/events?family=electronic")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody()
+                .jsonPath("$.totalElements")
+                .isEqualTo(2)
+                .jsonPath("$.content[0].slug")
+                .isEqualTo("techno-night")
+                .jsonPath("$.content[1].slug")
+                .isEqualTo("house-night")
+
+            // The two together narrow: a tag outside the family matches nothing.
+            webTestClient
+                .get()
+                .uri("/events?family=electronic&genre=house")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody()
+                .jsonPath("$.totalElements")
+                .isEqualTo(1)
+                .jsonPath("$.content[0].slug")
+                .isEqualTo("house-night")
+
+            webTestClient
+                .get()
+                .uri("/events?family=electronic&genre=metal")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody()
+                .jsonPath("$.totalElements")
+                .isEqualTo(0)
+        }
+
+    @Test
     fun `GET events filters by price range and search query`(): Unit =
         runBlocking {
             val venueId = insertVenue("Astra", "astra")

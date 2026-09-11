@@ -24,6 +24,7 @@ export function useEventFilters() {
     venue: queryString('venue') || undefined,
     district: queryString('district') || undefined,
     genre: queryString('genre') || undefined,
+    family: queryString('family') || undefined,
     minPrice: queryString('minPrice') ? Number(queryString('minPrice')) : undefined,
     maxPrice: queryString('maxPrice') ? Number(queryString('maxPrice')) : undefined,
     excludeSoldOut: queryString('excludeSoldOut') === 'true' || undefined,

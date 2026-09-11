@@ -18,6 +18,8 @@ data class GenreTagEntity(
     @Id val id: Long? = null,
     val name: String,
     val slug: String,
+    /** A [GenreFamily] slug, or `null`; written by [GenreFamilyReconciler] and the tag insert. */
+    val family: String? = null,
     @CreatedDate val createdAt: Instant? = null,
     @LastModifiedDate val updatedAt: Instant? = null
 ) {
@@ -26,6 +28,7 @@ data class GenreTagEntity(
             id = id,
             name = name,
             slug = slug,
+            family = GenreFamily.fromSlug(family),
             createdAt = createdAt,
             updatedAt = updatedAt
         )
@@ -36,6 +39,7 @@ data class GenreTagEntity(
                 id = genreTag.id,
                 name = genreTag.name,
                 slug = genreTag.slug,
+                family = genreTag.family?.slug,
                 createdAt = genreTag.createdAt,
                 updatedAt = genreTag.updatedAt
             )

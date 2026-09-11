@@ -173,12 +173,14 @@ abstract class BaseControllerTest {
 
     protected suspend fun insertGenreTag(
         name: String,
-        slug: String
+        slug: String,
+        family: String? = null
     ): Long =
         databaseClient
-            .sql("INSERT INTO events.genre_tag (name, slug) VALUES (:name, :slug) RETURNING id")
+            .sql("INSERT INTO events.genre_tag (name, slug, family) VALUES (:name, :slug, :family) RETURNING id")
             .bind("name", name)
             .bind("slug", slug)
+            .bindOrNull("family", family)
             .mapId()
 
     @Suppress("LongParameterList")

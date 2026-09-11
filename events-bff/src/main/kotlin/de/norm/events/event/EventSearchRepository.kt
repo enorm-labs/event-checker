@@ -22,6 +22,7 @@ data class EventFilter(
     val artistSlug: String? = null,
     val promoterSlug: String? = null,
     val genreSlug: String? = null,
+    val familySlug: String? = null,
     val minPrice: BigDecimal? = null,
     val maxPrice: BigDecimal? = null,
     val query: String? = null,
@@ -161,7 +162,7 @@ class EventSearchRepository(
     }
 
     /**
-     * Applies the many-to-many filters (genre/artist/promoter by slug) as `EXISTS` subqueries.
+     * Applies the many-to-many filters (genre/artist/promoter by slug, genre by family) as `EXISTS` subqueries.
      * The three share one template, parameterized by [Association]; each subquery correlates on
      * `event_id = e.id` so it tests membership without multiplying the outer rows.
      */
@@ -181,6 +182,12 @@ class EventSearchRepository(
                 conditions += association.existsClause()
                 params[association.param] = it.trim()
             }
+        }
+        // The family lives on the tag, so this is the genre EXISTS testing `family` in place of
+        // `slug`. Beside `genre=` it narrows, never widens: a tag in the family must still match.
+        filter.familySlug?.takeIf { it.isNotBlank() }?.let {
+            conditions += Association.GENRE.existsClause(column = "family", param = "familySlug")
+            params["familySlug"] = it.trim()
         }
     }
 
@@ -248,10 +255,14 @@ class EventSearchRepository(
         PROMOTER("event_promoter", "ep", "promoter_id", "promoter", "p", "promoterSlug")
         ;
 
-        fun existsClause(): String =
+        /** Membership test on the referenced entity's [column] — `slug` unless a caller says otherwise. */
+        fun existsClause(
+            column: String = "slug",
+            param: String = this.param
+        ): String =
             "EXISTS (SELECT 1 FROM $EVENTS_SCHEMA.$joinTable $joinAlias " +
                 "JOIN $EVENTS_SCHEMA.$refTable $refAlias ON $refAlias.id = $joinAlias.$foreignKey " +
-                "WHERE $joinAlias.event_id = e.id AND $refAlias.slug = :$param)"
+                "WHERE $joinAlias.event_id = e.id AND $refAlias.$column = :$param)"
     }
 
     companion object {

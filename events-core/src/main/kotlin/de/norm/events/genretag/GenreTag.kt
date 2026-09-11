@@ -19,6 +19,8 @@ data class GenreTag(
     val name: String,
     /** URL-friendly identifier, derived from the name. Example: `"hip-hop"` */
     val slug: String,
+    /** The filter group this tag belongs to, or `null` when the importer places it in none. */
+    val family: GenreFamily? = null,
     /** Timestamp when this record was first created. Set by the database. */
     val createdAt: Instant? = null,
     /** Timestamp when this record was last modified. Set by the database. */

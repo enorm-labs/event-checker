@@ -67,6 +67,7 @@ function eventsResponseFor(sp: URLSearchParams) {
   if (sp.get('eventType') === 'FESTIVAL') return eventPage(['Big Festival'])
   if (sp.get('venue') === 'lido') return eventPage(['Lido Show'])
   if (sp.get('genre') === 'techno') return eventPage(['Techno Rave'])
+  if (sp.get('family') === 'electronic') return eventPage(['Electronic Night'])
   if (sp.get('district') === 'neukoelln') return eventPage(['Neukölln Night'])
   if (sp.get('excludeSoldOut') === 'true') return eventPage(['Available Only'])
   if (sp.get('free') === 'true') return eventPage(['Free Show'])
@@ -90,11 +91,11 @@ function eventsResponseFor(sp: URLSearchParams) {
 }
 
 test.beforeEach(async ({ page }) => {
-  // Populate the genre dropdown so its options can be selected.
+  // Populate the style dropdown so its options can be selected once a family is chosen.
   await page.route(/\/api\/genres/, (route) =>
     json(route, [
-      { slug: 'techno', name: 'Techno' },
-      { slug: 'jazz', name: 'Jazz' },
+      { slug: 'techno', name: 'Techno', family: 'electronic' },
+      { slug: 'jazz', name: 'Jazz', family: 'jazz-blues' },
     ]),
   )
   // Populate the venue dropdown so its options can be selected.
@@ -157,14 +158,39 @@ test('filters by venue', async ({ page }) => {
   await expect(eventHeading(page, 'Lido Show')).toBeVisible()
 })
 
-test('filters by genre', async ({ page }) => {
+test('filters by genre family, then by a style inside it', async ({ page }) => {
   await page.goto('/events')
   await expect(eventHeading(page, 'Default Event A')).toBeVisible()
+  // No family chosen: the style select does not exist yet.
+  await expect(selectWithOption(page, 'All styles')).toHaveCount(0)
 
-  await selectWithOption(page, 'All genres').selectOption('techno')
+  await selectWithOption(page, 'All genres').selectOption('electronic')
+
+  await expect(page).toHaveURL(/[?&]family=electronic\b/)
+  await expect(eventHeading(page, 'Electronic Night')).toBeVisible()
+
+  // Only the family's own styles are offered — Jazz belongs to another family.
+  const styles = selectWithOption(page, 'All styles')
+  await expect(styles.getByRole('option')).toHaveText(['All styles', 'Techno'])
+  await styles.selectOption('techno')
 
   await expect(page).toHaveURL(/[?&]genre=techno\b/)
   await expect(eventHeading(page, 'Techno Rave')).toBeVisible()
+
+  // A new family drops the style, which belonged to the old one.
+  await selectWithOption(page, 'All genres').selectOption('jazz-blues')
+  await expect(page).toHaveURL(/[?&]family=jazz-blues\b/)
+  await expect(page).not.toHaveURL(/[?&]genre=/)
+})
+
+test('a link from before families carries only genre, and both selects still show it', async ({
+  page,
+}) => {
+  await page.goto('/events?genre=techno')
+  await expect(eventHeading(page, 'Techno Rave')).toBeVisible()
+
+  await expect(selectWithOption(page, 'All genres')).toHaveValue('electronic')
+  await expect(selectWithOption(page, 'All styles')).toHaveValue('techno')
 })
 
 test('filters by district', async ({ page }) => {

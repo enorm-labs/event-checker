@@ -13,6 +13,7 @@ export interface EventSearchParams {
   artist?: string
   promoter?: string
   genre?: string
+  family?: string
   minPrice?: number
   maxPrice?: number
   q?: string
@@ -42,6 +43,7 @@ export type EventFilterValues = Pick<
   | 'venue'
   | 'district'
   | 'genre'
+  | 'family'
   | 'minPrice'
   | 'maxPrice'
   | 'excludeSoldOut'
