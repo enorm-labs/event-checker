@@ -119,7 +119,7 @@ class SchokoladenOverviewPageScraper {
      * The times sit in free text under a `<strong>Time</strong>` label and vary
      * in spelling: `"doors 19:00 - show 20:00"`, `"Doors 19h / Show 20h"`,
      * `"Einlass 19h Beginn 20h"`, `"Einlass: 18:30 Uhr"`, `"19:00 Einlass - 20:00 Konzert - 22:00
-     * DJ-Set"`. [labelledTime] picks the two labelled times; the header's `span.d-none`
+     * DJ-Set"`. [timeBesideLabel] picks the two labelled times; the header's `span.d-none`
      * (`"19:00 Uhr"`) is a doors fallback when the line has no parseable time.
      */
     private fun parseTimes(
@@ -127,8 +127,8 @@ class SchokoladenOverviewPageScraper {
         block: Element
     ): Pair<LocalTime?, LocalTime?> {
         val timeText = info?.textAt(".event-facts p:has(strong:contains(Time)) span").orEmpty()
-        val doors = labelledTime(timeText, DOORS_LABEL_FIRST, DOORS_TIME_FIRST) ?: flexTime(HEADER_TIME_PATTERN.find(block.textAt("span.d-none").orEmpty()))
-        val start = labelledTime(timeText, SHOW_LABEL_FIRST, SHOW_TIME_FIRST)
+        val doors = timeBesideLabel(timeText, DOORS_LABEL_FIRST, DOORS_TIME_FIRST) ?: flexTime(HEADER_TIME_PATTERN.find(block.textAt("span.d-none").orEmpty()))
+        val start = timeBesideLabel(timeText, SHOW_LABEL_FIRST, SHOW_TIME_FIRST)
         return doors to start
     }
 
@@ -200,7 +200,7 @@ class SchokoladenOverviewPageScraper {
      * "19:00 Einlass" both name the doors. The label-first form is tried first, then the time-first
      * one (#1141).
      */
-    private fun labelledTime(
+    private fun timeBesideLabel(
         text: String,
         labelFirst: Regex,
         timeFirst: Regex
