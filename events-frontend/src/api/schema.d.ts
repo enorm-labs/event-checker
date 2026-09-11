@@ -567,6 +567,23 @@ export interface components {
              * @example 630
              */
             intrinsicHeight?: number | null;
+            /** @description Short prose description of the promoter */
+            description?: string | null;
+            /**
+             * @description Language of `description`: `de` or `en`. Null when the language is unknown.
+             * @example en
+             */
+            descriptionLanguage?: string | null;
+            /**
+             * @description The same description in the other language. Written by hand, not machine-translated, so it carries no origin and needs no disclosure (#328).
+             * @example Die Hausagentur von Lido, Astra und Bi Nuu.
+             */
+            descriptionAlt?: string | null;
+            /**
+             * @description Language of `descriptionAlt`: `de` or `en`. Null exactly when `descriptionAlt` is.
+             * @example de
+             */
+            descriptionAltLanguage?: string | null;
         };
         /** @description Version and commit of the running backend, for the frontend footer */
         MetaResponse: {

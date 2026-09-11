@@ -4,6 +4,7 @@ import de.norm.events.common.AttributableImage
 import de.norm.events.common.AttributedImage
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
 
 /**
@@ -38,5 +39,23 @@ data class PromoterRequest(
         description = "The image's description page, which the rendered credit links to",
         example = "https://commons.wikimedia.org/wiki/File:Example.jpg"
     )
-    override val imageSourceUrl: String? = null
+    override val imageSourceUrl: String? = null,
+    @field:Size(max = 4000, message = "Description must not exceed 4000 characters")
+    @Schema(
+        description = "Short prose description of the promoter, shown on the detail page",
+        example = "The in-house agency of Lido, Astra and Bi Nuu, booking indie and rock in Kreuzberg since 2007."
+    )
+    val description: String? = null,
+    @field:Pattern(regexp = "de|en", message = "Description language must be 'de' or 'en'")
+    @Schema(description = "Language of `description`: `de` or `en`", example = "en")
+    val descriptionLanguage: String? = null,
+    @field:Size(max = 4000, message = "Alternate description must not exceed 4000 characters")
+    @Schema(
+        description = "The same description in the other language. Hand-written, not machine-translated (ADR-027 covers event text, not this).",
+        example = "Die Hausagentur von Lido, Astra und Bi Nuu, bucht seit 2007 Indie und Rock in Kreuzberg."
+    )
+    val descriptionAlt: String? = null,
+    @field:Pattern(regexp = "de|en", message = "Alternate description language must be 'de' or 'en'")
+    @Schema(description = "Language of `descriptionAlt`: `de` or `en`", example = "de")
+    val descriptionAltLanguage: String? = null
 ) : AttributableImage

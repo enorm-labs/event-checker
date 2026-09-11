@@ -124,9 +124,16 @@ export function artistPageMeta(artist: ArtistDetail): PageMeta {
   }
 }
 
-/** A promoter. The BFF holds little beyond the name, so this is mostly a title. */
-export function promoterPageMeta(promoter: PromoterDetail): PageMeta {
-  return { title: formatTitle(promoter.name) }
+/**
+ * A promoter: its description in the visitor's locale where one exists (#328), the way a venue's
+ * is chosen, so the preview matches the page.
+ */
+export function promoterPageMeta(promoter: PromoterDetail, locale: Locale): PageMeta {
+  return {
+    title: formatTitle(promoter.name),
+    description: truncateOrUndefined(descriptionFor(promoter, locale)?.text),
+    image: absoluteImageUrl(promoter.imageUrl),
+  }
 }
 
 /**

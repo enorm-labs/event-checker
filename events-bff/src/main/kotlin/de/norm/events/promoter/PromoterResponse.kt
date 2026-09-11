@@ -88,7 +88,20 @@ data class PromoterDetailResponse(
     @Schema(description = INTRINSIC_WIDTH_DESCRIPTION, example = "1200")
     val intrinsicWidth: Int?,
     @Schema(description = INTRINSIC_HEIGHT_DESCRIPTION, example = "630")
-    val intrinsicHeight: Int?
+    val intrinsicHeight: Int?,
+    @Schema(description = "Short prose description of the promoter")
+    val description: String?,
+    @Schema(description = "Language of `description`: `de` or `en`. Null when the language is unknown.", example = "en")
+    val descriptionLanguage: String?,
+    @Schema(
+        description =
+            "The same description in the other language. Written by hand, not machine-translated, " +
+                "so it carries no origin and needs no disclosure (#328).",
+        example = "Die Hausagentur von Lido, Astra und Bi Nuu."
+    )
+    val descriptionAlt: String?,
+    @Schema(description = "Language of `descriptionAlt`: `de` or `en`. Null exactly when `descriptionAlt` is.", example = "de")
+    val descriptionAltLanguage: String?
 ) {
     companion object {
         fun fromEntity(
@@ -106,7 +119,11 @@ data class PromoterDetailResponse(
                 imageSourceUrl = entity.imageSourceUrl,
                 imageSources = image.sources,
                 intrinsicWidth = image.intrinsicWidth,
-                intrinsicHeight = image.intrinsicHeight
+                intrinsicHeight = image.intrinsicHeight,
+                description = entity.description,
+                descriptionLanguage = entity.descriptionLanguage,
+                descriptionAlt = entity.descriptionAlt,
+                descriptionAltLanguage = entity.descriptionAltLanguage
             )
     }
 }

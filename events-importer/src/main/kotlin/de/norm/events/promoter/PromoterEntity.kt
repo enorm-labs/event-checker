@@ -19,6 +19,10 @@ data class PromoterEntity(
     val imageAttribution: String? = null,
     val imageLicenceId: String? = null,
     val imageSourceUrl: String? = null,
+    val description: String? = null,
+    val descriptionLanguage: String? = null,
+    val descriptionAlt: String? = null,
+    val descriptionAltLanguage: String? = null,
     @CreatedDate val createdAt: Instant? = null,
     @LastModifiedDate val updatedAt: Instant? = null
 ) {
@@ -32,6 +36,10 @@ data class PromoterEntity(
             imageAttribution = imageAttribution,
             imageLicenceId = imageLicenceId,
             imageSourceUrl = imageSourceUrl,
+            description = description,
+            descriptionLanguage = descriptionLanguage,
+            descriptionAlt = descriptionAlt,
+            descriptionAltLanguage = descriptionAltLanguage,
             createdAt = createdAt,
             updatedAt = updatedAt
         )
@@ -47,6 +55,10 @@ data class PromoterEntity(
                 imageAttribution = promoter.imageAttribution,
                 imageLicenceId = promoter.imageLicenceId,
                 imageSourceUrl = promoter.imageSourceUrl,
+                description = promoter.description,
+                descriptionLanguage = promoter.descriptionLanguage,
+                descriptionAlt = promoter.descriptionAlt,
+                descriptionAltLanguage = promoter.descriptionAltLanguage,
                 createdAt = promoter.createdAt,
                 updatedAt = promoter.updatedAt
             )

@@ -59,7 +59,9 @@ export function entityMeta(kind: EntityKind, entity: unknown, locale: Locale): E
       const artist = entity as ArtistDetail
       return { meta: artistPageMeta(artist), image: imageSize(artist) }
     }
-    case 'promoters':
-      return { meta: promoterPageMeta(entity as PromoterDetail) }
+    case 'promoters': {
+      const promoter = entity as PromoterDetail
+      return { meta: promoterPageMeta(promoter, locale), image: imageSize(promoter) }
+    }
   }
 }

@@ -9,6 +9,8 @@ import { yesterdayIso } from '@/lib/format'
 import { usePromoter } from '@/composables/usePromoter'
 import { imageCredit } from '@/lib/imageCredit'
 import { useI18n } from 'vue-i18n'
+import { descriptionFor } from '@/lib/description'
+import type { Locale } from '@/i18n/locales'
 
 const route = useRoute()
 const slug = computed(() => String(route.params.slug))
@@ -43,7 +45,11 @@ function reload() {
 onMounted(reload)
 watch(slug, reload)
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
+
+const description = computed(() =>
+  promoter.value ? descriptionFor(promoter.value, locale.value as Locale) : null,
+)
 
 /** Entity label. A `computed` because a locale switch rewrites the URL without remounting this. */
 const kind = computed(() => t('detail.promoter.kind'))
@@ -51,7 +57,7 @@ const kind = computed(() => t('detail.promoter.kind'))
 // The same values the meta injector will need server-side later (ADR-014 §Decision 3).
 usePageMeta(() =>
   promoter.value
-    ? promoterPageMeta(promoter.value)
+    ? promoterPageMeta(promoter.value, locale.value as Locale)
     : placeholderPageMeta(
         notFound.value ? t('detail.notFoundHeading', { kind: kind.value }) : kind.value,
       ),
@@ -91,5 +97,13 @@ const credit = computed(() => imageCredit(promoter.value))
         {{ t('common.actions.website') }}
       </a>
     </template>
+
+    <p
+      v-if="description"
+      :lang="description.lang ?? undefined"
+      class="whitespace-pre-line text-foreground/90"
+    >
+      {{ description.text }}
+    </p>
   </BaseDetailView>
 </template>

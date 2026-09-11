@@ -13,12 +13,20 @@ object PromoterRequestFixtures {
     fun concerts36(
         name: String = "36 Concerts",
         websiteUrl: String? = "https://www.facebook.com/36Concerts/",
-        imageUrl: String? = null
+        imageUrl: String? = null,
+        description: String? = "The in-house agency of Lido, Astra and Bi Nuu.",
+        descriptionLanguage: String? = "en",
+        descriptionAlt: String? = "Die Hausagentur von Lido, Astra und Bi Nuu.",
+        descriptionAltLanguage: String? = "de"
     ): PromoterRequest =
         PromoterRequest(
             name = name,
             websiteUrl = websiteUrl,
-            imageUrl = imageUrl
+            imageUrl = imageUrl,
+            description = description,
+            descriptionLanguage = descriptionLanguage,
+            descriptionAlt = descriptionAlt,
+            descriptionAltLanguage = descriptionAltLanguage
         )
 
     /** Creates a [PromoterRequest] with minimal defaults. */
