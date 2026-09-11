@@ -179,6 +179,28 @@ variable "backup_retention_backstop_days" {
   }
 }
 
+variable "object_storage_bucket_own_images" {
+  description = <<-EOT
+    Object Storage bucket for photographs we take ourselves (ADR-028, #1285).
+
+    **Public, which no other bucket here is.** `-images` is private because it holds third-party
+    material at an origin we advertise. Neither half is true of a photograph we took, and ADR-028
+    declined to widen the first bucket's rule to cover material that is ours.
+
+    **A source, not a cache.** The importer fetches from here the way it fetches from Commons, then
+    stores and derives into `-images` like any other picture. Nothing reads this bucket except the
+    fetcher and whoever follows a credit link.
+  EOT
+  type        = string
+  default     = "event-junkie-images-own"
+  nullable    = false
+
+  validation {
+    condition     = can(regex("^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$", var.object_storage_bucket_own_images))
+    error_message = "Bucket names are lower-case letters, digits and hyphens, 3-63 characters, not starting or ending with a hyphen."
+  }
+}
+
 variable "object_storage_bucket_o2" {
   description = <<-EOT
     Object Storage bucket for OpenObserve's Parquet files (#271, ADR-015).

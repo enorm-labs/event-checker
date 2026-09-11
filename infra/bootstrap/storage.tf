@@ -165,3 +165,28 @@ resource "minio_s3_bucket" "images" {
 # The sweep must run under its own environment prefix. Content-addressed keys mean staging computes
 # the same key as production, so a sweep asking its own database about every key would delete the
 # other environment's objects — #270's shape, one bucket over.
+
+# --- the one public bucket: photographs we took ourselves -----------------------------------------
+
+# **Public, and the only bucket here that is.** ADR-028 declined to open `-images` instead. That
+# bucket is private because it holds third-party material at an origin we advertise, and neither
+# half is true of a photograph we took. A rule that reads "private because third-party" must not be
+# widened to cover material that is ours, so the different rule lives in a different bucket, where a
+# reader meets it.
+resource "minio_s3_bucket" "images_own" {
+  bucket = var.object_storage_bucket_own_images
+
+  # Anything written here is world-readable the moment it lands, which is the point: the importer
+  # fetches from this URL the way it fetches from Commons, and a credit link has to resolve for a
+  # visitor. It is also the hazard, so nothing but a reviewed photograph belongs in it.
+  acl = "public-read"
+
+  # `false`, for a reason the other three do not have. These files have no upstream to refetch from.
+  # A Commons picture survives losing the bucket; ours is gone.
+  force_destroy = false
+}
+
+# **No lifecycle rule, for `-images`' reason and one more.** An expiry would delete an object out
+# from under the page serving it. The orphan sweep does not reach here either, because it asks the
+# database about cached derivatives rather than about sources, so an object this bucket no longer
+# needs is deleted by a person (ADR-028 § Consequences).
