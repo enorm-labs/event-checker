@@ -7,8 +7,8 @@ import java.time.Instant
 /**
  * Read-only R2DBC entity mapped to the `promoter` table.
  *
- * Lean projection for the BFF. Promoters have no dedicated page; they appear embedded in
- * event detail responses and as an event filter. The table is owned/written by the importer.
+ * Lean projection for the BFF. The table is owned and written by the importer; the description
+ * columns reach the detail response only, not the summary embedded in events.
  */
 @Table("promoter")
 data class PromoterEntity(
@@ -20,6 +20,10 @@ data class PromoterEntity(
     val imageAttribution: String? = null,
     val imageLicenceId: String? = null,
     val imageSourceUrl: String? = null,
+    val description: String? = null,
+    val descriptionLanguage: String? = null,
+    val descriptionAlt: String? = null,
+    val descriptionAltLanguage: String? = null,
     val createdAt: Instant? = null,
     val updatedAt: Instant? = null
 )

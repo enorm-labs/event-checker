@@ -25,6 +25,14 @@ data class Promoter(
     val imageLicenceId: String? = null,
     /** The image's description page, which the rendered credit links to. */
     val imageSourceUrl: String? = null,
+    /** Short prose description of the promoter, shown on the detail page. */
+    val description: String? = null,
+    /** Language of [description]: `de` or `en`. */
+    val descriptionLanguage: String? = null,
+    /** The same description in the other language, written by hand rather than translated by a machine. */
+    val descriptionAlt: String? = null,
+    /** Language of [descriptionAlt]: `de` or `en`. Null exactly when [descriptionAlt] is. */
+    val descriptionAltLanguage: String? = null,
     /** Timestamp when this record was first created. Set by the database. */
     val createdAt: Instant? = null,
     /** Timestamp when this record was last modified. Set by the database. */

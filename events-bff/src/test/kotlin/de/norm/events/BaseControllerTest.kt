@@ -159,16 +159,26 @@ abstract class BaseControllerTest {
     protected suspend fun insertPromoter(
         name: String,
         slug: String,
-        imageUrl: String? = null
+        imageUrl: String? = null,
+        description: String? = null,
+        descriptionLanguage: String? = null,
+        descriptionAlt: String? = null,
+        descriptionAltLanguage: String? = null
     ): Long =
         databaseClient
             .sql(
-                "INSERT INTO events.promoter (name, slug, image_url, image_attribution, image_licence_id, image_source_url) " +
-                    "VALUES (:name, :slug, :imageUrl, :attribution, :licenceId, :sourceUrl) RETURNING id"
+                "INSERT INTO events.promoter (name, slug, image_url, image_attribution, image_licence_id, image_source_url, " +
+                    "description, description_language, description_alt, description_alt_language) " +
+                    "VALUES (:name, :slug, :imageUrl, :attribution, :licenceId, :sourceUrl, " +
+                    ":description, :descriptionLanguage, :descriptionAlt, :descriptionAltLanguage) RETURNING id"
             ).bind("name", name)
             .bind("slug", slug)
             .bindOrNull("imageUrl", imageUrl)
             .bindCredit(imageUrl)
+            .bindOrNull("description", description)
+            .bindOrNull("descriptionLanguage", descriptionLanguage)
+            .bindOrNull("descriptionAlt", descriptionAlt)
+            .bindOrNull("descriptionAltLanguage", descriptionAltLanguage)
             .mapId()
 
     protected suspend fun insertGenreTag(

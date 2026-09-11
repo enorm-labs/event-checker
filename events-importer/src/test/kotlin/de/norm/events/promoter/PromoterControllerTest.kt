@@ -50,7 +50,13 @@ class PromoterControllerTest : BaseControllerTest() {
             .isOk
             .expectBody<PromoterResponse>()
             .consumeWith { result ->
-                result.responseBody!!.name shouldBe "36 Concerts"
+                val promoter = result.responseBody!!
+                promoter.name shouldBe "36 Concerts"
+                // Both descriptions round-trip through create → persist → read.
+                promoter.description shouldBe "The in-house agency of Lido, Astra and Bi Nuu."
+                promoter.descriptionLanguage shouldBe "en"
+                promoter.descriptionAlt shouldBe "Die Hausagentur von Lido, Astra und Bi Nuu."
+                promoter.descriptionAltLanguage shouldBe "de"
             }
 
         // Update
@@ -150,6 +156,29 @@ class PromoterControllerTest : BaseControllerTest() {
         // Clean up
         deletePromoter(first.id)
         deletePromoter(second.id)
+    }
+
+    @Test
+    fun `POST promoter with a description language outside de and en returns 400`() {
+        webTestClient
+            .post()
+            .uri("/api/admin/promoters")
+            .bodyValue(PromoterRequestFixtures.concerts36(descriptionLanguage = "fr"))
+            .exchange()
+            .expectStatus()
+            .isBadRequest
+    }
+
+    @Test
+    fun `POST promoter with an alternate text but no language returns 409`() {
+        // The V024 CHECK refuses the half-marked row; the API maps the integrity violation to 409.
+        webTestClient
+            .post()
+            .uri("/api/admin/promoters")
+            .bodyValue(PromoterRequestFixtures.concerts36(descriptionAltLanguage = null))
+            .exchange()
+            .expectStatus()
+            .isEqualTo(409)
     }
 
     @Test

@@ -88,7 +88,14 @@ class PromoterControllerTest : BaseControllerTest() {
     @Test
     fun `GET promoter by slug returns detail`(): Unit =
         runBlocking {
-            insertPromoter("36 Concerts", "36-concerts")
+            insertPromoter(
+                "36 Concerts",
+                "36-concerts",
+                description = "The in-house agency of Lido, Astra and Bi Nuu.",
+                descriptionLanguage = "en",
+                descriptionAlt = "Die Hausagentur von Lido, Astra und Bi Nuu.",
+                descriptionAltLanguage = "de"
+            )
 
             webTestClient
                 .get()
@@ -101,6 +108,31 @@ class PromoterControllerTest : BaseControllerTest() {
                 .isEqualTo("36-concerts")
                 .jsonPath("$.name")
                 .isEqualTo("36 Concerts")
+                .jsonPath("$.description")
+                .isEqualTo("The in-house agency of Lido, Astra and Bi Nuu.")
+                .jsonPath("$.descriptionLanguage")
+                .isEqualTo("en")
+                .jsonPath("$.descriptionAlt")
+                .isEqualTo("Die Hausagentur von Lido, Astra und Bi Nuu.")
+                .jsonPath("$.descriptionAltLanguage")
+                .isEqualTo("de")
+        }
+
+    // The summary embedded in events and the list stays compact: no description there.
+    @Test
+    fun `GET promoters list carries no description`(): Unit =
+        runBlocking {
+            insertPromoter("36 Concerts", "36-concerts", description = "Text", descriptionLanguage = "en")
+
+            webTestClient
+                .get()
+                .uri("/promoters")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody()
+                .jsonPath("$.content[0].description")
+                .doesNotExist()
         }
 
     @Test

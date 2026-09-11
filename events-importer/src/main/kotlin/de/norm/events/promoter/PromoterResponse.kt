@@ -27,6 +27,14 @@ data class PromoterResponse(
     val imageLicenceId: String?,
     @Schema(description = "The image's description page, which the rendered credit links to", example = "https://commons.wikimedia.org/wiki/File:Example.jpg")
     val imageSourceUrl: String?,
+    @Schema(description = "Short prose description of the promoter")
+    val description: String?,
+    @Schema(description = "Language of `description`: `de` or `en`", example = "en")
+    val descriptionLanguage: String?,
+    @Schema(description = "The same description in the other language, written by hand")
+    val descriptionAlt: String?,
+    @Schema(description = "Language of `descriptionAlt`: `de` or `en`. Null exactly when `descriptionAlt` is.", example = "de")
+    val descriptionAltLanguage: String?,
     @Schema(description = "Timestamp when this record was first created")
     val createdAt: Instant?,
     @Schema(description = "Timestamp when this record was last modified")
@@ -43,6 +51,10 @@ data class PromoterResponse(
                 imageAttribution = promoter.imageAttribution,
                 imageLicenceId = promoter.imageLicenceId,
                 imageSourceUrl = promoter.imageSourceUrl,
+                description = promoter.description,
+                descriptionLanguage = promoter.descriptionLanguage,
+                descriptionAlt = promoter.descriptionAlt,
+                descriptionAltLanguage = promoter.descriptionAltLanguage,
                 createdAt = promoter.createdAt,
                 updatedAt = promoter.updatedAt
             )

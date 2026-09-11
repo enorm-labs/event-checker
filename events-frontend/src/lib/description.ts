@@ -24,10 +24,10 @@ export interface ChosenDescription {
 /**
  * Anything that carries a description in up to two languages.
  *
- * An event and a venue both do, and their rule is the same one, so this is structural rather than
- * a union of the two response types. `descriptionAltOrigin` is optional because only event text can
- * be machine-made: a venue description is our own prose in both languages (#1210), so a missing
- * origin reads as "not a machine", which is exactly right.
+ * An event, a venue and a promoter all do, and their rule is the same one, so this is structural
+ * rather than a union of the response types. `descriptionAltOrigin` is optional because only event
+ * text can be machine-made: a venue or promoter description is our own prose in both languages
+ * (#1210, #328), so a missing origin reads as "not a machine", which is exactly right.
  */
 export interface Described {
   description?: string | null

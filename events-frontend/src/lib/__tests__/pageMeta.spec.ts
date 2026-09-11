@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import type { ArtistDetail, EventDetail, VenueDetail } from '@/api/types'
+import type { ArtistDetail, PromoterDetail, EventDetail, VenueDetail } from '@/api/types'
 import {
   APP_NAME,
   artistPageMeta,
@@ -151,7 +151,26 @@ describe('artistPageMeta and promoterPageMeta', () => {
     // Same rule as the structured data: omit rather than invent. The site-level description is a
     // better answer than a generated one that says nothing.
     expect(artistPageMeta({ slug: 'a', name: 'A' }).description).toBeUndefined()
-    expect(promoterPageMeta({ slug: 'p', name: 'P' }).description).toBeUndefined()
+    expect(promoterPageMeta({ slug: 'p', name: 'P' }, 'en').description).toBeUndefined()
+  })
+
+  it("previews a promoter in the visitor's language, and the original where that is all there is", () => {
+    const promoter: PromoterDetail = {
+      slug: 'p',
+      name: 'P',
+      description: 'Books indie in Kreuzberg.',
+      descriptionLanguage: 'en',
+      descriptionAlt: 'Bucht Indie in Kreuzberg.',
+      descriptionAltLanguage: 'de',
+      imageUrl: 'https://example.test/p.jpg',
+    }
+    expect(promoterPageMeta(promoter, 'de').description).toBe('Bucht Indie in Kreuzberg.')
+    expect(promoterPageMeta(promoter, 'en').description).toBe('Books indie in Kreuzberg.')
+    expect(
+      promoterPageMeta({ ...promoter, descriptionAlt: null, descriptionAltLanguage: null }, 'de')
+        .description,
+    ).toBe('Books indie in Kreuzberg.')
+    expect(promoterPageMeta(promoter, 'en').image).toBe('https://example.test/p.jpg')
   })
 })
 

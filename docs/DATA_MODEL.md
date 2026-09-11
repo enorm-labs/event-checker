@@ -82,6 +82,10 @@ classDiagram
         String slug
         String websiteUrl
         String imageUrl
+        String description
+        String descriptionLanguage
+        String descriptionAlt
+        String descriptionAltLanguage
         Instant createdAt
         Instant updatedAt
     }
@@ -236,15 +240,23 @@ Represents a musical artist or band. Normalized separately so artists can appear
 
 Represents an event promoter or presenter. Shared across events and venues.
 
-| Field         | Type          | Nullable | Description                 | Example                                |
-| ------------- | ------------- | -------- | --------------------------- | -------------------------------------- |
-| `id`          | `BIGINT`      | No       | Auto-generated primary key  | `3`                                    |
-| `name`        | `TEXT`        | No       | Promoter name               | `36 Concerts`                          |
-| `slug`        | `TEXT` (UQ)   | No       | URL-friendly identifier     | `36-concerts`                          |
-| `website_url` | `TEXT`        | Yes      | Website or social page      | `https://www.facebook.com/36Concerts/` |
-| `image_url`   | `TEXT`        | Yes      | Logo image URL              | `https://example.com/36-concerts.jpg`  |
-| `created_at`  | `TIMESTAMPTZ` | No       | Record creation timestamp   |                                        |
-| `updated_at`  | `TIMESTAMPTZ` | No       | Last modification timestamp |                                        |
+| Field                      | Type          | Nullable | Description                                      | Example                                          |
+| -------------------------- | ------------- | -------- | ------------------------------------------------ | ------------------------------------------------ |
+| `id`                       | `BIGINT`      | No       | Auto-generated primary key                       | `3`                                              |
+| `name`                     | `TEXT`        | No       | Promoter name                                    | `36 Concerts`                                    |
+| `slug`                     | `TEXT` (UQ)   | No       | URL-friendly identifier                          | `36-concerts`                                    |
+| `website_url`              | `TEXT`        | Yes      | Website or social page                           | `https://www.facebook.com/36Concerts/`           |
+| `image_url`                | `TEXT`        | Yes      | Logo image URL                                   | `https://example.com/36-concerts.jpg`            |
+| `description`              | `TEXT`        | Yes      | Short prose description shown on the detail page | `The in-house agency of Lido, Astra and Bi Nuu.` |
+| `description_language`     | `TEXT`        | Yes      | Language of `description`: `de` or `en`          | `en`                                             |
+| `description_alt`          | `TEXT`        | Yes      | The same text in the other language              | `Die Hausagentur von Lido, Astra und Bi Nuu.`    |
+| `description_alt_language` | `TEXT`        | Yes      | Language of `description_alt`                    | `de`                                             |
+| `created_at`               | `TIMESTAMPTZ` | No       | Record creation timestamp                        |                                                  |
+| `updated_at`               | `TIMESTAMPTZ` | No       | Last modification timestamp                      |                                                  |
+
+**The descriptions follow the venue's rule (#328).** Both are our own prose, written by hand through the admin API, with
+the same language and all-or-nothing constraints V019 gave `venue`. A promoter's own site is not scraped for them: no
+`event_source` row records a promoter's terms, so the per-source licence gate never reaches a promoter.
 
 ### event_artist (Join Table / LineupEntry)
 

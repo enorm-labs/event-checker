@@ -66,7 +66,11 @@ class PromoterService(
                 imageUrl = request.imageUrl,
                 imageAttribution = request.imageAttribution,
                 imageLicenceId = request.imageLicenceId,
-                imageSourceUrl = request.imageSourceUrl
+                imageSourceUrl = request.imageSourceUrl,
+                description = request.description,
+                descriptionLanguage = request.descriptionLanguage,
+                descriptionAlt = request.descriptionAlt,
+                descriptionAltLanguage = request.descriptionAltLanguage
             )
         val entity = PromoterEntity.fromDomain(promoter)
         val saved = promoterRepository.save(entity)
@@ -102,7 +106,11 @@ class PromoterService(
                 imageUrl = request.imageUrl,
                 imageAttribution = request.imageAttribution,
                 imageLicenceId = request.imageLicenceId,
-                imageSourceUrl = request.imageSourceUrl
+                imageSourceUrl = request.imageSourceUrl,
+                description = request.description,
+                descriptionLanguage = request.descriptionLanguage,
+                descriptionAlt = request.descriptionAlt,
+                descriptionAltLanguage = request.descriptionAltLanguage
             )
         val saved = promoterRepository.save(updated)
         logger.info { "Updated promoter '${saved.name}' (id=${saved.id})" }
