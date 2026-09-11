@@ -29,9 +29,10 @@ where the site and the credit disagree. A `party`, `artist` or `junk` row was re
 and its venue, not from a site. An `unverified` row had one search that found nothing to cite. It
 stays as the venue wrote it.
 
-**The descriptions are written for the promoters with the most events first.** The first twenty
+**The descriptions are written for the promoters with the most events first.** The first forty
 were drafted from each promoter's own about page and read by a person before they were added
-(#328). A row without one shows no description, which is better than a sentence that says
+(#328). A media partner or a venue that presents shows gets a shorter one. A reader lands on its
+page from an event all the same. A row without one shows no description, which is better than a sentence that says
 nothing.
 
 **Logos: two sites offer one, none states who may use it.** Every site in the table was read for
