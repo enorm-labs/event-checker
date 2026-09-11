@@ -4,41 +4,56 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
 
 /**
- * One of Berlin's twelve boroughs, which is the only thing `venue.district` may hold.
+ * One of Berlin's 23 districts as they stood from 1986 to 2000, which is the only thing
+ * `venue.district` may hold.
  *
- * **The field was a free-form `String?` and that is how two wrong values got in** (#329). Two venues
- * on the RAW-Gelände said `friedrichshain`, which is an *Ortsteil* and not a borough, while nine
- * venues at the same postal code said `friedrichshain-kreuzberg`. A filter on the borough dropped
- * those two and reported success. Nothing was wrong enough to fail, which is why nobody saw it.
+ * **The 23 pre-2001 districts, not the 12 boroughs that replaced them** (#1307). The 2001 reform
+ * merged Friedrichshain with Kreuzberg and Prenzlauer Berg into Pankow, and nobody in Berlin says
+ * either of the merged names. With the boroughs, 36 of 86 venues sat in one filter value. The old
+ * districts are the level people name, and each is a union of today's *Ortsteile*, so the mapping is
+ * a fixed table rather than a judgement.
  *
- * **A borough, never an Ortsteil.** Friedrichshain, Kreuzberg, Prenzlauer Berg, Treptow and Köpenick
- * are the names people use and none of them is a value here. The map and the radius search both work
- * on boroughs, so a mix of the two silently splits one area into two.
+ * **One level, never a mix.** The field was a free-form `String?` and that is how two wrong values
+ * got in (#329): two venues on the RAW-Gelände said `friedrichshain` while nine at the same postal
+ * code said `friedrichshain-kreuzberg`, and a filter on either dropped the others without failing.
+ * The cure was a closed set, and it still is. A borough is not a value here, and neither is an
+ * Ortsteil: `moabit` is `tiergarten`, `gesundbrunnen` is `wedding`, `oberschoeneweide` is `koepenick`.
  *
- * **The wire form is the kebab-case name**, because that is what the database already holds and what
- * the frontend already sends. `V009` adds the matching CHECK constraint, so a hand-edited row cannot
- * introduce a thirteenth borough either.
+ * **The wire form is the kebab-case name**, because that is what the database holds and what the
+ * frontend sends. `V021` carries the matching CHECK constraint, so a hand-edited row cannot introduce
+ * a twenty-fourth district either.
  *
  * **Here rather than in `events-core` beside `SourceLicence`, and that is not an oversight.** The
  * kebab-case wire form needs Jackson's `@JsonValue` to survive a round trip, and `events-core`
  * carries no Jackson. Only the importer writes a venue, so only the importer needs to parse one. The
- * BFF still filters on the raw column, which is why `V009` carries the constraint as well.
+ * BFF still filters on the raw column, which is why `V021` carries the constraint as well.
  */
 enum class District(
     @get:JsonValue val value: String
 ) {
-    CHARLOTTENBURG_WILMERSDORF("charlottenburg-wilmersdorf"),
-    FRIEDRICHSHAIN_KREUZBERG("friedrichshain-kreuzberg"),
+    CHARLOTTENBURG("charlottenburg"),
+    FRIEDRICHSHAIN("friedrichshain"),
+    HELLERSDORF("hellersdorf"),
+    HOHENSCHOENHAUSEN("hohenschoenhausen"),
+    KOEPENICK("koepenick"),
+    KREUZBERG("kreuzberg"),
     LICHTENBERG("lichtenberg"),
-    MARZAHN_HELLERSDORF("marzahn-hellersdorf"),
+    MARZAHN("marzahn"),
     MITTE("mitte"),
     NEUKOELLN("neukoelln"),
     PANKOW("pankow"),
+    PRENZLAUER_BERG("prenzlauer-berg"),
     REINICKENDORF("reinickendorf"),
+    SCHOENEBERG("schoeneberg"),
     SPANDAU("spandau"),
-    STEGLITZ_ZEHLENDORF("steglitz-zehlendorf"),
-    TEMPELHOF_SCHOENEBERG("tempelhof-schoeneberg"),
-    TREPTOW_KOEPENICK("treptow-koepenick");
+    STEGLITZ("steglitz"),
+    TEMPELHOF("tempelhof"),
+    TIERGARTEN("tiergarten"),
+    TREPTOW("treptow"),
+    WEDDING("wedding"),
+    WEISSENSEE("weissensee"),
+    WILMERSDORF("wilmersdorf"),
+    ZEHLENDORF("zehlendorf");
 
     companion object {
         /**
@@ -46,8 +61,8 @@ enum class District(
          *
          * **Unlike `SourceLicence.parseOrProhibited` there is no lenient fallback, because there
          * is no safe one.** A licence has a conservative answer to fall back
-         * to. A borough does not: guessing puts a venue in the wrong place on the map, or removes it
-         * from a search, and both are worse than refusing the write.
+         * to. A district does not: guessing puts a venue in the wrong place on the map, or removes
+         * it from a search, and both are worse than refusing the write.
          */
         @JvmStatic
         @JsonCreator

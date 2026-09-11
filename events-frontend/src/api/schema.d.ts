@@ -300,8 +300,8 @@ export interface components {
              */
             address?: string | null;
             /**
-             * @description Berlin borough (Bezirk) as a canonical slug
-             * @example friedrichshain-kreuzberg
+             * @description Berlin district (one of the 23 pre-2001 Bezirke) as a canonical slug
+             * @example kreuzberg
              */
             district?: string | null;
             /** @description URL of the venue's logo or photo */
@@ -370,8 +370,8 @@ export interface components {
              */
             postalCode?: string | null;
             /**
-             * @description Berlin borough (Bezirk) as a canonical slug
-             * @example friedrichshain-kreuzberg
+             * @description Berlin district (one of the 23 pre-2001 Bezirke) as a canonical slug
+             * @example kreuzberg
              */
             district?: string | null;
             /**
@@ -1073,7 +1073,7 @@ export interface operations {
             query?: {
                 /** @description Case-insensitive substring filter on the venue name. Omitted/blank returns all venues. */
                 q?: string;
-                /** @description District filter — only venues in the matching Berlin borough (e.g. friedrichshain-kreuzberg). Omitted/blank returns all districts. */
+                /** @description District filter — only venues in the matching Berlin district, one of the 23 pre-2001 districts (e.g. kreuzberg). Omitted/blank returns all districts. */
                 district?: string;
                 /** @description Zero-based page index (0..N) */
                 page?: number;
@@ -1259,7 +1259,7 @@ export interface operations {
                 eventType?: string;
                 /** @description Venue slug filter — only events at the matching venue. */
                 venue?: string;
-                /** @description District filter — only events at venues in the matching Berlin borough (e.g. friedrichshain-kreuzberg). */
+                /** @description District filter — only events at venues in the matching pre-2001 Berlin district (e.g. kreuzberg). */
                 district?: string;
                 /** @description Artist slug filter — only events featuring the matching artist. */
                 artist?: string;
@@ -1358,7 +1358,7 @@ export interface operations {
                 eventType?: string;
                 /** @description Venue slug filter — only events at the matching venue. */
                 venue?: string;
-                /** @description District filter — only events at venues in the matching Berlin borough (e.g. friedrichshain-kreuzberg). */
+                /** @description District filter — only events at venues in the matching pre-2001 Berlin district (e.g. kreuzberg). */
                 district?: string;
                 /** @description Artist slug filter — only events featuring the matching artist. */
                 artist?: string;

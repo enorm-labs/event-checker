@@ -17,7 +17,7 @@ interface VenueRepository : CoroutineCrudRepository<VenueEntity, Long> {
     /** Total count matching a case-insensitive name search, for pagination metadata. */
     suspend fun countByNameContainingIgnoreCase(name: String): Long
 
-    /** Exact-match filter on the district (Bezirk) slug with pagination. */
+    /** Exact-match filter on the district slug with pagination. */
     fun findByDistrict(
         district: String,
         pageable: Pageable

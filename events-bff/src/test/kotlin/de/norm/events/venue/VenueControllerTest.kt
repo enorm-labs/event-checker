@@ -49,8 +49,8 @@ class VenueControllerTest : BaseControllerTest() {
     @Test
     fun `GET venues filters by district`(): Unit =
         runBlocking {
-            insertVenue("Astra", "astra", district = "friedrichshain-kreuzberg")
-            insertVenue("Lido", "lido", district = "friedrichshain-kreuzberg")
+            insertVenue("Astra", "astra", district = "kreuzberg")
+            insertVenue("Lido", "lido", district = "kreuzberg")
             insertVenue("Berghain", "berghain", district = "mitte")
 
             webTestClient
@@ -69,13 +69,13 @@ class VenueControllerTest : BaseControllerTest() {
     @Test
     fun `GET venues combines name query and district filter`(): Unit =
         runBlocking {
-            insertVenue("Astra Kulturhaus", "astra", district = "friedrichshain-kreuzberg")
+            insertVenue("Astra Kulturhaus", "astra", district = "kreuzberg")
             insertVenue("Astra Bar", "astra-bar", district = "mitte")
-            insertVenue("Lido", "lido", district = "friedrichshain-kreuzberg")
+            insertVenue("Lido", "lido", district = "kreuzberg")
 
             webTestClient
                 .get()
-                .uri("/venues?q=astra&district=friedrichshain-kreuzberg")
+                .uri("/venues?q=astra&district=kreuzberg")
                 .exchange()
                 .expectStatus()
                 .isOk

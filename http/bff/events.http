@@ -36,8 +36,8 @@ Accept: application/json
 GET {{bff-host}}/api/events?venue=lido
 Accept: application/json
 
-### Filter by district (Berlin borough)
-GET {{bff-host}}/api/events?district=friedrichshain-kreuzberg
+### Filter by district (one of the 23 pre-2001 Berlin districts)
+GET {{bff-host}}/api/events?district=kreuzberg
 Accept: application/json
 
 ### Filter by artist slug
@@ -81,7 +81,7 @@ GET {{bff-host}}/api/events/calendar?from=2026-07-15&to=2026-06-19
 Accept: application/json
 
 ### Calendar — same optional filters as the search endpoint
-GET {{bff-host}}/api/events/calendar?from=2026-06-19&to=2026-07-15&district=friedrichshain-kreuzberg&genre=punk&maxPrice=20&excludeSoldOut=true
+GET {{bff-host}}/api/events/calendar?from=2026-06-19&to=2026-07-15&district=kreuzberg&genre=punk&maxPrice=20&excludeSoldOut=true
 Accept: application/json
 
 ### Get event by slug (uses the slug captured from the list request above)

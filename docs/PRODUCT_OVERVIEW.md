@@ -31,7 +31,7 @@ classical.
 ## What it lets you do
 
 - **Browse and search** upcoming events, with a **calendar view** and a **today** view.
-- **Filter** by what you actually care about: date range, event type, **Berlin district** (all 12 boroughs),
+- **Filter** by what you actually care about: date range, event type, **Berlin district** (23 pre-2001 districts),
   **genre**, **price range**, **free-only** and **exclude sold-out**. Plus free-text search over titles.
 - **Drill into details:** dedicated pages for each **event, venue, artist and promoter**. They are cross-linked, so
   you can jump from an artist to all their Berlin dates, or from a venue to its full programme.
@@ -50,7 +50,7 @@ public launch — hosting, domain, auth, legal — is tracked in
 **Discovery frontend** (Vue 3)
 
 - Home, **calendar**, and event **search/list** pages, plus **event / venue / artist / promoter** detail pages and an About page.
-- Filtering by date range, event type, venue, district (12 boroughs), genre, price range, free-only and
+- Filtering by date range, event type, venue, district (the 23 pre-2001 districts), genre, price range, free-only and
   exclude-sold-out. The date range has **Tonight / This weekend / Next 7 days** shortcuts. Plus free-text search, and
   "Free" and "Sold Out" badges. One shared filter bar serves both the **list and the calendar**. The date range is the exception, because
   the calendar's window is one already. Every filter lives in the URL, so a narrowed view is shareable.

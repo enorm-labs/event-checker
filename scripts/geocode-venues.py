@@ -27,15 +27,16 @@ reported and never flagged, because the distance is then measuring Google's own 
 postal code is compared as well -- `Mikropol` is the venue #329 could not settle, and its
 *address* is the part that is wrong.
 
-**The borough is reported and never compared, and `district` must not be filled from it.** Three
+**The district is reported and never compared, and `district` must not be filled from it.** Three
 venues in one audit, and a different failure each time. `MS Hoppetosse` is a boat: Google puts its
-address on the Treptow-Koepenick bank and its point in the river on the Friedrichshain-Kreuzberg
-side, so the two lookups disagree. For `Huxleys Neue Welt` neither Google nor OpenStreetMap had an
-answer at all. **And for `Heideglühen` both agreed, and both were wrong** -- Seestrasse 1 is in
-Wedding, so the borough is Mitte, but number 1 stands at the canal where Charlottenburg-Nord begins
-and each source answered for the point rather than for the address. Agreement is not correctness
-here. V009 closed that column to the twelve because a wrong borough is invisible: the venue stops
-appearing in its own filter and nobody reports a result that never arrived. It takes a human.
+address on the Treptow bank and its point in the river on the Friedrichshain side, so the two
+lookups disagree. For `Huxleys Neue Welt` neither Google nor OpenStreetMap had an answer at all.
+**And for `Heideglühen` both agreed, and both were wrong** -- Seestrasse 1 is in Wedding, but
+number 1 stands at the canal where Charlottenburg-Nord begins and each source answered for the
+point rather than for the address. Agreement is not correctness here. V009 closed that column to
+the twelve boroughs and V021 to the 23 pre-2001 districts, because a wrong district is invisible:
+the venue stops appearing in its own filter and nobody reports a result that never arrived. It
+takes a human.
 
 **Storing a value from here is a licensing decision.** The Maps Platform terms allow caching
 Content for 30 days and a `place_id` indefinitely; a coordinate kept past that, drawn on a map

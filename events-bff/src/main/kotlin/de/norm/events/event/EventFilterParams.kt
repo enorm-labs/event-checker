@@ -25,7 +25,7 @@ data class EventFilterParams(
     val eventType: String? = null,
     @field:Parameter(description = "Venue slug filter — only events at the matching venue.")
     val venue: String? = null,
-    @field:Parameter(description = "District filter — only events at venues in the matching Berlin borough (e.g. friedrichshain-kreuzberg).")
+    @field:Parameter(description = "District filter — only events at venues in the matching pre-2001 Berlin district (e.g. kreuzberg).")
     val district: String? = null,
     @field:Parameter(description = "Artist slug filter — only events featuring the matching artist.")
     val artist: String? = null,

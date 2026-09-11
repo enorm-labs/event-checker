@@ -179,7 +179,7 @@ async function mockBff(page: Page): Promise<void> {
             slug: 'mock-venue',
             name: 'Mock Venue',
             city: 'Berlin',
-            district: 'friedrichshain-kreuzberg',
+            district: 'kreuzberg',
           },
           { slug: 'other-venue', name: 'Other Venue', city: 'Berlin' },
         ],

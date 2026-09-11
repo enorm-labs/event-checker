@@ -26,7 +26,7 @@ function json(route: Route, body: unknown, status = 200): Promise<void> {
 const venuesList = /\/api\/venues(\?|$)/
 
 function venue(slug: string, name: string) {
-  return { slug, name, city: 'Berlin', district: 'friedrichshain-kreuzberg' }
+  return { slug, name, city: 'Berlin', district: 'kreuzberg' }
 }
 
 function pageBody(content: ReturnType<typeof venue>[], page = 0, totalPages = 1) {
