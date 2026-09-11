@@ -201,20 +201,33 @@ Nothing here is a service you have an account with. It is the set of addresses `
 
 ## 10. Stack reference documentation
 
-The docs actually consulted while working on this repository, rather than a link farm.
+The docs actually consulted while working on this repository, rather than a link farm. Each framework has two rows:
+the documentation, then its release notes. Read the release notes on a version bump and before a feature that the
+current version may already have. An agent asks the `context7` MCP server first, which returns the docs for the pinned
+version. The links here are for people.
 
 | Link                                                                               | For                                                                                   |
 | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
 | <https://docs.spring.io/spring-data/relational/reference/r2dbc/query-methods.html> | R2DBC query derivation — its limits are a recurring gotcha                            |
 | <https://spring.io/projects/spring-boot>                                           | Spring Boot 4                                                                         |
+| <https://github.com/spring-projects/spring-boot/wiki>                              | Spring Boot release notes, one wiki page per minor version                            |
 | <https://kotlinlang.org>                                                           | Kotlin 2.4                                                                            |
+| <https://kotlinlang.org/docs/whatsnew24.html>                                      | What's new in Kotlin — `whatsnew<major><minor>.html`, move it with the version bump   |
 | <https://openjdk.org>                                                              | Java 25                                                                               |
+| <https://github.com/microsoft/TypeScript/releases>                                 | TypeScript release notes                                                              |
 | <https://vuejs.org>                                                                | Vue 3                                                                                 |
+| <https://github.com/vuejs/core/releases>                                           | Vue release notes                                                                     |
 | <https://vue-i18n.intlify.dev>                                                     | Localisation (ADR-013)                                                                |
+| <https://github.com/intlify/vue-i18n/releases>                                     | vue-i18n release notes                                                                |
 | <https://fullcalendar.io>                                                          | Calendar (ADR-011) — **keep the premium plugins out**, they are commercially licensed |
-| <https://tailwindcss.com>                                                          | Styling (ADR-010)                                                                     |
+| <https://github.com/fullcalendar/fullcalendar/releases>                            | FullCalendar release notes                                                            |
+| <https://tailwindcss.com/docs>                                                     | Styling (ADR-010) — Tailwind v4, not the v2 or v3 site                                |
+| <https://github.com/tailwindlabs/tailwindcss/releases>                             | Tailwind release notes                                                                |
 | <https://jsoup.org>                                                                | Jsoup — every scraper's parser                                                        |
+| <https://jsoup.org/news/>                                                          | Jsoup release notes                                                                   |
 | <https://playwright.dev>                                                           | End-to-end tests                                                                      |
+| <https://playwright.dev/docs/release-notes>                                        | Playwright release notes                                                              |
+| <https://docs.gradle.org/current/release-notes.html>                               | Gradle release notes                                                                  |
 | <https://sdkman.io/>                                                               | JDK management, see `.sdkmanrc`                                                       |
 | <https://www.conventionalcommits.org>                                              | Commit message format                                                                 |
 | <https://platform.claude.com/docs/en/api/messages>                                 | The Messages API, which Spring AI calls for translation (ADR-026)                     |

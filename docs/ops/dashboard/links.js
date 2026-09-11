@@ -692,10 +692,26 @@ window.EJ_LINKS = {
           "statusText": ""
         },
         {
+          "url": "https://github.com/spring-projects/spring-boot/wiki",
+          "label": "github.com/spring-projects/spring-boot/wiki",
+          "what": "Spring Boot release notes, one wiki page per minor version",
+          "whatText": "Spring Boot release notes, one wiki page per minor version",
+          "status": "",
+          "statusText": ""
+        },
+        {
           "url": "https://kotlinlang.org",
           "label": "kotlinlang.org",
           "what": "Kotlin 2.4",
           "whatText": "Kotlin 2.4",
+          "status": "",
+          "statusText": ""
+        },
+        {
+          "url": "https://kotlinlang.org/docs/whatsnew24.html",
+          "label": "kotlinlang.org/docs/whatsnew24.html",
+          "what": "What's new in Kotlin — <code>whatsnew&lt;major&gt;&lt;minor&gt;.html</code>, move it with the version bump",
+          "whatText": "What's new in Kotlin — whatsnew<major><minor>.html, move it with the version bump",
           "status": "",
           "statusText": ""
         },
@@ -708,10 +724,26 @@ window.EJ_LINKS = {
           "statusText": ""
         },
         {
+          "url": "https://github.com/microsoft/TypeScript/releases",
+          "label": "github.com/microsoft/TypeScript/releases",
+          "what": "TypeScript release notes",
+          "whatText": "TypeScript release notes",
+          "status": "",
+          "statusText": ""
+        },
+        {
           "url": "https://vuejs.org",
           "label": "vuejs.org",
           "what": "Vue 3",
           "whatText": "Vue 3",
+          "status": "",
+          "statusText": ""
+        },
+        {
+          "url": "https://github.com/vuejs/core/releases",
+          "label": "github.com/vuejs/core/releases",
+          "what": "Vue release notes",
+          "whatText": "Vue release notes",
           "status": "",
           "statusText": ""
         },
@@ -724,6 +756,14 @@ window.EJ_LINKS = {
           "statusText": ""
         },
         {
+          "url": "https://github.com/intlify/vue-i18n/releases",
+          "label": "github.com/intlify/vue-i18n/releases",
+          "what": "vue-i18n release notes",
+          "whatText": "vue-i18n release notes",
+          "status": "",
+          "statusText": ""
+        },
+        {
           "url": "https://fullcalendar.io",
           "label": "fullcalendar.io",
           "what": "Calendar (ADR-011) — <strong>keep the premium plugins out</strong>, they are commercially licensed",
@@ -732,10 +772,26 @@ window.EJ_LINKS = {
           "statusText": ""
         },
         {
-          "url": "https://tailwindcss.com",
-          "label": "tailwindcss.com",
-          "what": "Styling (ADR-010)",
-          "whatText": "Styling (ADR-010)",
+          "url": "https://github.com/fullcalendar/fullcalendar/releases",
+          "label": "github.com/fullcalendar/fullcalendar/releases",
+          "what": "FullCalendar release notes",
+          "whatText": "FullCalendar release notes",
+          "status": "",
+          "statusText": ""
+        },
+        {
+          "url": "https://tailwindcss.com/docs",
+          "label": "tailwindcss.com/docs",
+          "what": "Styling (ADR-010) — Tailwind v4, not the v2 or v3 site",
+          "whatText": "Styling (ADR-010) — Tailwind v4, not the v2 or v3 site",
+          "status": "",
+          "statusText": ""
+        },
+        {
+          "url": "https://github.com/tailwindlabs/tailwindcss/releases",
+          "label": "github.com/tailwindlabs/tailwindcss/releases",
+          "what": "Tailwind release notes",
+          "whatText": "Tailwind release notes",
           "status": "",
           "statusText": ""
         },
@@ -748,10 +804,34 @@ window.EJ_LINKS = {
           "statusText": ""
         },
         {
+          "url": "https://jsoup.org/news/",
+          "label": "jsoup.org/news/",
+          "what": "Jsoup release notes",
+          "whatText": "Jsoup release notes",
+          "status": "",
+          "statusText": ""
+        },
+        {
           "url": "https://playwright.dev",
           "label": "playwright.dev",
           "what": "End-to-end tests",
           "whatText": "End-to-end tests",
+          "status": "",
+          "statusText": ""
+        },
+        {
+          "url": "https://playwright.dev/docs/release-notes",
+          "label": "playwright.dev/docs/release-notes",
+          "what": "Playwright release notes",
+          "whatText": "Playwright release notes",
+          "status": "",
+          "statusText": ""
+        },
+        {
+          "url": "https://docs.gradle.org/current/release-notes.html",
+          "label": "docs.gradle.org/current/release-notes.html",
+          "what": "Gradle release notes",
+          "whatText": "Gradle release notes",
           "status": "",
           "statusText": ""
         },
