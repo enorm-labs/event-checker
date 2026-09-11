@@ -92,7 +92,7 @@ class UrbanSpreeDetailPageScraper {
             free = detectFree(pricePresale = price, priceNote = priceText),
             status = urbanSpreeStatus(rawTitle),
             artists = buildArtistsForEventType(title, subtitle = supportNote, eventType = eventType),
-            promoters = listOfNotNull(infoValue(document, PROMOTER_LABEL))
+            promoters = infoValue(document, PROMOTER_LABEL)?.split(CO_PROMOTER_SEPARATOR)?.map { it.trim() }.orEmpty()
         )
     }
 
@@ -161,6 +161,12 @@ class UrbanSpreeDetailPageScraper {
 
         /** Label of the `.ct-info` row naming the event's promoter. */
         private const val PROMOTER_LABEL = "Promoter"
+
+        /**
+         * What the venue joins two promoters with ("Positive Transmitter & Crunch Tapes"). Only
+         * "&": the label "Aufnahme + wiedergabe" carries its "+" in its own name (#328).
+         */
+        private val CO_PROMOTER_SEPARATOR = Regex("""\s*&\s*""")
 
         /** English hero date rendering, e.g. "Dec 12, 2026" / "Dec 05, 2026". */
         private val HERO_DATE_FORMATTER: DateTimeFormatter =

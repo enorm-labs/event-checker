@@ -371,10 +371,11 @@ class PeterEdelOverviewPageScraper {
 
         /**
          * The promoter behind a `Präsentiert von: Loft Concerts` credit, captured up to the next
-         * `Tickets:` label or the end of the line — the venue writes the credit before or after the
-         * ticket line depending on the event.
+         * `Tickets:` or `Hinweis:` label or the end of the line — the venue writes the credit
+         * before or after the ticket line depending on the event, and once appended a festival
+         * note to it that became a promoter of its own (#328).
          */
-        private val PROMOTER = Regex("""Präsentiert von\s*:\s*(.+?)(?:\s*Tickets\s*:|$)""", RegexOption.IGNORE_CASE)
+        private val PROMOTER = Regex("""Präsentiert von\s*:\s*(.+?)(?:\s*(?:Tickets|Hinweis)\s*:|$)""", RegexOption.IGNORE_CASE)
 
         /** A monetary amount in either notation, written with a `€` sign or the word `Euro`. */
         private val EURO_AMOUNT = Regex("""(\d+(?:[.,]\d{1,2})?)\s*(?:€|Euro)""", RegexOption.IGNORE_CASE)

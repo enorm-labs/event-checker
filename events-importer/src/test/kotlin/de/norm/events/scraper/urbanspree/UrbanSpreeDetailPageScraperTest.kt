@@ -87,6 +87,17 @@ class UrbanSpreeDetailPageScraperTest {
     }
 
     @Test
+    fun `splits two promoters joined with an ampersand and keeps a plus inside one name`() {
+        val document = fixture("urbanspree-detail-concert.html", concertUrl)
+        document.select(".info-data").first { it.text() == "Aufnahme + wiedergabe" }.text("Positive Transmitter & Crunch Tapes")
+
+        scraper.scrape(document, concertUrl).shouldNotBeNull().promoters shouldContainExactly
+            listOf("Positive Transmitter", "Crunch Tapes")
+        // The fixture's own value is one label, and stays one promoter (asserted above).
+        scrapeConcert().shouldNotBeNull().promoters shouldContainExactly listOf("Aufnahme + wiedergabe")
+    }
+
+    @Test
     fun `scrape flags free entry and drops the empty ticket link`() {
         val event = scraper.scrape(fixture("urbanspree-detail-free.html", freeUrl), freeUrl).shouldNotBeNull()
 

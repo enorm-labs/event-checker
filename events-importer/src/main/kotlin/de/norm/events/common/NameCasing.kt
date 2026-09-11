@@ -99,5 +99,6 @@ private val ACRONYMS: Set<String> =
         // Promoters that are themselves initialisms: the tour agency "KKT" and the concert arm
         // of the Anschutz group, "AEG Presents".
         "KKT",
-        "AEG"
+        "AEG",
+        "FKP"
     )
