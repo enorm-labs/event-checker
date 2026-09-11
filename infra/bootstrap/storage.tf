@@ -49,17 +49,15 @@ resource "minio_s3_bucket" "o2" {
 # **90 days, six times the application's 14**, and the gap is the point: it must never be the thing
 # that expires data in normal operation, only the thing that catches a stalled compactor. Narrowing
 # it toward 14 would start deleting files OpenObserve still has indexed.
+#
+# **The `abort-incomplete-uploads` rule comes first in both lifecycle resources because the server
+# returns it first, not because it matters more.** `rule` is a positional list, and Hetzner's
+# object storage hands the rules back sorted rather than in the order they were written — so a
+# configuration that leads with the expiry rule plans two in-place updates on every run, swapping
+# the two blocks' contents back and forth forever. Applying them changes nothing — the next plan
+# shows the same diff, measured on both buckets either side of an apply.
 resource "minio_s3_bucket_lifecycle" "o2" {
   bucket = minio_s3_bucket.o2.bucket
-
-  rule {
-    id     = "backstop-expiry"
-    status = "Enabled"
-
-    expiration {
-      days = 90
-    }
-  }
 
   rule {
     id     = "abort-incomplete-uploads"
@@ -69,6 +67,15 @@ resource "minio_s3_bucket_lifecycle" "o2" {
     # here resumes one, so a week is generous.
     abort_incomplete_multipart_upload {
       days_after_initiation = 7
+    }
+  }
+
+  rule {
+    id     = "backstop-expiry"
+    status = "Enabled"
+
+    expiration {
+      days = 90
     }
   }
 }
@@ -116,15 +123,7 @@ resource "minio_s3_bucket" "backups" {
 resource "minio_s3_bucket_lifecycle" "backups" {
   bucket = minio_s3_bucket.backups.bucket
 
-  rule {
-    id     = "retention-ceiling"
-    status = "Enabled"
-
-    expiration {
-      days = var.backup_retention_backstop_days
-    }
-  }
-
+  # Ordered to match the server, as `o2` above is.
   rule {
     id     = "abort-incomplete-uploads"
     status = "Enabled"
@@ -133,6 +132,15 @@ resource "minio_s3_bucket_lifecycle" "backups" {
     # invisible to a plain listing, and nothing here resumes one.
     abort_incomplete_multipart_upload {
       days_after_initiation = 7
+    }
+  }
+
+  rule {
+    id     = "retention-ceiling"
+    status = "Enabled"
+
+    expiration {
+      days = var.backup_retention_backstop_days
     }
   }
 }
