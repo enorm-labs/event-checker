@@ -2,7 +2,7 @@ stored_name	slug	kind	website	name	description_de	description_en	events	note
 11freunde	11freunde	media	https://www.11freunde.de/	11FREUNDE			2	football magazine; pub quiz
 36 Concerts	36-concerts	promoter	https://www.36-tickets.de/	36 Concerts	36 Concerts ist die Hausagentur von Lido, Astra Kulturhaus und Bi Nuu in Kreuzberg, bis 2020 unter dem Namen Direct Concerts. Sie bucht vor allem Indie, Rock und Alternative für die eigenen Clubs und daneben für Festsaal Kreuzberg und Urban Spree.	36 Concerts is the in-house agency of Lido, Astra Kulturhaus and Bi Nuu in Kreuzberg, known as Direct Concerts until 2020. It books mostly indie, rock and alternative for its own clubs, and also for Festsaal Kreuzberg and Urban Spree.	27	in-house agency of Lido, Astra, Bi Nuu
 7synths Party	7synths-party	party		7synths Party			1	Badehaus party series
-Act	act	junk		Act			1	one word, Gretchen
+Act	act	junk		Act			1	one word, Gretchen; deleted by V026
 AEG Presents	aeg-presents	promoter	https://www.aegpresents.com/	AEG Presents			1	
 Afro Haus	afro-haus	promoter	https://www.afrohaus.de/	Afro Haus			5	site writes AFRO HAUS
 Agave	agave	unverified		Agave			1	Metropol, one event
@@ -13,7 +13,7 @@ amSTARt	amstart	unverified		amSTARt			1	Urban Spree
 Antenne Brandenburg	antenne-brandenburg	media	https://www.antennebrandenburg.de/	Antenne Brandenburg			1	rbb radio
 Antonio Garcia	antonio-garcia	promoter		Antonio Garcia			1	person; salsa
 Aok. Die Gesundheitskasse	aok	sponsor	https://www.aok.de/	AOK			2	health insurer; prevention theatre
-Ar	ar	junk		Ar			1	two letters, Huxleys
+Ar	ar	junk		Ar			1	two letters, Huxleys; deleted by V026
 Archiv B	archiv-b	unverified		Archiv B			1	Columbia Theater
 Asiarec SpA	asiarec-spa	unverified		Asiarec SpA			1	Privatclub
 Atoc Soundlab	atoc-soundlab	promoter	https://atocsoundlab.com/	ATOC Soundlab			2	
@@ -37,10 +37,10 @@ Book of Raw	book-of-raw	unverified		Book of Raw			1	Astra
 Bossa FM	bossa-fm	promoter	https://www.bossafm.com/	Bossa FM	Bossa FM ist eine Berliner Agentur für brasilianische Musik und Kultur in Europa, seit 2016 mit über 150 Veranstaltungen von Konzerten bis zu Festivals wie Psicotrópicos und LAPA. In Berlin laufen die Abende unter anderem im Badehaus, Gretchen und Lido.	Bossa FM is a Berlin agency for Brazilian music and culture in Europe, with more than 150 events since 2016, from concerts to festivals such as Psicotrópicos and LAPA. In Berlin its nights run at Badehaus, Gretchen and Lido, among others.	6	
 bricks	bricks	promoter	https://bricks-berlin.de/	BRICKS			2	
 Brighter	brighter	promoter		Brighter			1	Brighter Agency, Schokoladen co-billing
-Bum	bum	junk		Bum			1	Badehaus
+Bum	bum	junk		Bum			1	Badehaus; deleted by V026
 ByteFM	bytefm	media	https://www.byte.fm/	ByteFM			6	
 Casius	casius	unverified		Casius			1	Privatclub
-Channel	channel	junk		Channel			1	Hole 44
+Channel	channel	junk		Channel			1	Hole 44; deleted by V026
 Chicha	chicha	party		Chicha			2	
 Chimperator	chimperator	promoter	https://chimperator.de/	Chimperator			1	
 Chnsw!	chnsw	party		CHNSW!			4	source writes CHNSW!
@@ -57,7 +57,7 @@ Crunch Tapes	crunch-tapes	promoter	https://www.crunchtapes.com/	Crunch Tapes			1
 Cyberfunk + Urban Spree	cyberfunk-urban-spree	party		Cyberfunk + Urban Spree			1	co-billing not split (+)
 d2mberlin	d2mberlin	promoter	https://d2mberlin.de/	d2mberlin			1	
 Dancing With Myself	dancing-with-myself	party		Dancing With Myself			1	see Berlin Pop Nights
-Das forgotten female* composers	das-forgotten-female-composers	junk		Das forgotten female* composers			1	title fragment
+Das forgotten female* composers	das-forgotten-female-composers	junk		Das forgotten female* composers			1	title fragment; deleted by V026
 Decibel Touring	decibel-touring	promoter		Decibel Touring			1	site not found
 Deep Medi	deep-medi	promoter		Deep Medi			1	label
 Deputamadre Berlin	deputamadre-berlin	unverified		Deputamadre Berlin			1	
@@ -70,7 +70,7 @@ DJ Rebel	dj-rebel	party		DJ Rebel			5
 Dlf	deutschlandfunk	media	https://www.deutschlandfunk.de/	Deutschlandfunk			1	stored as Dlf
 Doomstar	doomstar-bookings	promoter	https://doomstarbookings.com/	Doomstar Bookings			1	
 Dynablaster	dynablaster	party		Dynablaster			1	
-dynamis	dynamis	junk		dynamis			0	0 events
+dynamis	dynamis	sponsor	https://www.dynamis-berlin.de/	dynamis			0	non-profit (Reisen für Menschen mit Beeinträchtigung), credited at Lido
 Echo	echo	unverified		Echo			7	Bi Nuu, 7 events; JSON has a URL, not read yet
 Echo Vision Artist Management	echo-vision-artist-management	promoter		Echo Vision Artist Management			1	
 Echoes of Pandora	echoes-of-pandora	unverified		Echoes of Pandora			1	
@@ -110,9 +110,9 @@ Hollywood Tramp	hollywood-tramp	party	https://www.hollywoodtramp.de/	Hollywood T
 Ibb	ibb-booking	promoter	https://www.ibb-booking.com/	IBB Booking			2	same site as Boldt Berlin
 Ilija Gabrilenko	ilija-gabrilenko	promoter		Ilija Gabrilenko			1	person, Urban Spree
 Impericon	impericon	promoter	https://www.impericon.com/	Impericon			1	
-Itd	itd	junk		Itd			1	Hole 44
-Jb Freie	jb-freie	junk		Jb Freie			1	Huxleys slug-minted, #307
-Jm Audio	jm-audio	junk		Jm Audio			1	Huxleys slug-minted, #307
+Itd	itd	junk		Itd			1	Hole 44; deleted by V026
+Jb Freie	jb-freie	unverified		Jb Freie			1	Huxleys slug-minted, casing defect: #307
+Jm Audio	jm-audio	unverified		Jm Audio			1	Huxleys slug-minted, casing defect: #307
 Join	join	unverified		Join			2	Max-Schmeling-Halle, rap
 Jungle World	jungle-world	media	https://jungle.world/	Jungle World			1	weekly
 Karsten Jahnke Konzertdirektion	karsten-jahnke-konzertdirektion	promoter	https://kj.de/	Karsten Jahnke Konzertdirektion			1	"logo: press page offers ""KJ Logo-Set"" (kj.de/presse.html), no usage terms stated"
@@ -125,21 +125,21 @@ Kinky Hub	kinkyhub-berlin	party	https://www.kinkyhub.de/	KinkyHub Berlin			1
 kj der käpt'n	kj-der-kapt-n	artist		kj der käpt'n			1	karaoke host
 KKT	kkt	promoter	https://kkt.berlin/	KKT			4	
 klassix	klassix	unverified		klassix			1	
-Kneipenabend	kneipenabend	junk		Kneipenabend			3	Schokoladen bar night
+Kneipenabend	kneipenabend	junk		Kneipenabend			3	Schokoladen bar night; deleted by V026
 Kommune	kommune	unverified		Kommune			1	
 Kontramarka	kontramarka	promoter	https://www.kontramarka.de/	Kontramarka			1	Russian-language ticket agency
 Konzertbüro Schoneberg	konzertburo-schoneberg	promoter	https://www.schoneberg.de/	Konzertbüro Schoneberg	Das Konzertbüro Schoneberg veranstaltet Rock und Pop, Klassik, Kabarett und Comedy, mit Büros in Berlin, Hamburg, Köln, Frankfurt, München und Münster. In Berlin laufen die Shows unter anderem im Lido, Privatclub und Huxleys Neue Welt.	Konzertbüro Schoneberg promotes rock and pop, classical, cabaret and comedy, with offices in Berlin, Hamburg, Cologne, Frankfurt, Munich and Münster. In Berlin its shows run at Lido, Privatclub and Huxleys Neue Welt, among others.	18	
 Kulturalarm	kulturalarm	venue	https://kulturalarm.com/	kulturALARM			6	e.V. behind Kulturhaus Insel
 Kulturnews	kulturnews	media	https://kulturnews.de/	kulturnews			7	site lowercase
 Kunst&Krawall	kunst-krawall	promoter		Kunst&Krawall			1	Insel slam series
-Kuratorin Anika Meier	kuratorin-anika-meier	junk		Kuratorin Anika Meier			1	role + person
+Kuratorin Anika Meier	kuratorin-anika-meier	junk		Kuratorin Anika Meier			1	role + person; deleted by V026
 Känguruh Production	kanguruh-production	promoter	https://www.kaenguruh.de/	Känguruh Production			2	Halle
 L'Oreille en friche	l-oreille-en-friche	promoter		L'Oreille en friche			1	
 Landstreicher	landstreicher-konzerte	promoter	https://landstreicher-konzerte.de/	Landstreicher Konzerte	Landstreicher Konzerte veranstaltet seit 2014 in Berlin und im Osten Deutschlands: Rap und R'n'B, Indie, Alternative, Rock, Pop, Electronic, dazu Podcasts, Lesungen und Stand-up. Das Sublabel Vertikal Concerts (seit 2019) bucht Punk, Hardcore und Metal.	Landstreicher Konzerte has promoted shows in Berlin and eastern Germany since 2014: rap and R&B, indie, alternative, rock, pop and electronic, plus podcasts, readings and stand-up. Its sub-label Vertikal Concerts (since 2019) books punk, hardcore and metal.	99	
 Lars Berndt	lars-berndt-events	promoter	https://www.lb-events.de/	Lars Berndt Events			3	Bochum
 LassMaMachen	lassmamachen	unverified		LassMaMachen			1	
 le petit signal	le-petit-signal	promoter		le petit signal			1	Schokoladen collective
-Leasing&rent	leasing-rent	junk		Leasing&rent			1	
+Leasing&rent	leasing-rent	junk		Leasing&rent			1	deleted by V026
 Levanto	levanto	unverified		Levanto			1	Cosmic Comedy
 Lido Berlin	lido-berlin	venue	https://www.lido-berlin.de/	Lido Berlin			1	
 Light The Blind	light-the-blind	artist	https://www.lighttheblind.de/	Light The Blind			1	band
@@ -163,7 +163,7 @@ Medibüro Berlin	mediburo-berlin	sponsor	https://medibuero.de/	Medibüro Berlin	
 Messed!Up Magazine	messed-up-magazine	media	https://www.messedmag.com/	Messed!Up Magazine			2	
 Metal Hammer	metal-hammer	media	https://www.metal-hammer.de/	Metal Hammer			1	
 Metal.de	metal-de	media	https://www.metal.de/	metal.de			1	site lowercase
-Mfp	mfp	junk		Mfp			1	
+Mfp	mfp	junk		Mfp			1	deleted by V026
 Michael Koch	michael-koch	artist		Michael Koch			1	
 Milchmädchen Musikkultur	milchmadchen-musikkultur	promoter		Milchmädchen Musikkultur			1	
 Milchsalon	milchsalon	promoter	https://milchsalon.de/	Milchsalon			1	
@@ -171,7 +171,7 @@ Miller-Zillmer Foundation	miller-zillmer-foundation	sponsor		Miller-Zillmer Foun
 Mind Enterprises	mind-enterprises	promoter		Mind Enterprises			1	wrestling
 Morabeza	morabeza	party		Morabeza			1	
 More Zvukov	more-zvukov	unverified		More Zvukov			1	
-Mup	mup	junk		Mup			1	
+Mup	mup	junk		Mup			1	deleted by V026
 MusikBlog	musikblog	media	https://www.musikblog.de/	MusikBlog			6	
 Musikexpress	musikexpress	media	https://www.musikexpress.de/	Musikexpress			1	
 Musikparade	musikparade	promoter		Musikparade			3	site 500
@@ -183,9 +183,9 @@ Mystiek	mystiek	unverified		Mystiek			1
 Neuland	neuland	unverified		Neuland			1	
 neuwerk Music Management	neuwerk-music-management	promoter	https://neuwerk-music.com/	neuwerk Music Management			3	
 New Berlin	new-berlin-konzerte	promoter	https://berlinkonzerte.de/	New Berlin Konzerte	New Berlin Konzerte veranstaltet seit 2000 im Großraum Berlin: Rock und Pop, Jazz und Folk, Lesungen, Comedy und Kindermusicals. Zusammen mit der Karsten Jahnke Konzertdirektion richtet die Agentur die JazzNights aus.	New Berlin Konzerte has promoted events across Berlin since 2000: rock and pop, jazz and folk, readings, comedy and children's musicals. Together with Karsten Jahnke Konzertdirektion it runs the JazzNights series.	30	New Berlin Konzerte & Events GmbH; absorbs Berlinkonzerte
-Niemals	niemals	junk		Niemals			1	title
+Niemals	niemals	junk		Niemals			1	title; deleted by V026
 Nina Queer	nina-queer	artist		Nina Queer			1	
-Nova	nova	junk		Nova			1	
+Nova	nova	junk		Nova			1	deleted by V026
 Now And Ever	now-and-ever	promoter	https://nowandever.de/	Now And Ever			4	site NOW AND EVER Music
 Ntr Team	ntr-team	unverified		Ntr Team			1	
 Oakheart	oakheart	unverified		Oakheart			1	
@@ -197,7 +197,7 @@ Ox-Fancine	ox-fanzine	media	https://www.ox-fanzine.de/	Ox-Fanzine			1	stored as 
 Papke Luhr	papke-luhr	unverified		Papke Luhr			1	
 Paranoid	paranoid	party		Paranoid			2	Lido
 Patchanka	patchanka	promoter		Patchanka			2	
-Peter Edel & www.stummfilmkonzerte.de	peter-edel-www-stummfilmkonzerte-de	junk		Peter Edel & www.stummfilmkonzerte.de			1	venue + URL
+Peter Edel & www.stummfilmkonzerte.de	peter-edel-www-stummfilmkonzerte-de	junk		Peter Edel & www.stummfilmkonzerte.de			1	venue + URL; deleted by V026
 Picky Magazine	picky-magazine	media	https://pickymagazine.de/	Picky Magazine			1	
 Pluswelt	pluswelt	promoter	https://www.pluswelt.com/	Pluswelt			4	PLUSWELT PROMOTION, Hamburg
 polenta	polenta	artist		polenta			1	
@@ -210,7 +210,7 @@ psychberg affairs	psychberg-affairs	promoter		psychberg affairs			1	Schokoladen 
 punkfilmfest berlin	punkfilmfest-berlin	promoter		punkfilmfest berlin			7	
 Pure Obsessions & Red Nights	pure-obsessions-red-nights	party		Pure Obsessions & Red Nights			1	
 Puschen	puschen	promoter	https://puschen.net/	Puschen	Puschen ist eine Booking- und Promotion-Agentur aus Neukölln, gegründet von Andreas Oberschelp, mit einem Roster aus Indie, Folk und Alternative. Die Berliner Shows laufen unter anderem in Huxleys Neue Welt, silent green und Schokoladen.	Puschen is a booking and promotion agency in Neukölln, founded by Andreas Oberschelp, with a roster of indie, folk and alternative acts. Its Berlin shows run at Huxleys Neue Welt, silent green and Schokoladen, among others.	16	
-Qu	qu	junk		Qu			1	
+Qu	qu	junk		Qu			1	deleted by V026
 Quasimodo	quasimodo	venue	https://quasimodo.de/	Quasimodo			2	
 Quiero Stand Up!	quiero-stand-up	promoter		Quiero Stand Up!			1	
 Radio Bob	radio-bob	media	https://www.radiobob.de/	RADIO BOB!			1	site writes RADIO BOB!
@@ -231,13 +231,13 @@ Semtainment	semtainment	unverified		Semtainment			1
 silent green	silent-green	venue	https://www.silent-green.net/	silent green			50	
 Simply Quiz	simply-quiz	promoter		Simply Quiz			13	FB/IG only
 Skyline Green	skyline-green	artist	https://www.skylinegreen.de/	Skyline Green			1	band
-Slam	slam	junk		Slam			1	
+Slam	slam	junk		Slam			1	deleted by V026
 Sonic Boom	sonic-boom	promoter		Sonic Boom			1	Schokoladen
 Sonic Seducer	sonic-seducer	media	https://sonic-seducer.de/	Sonic Seducer			1	
 Soulgigs	soulgigs	promoter		Soulgigs			1	site not found
 Sozialo	sozialo	party		Sozialo			2	sozialo.de for sale
 Spanisch in Berlin - Eventos	spanisch-in-berlin-eventos	promoter		Spanisch in Berlin - Eventos			1	
-Spirit	spirit	junk		Spirit			1	
+Spirit	spirit	junk		Spirit			1	deleted by V026
 Spokes	spokes	unverified		Spokes			1	Cosmic Comedy
 Stand in Front	stand-in-front	promoter	https://standinfront.de/	Stand in Front	Stand in Front ist eine Berliner Management- und Tourneeagentur für deutschen Rap, mit Künstlern wie Prinz Pi, Genetikk und Omar76. Die Berliner Shows laufen in der Columbiahalle und im Hole 44.	Stand in Front is a Berlin management and touring company for German rap, with acts such as Prinz Pi, Genetikk and Omar76. Its Berlin shows run at the Columbiahalle and Hole 44.	6	
 Starving Artist	starving-artist	unverified		Starving Artist			1	
@@ -245,15 +245,15 @@ Stiftung WissensArt	stiftung-wissensart	sponsor	https://stiftung-wissensart.de/	
 Streetlife International	streetlife-international	promoter	https://street.life/	Streetlife International			4	
 Subacuatica	subacuatica	unverified		Subacuatica			1	
 Subway Event Berlin	subway-event-berlin	promoter	https://www.subwayevent-berlin.com/	Subway Event Berlin			2	
-Sunday-Matinee	sunday-matinee	junk		Sunday-Matinee			1	series label
+Sunday-Matinee	sunday-matinee	junk		Sunday-Matinee			1	series label; deleted by V026
 Swamp	swamp	promoter		Swamp			2	Swamp Booking
 süper!nice!	super-nice	promoter		süper!nice!			1	
 T.g.c. The Glow Collective	t-g-c-the-glow-collective	promoter		T.g.c. The Glow Collective			1	
-Tag Der Klubkultur	tag-der-klubkultur	junk		Tag Der Klubkultur			1	event name
-Team Feel Free Energy	team-feel-free-energy	junk		Team Feel Free Energy			1	
+Tag Der Klubkultur	tag-der-klubkultur	junk		Tag Der Klubkultur			1	event name; deleted by V026
+Team Feel Free Energy	team-feel-free-energy	junk		Team Feel Free Energy			1	deleted by V026
 Teenage Couleur	teenage-couleur	party		Teenage Couleur			1	
 the Comedy Nomad	the-comedy-nomad	promoter		the Comedy Nomad			2	
-The Hilarious Deep Amazing Comedy	the-hilarious-deep-amazing-comedy	junk		The Hilarious Deep Amazing Comedy			1	show title
+The Hilarious Deep Amazing Comedy	the-hilarious-deep-amazing-comedy	junk		The Hilarious Deep Amazing Comedy			1	show title; deleted by V026
 The Swag	the-swag	party		The Swag			2	jam session
 thirsty & miserable	thirsty-miserable	promoter		thirsty & miserable			1	Schokoladen
 Tilos Rádió	tilos-radio	media	https://tilos.hu/	Tilos Rádió			1	
@@ -277,7 +277,7 @@ Vertikal	vertikal	unverified		Vertikal			1
 Vk Beats_	vk-beats_	unverified		Vk Beats_			1	trailing underscore
 Volkssolidarität Berlin	volkssolidaritat-berlin	sponsor	https://www.volkssolidaritaet.de/	Volkssolidarität Berlin			1	
 WallCityMusic	wallcitymusic	promoter		WallCityMusic			1	
-We Artists	we-artists	junk		We Artists			1	Huxleys slug-minted, #307
+We Artists	we-artists	unverified		We Artists			1	Huxleys slug-minted, casing defect: #307
 Welterforscher Film und so weiter	welterforscher-film-und-so-weiter	promoter		Welterforscher Film und so weiter			1	
 Whiskeyrap	whiskeyrap	party	https://www.whiskeyrap.de/	Whiskeyrap			1	
 Wisborg	wisborg	artist		Wisborg			1	band

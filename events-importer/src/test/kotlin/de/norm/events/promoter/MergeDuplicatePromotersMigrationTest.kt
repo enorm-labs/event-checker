@@ -14,11 +14,12 @@ import java.sql.Connection
 import java.sql.DriverManager
 
 /**
- * Runs V023 against the rows it names, on a database migrated to just before it.
+ * Runs the promoter data migrations — V023, V025, V026 — against the rows each names, planted on a
+ * database migrated to just before it.
  *
- * The migration is keyed on slugs read from staging, and a misspelt one updates no row while
+ * The migrations are keyed on slugs read from staging, and a misspelt one updates no row while
  * Flyway records success (#987). Nothing seeds promoters, so `MigrationSlugTest` cannot check
- * them; this test plants the shapes the four steps handle and reads back what each one did.
+ * them; this test plants the shapes each step handles and reads back what it did.
  */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class MergeDuplicatePromotersMigrationTest {
@@ -51,6 +52,18 @@ class MergeDuplicatePromotersMigrationTest {
             plantEvent(statement, "e6", "listen")
         }
         flyway("23").migrate()
+        connection.createStatement().use { statement ->
+            // V025: the row V023 misnamed, and the one the next import minted beside it.
+            plantPromoter(statement, "Greyzone Concerts", "greyzone")
+            plantPromoter(statement, "Greyzone Concerts", "greyzone-concerts")
+            plantEvent(statement, "g1", "greyzone")
+            plantEvent(statement, "g2", "greyzone-concerts")
+            // V026: a fragment in the promoter slot, and its event, which must survive it.
+            plantPromoter(statement, "Kneipenabend", "kneipenabend")
+            plantPromoter(statement, "Schokoladen", "schokoladen")
+            plantEvent(statement, "j1", "kneipenabend", "schokoladen")
+        }
+        flyway("26").migrate()
     }
 
     @AfterAll
@@ -124,16 +137,20 @@ class MergeDuplicatePromotersMigrationTest {
 
     @Test
     fun `V025 folds the re-minted greyzone row and the old one into the slug the normalizer resolves`() {
-        connection.createStatement().use { statement ->
-            statement.execute("SET search_path TO events")
-            plantPromoter(statement, "Greyzone Concerts", "greyzone")
-            plantPromoter(statement, "Greyzone Concerts", "greyzone-concerts")
-            plantEvent(statement, "g1", "greyzone")
-            plantEvent(statement, "g2", "greyzone-concerts")
-        }
-        flyway("25").migrate()
         promoters().containsKey("greyzone") shouldBe false
         eventsOf("greyzone-concerts") shouldContainExactlyInAnyOrder listOf("g1", "g2")
+    }
+
+    @Test
+    fun `V026 deletes a row that names no promoter and leaves its event with its other promoter`() {
+        promoters().containsKey("kneipenabend") shouldBe false
+        eventsOf("schokoladen") shouldContainExactlyInAnyOrder listOf("j1")
+        connection.createStatement().use { statement ->
+            statement.executeQuery("SELECT count(*) FROM events.event WHERE source_id = 'j1'").use { rows ->
+                rows.next()
+                rows.getInt(1) shouldBe 1
+            }
+        }
     }
 
     private fun flyway(target: String): Flyway =

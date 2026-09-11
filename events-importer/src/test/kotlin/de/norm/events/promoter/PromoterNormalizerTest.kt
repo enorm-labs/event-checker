@@ -140,6 +140,34 @@ class PromoterNormalizerTest {
         }
     }
 
+    // #1318: the rows a review found in the promoter slot that name no promoter.
+    @Test
+    fun `flags fragments and titles a source prints as the promoter`() {
+        assertSoftly {
+            // One or two letters, whatever the case.
+            isNonPromoterName("Ar") shouldBe true
+            isNonPromoterName("QU") shouldBe true
+            // Three letters only by name: "KKT", "IBB" and "MCT" are promoters.
+            isNonPromoterName("Itd") shouldBe true
+            isNonPromoterName("Mfp") shouldBe true
+            isNonPromoterName("KKT") shouldBe false
+            isNonPromoterName("IBB") shouldBe false
+            // Named fragments, keyed without casing or punctuation.
+            isNonPromoterName("Kneipenabend") shouldBe true
+            isNonPromoterName("Sunday-Matinee") shouldBe true
+            isNonPromoterName("Tag Der Klubkultur") shouldBe true
+            isNonPromoterName("Leasing&rent") shouldBe true
+            isNonPromoterName("Peter Edel & www.stummfilmkonzerte.de") shouldBe true
+            isNonPromoterName("Das forgotten female* composers") shouldBe true
+            isNonPromoterName("SPIRIT") shouldBe true
+            // Short real names stay.
+            isNonPromoterName("Echo") shouldBe false
+            isNonPromoterName("Join") shouldBe false
+            isNonPromoterName("HB Music") shouldBe false
+            isNonPromoterName("Zart") shouldBe false
+        }
+    }
+
     // Audit T-9: two Loge promoters kept the presenter verb they head their billings with.
     @Test
     fun `strips a trailing presenter verb`() {

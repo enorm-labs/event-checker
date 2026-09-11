@@ -47,8 +47,10 @@ The decisions the three backend modules are built on. Each one has a failure mod
 
     **A `slug` literal in a migration is checked, because a wrong one fails open.** A guarded `UPDATE venue ... WHERE slug = '...'` with a misspelt slug updates
     no row, and Flyway still records the migration as applied — the row stays wrong and nothing says so. `MigrationSlugTest` slugifies every venue name in
-    `http/importer/dev-seed.http` through `SlugGenerator` and asserts that every slug literal under `db/migration/` is in that set, naming the file and the line
-    of any that is not. It runs in `./gradlew build`.
+    `http/importer/dev-seed.http` through `SlugGenerator` and asserts that every slug literal in a `venue` statement under `db/migration/` is in that set,
+    naming the file and the line of any that is not. It runs in `./gradlew build`. A promoter data migration (V023, V025, V026) names slugs no seed creates,
+    so those are not scanned; `MergeDuplicatePromotersMigrationTest` runs each of them against planted rows instead, and also asserts that a merge
+    survivor's slug is the slug of its own name — the trap V025 repaired.
 
     **When a venue is renamed or removed, add its old slug to `RETIRED_VENUE_SLUGS` in that test, with the reason.** An older migration then keeps naming a
     venue that no longer exists, which is correct and is what the entry records. A second assertion deletes the entry again once it is stale, so the escape
