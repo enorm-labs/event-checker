@@ -111,8 +111,8 @@ Ibb	ibb-booking	promoter	https://www.ibb-booking.com/	IBB Booking			2	same site 
 Ilija Gabrilenko	ilija-gabrilenko	promoter		Ilija Gabrilenko			1	person, Urban Spree
 Impericon	impericon	promoter	https://www.impericon.com/	Impericon			1	
 Itd	itd	junk		Itd			1	Hole 44; deleted by V026
-Jb Freie	jb-freie	unverified		Jb Freie			1	Huxleys slug-minted, casing defect: #307
-Jm Audio	jm-audio	unverified		Jm Audio			1	Huxleys slug-minted, casing defect: #307
+Jb Freie	jb-freie-musik	promoter	https://www.jb-store.de/	JB Freie Musik			1	Joel Brandenstein's company (Ratingen); Huxleys credit read as Jb Freie until #307
+Jm Audio	jm-audio-entertainment	promoter		JM Audio Entertainment			1	Huxleys credit read as Jm Audio until #307
 Join	join	unverified		Join			2	Max-Schmeling-Halle, rap
 Jungle World	jungle-world	media	https://jungle.world/	Jungle World			1	weekly
 Karsten Jahnke Konzertdirektion	karsten-jahnke-konzertdirektion	promoter	https://kj.de/	Karsten Jahnke Konzertdirektion			1	"logo: press page offers ""KJ Logo-Set"" (kj.de/presse.html), no usage terms stated"
@@ -277,7 +277,7 @@ Vertikal	vertikal	unverified		Vertikal			1
 Vk Beats_	vk-beats_	unverified		Vk Beats_			1	trailing underscore
 Volkssolidarität Berlin	volkssolidaritat-berlin	sponsor	https://www.volkssolidaritaet.de/	Volkssolidarität Berlin			1	
 WallCityMusic	wallcitymusic	promoter		WallCityMusic			1	
-We Artists	we-artists	unverified		We Artists			1	Huxleys slug-minted, casing defect: #307
+We Artists	we-artists	promoter	https://www.weartists.de/	We Artists			1	We Artists GmbH, Booking & Management; the venue writes it so
 Welterforscher Film und so weiter	welterforscher-film-und-so-weiter	promoter		Welterforscher Film und so weiter			1	
 Whiskeyrap	whiskeyrap	party	https://www.whiskeyrap.de/	Whiskeyrap			1	
 Wisborg	wisborg	artist		Wisborg			1	band

@@ -319,5 +319,10 @@ private val NAME_CORRECTIONS: Map<String, String> =
         "touringtunesspzoo" to "TouringTunes",
         "unreleased" to "Unreleased Berlin",
         "unreleasedberlin" to "Unreleased Berlin",
-        "zart" to "Z|ART Agency"
+        "zart" to "Z|ART Agency",
+        // Huxleys credits "JB Freie Musik presents" and "JM Audio Entertainment presents": the strip
+        // takes the descriptor and the de-shout then reads the two-letter initials as a word, so
+        // the row was "Jb Freie" (#307). The entry restores the trading name, as "Loft Concerts" does.
+        "jbfreie" to "JB Freie Musik",
+        "jmaudio" to "JM Audio Entertainment"
     )

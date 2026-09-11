@@ -14,7 +14,7 @@ import java.sql.Connection
 import java.sql.DriverManager
 
 /**
- * Runs the promoter data migrations — V023, V025, V026 — against the rows each names, planted on a
+ * Runs the promoter data migrations — V023, V025, V026, V027 — against the rows each names, planted on a
  * database migrated to just before it.
  *
  * The migrations are keyed on slugs read from staging, and a misspelt one updates no row while
@@ -62,8 +62,11 @@ class MergeDuplicatePromotersMigrationTest {
             plantPromoter(statement, "Kneipenabend", "kneipenabend")
             plantPromoter(statement, "Schokoladen", "schokoladen")
             plantEvent(statement, "j1", "kneipenabend", "schokoladen")
+            // V027: a row the de-shout title-cased, whose new name changes its slug.
+            plantPromoter(statement, "Jb Freie", "jb-freie")
+            plantEvent(statement, "h1", "jb-freie")
         }
-        flyway("26").migrate()
+        flyway("27").migrate()
     }
 
     @AfterAll
@@ -139,6 +142,13 @@ class MergeDuplicatePromotersMigrationTest {
     fun `V025 folds the re-minted greyzone row and the old one into the slug the normalizer resolves`() {
         promoters().containsKey("greyzone") shouldBe false
         eventsOf("greyzone-concerts") shouldContainExactlyInAnyOrder listOf("g1", "g2")
+    }
+
+    @Test
+    fun `V027 renames a title-cased initialism row onto the slug of its trading name`() {
+        promoters().containsKey("jb-freie") shouldBe false
+        promoters()["jb-freie-musik"] shouldBe "JB Freie Musik"
+        eventsOf("jb-freie-musik") shouldContainExactlyInAnyOrder listOf("h1")
     }
 
     @Test
