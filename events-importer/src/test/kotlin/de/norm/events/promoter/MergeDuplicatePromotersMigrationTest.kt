@@ -14,7 +14,7 @@ import java.sql.Connection
 import java.sql.DriverManager
 
 /**
- * Runs the promoter data migrations — V023, V025, V026, V027 — against the rows each names, planted on a
+ * Runs the promoter data migrations — V023, V025, V026, V027, V029 — against the rows each names, planted on a
  * database migrated to just before it.
  *
  * The migrations are keyed on slugs read from staging, and a misspelt one updates no row while
@@ -67,6 +67,15 @@ class MergeDuplicatePromotersMigrationTest {
             plantEvent(statement, "h1", "jb-freie")
         }
         flyway("27").migrate()
+        connection.createStatement().use { statement ->
+            // V029: a survivor whose first-listed loser is absent and whose second exists, which V023
+            // renamed nothing for; and a row minted before the de-shout.
+            plantPromoter(statement, "tip Berlin", "tip-berlin")
+            plantEvent(statement, "t1", "tip-berlin")
+            plantPromoter(statement, "Stand In Front", "stand-in-front")
+            plantEvent(statement, "s1", "stand-in-front")
+        }
+        flyway("29").migrate()
     }
 
     @AfterAll
@@ -149,6 +158,15 @@ class MergeDuplicatePromotersMigrationTest {
         promoters().containsKey("jb-freie") shouldBe false
         promoters()["jb-freie-musik"] shouldBe "JB Freie Musik"
         eventsOf("jb-freie-musik") shouldContainExactlyInAnyOrder listOf("h1")
+    }
+
+    @Test
+    fun `V029 makes a missing survivor out of the loser that exists when the first-listed one is absent`() {
+        promoters().containsKey("tip-berlin") shouldBe false
+        promoters()["tipberlin"] shouldBe "tipBerlin"
+        eventsOf("tipberlin") shouldContainExactlyInAnyOrder listOf("t1")
+        promoters()["stand-in-front"] shouldBe "Stand in Front"
+        eventsOf("stand-in-front") shouldContainExactlyInAnyOrder listOf("s1")
     }
 
     @Test
