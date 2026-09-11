@@ -1,5 +1,6 @@
 package de.norm.events.promoter
 
+import de.norm.events.slug.SlugGenerator
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import org.flywaydb.core.Flyway
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.testcontainers.postgresql.PostgreSQLContainer
+import java.io.File
 import java.sql.Connection
 import java.sql.DriverManager
 
@@ -87,12 +89,51 @@ class MergeDuplicatePromotersMigrationTest {
     fun `keeps every event linked to exactly the promoters it had, with no duplicate link`() {
         val links =
             connection.createStatement().use { statement ->
-                statement.executeQuery("SELECT event_id, promoter_id FROM events.event_promoter").use { rows ->
-                    generateSequence { if (rows.next()) rows.getLong(1) to rows.getLong(2) else null }.toList()
-                }
+                statement
+                    .executeQuery(
+                        "SELECT ep.event_id, ep.promoter_id FROM events.event_promoter ep " +
+                            "JOIN events.event e ON e.id = ep.event_id WHERE e.source_id LIKE 'e%'"
+                    ).use { rows ->
+                        generateSequence { if (rows.next()) rows.getLong(1) to rows.getLong(2) else null }.toList()
+                    }
             }
         links.distinct().size shouldBe links.size
         links.size shouldBe 6
+    }
+
+    // The trap V025 repairs: a survivor whose slug is not its own name's slug is re-minted by the
+    // next import, and the admin API can never touch it again.
+    @Test
+    fun `every survivor in a merge migration carries the slug its name generates`() {
+        val pair = Regex("""\('([^']+)',\s*'([^']+)',\s*'([^']+)'\)""")
+        val wrong =
+            File("src/main/resources/db/migration")
+                .listFiles { file -> file.name.contains("merge") && file.extension == "sql" }
+                .orEmpty()
+                .flatMap { file ->
+                    pair
+                        .findAll(file.readText())
+                        .map { match -> Triple(file.name, match.groupValues[2], match.groupValues[3]) }
+                        .filter { (_, survivor, name) -> SlugGenerator.slugify(name) != survivor }
+                        .map { (migration, survivor, name) -> "$migration: '$survivor' is named '$name', whose slug is '${SlugGenerator.slugify(name)}'" }
+                        .distinct()
+                }
+        // V023's one wrong pair stays as written, because an applied migration is never edited; V025 repairs it.
+        wrong shouldBe listOf("V023__merge_duplicate_promoters.sql: 'greyzone' is named 'Greyzone Concerts', whose slug is 'greyzone-concerts'")
+    }
+
+    @Test
+    fun `V025 folds the re-minted greyzone row and the old one into the slug the normalizer resolves`() {
+        connection.createStatement().use { statement ->
+            statement.execute("SET search_path TO events")
+            plantPromoter(statement, "Greyzone Concerts", "greyzone")
+            plantPromoter(statement, "Greyzone Concerts", "greyzone-concerts")
+            plantEvent(statement, "g1", "greyzone")
+            plantEvent(statement, "g2", "greyzone-concerts")
+        }
+        flyway("25").migrate()
+        promoters().containsKey("greyzone") shouldBe false
+        eventsOf("greyzone-concerts") shouldContainExactlyInAnyOrder listOf("g1", "g2")
     }
 
     private fun flyway(target: String): Flyway =
