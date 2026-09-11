@@ -76,12 +76,14 @@ fun canonicalPromoterName(raw: String): String {
 private fun List<String>.isUsableName(): Boolean = any { word -> word.any(Char::isLetter) } && !(size == 1 && first().isShortInitialism())
 
 /**
- * Whether [raw] is not a real promoter but a bare generic label — a name that, once a
- * trailing parenthetical is dropped, consists *entirely* of legal-form and descriptor
- * words ([STRIP_WORDS]) or punctuation, with no distinctive token left. Filters junk
- * like "Event." or "Konzert" that a source drops into the promoter slot, before
- * [canonicalPromoterName] (which always keeps one word and so can't drop them itself).
- * A name with any distinctive word ("Concert Concept", "Loft Concerts GmbH") is kept.
+ * Whether [raw] is not a real promoter but something a source dropped into the promoter slot.
+ *
+ * Three shapes, each seen on staging (#1318): a name that, once a trailing parenthetical is
+ * dropped, consists *entirely* of legal-form and descriptor words ([STRIP_WORDS]) or punctuation
+ * ("Event.", "Konzerts GmbH"); a lone token of one or two letters ("Ar", "Qu"), which nobody
+ * searches for — three letters are not enough to tell "Itd" from "KKT", so those go by name; and
+ * a name on [NON_PROMOTER_NAMES]. Runs before [canonicalPromoterName], which always keeps one
+ * word and so cannot drop these itself.
  */
 fun isNonPromoterName(raw: String): Boolean {
     val tokens =
@@ -90,8 +92,14 @@ fun isNonPromoterName(raw: String): Boolean {
             .replace(TRAILING_PAREN_REGEX, "")
             .split(WHITESPACE_REGEX)
             .filter { it.isNotBlank() }
-    return tokens.isEmpty() || tokens.all { it.isStrippableTrailingWord() }
+    return tokens.isEmpty() ||
+        tokens.all { it.isStrippableTrailingWord() } ||
+        tokens.singleOrNull()?.isTinyToken() == true ||
+        tokens.joinToString(" ").normalizedKey() in NON_PROMOTER_NAMES
 }
+
+/** One or two letters and nothing else: a fragment, not a name ("Ar", "Qu"). */
+private fun String.isTinyToken(): Boolean = length <= 2 && all(Char::isLetter)
 
 /** Lowercased, punctuation-free lookup key for a name (matches [String.isStrippableTrailingWord]'s scheme). */
 private fun String.normalizedKey(): String = lowercase().replace(NON_WORD_REGEX, "")
@@ -172,6 +180,36 @@ private val STRIP_WORDS: Set<String> =
         "presenting",
         "präsentiert",
         "präsentieren"
+    )
+
+/**
+ * Credits a source prints in the promoter slot that name no promoter (#1318): a bar night, a
+ * series label, a show title, a curator's role, a sponsor's URL, or a word with nothing
+ * behind it. Keyed like [NAME_CORRECTIONS], so casing and punctuation do not matter. A three-letter
+ * fragment goes here by name because the length alone cannot separate it from "KKT" or "IBB".
+ */
+private val NON_PROMOTER_NAMES: Set<String> =
+    setOf(
+        "act",
+        "bum",
+        "channel",
+        "itd",
+        "mfp",
+        "mup",
+        "niemals",
+        "nova",
+        "slam",
+        "spirit",
+        "leasingrent",
+        "kneipenabend",
+        "sundaymatinee",
+        "tagderklubkultur",
+        "teamfeelfreeenergy",
+        "kuratorinanikameier",
+        "dasforgottenfemalecomposers",
+        "thehilariousdeepamazingcomedy",
+        "thehilariousdeepamazingberlincomedy",
+        "peteredelwwwstummfilmkonzertede"
     )
 
 /**
