@@ -87,14 +87,20 @@ const { t } = useI18n()
         less `sm:p-8` is 704 px, and the viewport less its padding below that. They are what turn
         `srcset`'s widths into a choice, so they track the `<main>` classes above.
 
-        The wrapper carries the spacing and the caption. `space-y-8` puts its margin on the child
-        before the gap, and `CachedImage` renders a `display: contents` <picture> with no box to
-        hold one.
+        The wrapper carries the border and positions the credit, because `CachedImage` renders a
+        `display: contents` <picture> with no box of its own. The border moves here so the scrim
+        stops at it rather than over it, and the image is `block` so no inline descender opens a
+        gap between the picture and the credit sitting on it.
 
         `eager` because this is the largest element above the fold, and a lazy LCP is the defect
         #1207 reports on the event card.
+
+        `max-h-[35rem]` is what makes the `object-cover` beside it do anything: without a height to
+        crop against, the box takes the picture's own ratio and a portrait one fills the screen.
+        560 px sits above the tallest landscape image of the 43, so 39 of them render unchanged and
+        the 4 taller ones crop to the same weight as the rest.
       -->
-      <div v-if="imageUrl" class="space-y-2">
+      <div v-if="imageUrl" class="relative border border-border">
         <CachedImage
           :src="imageUrl"
           :sources="imageSources"
@@ -103,9 +109,9 @@ const { t } = useI18n()
           :alt="name ?? ''"
           loading="eager"
           sizes="(min-width: 768px) 704px, (min-width: 640px) calc(100vw - 4rem), calc(100vw - 2rem)"
-          img-class="w-full border border-border object-cover"
+          img-class="block max-h-[35rem] w-full object-cover"
         />
-        <ImageCreditLine v-if="credit" :credit="credit" />
+        <ImageCreditLine v-if="credit" :credit="credit" overlay />
       </div>
 
       <!--
