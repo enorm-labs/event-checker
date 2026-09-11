@@ -1,34 +1,36 @@
 #!/usr/bin/env python3
-"""Write the reviewed Wikimedia Commons images onto the venues (#1277).
+"""Write the reviewed venue images onto the venues (#1277).
 
 Dry run by default. `--apply` is what writes, because a venue PUT replaces every field and a wrong
 picture on a venue page is worse than the placeholder #811 already draws.
 
-    python3 scripts/commons-venue-images.py                      # show the plan
-    python3 scripts/commons-venue-images.py --apply              # write it
-    python3 scripts/commons-venue-images.py --host http://localhost:18081 --apply
-    python3 scripts/commons-venue-images.py --venue Tresor       # one venue
+    python3 scripts/venue-images.py                      # show the plan
+    python3 scripts/venue-images.py --apply              # write it
+    python3 scripts/venue-images.py --host http://localhost:18081 --apply
+    python3 scripts/venue-images.py --venue Tresor       # one venue
 
 Reads docs/venue-images/REVIEWED.tsv, which records a person's verdict on every one of the 86
 venues. Only a CONFIRMED row is written. A REJECTED row is never proposed again, which is the point
 of recording it.
 
-Commons rows only. The file also holds rows an Openverse search confirmed on Flickr, and each of
-those stops with a message: Flickr states its licence through an API that needs a key, so the
-run-time licence check below cannot be met for one yet.
+Two archives, chosen per row by `found_by`: Wikimedia Commons, and Flickr through its oEmbed
+endpoint. Both answer without a key and both state a licence, which is what the check below needs.
 
-The licence and the credit are read from the Commons API at run time and never from the file above,
-because a Commons file can be relicensed after a review. `licence_at_review` is compared against
-what the API returns now, and a difference stops that venue rather than writing a stale credit.
+The licence and the credit are read from the archive at run time and never from the file above,
+because a picture can be relicensed after a review. `licence_at_review` is compared against what the
+archive states now, and a difference stops that venue rather than writing a stale credit. Openverse
+is never asked: it indexes Flickr rather than speaks for it, and its copy of a licence can be a year
+old. Asking Flickr itself is also what catches a photo that has since been deleted.
 
 Three things are stored per venue: the image URL, the credit, and the licence. All three or none --
 V020 rejects a row with an image and no credit, and so does the admin API.
 
 The URL stored is a Commons thumbnail, never the original file. Commons renders one on demand at
 any width, it is the same image under the same licence, and the originals run to 18 MB where
-`images.fetch.max-bytes` stops at 8 MiB.
+`images.fetch.max-bytes` stops at 8 MiB. Flickr renders no thumbnail to order. It publishes a fixed
+ladder of sizes, and everything above 1024 px needs a signed secret, so 1024 is what is stored.
 
-Standard library only, and no key: the Commons API needs none.
+Standard library only, and no key: neither archive needs one.
 """
 
 import argparse
@@ -44,6 +46,7 @@ import urllib.request
 
 REVIEWED = "docs/venue-images/REVIEWED.tsv"
 COMMONS = "https://commons.wikimedia.org/w/api.php"
+FLICKR_OEMBED = "https://www.flickr.com/services/oembed"
 AGENT = "event-junkie/1.0 (https://github.com/enorm-labs/event-junkie)"
 LOCAL_HOST = "http://localhost:8081"
 PAGE_SIZE = 100
@@ -58,6 +61,8 @@ THUMB_WIDTH = 1600
 # `images.fetch.max-bytes` in events-importer/src/main/resources/application.yaml. The fetcher
 # rejects on the declared Content-Length, so a URL above this is one the importer can never read.
 MAX_BYTES = 8 * 1024 * 1024
+
+HTTP_NOT_FOUND = 404
 
 # Commons publishes a licence as a template name. `image_licence_id` holds an SPDX identifier, so
 # the mapping is written out rather than derived: a pattern over "CC BY-…" also produces an
@@ -77,6 +82,7 @@ SPDX = {
     "CC BY-SA 3.0 de": "CC-BY-SA-3.0-DE",
     "CC BY-SA 4.0": "CC-BY-SA-4.0",
     "Public domain": "PD",
+    "Public Domain Mark": "PD",
 }
 
 # Every field a venue PUT carries. The admin API has no PATCH, so anything missing here is erased
@@ -135,6 +141,26 @@ def without_query(url):
     return urllib.parse.urlsplit(url)._replace(query="").geturl()
 
 
+def image_size(url):
+    """How many bytes the image is, asked the way `ImageFetcher` decides on it.
+
+    A declared `Content-Length` is the cheap answer and the one the fetcher reads first. Flickr's
+    CDN declares none, and the fetcher handles that by streaming and capping the buffer rather than
+    refusing, so a missing header is not a refusal here either -- it is a reason to go and measure.
+    One byte over the cap is enough to know, so nothing reads further.
+    """
+    request = urllib.request.Request(url, method="HEAD", headers={"User-Agent": AGENT})
+    try:
+        with urllib.request.urlopen(request, timeout=30) as response:
+            declared = response.headers.get("Content-Length")
+        if declared:
+            return int(declared), None
+        with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": AGENT}), timeout=60) as response:
+            return len(response.read(MAX_BYTES + 1)), None
+    except urllib.error.HTTPError as error:
+        return 0, f"the image itself answers {error.code}"
+
+
 def get_json(url, headers=None):
     request = urllib.request.Request(url, headers={"Accept": "application/json", **(headers or {})})
     with urllib.request.urlopen(request, timeout=30) as response:
@@ -162,11 +188,11 @@ def fetch_venues(host):
     return venues
 
 
-def commons_file(title):
+def commons_file(row):
     """Thumbnail URL, licence and credit for one Commons file, as the API states them."""
     params = {
         "action": "query",
-        "titles": "File:" + title,
+        "titles": "File:" + row["file"],
         "prop": "imageinfo",
         "iiprop": "url|extmetadata|size|mime",
         "iiurlwidth": THUMB_WIDTH,
@@ -194,11 +220,58 @@ def commons_file(title):
     }, None
 
 
+def flickr_photo(row):
+    """Image URL, licence and credit for one Flickr photo, as Flickr states them.
+
+    oEmbed rather than the Flickr API, because it answers the same three questions without a key.
+    A 404 here is the answer the Openverse index cannot give: the photo has been deleted or made
+    private since it was reviewed, so there is no licence to honour and no page to link.
+    """
+    query = urllib.parse.urlencode({"format": "json", "url": row["file_page"]})
+    try:
+        photo = get_json(f"{FLICKR_OEMBED}?{query}", {"User-Agent": AGENT})
+    except urllib.error.HTTPError as error:
+        if error.code == HTTP_NOT_FOUND:
+            return None, "the photo is gone from Flickr, so nothing states its licence now"
+        raise
+
+    image = photo.get("url")
+    if not image:
+        return None, "Flickr returned no image URL"
+    size, problem = image_size(image)
+    if problem:
+        return None, problem
+    if size > MAX_BYTES:
+        return None, f"Flickr serves {size // 1024 // 1024} MB, over the fetcher's cap"
+
+    return {
+        "thumb": without_query(image),
+        "licence": photo.get("license") or "",
+        "artist": plain(photo.get("author_name")),
+        "page": photo.get("web_page") or row["file_page"],
+    }, None
+
+
+# Which resolver answers for a row, and how the credit names the archive it came from.
+ARCHIVES = (
+    (("commons-", "wikidata-"), commons_file, "Wikimedia Commons"),
+    (("openverse-flickr",), flickr_photo, "Flickr"),
+)
+
+
+def archive_for(found_by):
+    for prefixes, resolver, name in ARCHIVES:
+        if found_by.startswith(prefixes):
+            return resolver, name
+    return None, None
+
+
 def plan_one(row, venue):
     """What this venue would be written, or the reason it will not be."""
-    if not row["found_by"].startswith(("commons-", "wikidata-")):
-        return None, f"{row['found_by']} is not a Commons row, and only Commons is implemented"
-    file_info, problem = commons_file(row["file"])
+    resolver, archive = archive_for(row["found_by"])
+    if not resolver:
+        return None, f"no archive reads a {row['found_by']!r} row"
+    file_info, problem = resolver(row)
     if problem:
         return None, problem
 
@@ -210,11 +283,11 @@ def plan_one(row, venue):
         return None, f"no SPDX identifier for {file_info['licence']!r}"
     if not names_an_author(file_info["artist"]):
         stated = file_info["artist"] or "nothing"
-        return None, f"Commons names no author, it states {stated[:60]!r}"
+        return None, f"{archive} names no author, it states {stated[:60]!r}"
 
     body = {field: venue.get(field) for field in VENUE_FIELDS}
     body["imageUrl"] = file_info["thumb"]
-    body["imageAttribution"] = f"{file_info['artist']}, via Wikimedia Commons"
+    body["imageAttribution"] = f"{file_info['artist']}, via {archive}"
     body["imageLicenceId"] = spdx
     body["imageSourceUrl"] = file_info["page"] or row["file_page"]
     return body, None
