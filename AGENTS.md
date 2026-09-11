@@ -625,6 +625,7 @@ a PR without one is the exception that makes the milestone view stop meaning any
 | ADR: Release number from the commits        | `docs/adr/ADR-025_RELEASE_VERSION_FROM_COMMITS.md` — a `feat` is a minor, a break a major. The cut refuses less                   |
 | ADR: Multilingual event text                | `docs/adr/ADR-026_MULTILINGUAL_EVENT_TEXT.md` — the publisher's words per language, and the case against translating              |
 | ADR: Translation follows the display rule   | `docs/adr/ADR-027_TRANSLATION_FOLLOWS_THE_DISPLAY_RULE.md` — supersedes ADR-026 rule 3. Only PROHIBITED withholds                 |
+| ADR: Our own photographs' hosting           | `docs/adr/ADR-028_OWN_PHOTOGRAPH_HOSTING.md` — a second public bucket for own work, credited on the About page                    |
 | Plan: Hetzner + k3s setup, go-live          | `docs/ops/PLATFORM_SETUP.md`                                                                                                      |
 | Releasing & deploying, end to end           | `docs/ops/RELEASING.md` — the diagram; ADR-016 has the reasoning                                                                  |
 | Bootstrapping a cluster, once               | `docs/ops/CLUSTER_BOOTSTRAP.md` — ordered runbook, first run 2026-08-13; traps table at the bottom                                |
