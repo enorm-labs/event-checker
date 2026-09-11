@@ -28,6 +28,27 @@ describe('ImageCreditLine', () => {
     ])
   })
 
+  it('lays a scrim under the credit when it sits on the picture', () => {
+    const wrapper = mount(ImageCreditLine, { props: { credit, overlay: true } })
+    const classes = wrapper.get('p').classes()
+
+    // Without a scrim the credit is unreadable on a bright photograph, which is not attribution.
+    expect(classes).toContain('absolute')
+    expect(classes).toContain('from-black/80')
+    expect(classes).toContain('text-white')
+  })
+
+  it('keeps naming the author and the licence on the picture', () => {
+    const wrapper = mount(ImageCreditLine, { props: { credit, overlay: true } })
+    const hrefs = wrapper.findAll('a').map((a) => a.attributes('href'))
+
+    expect(wrapper.text()).toContain('Photographer Name, via Wikimedia Commons')
+    expect(hrefs).toEqual([
+      'https://commons.wikimedia.org/wiki/File:Example.jpg',
+      'https://creativecommons.org/licenses/by-sa/4.0/',
+    ])
+  })
+
   it('still names a public-domain licence, with no deed to link', () => {
     const wrapper = mount(ImageCreditLine, {
       props: { credit: { ...credit, licenceLabel: 'Public domain', licenceUrl: null } },
