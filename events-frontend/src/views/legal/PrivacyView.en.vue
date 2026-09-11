@@ -166,13 +166,16 @@ const { t } = useI18n()
         under Art. 21 GDPR. The email address in the next paragraph is all it takes.
       </p>
       <p>
-        <strong>Images:</strong> venues, promoters and artists publish images, with individual
-        events and of themselves. Event Junkie downloads those images and stores a copy on its own
-        servers at Hetzner, rather than asking the provider for the file again on every page view.
-        The legal basis is Art. 6 (1) (f) GDPR. The legitimate interest is delivering the site
+        <strong>Images:</strong> they come from two places. Venues, promoters and artists publish
+        images, with individual events and of themselves. Photographs of venue buildings also come
+        from open archives such as Wikimedia Commons and Flickr, where a photographer published them
+        under a licence that permits it. Event Junkie downloads both kinds and stores a copy on its
+        own servers at Hetzner, rather than asking the provider for the file again on every page
+        view. The legal basis is Art. 6 (1) (f) GDPR. The legitimate interest is delivering the site
         without involving a third party, and placing less load on a venue's server. The copy is
         deleted as soon as the venue opts out or a rights holder asks for it, and it is not fetched
-        again.
+        again. For an archive photograph the rights holder is the photographer, not the venue, and
+        the credit under the picture names them.
       </p>
       <p>
         <strong>Translations:</strong> descriptions are machine translated, so that the site can
