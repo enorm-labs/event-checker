@@ -147,6 +147,27 @@ Before applying updates, verify compatibility:
 - **Kotlin ↔ Spring Boot**: Verify the Kotlin version is supported by the Spring Boot version (check the Spring Boot release notes).
 - **Major version bumps**: For any major version upgrade (e.g., 5.x → 6.x), check the migration guide and note any breaking changes. Flag these for the user
   instead of silently applying them.
+- **Read the release notes for every minor and major bump**, not only for the breaking changes. A release also adds things, and the bump is the one moment
+  somebody is looking. Write what applies to this repository under **What the release gives us** in the Output Summary: a new API that replaces a workaround
+  here, a deprecation that names code we have, a default that changed. Where to read, per framework:
+
+    | Framework       | Release notes                                                                                                                |
+    | --------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+    | Spring Boot     | <https://github.com/spring-projects/spring-boot/wiki> — one `Spring-Boot-X.Y-Release-Notes` page per minor                   |
+    | Spring Modulith | <https://github.com/spring-projects/spring-modulith/releases>                                                                |
+    | Spring AI       | <https://github.com/spring-projects/spring-ai/releases>                                                                      |
+    | Kotlin          | `https://kotlinlang.org/docs/whatsnew<major><minor>.html` — the version is in `settings.gradle.kts`, e.g. `whatsnew24.html`  |
+    | Gradle          | <https://docs.gradle.org/current/release-notes.html>                                                                         |
+    | TypeScript      | <https://github.com/microsoft/TypeScript/releases>                                                                           |
+    | Vue             | <https://github.com/vuejs/core/releases>, and <https://blog.vuejs.org> for a major                                           |
+    | vue-router      | <https://github.com/vuejs/router/releases>                                                                                   |
+    | vue-i18n        | <https://github.com/intlify/vue-i18n/releases>                                                                               |
+    | Tailwind CSS    | <https://github.com/tailwindlabs/tailwindcss/releases> — docs at <https://tailwindcss.com/docs>, v4; the v2 and v3 sites lie |
+    | FullCalendar    | <https://github.com/fullcalendar/fullcalendar/releases>                                                                      |
+    | Playwright      | <https://playwright.dev/docs/release-notes>                                                                                  |
+    | Jsoup           | <https://jsoup.org/news/>                                                                                                    |
+
+    The `context7` MCP server answers "how does X work in the version we have" — use it for the docs, and the links above for what changed between versions.
 
 ## Step 5: Apply Updates
 
@@ -275,6 +296,9 @@ nothing in the build fails when they go stale — so update them here, in the sa
 | `Java`        | `java.version` in `gradle.properties`                                   | major only — the badge carries no minor/patch  |
 | `Vue.js`      | `"vue"` in `events-frontend/package.json`                               | major only — the badge reads `3`, not `3.5.41` |
 
+The Kotlin badge has a companion in [docs/LINKS.md § 10](../../docs/LINKS.md#10-stack-reference-documentation): the "What's new in Kotlin" row links
+`whatsnew<major><minor>.html`, and a Kotlin minor bump moves it too, then `scripts/dashboard-parity.sh` regenerates the page and the bookmarks from it.
+
 Only the version segment of the shields.io URL changes; leave the colour, logo and link target alone. Note that `%20` encodes the space in `Spring%20Boot`, so
 edit the number, not the surrounding path. Check every badge even if you think the bump was unrelated — a Spring Boot bump can drag Kotlin along via
 compatibility, and a frontend-only run can still cross a Vue major.
@@ -312,6 +336,8 @@ Also note:
 - Which **README badges** were refreshed, and which were already correct.
 - Any dependencies that were **skipped** because only pre-release versions were available.
 - Any **major version bumps** that were applied, with a brief note on breaking changes (if any).
+- **What the release gives us**: per minor or major bump, what in its release notes applies to this repository — a new API that replaces a workaround
+  here, a deprecation that names code we have, a default that changed. "Nothing for us" is a valid entry. Skip patch bumps.
 - Any dependencies already at their **latest stable version** (no update needed).
 - Any **CVE-remediation overrides removed** because the BOM caught up, and any **kept**, naming the CVE that still justifies each one.
 - **Nothing about cluster components, CI tool pins, or anything else Renovate and Dependabot own.** A report that lists them invites somebody to act on the

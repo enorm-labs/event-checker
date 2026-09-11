@@ -138,6 +138,12 @@ covers the SPA.
   directory, and [Automating GitHub with `gh`](#automating-github-with-gh) for what the skill does not know about this repository.
   See also [GitHub CLI quickstart](https://docs.github.com/en/github-cli/github-cli/quickstart) and
   [CLI reference](https://docs.github.com/en/github-cli/github-cli/github-cli-reference).
+- **Library docs: ask `context7` first, and read the release notes on a bump.** The `context7` MCP server is wired into this repository and returns the
+  documentation for a library as it is now — ask it before answering from memory, even for Vue, Spring Boot or Tailwind, because the pinned versions here
+  (Tailwind 4, Vue Router 5, TypeScript 6, Spring Boot 4) postdate most of what a model remembers, and a v2-era Tailwind answer writes `tailwind.config.js`
+  into a project that has none. What changed _between_ versions is the other half: [`docs/LINKS.md` § 10](docs/LINKS.md#10-stack-reference-documentation)
+  pairs every framework with its release notes, and [`/update-dependencies`](.github/prompts/update-dependencies.prompt.md) reads them per bump and reports
+  what the release gives this repository.
 
 ## Privacy & GDPR — re-check when infrastructure or features change
 
