@@ -34,6 +34,13 @@ were drafted from each promoter's own about page and read by a person before the
 (#328). A row without one shows no description, which is better than a sentence that says
 nothing.
 
+**Logos: two sites offer one, none states who may use it.** Every site in the table was read for
+a press, brand or partner page (#328). FluxFM (`fluxfm.de/presse`) and Karsten Jahnke
+(`kj.de/presse.html`) offer a logo download on a press page and say nothing about its use. The
+other press pages take accreditation requests or sit behind a login (rbb). No promoter publishes a
+usage grant, so this pass writes no `image_url`. The two offers are in the `note` column, for the
+day the image decision in #328 is taken.
+
 **Kinds that are not promoters stay in the table.** A magazine that presents a show is a credit
 the venue prints and a reader may search for. The kind is what a later enrichment reads to decide
 whether a row gets a description at all. Nothing deletes a row for its kind.
