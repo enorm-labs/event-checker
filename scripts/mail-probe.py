@@ -19,7 +19,8 @@ argument is visible in `ps` and in a CI log's command echo.
 
 What it does not prove: that the mailbox's `Kopie an` forward reaches a person. `docs/ops/EMAIL.md`
 §7 carries that as a manual step, on purpose — see the issue and the plan for why the alternative
-was rejected.
+was rejected. That forward also copies every probe to the person before the delete runs, so the
+probe lands in their inbox daily; the body says so and names the subject prefix to filter on.
 """
 
 import argparse
@@ -71,8 +72,11 @@ def send(mailbox: str, password: str, subject: str) -> None:
     message["Message-ID"] = email.utils.make_msgid(domain=mailbox.split("@")[-1])
     message.set_content(
         "Automated delivery probe for the role mailboxes (#637).\n\n"
-        "It is sent and deleted by scripts/mail-probe.py. If you are reading it in the mailbox, the\n"
-        "probe could not clean up after itself — see docs/ops/EMAIL.md § Monitoring.\n"
+        "It is sent and deleted by scripts/mail-probe.py, once a day per mailbox.\n\n"
+        "Reading it in a forward target is expected: the mailbox's Kopie an forward copies it before\n"
+        "the probe deletes the original. Filter on the subject prefix [mail-probe].\n\n"
+        "Reading it in the role mailbox itself means the probe could not clean up after itself —\n"
+        "see docs/ops/EMAIL.md § Monitoring.\n"
     )
 
     try:

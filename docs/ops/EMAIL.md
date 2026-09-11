@@ -313,6 +313,13 @@ is GitHub itself. Read the run first. The step summary names the mailbox and lin
 3. **Check konsoleH is paid.** The package and the €0.76 external-domain add-on fail as a billing problem, not a technical one. Nothing here can see that.
 4. **Check the mailbox is not full.** Mail counts against the 10 GB the whole package shares.
 
+### The probe lands in your inbox, and that is the forward working
+
+The forward from §4 step 7 copies every message on arrival. The probe's delete runs after that and removes only the server copy, so each run leaves one
+`[mail-probe]` message per mailbox in the forward target. Two a day, from 2026-09-09 on. A probe in the **role mailbox itself** is the failure the body
+describes. A probe in the **forward target** is not. Filter it there: match a subject that starts with `[mail-probe]` from `hello@` or `security@`, and skip
+the inbox. The prefix is `SUBJECT_PREFIX` in `scripts/mail-probe.py` and does not change between runs.
+
 ### What it does not prove
 
 **That the `Kopie an` forward from §4 step 7 puts the mail in front of a person.** The probe stops at the mailbox. To prove the last hop automatically, we
