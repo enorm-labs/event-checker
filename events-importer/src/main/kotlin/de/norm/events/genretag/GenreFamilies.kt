@@ -69,6 +69,19 @@ private val GENRE_FAMILIES: Map<String, GenreFamily> =
         "noise" to ELECTRONIC,
         "experimental" to ELECTRONIC,
         "guitartronica" to ELECTRONIC,
+        "tech-house" to ELECTRONIC,
+        "uk-garage" to ELECTRONIC,
+        "neurofunk" to ELECTRONIC,
+        "trip-hop" to ELECTRONIC,
+        "italo" to ELECTRONIC,
+        "rave" to ELECTRONIC,
+        "riddim" to ELECTRONIC,
+        "speedhouse" to ELECTRONIC,
+        "breakz" to ELECTRONIC,
+        "tearout" to ELECTRONIC,
+        "steppers" to ELECTRONIC,
+        "dark" to ELECTRONIC,
+        "cinematic" to ELECTRONIC,
         // Hip Hop & R&B
         "hip-hop" to HIP_HOP,
         "r-b" to HIP_HOP,
@@ -116,6 +129,7 @@ private val GENRE_FAMILIES: Map<String, GenreFamily> =
         "rock-n-roll" to ROCK,
         "motorbilly" to ROCK,
         "crossover" to ROCK,
+        "prog" to ROCK,
         // Punk & Hardcore
         "punk" to PUNK,
         "hardcore" to PUNK,
@@ -130,6 +144,7 @@ private val GENRE_FAMILIES: Map<String, GenreFamily> =
         "electropunk" to PUNK,
         "psychobilly" to PUNK,
         "ska" to PUNK,
+        "oi-punk" to PUNK,
         // Metal
         "metal" to METAL,
         "metalcore" to METAL,
@@ -139,6 +154,7 @@ private val GENRE_FAMILIES: Map<String, GenreFamily> =
         "nu-metal" to METAL,
         "power-metal" to METAL,
         "neue-deutsche-harte" to METAL,
+        "post-metal" to METAL,
         // Post-Punk & Wave
         "post-punk" to WAVE,
         "new-wave" to WAVE,
@@ -174,6 +190,7 @@ private val GENRE_FAMILIES: Map<String, GenreFamily> =
         "country-bluegrass" to FOLK,
         "poetic-country-rock" to FOLK,
         "chanson" to FOLK,
+        "country-trash" to FOLK,
         // Latin, Reggae & World
         "latin" to LATIN_WORLD,
         "afrobeats" to LATIN_WORLD,
@@ -187,6 +204,9 @@ private val GENRE_FAMILIES: Map<String, GenreFamily> =
         "balkan" to LATIN_WORLD,
         "tuareg" to LATIN_WORLD,
         "world-music" to LATIN_WORLD,
+        "north-african" to LATIN_WORLD,
+        "swana" to LATIN_WORLD,
+        "poncha" to LATIN_WORLD,
         // Classical & Chamber
         "kammermusik" to CLASSICAL,
         // Charts & Decades — chart hits and decade floors, the labels a party night bills itself with

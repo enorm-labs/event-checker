@@ -401,4 +401,40 @@ class GenreNormalizerTest {
         normalizeGenre("Neue Deutsche Welle").shouldContainExactly("NDW")
         normalizeGenre("Neue Deutsche Härte").shouldContainExactly("Neue Deutsche Härte")
     }
+
+    @Test
+    fun `formats found in genre_tag on staging are dropped`() {
+        // The nine formats and two fragments #1309 found sitting in genre_tag as genres.
+        listOf(
+            "Ping Pong",
+            "Tattoo",
+            "Market",
+            "Drag",
+            "Burlesque",
+            "Soli-Fest",
+            "Kinderkonzert",
+            "Jam Session",
+            "Spoken Word",
+            "Core",
+            "BETON ARME"
+        ).forEach { normalizeGenre(it).shouldBeEmpty() }
+    }
+
+    @Test
+    fun `core vetoes the bare fragment only, never a compound genre`() {
+        normalizeGenre("Metalcore").shouldContainExactly("Metalcore")
+        normalizeGenre("Deathcore").shouldContainExactly("Deathcore")
+        normalizeGenre("Hardcore").shouldContainExactly("Hardcore")
+        normalizeGenre("Melodic-Hardcore").shouldContainExactly("Melodic-Hardcore")
+    }
+
+    @Test
+    fun `second spellings fold onto the tag that exists`() {
+        normalizeGenre("Synthie-Pop").shouldContainExactly("Synthpop")
+        normalizeGenre("Goth").shouldContainExactly("Gothic Rock")
+        normalizeGenre("Gothic").shouldContainExactly("Gothic Rock")
+        normalizeGenre("Dreamy Kuschelrock").shouldContainExactly("Rock")
+        normalizeGenre("Acoustic-Guitar-Hasen-Liedermaching").shouldContainExactly("Singer-Songwriter")
+        normalizeGenre("Liedermaching").shouldContainExactly("Singer-Songwriter")
+    }
 }

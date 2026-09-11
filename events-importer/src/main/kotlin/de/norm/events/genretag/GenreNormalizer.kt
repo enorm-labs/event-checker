@@ -42,6 +42,8 @@ internal val GENRE_SYNONYMS: Map<String, String> =
         // Rock family
         "rock" to "Rock",
         "alternativerock" to "Rock",
+        // Word-level, so one venue's "Dreamy Kuschelrock" lands on Rock rather than on its own tag.
+        "kuschelrock" to "Rock",
         "poprock" to "Rock",
         "bluesrock" to "Rock",
         "experimentalrock" to "Rock",
@@ -68,6 +70,7 @@ internal val GENRE_SYNONYMS: Map<String, String> =
         "queerpop" to "Pop",
         "poppunk" to "Punk",
         "synthpop" to "Synthpop",
+        "synthiepop" to "Synthpop",
         "synth" to "Synthpop",
         // Punk
         "punk" to "Punk",
@@ -101,6 +104,8 @@ internal val GENRE_SYNONYMS: Map<String, String> =
         "darkwave" to "Darkwave",
         "ebm" to "EBM",
         "gothicrock" to "Gothic Rock",
+        "goth" to "Gothic Rock",
+        "gothic" to "Gothic Rock",
         // Soul / Funk / R&B family
         "soul" to "Soul",
         "neosoul" to "Soul",
@@ -120,6 +125,11 @@ internal val GENRE_SYNONYMS: Map<String, String> =
         "americana" to "Americana",
         "singersongwriter" to "Singer-Songwriter",
         "singersongwriterin" to "Singer-Songwriter",
+        // "Liedermaching" is the German Liedermacher scene. The hyphenated label one venue writes,
+        // "Acoustic-Guitar-Hasen-Liedermaching", is a single token, so word-level matching never
+        // sees the word alone and the whole-token key is needed beside it.
+        "liedermaching" to "Singer-Songwriter",
+        "acousticguitarhasenliedermaching" to "Singer-Songwriter",
         // Reggae
         "reggae" to "Reggae",
         "reggea" to "Reggae",
@@ -243,7 +253,21 @@ private val NON_GENRE_TOKENS: Set<String> =
         // A city is a place, not a style; "Berlin Techno" still resolves to Techno.
         "berlin",
         // A medium whose soundtrack spans every style.
-        "anime"
+        "anime",
+        // Formats and labels that reached genre_tag on staging as genres (#1309). Whole-token keys:
+        // "Jam Session" is `jamsession`, and a compound like "Metalcore" resolves as a whole token
+        // via the synonym map before `core` could veto it.
+        "pingpong",
+        "tattoo",
+        "market",
+        "drag",
+        "burlesque",
+        "solifest",
+        "kinderkonzert",
+        "jamsession",
+        "spokenword",
+        "core",
+        "betonarme"
     )
 
 /**

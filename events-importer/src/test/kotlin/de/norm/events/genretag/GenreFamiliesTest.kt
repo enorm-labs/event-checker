@@ -29,6 +29,17 @@ class GenreFamiliesTest {
     }
 
     @Test
+    fun `the styles staging once held without a family now have one`() {
+        genreFamily("tech-house") shouldBe GenreFamily.ELECTRONIC
+        genreFamily("trip-hop") shouldBe GenreFamily.ELECTRONIC
+        genreFamily("oi-punk") shouldBe GenreFamily.PUNK
+        genreFamily("post-metal") shouldBe GenreFamily.METAL
+        genreFamily("prog") shouldBe GenreFamily.ROCK
+        genreFamily("country-trash") shouldBe GenreFamily.FOLK
+        genreFamily("swana") shouldBe GenreFamily.LATIN_WORLD
+    }
+
+    @Test
     fun `a slug the map does not name has no family`() {
         // The formats that reach genre_tag by the looksLikeGenre fall-through stay out of the filter.
         genreFamily("ping-pong").shouldBeNull()
