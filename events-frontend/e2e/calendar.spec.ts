@@ -76,6 +76,37 @@ test.beforeEach(async ({ page }) => {
   })
 })
 
+/** Today in Berlin — the clock the app reads (`todayIso` in lib/format), not the runner's. */
+const todayInBerlin = () =>
+  new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Berlin' }).format(new Date())
+
+test("marks today's events as live and last month's as past", async ({ page }) => {
+  // One event on today, one on the first visible day; the two are the same shape otherwise, so
+  // the class and the label are proven to come from the date alone.
+  await page.route(calendarFeed, (route) => {
+    const from = new URL(route.request().url()).searchParams.get('from') ?? '2026-07-01'
+    return json(route, [
+      { slug: 'tonight-gig', title: 'Tonight Gig', eventDate: todayInBerlin(), startTime: '20:00' },
+      { slug: 'range-gig', title: 'Range Gig', eventDate: from, startTime: '20:00' },
+    ])
+  })
+
+  await page.goto('/calendar')
+
+  // The pulse is CSS on a FullCalendar-internal dot; what the DOM has to offer is the class the
+  // view sets and the screen-reader text `eventDidMount` appends, which is the same as EventCard's.
+  const live = page.getByRole('link', { name: /Tonight Gig/ })
+  await expect(live).toHaveClass(/\bfc-event-live\b/)
+  await expect(live).toHaveAccessibleName(/Live tonight/)
+  await expect(live).not.toHaveClass(/\bfc-event-past\b/)
+
+  // Whatever the visible window's first day is, last month's is behind today.
+  await page.getByRole('button', { name: 'prev' }).click()
+  const past = page.getByRole('link', { name: /Range Gig/ })
+  await expect(past).toHaveClass(/\bfc-event-past\b/)
+  await expect(past).not.toHaveAccessibleName(/Live tonight/)
+})
+
 test('renders events and opens the event detail on click', async ({ page }) => {
   const errors = collectPageErrors(page)
   await page.route(/\/api\/events\/calendar-gig/, (route) =>

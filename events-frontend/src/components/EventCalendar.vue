@@ -9,6 +9,7 @@ import type {
 } from '@fullcalendar/vue3'
 import FullCalendar from '@fullcalendar/vue3'
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { eventLabel } from '@/lib/format'
 // v7 ships plugins as subpaths of the framework package; the standalone
 // @fullcalendar/daygrid et al. have no v7 release.
@@ -69,7 +70,17 @@ function handleEventClick(arg: EventClickInfo) {
  */
 function handleEventDidMount(arg: MountInfo<EventDisplayInfo>) {
   arg.el.title = eventLabel(arg.event.title, arg.event.extendedProps.venue as string | undefined)
+  // The pulse below is colour and motion only. The same words EventCard puts behind its dot make
+  // the mark exist for a screen reader too (WCAG 1.4.1), and give the e2e suite something to hold.
+  if (arg.el.classList.contains('fc-event-live')) {
+    const label = document.createElement('span')
+    label.className = 'sr-only'
+    label.textContent = t('events.card.liveTonight')
+    arg.el.append(label)
+  }
 }
+
+const { t } = useI18n()
 
 // FullCalendar is encapsulated here so the rest of the app sees a single, on-theme
 // component (see ADR-011). The CSS-variable bridge to our shadcn tokens lives in <style> below.
@@ -174,5 +185,41 @@ const options = computed<CalendarOptions>(() => ({
 .event-calendar :deep(.fc-event-past) {
   --fc-classic-event: var(--muted);
   --fc-classic-event-contrast: var(--muted-foreground);
+}
+
+/* Today's events pulse the way EventCard's live dot does — the same ring, thrown from the dot
+   FullCalendar already draws. That dot is the event's first child and, being drawn with a border,
+   the only empty one; v7 hashes every class name, so `:first-child:empty` is the one stable handle
+   on it. Timed events in the month and list views carry a dot; all-day bars and week-view blocks
+   have none, and match nothing here. The dot is all border around a 0 px box (8 px in the month
+   grid, 10 px in the list), so the ring's containing block is that empty centre and `inset: -4px`
+   grows it back out to the dot's edge.
+   The animation is Tailwind's `animate-ping`, spelled out because a keyframe cannot be `@apply`ed
+   into a scoped block. */
+.event-calendar :deep(.fc-event-live > :first-child:empty) {
+  position: relative;
+}
+
+.event-calendar :deep(.fc-event-live > :first-child:empty)::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 9999px;
+  background-color: var(--fc-event-color);
+  opacity: 0.75;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .event-calendar :deep(.fc-event-live > :first-child:empty)::after {
+    animation: live-ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+}
+
+@keyframes live-ping {
+  75%,
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
 }
 </style>
