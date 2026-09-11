@@ -35,8 +35,10 @@ REVIEWED = "docs/venue-images/REVIEWED.tsv"
 API = "https://api.openverse.org/v1/images/"
 AGENT = "event-junkie/1.0 (https://github.com/enorm-labs/event-junkie)"
 
-# What the site can render a credit for. `by-nc` and `by-nd` are absent on purpose: the site carries
-# advertising, and a thumbnail of a no-derivatives work is a question nobody needs to answer.
+# What the site can render a credit for. `by-nc` and `by-nd` are absent on purpose. `nd` because a
+# derivative is exactly what the site serves. `nc` because #480 has not decided how the running
+# costs get covered, and a picture usable only while the answer stays non-commercial is a picture
+# that expires on a decision nobody has taken yet.
 LICENCES = "by,by-sa,cc0,pdm"
 
 COMMONS_SOURCES = frozenset({"wikimedia", "wikimedia_commons"})
