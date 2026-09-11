@@ -80,8 +80,8 @@ class ZitadelleDetailPageScraper {
             eventType = eventType,
             // The listing owns the date; the sentinel lets it fill this in at the merge.
             eventDate = UNRESOLVED_EVENT_DATE,
-            doorsTime = labelledTime(document, DOORS_LABEL),
-            startTime = labelledTime(document, START_LABEL),
+            doorsTime = detailsRowTime(document, DOORS_LABEL),
+            startTime = detailsRowTime(document, START_LABEL),
             imageUrl = document.imgSrcAt("a.event-image img"),
             sourceUrl = sourceUrl,
             sourceId = "${EventSource.ZITADELLE.sourceIdPrefix}$slug",
@@ -126,7 +126,7 @@ class ZitadelleDetailPageScraper {
      * Reads the `HH:mm` value of a `ul.details-list` row by its German label, or `null` when the
      * row is absent or states something other than a time (an unannounced doors time reads `tba`).
      */
-    private fun labelledTime(
+    private fun detailsRowTime(
         document: Document,
         label: String
     ): LocalTime? {
