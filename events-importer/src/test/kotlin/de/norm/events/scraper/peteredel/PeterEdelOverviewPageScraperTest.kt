@@ -287,6 +287,16 @@ class PeterEdelOverviewPageScraperTest {
     }
 
     @Test
+    fun `stops the promoter credit at a Hinweis note`() {
+        val main =
+            "<h3>Rudelsingen</h3><div class=\"text-block\"><p>Mitsingen.</p></div>" +
+                "<p>Einlass: 18:00 Uhr | Beginn: 19:00 Uhr<br/><strong>Präsentiert von:</strong> " +
+                "Rudelsingen - Das Original aus Münster Hinweis: Diese Veranstaltung ist Teil des Kultursommers!</p>"
+        val parsed = scraper.scrape(grid("AUGUST 2026", "DO | 20.08.", main), baseUrl)
+        parsed[0].promoters shouldContainExactly listOf("Rudelsingen - Das Original aus Münster")
+    }
+
+    @Test
     fun `accepts an event announced without times, prices or a subtitle`() {
         val parsed = scraper.scrape(grid("AUGUST 2026", "DO | 20.08.", "<h3>Something</h3>", ticketColumn = ""), baseUrl)
         parsed shouldHaveSize 1

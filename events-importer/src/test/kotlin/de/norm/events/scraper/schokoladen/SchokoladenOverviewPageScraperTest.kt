@@ -145,6 +145,17 @@ class SchokoladenOverviewPageScraperTest {
         }
 
         @Test
+        fun `splits co-promoters the venue joins with commas and ampersands`() {
+            val autumn =
+                javaClass.classLoader
+                    .getResourceAsStream("scraper/schokoladen/schokoladen-overview-time-line.html")!!
+                    .bufferedReader()
+                    .readText()
+            val event = scraper.scrape(Jsoup.parse(autumn, baseUrl), baseUrl).first { it.sourceId == "schokoladen:e20260910" }
+            event.promoters shouldContainExactly listOf("beav boloney", "wild wax", "little league shows")
+        }
+
+        @Test
         fun `all events carry the required identity fields`() {
             val events = scrape()
             events.forEach { event ->

@@ -109,7 +109,7 @@ class SchokoladenOverviewPageScraper {
             sourceId = "${EventSource.SCHOKOLADEN.sourceIdPrefix}$eventId",
             ticketUrl = block.hrefAt("a.ticket-btn"),
             artists = parseArtists(title, subtitle, eventType),
-            promoters = parsePromoter(block)?.let { listOf(it) }.orEmpty()
+            promoters = parsePromoters(block)
         )
     }
 
@@ -163,16 +163,19 @@ class SchokoladenOverviewPageScraper {
     }
 
     /**
-     * Extracts the promoter name from the header's `span.promoter`, stripping a
-     * trailing "presents:" / "prsnts:" flourish (e.g. `"little league shows
-     * prsnts:"` → `"little league shows"`). Returns `null` when absent.
+     * Extracts the promoters from the header's `span.promoter`, stripping a trailing
+     * "presents:" / "prsnts:" flourish. The venue lists co-promoters in one span, joined by
+     * "," and "&" (`"beav boloney, wild wax & little league shows prsnt:"`), and each one is a
+     * promoter row of its own — a joined name was one row per billing (#328).
      */
-    private fun parsePromoter(block: Element): String? =
+    private fun parsePromoters(block: Element): List<String> =
         block
             .textAt("span.promoter")
             ?.replace(PRESENTS_SUFFIX, "")
-            ?.trim()
-            ?.takeIf { it.isNotBlank() }
+            ?.split(CO_PROMOTER_SEPARATOR)
+            ?.map { it.trim() }
+            ?.filter { it.isNotBlank() }
+            .orEmpty()
 
     /**
      * Derives artist entries from the title (headliner) plus any support acts.
@@ -220,8 +223,11 @@ class SchokoladenOverviewPageScraper {
         /** A "(genre, origin)" annotation appended to each act in a title, stripped before artist derivation. */
         private val GENRE_PARENTHETICAL = Regex("""\s*\([^)]*\)""")
 
+        /** What the venue joins co-promoters with inside one `span.promoter`. */
+        private val CO_PROMOTER_SEPARATOR = Regex("""\s*(?:,|&)\s*""")
+
         /** A trailing "presents:" / "prsnts:" / "pres.:" promoter flourish. */
-        private val PRESENTS_SUFFIX = Regex("""\s*(?:presents|prsnts|pres\.?)\s*:?\s*$""", RegexOption.IGNORE_CASE)
+        private val PRESENTS_SUFFIX = Regex("""\s*(?:presents|prsnts?|pres\.?)\s*:?\s*$""", RegexOption.IGNORE_CASE)
 
         /** The words the venue labels its doors time with. */
         private const val DOORS_WORDS = """(?:doors|einlass)"""

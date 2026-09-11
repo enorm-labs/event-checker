@@ -151,6 +151,16 @@ private val STRIP_WORDS: Set<String> =
         "records",
         "production",
         "productions",
+        // Longer German forms that staging showed splitting one promoter into two rows (#328).
+        // "Radio France International" is why "international" is not here: it would become
+        // "Radio France", which is a different broadcaster.
+        "veranstaltungs",
+        "veranstaltungsgmbh",
+        "konzertproduktionen",
+        "kulturproduktionen",
+        "konzertagentur",
+        "konzertdirektion",
+        "einzelunternehmer",
         // Presenter *verbs* a promoter appends to its own name when it heads a billing
         // ("porcupine records & little league shows prsnt:"). Punctuation is stripped before the
         // lookup, so the trailing colon is already handled.
@@ -198,12 +208,78 @@ private val NAME_CORRECTIONS: Map<String, String> =
         // Both share this key, so the entry folds them onto the broadcaster's own branding.
         "radioeins" to "radioeins",
         // "tipBerlin" (one venue), "tip Berlin" (another) and the bare "Tip" Zitadelle prints are
-        // the city magazine, and no other promoter in the corpus is called "Tip" (#304).
-        "tipberlin" to "tip Berlin",
-        "tip" to "tip Berlin",
+        // the city magazine, which writes itself "tipBerlin"; no other promoter is called "Tip" (#304).
+        "tipberlin" to "tipBerlin",
+        "tip" to "tipBerlin",
         // The tour agency appears both abbreviated and under its full trading name. The shared
         // acronym list keeps "KKT" in its capitals; the first entry still catches a "Kkt" that
         // an earlier import stored before it did (#304).
         "kkt" to "KKT",
-        "kktgmbhkikiskleinertourneeservice" to "KKT"
+        "kktgmbhkikiskleinertourneeservice" to "KKT",
+        // Pairs that split one promoter into two rows on staging (#328). Where a variant is a
+        // legal form or a descriptor, it is stripped above; these are the rest, and each one
+        // pins the spelling the promoter uses itself.
+        "allroom" to "All Rooms",
+        "atok" to "ATOK Berlin",
+        "atokberlin" to "ATOK Berlin",
+        "audiolithinternational" to "Audiolith",
+        "streetlife" to "Streetlife International",
+        // The agency renamed itself, and one venue still credits the old name.
+        "listenagency" to "Friendly Reminder",
+        "fkpscorpio" to "FKP Scorpio",
+        "greyzone" to "Greyzone Concerts",
+        "greyzoneconcertspromotiongreyvonbronikowski" to "Greyzone Concerts",
+        // The person is not the company: "Konzertdirektion" is stripped above and restored here.
+        "karstenjahnke" to "Karsten Jahnke Konzertdirektion",
+        "känguruh" to "Känguruh Production",
+        "kaenguruh" to "Känguruh Production",
+        "messedupmagazine" to "Messed!Up Magazine",
+        "musikblog" to "MusikBlog",
+        "musikblogde" to "MusikBlog",
+        "prkdreamhaus" to "PRK DreamHaus",
+        "prkdreamhouse" to "PRK DreamHaus",
+        "rausgeganger" to "Rausgegangen",
+        "punkfilmfestivalberlin" to "punkfilmfest berlin",
+        // The spelling each promoter uses on its own site, where the venues' credit differs from it
+        // (#328, docs/promoters/REVIEWED.tsv). A descriptor the strip removes is restored where it
+        // is part of the brand, the way "Loft Concerts" is above.
+        "11freunde" to "11FREUNDE",
+        "aokdiegesundheitskasse" to "AOK",
+        "atocsoundlab" to "ATOC Soundlab",
+        "aufdiegutetour" to "Auf die gute Tour",
+        "aufnahmewiedergabe" to "aufnahme + wiedergabe",
+        "berlinkonzerte" to "New Berlin Konzerte",
+        "newberlin" to "New Berlin Konzerte",
+        "boese" to "Boese Live",
+        "bricks" to "BRICKS",
+        "chnsw" to "CHNSW!",
+        "diffus" to "DIFFUS",
+        "dlf" to "Deutschlandfunk",
+        "doomstar" to "Doomstar Bookings",
+        "doomstarbookings" to "Doomstar Bookings",
+        "gotobeat" to "Gotobeat",
+        "headline" to "Headline Concerts",
+        "ibb" to "IBB Booking",
+        "kingstar" to "Kingstar Music",
+        "kinkyhub" to "KinkyHub Berlin",
+        "kulturalarm" to "kulturALARM",
+        "kulturnews" to "kulturnews",
+        "landstreicher" to "Landstreicher Konzerte",
+        "larsberndt" to "Lars Berndt Events",
+        "mawi" to "MAWI Concert",
+        "mbkonzerte" to "MB Konzerte",
+        "mct" to "MCT Agentur",
+        "metalde" to "metal.de",
+        "oxfancine" to "Ox-Fanzine",
+        "powerline" to "Powerline Agency",
+        "radiobob" to "RADIO BOB!",
+        "radiofranceinternational" to "Radio France Internationale",
+        "rockitsessions" to "Rockitsessions",
+        "rudelsingendasoriginalausmünster" to "Rudelsingen",
+        "semmel" to "Semmel Concerts",
+        "stiftungwissensart" to "Stiftung Wissensart",
+        "touringtunesspzoo" to "TouringTunes",
+        "unreleased" to "Unreleased Berlin",
+        "unreleasedberlin" to "Unreleased Berlin",
+        "zart" to "Z|ART Agency"
     )

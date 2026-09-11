@@ -33,11 +33,11 @@ class PromoterNormalizerTest {
             canonicalPromoterName("Konzertbüro Schoneberg") shouldBe "Konzertbüro Schoneberg"
             canonicalPromoterName("Schoneberg") shouldBe "Konzertbüro Schoneberg"
             canonicalPromoterName("KONZERTBÜRO SCHONEBERG") shouldBe "Konzertbüro Schoneberg"
-            canonicalPromoterName("LANDSTREICHER") shouldBe "Landstreicher"
-            canonicalPromoterName("Landstreicher Konzerte") shouldBe "Landstreicher"
-            canonicalPromoterName("Landstreicher Konzerte GmbH") shouldBe "Landstreicher"
-            canonicalPromoterName("Boese") shouldBe "Boese"
-            canonicalPromoterName("Boese Live") shouldBe "Boese"
+            canonicalPromoterName("LANDSTREICHER") shouldBe "Landstreicher Konzerte"
+            canonicalPromoterName("Landstreicher Konzerte") shouldBe "Landstreicher Konzerte"
+            canonicalPromoterName("Landstreicher Konzerte GmbH") shouldBe "Landstreicher Konzerte"
+            canonicalPromoterName("Boese") shouldBe "Boese Live"
+            canonicalPromoterName("Boese Live") shouldBe "Boese Live"
             // The radio station is spelled three ways across sources, and the spaced form
             // de-shouts to "Flux Fm"; all four share one key and fold onto its own casing.
             canonicalPromoterName("FluxFM") shouldBe "FluxFM"
@@ -54,8 +54,8 @@ class PromoterNormalizerTest {
             canonicalPromoterName("THE SWAG") shouldBe "The Swag"
             canonicalPromoterName("FANIA BRAVA") shouldBe "Fania Brava"
             // Mixed casing is a deliberate style choice — leave it alone.
-            canonicalPromoterName("GreyZone Concerts") shouldBe "GreyZone"
-            canonicalPromoterName("Greyzone") shouldBe "Greyzone"
+            canonicalPromoterName("LassMaMachen") shouldBe "LassMaMachen"
+            canonicalPromoterName("amSTARt") shouldBe "amSTARt"
         }
     }
 
@@ -147,7 +147,7 @@ class PromoterNormalizerTest {
             canonicalPromoterName("porcupine records & little league shows prsnt:") shouldBe
                 "porcupine records & little league shows"
             canonicalPromoterName("Geisburg Records prsnt:") shouldBe "Geisburg"
-            canonicalPromoterName("Kaenguruh präsentiert") shouldBe "Kaenguruh"
+            canonicalPromoterName("Kaenguruh präsentiert") shouldBe "Känguruh Production"
         }
     }
 
@@ -192,14 +192,89 @@ class PromoterNormalizerTest {
         assertSoftly {
             canonicalPromoterName("radioeins") shouldBe "radioeins"
             canonicalPromoterName("Radio Eins") shouldBe "radioeins"
-            canonicalPromoterName("tipBerlin") shouldBe "tip Berlin"
-            canonicalPromoterName("tip Berlin") shouldBe "tip Berlin"
+            canonicalPromoterName("tipBerlin") shouldBe "tipBerlin"
+            canonicalPromoterName("tip Berlin") shouldBe "tipBerlin"
             // Zitadelle prints the magazine as a bare "Tip" (#304).
-            canonicalPromoterName("Tip") shouldBe "tip Berlin"
-            canonicalPromoterName("TIP") shouldBe "tip Berlin"
+            canonicalPromoterName("Tip") shouldBe "tipBerlin"
+            canonicalPromoterName("TIP") shouldBe "tipBerlin"
             canonicalPromoterName("KKT") shouldBe "KKT"
             canonicalPromoterName("Kkt") shouldBe "KKT"
             canonicalPromoterName("KKT GmbH – Kikis Kleiner Tourneeservice") shouldBe "KKT"
+        }
+    }
+
+    // #328: every pair here was two rows on staging, and a person confirmed each is one promoter.
+    @Test
+    fun `strips the longer German legal forms and descriptors`() {
+        assertSoftly {
+            canonicalPromoterName("Concert Concept Veranstaltungs-GmbH") shouldBe "Concert Concept"
+            canonicalPromoterName("Concert Concept Veranstaltungs") shouldBe "Concert Concept"
+            canonicalPromoterName("FKP Scorpio Konzertproduktionen") shouldBe "FKP Scorpio"
+            canonicalPromoterName("Fkp Scorpio") shouldBe "FKP Scorpio"
+            canonicalPromoterName("Landstreicher Kulturproduktionen") shouldBe "Landstreicher Konzerte"
+            canonicalPromoterName("Karsten Jahnke Konzertdirektion") shouldBe "Karsten Jahnke Konzertdirektion"
+            canonicalPromoterName("Karsten Jahnke") shouldBe "Karsten Jahnke Konzertdirektion"
+            canonicalPromoterName("Antonio Garcia Einzelunternehmer") shouldBe "Antonio Garcia"
+            canonicalPromoterName("Kaenguruh Production Konzertagentur") shouldBe "Känguruh Production"
+            canonicalPromoterName("Känguruh Production Konzertagentur") shouldBe "Känguruh Production"
+            // A broadcaster, not a legal form: "International" is deliberately not stripped.
+            canonicalPromoterName("Radio France International") shouldBe "Radio France Internationale"
+        }
+    }
+
+    @Test
+    fun `folds the remaining staging pairs onto one spelling`() {
+        assertSoftly {
+            canonicalPromoterName("All Room") shouldBe "All Rooms"
+            canonicalPromoterName("Atok Berlin") shouldBe "ATOK Berlin"
+            canonicalPromoterName("ATOK") shouldBe "ATOK Berlin"
+            canonicalPromoterName("Audiolith International") shouldBe "Audiolith"
+            canonicalPromoterName("Streetlife") shouldBe "Streetlife International"
+            canonicalPromoterName("Streetlife International") shouldBe "Streetlife International"
+            canonicalPromoterName("listenagency") shouldBe "Friendly Reminder"
+            canonicalPromoterName("GreyZone Concerts") shouldBe "Greyzone Concerts"
+            canonicalPromoterName("Greyzone") shouldBe "Greyzone Concerts"
+            canonicalPromoterName("Greyzone Concerts & Promotion Grey & von Bronikowski") shouldBe "Greyzone Concerts"
+            canonicalPromoterName("Messed!Up Magazine") shouldBe "Messed!Up Magazine"
+            canonicalPromoterName("MessedUp! Magazine") shouldBe "Messed!Up Magazine"
+            canonicalPromoterName("MusikBlog.de") shouldBe "MusikBlog"
+            canonicalPromoterName("Musikblog") shouldBe "MusikBlog"
+            canonicalPromoterName("Prk Dreamhouse") shouldBe "PRK DreamHaus"
+            canonicalPromoterName("PRK DreamHaus") shouldBe "PRK DreamHaus"
+            canonicalPromoterName("Rausgeganger") shouldBe "Rausgegangen"
+            canonicalPromoterName("Punkfilmfestival Berlin") shouldBe "punkfilmfest berlin"
+            // "Listen" is Listen Collective, a different company from listenagency, and stays.
+            canonicalPromoterName("Listen") shouldBe "Listen"
+        }
+    }
+
+    // #328: the spelling on the promoter's own site, checked in docs/promoters/REVIEWED.tsv.
+    @Test
+    fun `pins the spelling each promoter uses itself`() {
+        assertSoftly {
+            canonicalPromoterName("Semmel Concerts Entertainment GmbH") shouldBe "Semmel Concerts"
+            canonicalPromoterName("Semmel") shouldBe "Semmel Concerts"
+            canonicalPromoterName("Headline") shouldBe "Headline Concerts"
+            canonicalPromoterName("Powerline Agency") shouldBe "Powerline Agency"
+            canonicalPromoterName("powerline") shouldBe "Powerline Agency"
+            canonicalPromoterName("MCT Agentur GmbH") shouldBe "MCT Agentur"
+            canonicalPromoterName("Mct") shouldBe "MCT Agentur"
+            canonicalPromoterName("MAWI Concert") shouldBe "MAWI Concert"
+            canonicalPromoterName("Zart") shouldBe "Z|ART Agency"
+            canonicalPromoterName("Z|ART Agency") shouldBe "Z|ART Agency"
+            canonicalPromoterName("New Berlin Konzerte & Events GmbH") shouldBe "New Berlin Konzerte"
+            canonicalPromoterName("Berlinkonzerte") shouldBe "New Berlin Konzerte"
+            canonicalPromoterName("Dlf") shouldBe "Deutschlandfunk"
+            canonicalPromoterName("Ibb") shouldBe "IBB Booking"
+            canonicalPromoterName("Ox-Fancine") shouldBe "Ox-Fanzine"
+            canonicalPromoterName("Radio Bob") shouldBe "RADIO BOB!"
+            canonicalPromoterName("Rockitsessions,") shouldBe "Rockitsessions"
+            canonicalPromoterName("TouringTunes Sp. z o. o.") shouldBe "TouringTunes"
+            canonicalPromoterName("Rudelsingen - Das Original aus Münster") shouldBe "Rudelsingen"
+            canonicalPromoterName("Aok. Die Gesundheitskasse") shouldBe "AOK"
+            canonicalPromoterName("Unreleased") shouldBe "Unreleased Berlin"
+            canonicalPromoterName("Kulturalarm") shouldBe "kulturALARM"
+            canonicalPromoterName("Metal.de") shouldBe "metal.de"
         }
     }
 }
