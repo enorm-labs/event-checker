@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.r2dbc.core.await
 import org.springframework.r2dbc.core.awaitSingle
 import org.testcontainers.containers.MinIOContainer
+import org.testcontainers.utility.DockerImageName
 import software.amazon.awssdk.core.async.AsyncRequestBody
 import software.amazon.awssdk.services.s3.S3AsyncClient
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest
@@ -42,7 +43,7 @@ class ImageRemovalServiceIntegrationTest : BaseControllerTest() {
     @Autowired
     private lateinit var variantRepository: CachedImageVariantRepository
 
-    private val minio = MinIOContainer("minio/minio:RELEASE.2025-09-07T16-13-09Z")
+    private val minio = MinIOContainer(DockerImageName.parse("quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z").asCompatibleSubstituteFor("minio/minio"))
     private lateinit var client: S3AsyncClient
     private lateinit var storageProperties: ImageStorageProperties
 
