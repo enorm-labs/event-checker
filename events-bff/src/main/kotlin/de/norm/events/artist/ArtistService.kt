@@ -35,7 +35,7 @@ class ArtistService(
             }
         val images = cachedImageGate.forUrls(entities.map { it.imageUrl })
         return PageResponse.of(
-            entities.map { ArtistSummaryResponse.fromEntity(it, images.serve(it.imageUrl, RENDERED_WIDTH)) },
+            entities.map { ArtistSummaryResponse.fromEntity(it, images.serve(it.imageUrl, CARD_WIDTH)) },
             safePageable,
             total
         )
@@ -49,7 +49,7 @@ class ArtistService(
     @Transactional(readOnly = true)
     suspend fun findBySlug(slug: String): ArtistDetailResponse {
         val entity = artistRepository.findBySlug(slug) ?: throw ArtistNotFoundException(slug)
-        val image = cachedImageGate.forUrls(listOf(entity.imageUrl)).serve(entity.imageUrl, RENDERED_WIDTH)
+        val image = cachedImageGate.forUrls(listOf(entity.imageUrl)).serve(entity.imageUrl, DETAIL_WIDTH)
         return ArtistDetailResponse.fromEntity(entity, image)
     }
 
@@ -57,10 +57,16 @@ class ArtistService(
         /**
          * What the site draws one of these at, in CSS pixels.
          *
-         * `BaseDetailView`'s header draws 96, and the list renders no image today. The gate offers
-         * everything from the slot up to three times it, so this covers a card if one arrives.
+         * `BaseDetailView` leads with the picture at the full width of a `max-w-3xl` column, 704 px
+         * after padding, and its `sizes` attribute states the same number. The list renders no image
+         * today, so [CARD_WIDTH] is the thumbnail width `EventService` already uses for the same
+         * kind of slot, ready for a card that arrives later.
+         *
+         * **CSS pixels, not file widths.** The device pixel ratio is the browser's to know, and it
+         * picks from the `srcset` this produces.
          */
-        private const val RENDERED_WIDTH = 96
+        private const val CARD_WIDTH = 96
+        private const val DETAIL_WIDTH = 704
 
         /** Entity properties a client may sort the artist list by; anything else is ignored. */
         private val SORTABLE_PROPERTIES = setOf("name", "slug")

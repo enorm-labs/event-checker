@@ -68,7 +68,7 @@ class VenueService(
     @Transactional(readOnly = true)
     suspend fun findBySlug(slug: String): VenueDetailResponse {
         val entity = venueRepository.findBySlug(slug) ?: throw VenueNotFoundException(slug)
-        val image = cachedImageGate.forUrls(listOf(entity.imageUrl)).serve(entity.imageUrl, RENDERED_WIDTH)
+        val image = cachedImageGate.forUrls(listOf(entity.imageUrl)).serve(entity.imageUrl, DETAIL_WIDTH)
         return VenueDetailResponse.fromEntity(entity, image)
     }
 
@@ -77,11 +77,15 @@ class VenueService(
          * What the site draws one of these at, in CSS pixels.
          *
          * A venue card draws its poster at the card's own width, about 474 px in the two-column
-         * `max-w-5xl` grid, so the gate offers 512 and 768. `BaseDetailView`'s header thumbnail is a
-         * different slot entirely and stays at 96.
+         * `max-w-5xl` grid, so the gate offers 512 and 768. `BaseDetailView` leads with the picture
+         * at the full width of a `max-w-3xl` column, 704 px after padding, and its `sizes` attribute
+         * states the same number.
+         *
+         * **CSS pixels, not file widths.** The device pixel ratio is the browser's to know, and it
+         * picks from the `srcset` this produces.
          */
         private const val POSTER_WIDTH = 480
-        private const val RENDERED_WIDTH = 96
+        private const val DETAIL_WIDTH = 704
 
         /** Entity properties a client may sort the venue list by; anything else is ignored. */
         private val SORTABLE_PROPERTIES = setOf("name", "slug", "city")

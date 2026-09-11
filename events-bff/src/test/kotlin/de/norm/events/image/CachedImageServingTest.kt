@@ -250,7 +250,7 @@ class CachedImageServingTest : BaseControllerTest() {
                 .isOk
                 .expectBody()
                 .jsonPath("$.imageUrl")
-                .isEqualTo("/api/images/$LOGO_HASH/192.jpg")
+                .isEqualTo("/api/images/$LOGO_HASH/768.jpg")
                 .jsonPath("$.imageSources[0].type")
                 .isEqualTo("image/avif")
         }
@@ -269,7 +269,7 @@ class CachedImageServingTest : BaseControllerTest() {
                 .isOk
                 .expectBody()
                 .jsonPath("$.imageUrl")
-                .isEqualTo("/api/images/$LOGO_HASH/192.jpg")
+                .isEqualTo("/api/images/$LOGO_HASH/768.jpg")
         }
 
     @Test
@@ -383,6 +383,46 @@ class CachedImageServingTest : BaseControllerTest() {
                 .isEqualTo(1200)
                 .jsonPath("$.intrinsicHeight")
                 .isEqualTo(630)
+        }
+
+    // `BaseDetailView` declares `sizes="(min-width: 768px) 704px, …"` and the width below has to
+    // agree with it. When it did not, every venue hero downloaded 288 px and drew it at 704 (#1280).
+    @Test
+    @DisplayName("a venue's detail image is banded to the 704 px hero, not to a thumbnail")
+    fun `the venue detail response asks for the hero width`(): Unit =
+        runBlocking {
+            insertCachedImage(LOGO_URL, LOGO_HASH, ALL_WIDTHS, intrinsicWidth = 1200, intrinsicHeight = 800)
+            insertVenue("Astra", "astra", imageUrl = LOGO_URL)
+
+            webTestClient
+                .get()
+                .uri("/venues/astra")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody()
+                .jsonPath("$.imageUrl")
+                .isEqualTo("/api/images/$LOGO_HASH/768.jpg")
+                .jsonPath("$.imageSources[0].srcset")
+                .isEqualTo("/api/images/$LOGO_HASH/768.avif 768w, /api/images/$LOGO_HASH/1536.avif 1536w")
+        }
+
+    @Test
+    @DisplayName("a venue in the list still asks for the poster width")
+    fun `the venue list response asks for the poster width`(): Unit =
+        runBlocking {
+            insertCachedImage(LOGO_URL, LOGO_HASH, ALL_WIDTHS)
+            insertVenue("Astra", "astra", imageUrl = LOGO_URL)
+
+            webTestClient
+                .get()
+                .uri("/venues")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody()
+                .jsonPath("$.content[0].imageSources[0].srcset")
+                .isEqualTo("/api/images/$LOGO_HASH/512.avif 512w, /api/images/$LOGO_HASH/768.avif 768w")
         }
 
     // 16% of staging's images had no dimensions at import, because a stock JVM reads neither WebP
