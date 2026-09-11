@@ -91,6 +91,7 @@ class LidoOverviewPageScraper {
             soldOut = block.soldOut,
             status = block.status,
             promoters = block.promoters,
+            promoterWebsites = block.promoterWebsites,
             // Extract support only from the subtitle line that carries the "Support:" marker,
             // so an appended note on a later <br> line (e.g. a cancellation notice) can't be
             // mistaken for a support act.
@@ -121,7 +122,9 @@ internal data class LidoEventBlock(
     val subtitle: String?,
     val soldOut: Boolean,
     val status: String,
-    val promoters: List<String>
+    val promoters: List<String>,
+    /** The presenter anchor's `href`, keyed by the presenter's name, where the venue links one (#1319). */
+    val promoterWebsites: Map<String, String>
 )
 
 /**
@@ -155,7 +158,8 @@ internal fun parseLidoEventBlock(
         subtitle = root.textAt(".event-ticket__content__subtitle"),
         soldOut = statusText.contains("ausverkauft") || statusText.contains("sold out"),
         status = parseEventStatus(statusText),
-        promoters = parseLidoPresenters(root)
+        promoters = parseLidoPresenters(root),
+        promoterWebsites = parseLidoPresenterWebsites(root)
     )
 }
 
@@ -198,3 +202,13 @@ private fun parseLidoPresenters(root: Element): List<String> {
             ?: presenter.text().substringBefore("präsentiert").trim()
     return listOfNotNull(name.takeIf { it.isNotBlank() })
 }
+
+/** The presenter's link, where the name is an anchor. */
+private fun parseLidoPresenterWebsites(root: Element): Map<String, String> =
+    root
+        .select(".event-ticket__meta__presenter a")
+        .mapNotNull { link ->
+            val name = link.text().trim().takeIf { it.isNotBlank() }
+            val url = link.absUrl("href").takeIf { it.startsWith("http") }
+            if (name != null && url != null) name to url else null
+        }.toMap()

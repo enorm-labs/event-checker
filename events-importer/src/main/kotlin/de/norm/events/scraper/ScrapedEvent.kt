@@ -72,7 +72,12 @@ data class ScrapedEvent(
      * The service layer resolves these to database promoter entities (auto-creating if necessary)
      * and creates event_promoter join table associations.
      */
-    val promoters: List<String> = emptyList()
+    val promoters: List<String> = emptyList(),
+    /**
+     * The website a venue links each promoter credit to, keyed by the raw name in [promoters].
+     * Fills `promoter.website_url` where the row has none; a row that has one keeps it (#1319).
+     */
+    val promoterWebsites: Map<String, String> = emptyMap()
 ) {
     /**
      * Converts this scraped event into an [EventEntity] for persistence.

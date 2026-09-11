@@ -77,7 +77,8 @@ class AstraDetailPageScraper {
             priceBoxOffice = priceBoxOffice,
             soldOut = block.soldOut,
             status = block.status,
-            promoters = parsePromoters(content)
+            promoters = parsePromoters(content),
+            promoterWebsites = parsePromoterWebsites(content)
         )
     }
 
@@ -90,6 +91,16 @@ class AstraDetailPageScraper {
             .select(".promoters__link")
             .mapNotNull { it.text().trim().takeIf { name -> name.isNotBlank() } }
             .distinct()
+
+    /** Each promoter anchor's `href`, where it links out (#1319). */
+    private fun parsePromoterWebsites(content: Element): Map<String, String> =
+        content
+            .select(".promoters__link")
+            .mapNotNull { link ->
+                val name = link.text().trim().takeIf { it.isNotBlank() } ?: return@mapNotNull null
+                val url = link.absUrl("href").takeIf { it.startsWith("http") } ?: return@mapNotNull null
+                name to url
+            }.toMap()
 
     /**
      * Extracts the event description from the artist bio and detail sections.

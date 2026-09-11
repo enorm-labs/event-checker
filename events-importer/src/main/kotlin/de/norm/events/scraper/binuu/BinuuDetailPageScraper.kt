@@ -82,7 +82,8 @@ class BinuuDetailPageScraper {
             soldOut = item.path("soldout").asBoolean(),
             status = mapBinuuStatus(item.stringOrNull("eventStatus")),
             artists = parseArtists(item),
-            promoters = parsePromoters(item)
+            promoters = parsePromoters(item),
+            promoterWebsites = parsePromoterWebsites(item)
         )
     }
 
@@ -120,6 +121,16 @@ class BinuuDetailPageScraper {
             .path("promoters")
             .mapNotNull { it.stringOrNull("title") }
             .distinct()
+
+    /** The `url` beside each promoter's `title`, where the venue links one (#1319). */
+    private fun parsePromoterWebsites(item: JsonNode): Map<String, String> =
+        item
+            .path("promoters")
+            .mapNotNull { promoter ->
+                val title = promoter.stringOrNull("title") ?: return@mapNotNull null
+                val url = promoter.stringOrNull("url")?.takeIf { it.startsWith("http") } ?: return@mapNotNull null
+                title to url
+            }.toMap()
 
     /**
      * Builds the artist roster from the structured `performers` list, tagging a
