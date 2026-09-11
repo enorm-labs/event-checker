@@ -1303,19 +1303,19 @@
         },
         {
           "name": "@full-ui/headless-calendar",
-          "version": "7.0.2",
+          "version": "7.1.0",
           "url": "https://github.com/fullcalendar/fullcalendar",
           "ecosystem": "frontend"
         },
         {
           "name": "@fullcalendar/core",
-          "version": "7.0.2",
+          "version": "7.1.0",
           "url": "https://github.com/fullcalendar/fullcalendar",
           "ecosystem": "frontend"
         },
         {
           "name": "@fullcalendar/vue3",
-          "version": "7.0.2",
+          "version": "7.1.0",
           "url": "https://github.com/fullcalendar/fullcalendar-vue",
           "ecosystem": "frontend"
         },
@@ -2089,7 +2089,7 @@
       "components": [
         {
           "name": "@lucide/vue",
-          "version": "1.39.0",
+          "version": "1.43.0",
           "url": "https://github.com/lucide-icons/lucide",
           "ecosystem": "frontend"
         },
