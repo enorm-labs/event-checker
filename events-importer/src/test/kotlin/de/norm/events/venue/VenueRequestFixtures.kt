@@ -20,7 +20,7 @@ object VenueRequestFixtures {
         address: String? = "Revaler Str. 99",
         city: String = "Berlin",
         postalCode: String? = "10245",
-        district: District? = District.FRIEDRICHSHAIN_KREUZBERG,
+        district: District? = District.KREUZBERG,
         latitude: BigDecimal? = null,
         longitude: BigDecimal? = null,
         websiteUrl: String? = "https://www.astra-berlin.de",

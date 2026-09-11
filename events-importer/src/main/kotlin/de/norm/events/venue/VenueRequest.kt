@@ -35,10 +35,10 @@ data class VenueRequest(
     @Schema(description = "Postal code of the venue's address", example = "10245")
     val postalCode: String? = null,
     // Typed, so an Ortsteil or a typo is a 400 rather than a venue that quietly stops matching its own
-    // borough filter (#329). The entity keeps a String, the same split SourceLicence uses.
+    // district filter (#329). The entity keeps a String, the same split SourceLicence uses.
     @Schema(
-        description = "Berlin borough (Bezirk) as a canonical slug. One of the twelve, never an Ortsteil",
-        example = "friedrichshain-kreuzberg"
+        description = "Berlin district as a canonical slug. One of the 23 pre-2001 districts, never a borough or an Ortsteil",
+        example = "kreuzberg"
     )
     val district: District? = null,
     // Bounded to Berlin and a little beyond it (#329). **This would have caught none of the 32 wrong

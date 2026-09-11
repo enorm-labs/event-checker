@@ -19,7 +19,7 @@ class VenueService(
 ) {
     /**
      * Lists venues with pagination, optionally filtered by a case-insensitive name [query]
-     * and/or an exact [district] (Bezirk) slug. The two filters combine independently, so any
+     * and/or an exact [district] slug. The two filters combine independently, so any
      * of the four presence combinations selects the matching repository query.
      */
     @Transactional(readOnly = true)
@@ -30,12 +30,12 @@ class VenueService(
     ): PageResponse<VenueSummaryResponse> {
         val safePageable = pageable.sanitizeSort(SORTABLE_PROPERTIES, DEFAULT_SORT)
         val name = query?.takeIf { it.isNotBlank() }
-        val borough = district?.takeIf { it.isNotBlank() }
+        val districtSlug = district?.takeIf { it.isNotBlank() }
         val (entities, total) =
             when {
-                name != null && borough != null -> {
-                    venueRepository.findByNameContainingIgnoreCaseAndDistrict(name, borough, safePageable).toList() to
-                        venueRepository.countByNameContainingIgnoreCaseAndDistrict(name, borough)
+                name != null && districtSlug != null -> {
+                    venueRepository.findByNameContainingIgnoreCaseAndDistrict(name, districtSlug, safePageable).toList() to
+                        venueRepository.countByNameContainingIgnoreCaseAndDistrict(name, districtSlug)
                 }
 
                 name != null -> {
@@ -43,9 +43,9 @@ class VenueService(
                         venueRepository.countByNameContainingIgnoreCase(name)
                 }
 
-                borough != null -> {
-                    venueRepository.findByDistrict(borough, safePageable).toList() to
-                        venueRepository.countByDistrict(borough)
+                districtSlug != null -> {
+                    venueRepository.findByDistrict(districtSlug, safePageable).toList() to
+                        venueRepository.countByDistrict(districtSlug)
                 }
 
                 else -> {

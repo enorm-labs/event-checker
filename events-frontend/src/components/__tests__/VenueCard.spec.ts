@@ -9,7 +9,7 @@ const venue: VenueSummary = {
   name: 'Lido',
   city: 'Berlin',
   address: 'Cuvrystr. 7',
-  district: 'friedrichshain-kreuzberg',
+  district: 'kreuzberg',
   imageUrl: 'https://example.com/lido.jpg',
 }
 
@@ -27,8 +27,8 @@ describe('VenueCard', () => {
 
   it('shows the human-readable district label, not the slug', () => {
     const wrapper = mount(VenueCard, { props: { venue }, global: { stubs } })
-    expect(wrapper.text()).toContain('Friedrichshain-Kreuzberg')
-    expect(wrapper.text()).not.toContain('friedrichshain-kreuzberg')
+    expect(wrapper.text()).toContain('Kreuzberg')
+    expect(wrapper.text()).not.toContain('kreuzberg')
   })
 
   it('draws the name as the poster when the venue has no image', () => {

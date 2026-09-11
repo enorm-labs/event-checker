@@ -85,14 +85,14 @@ class EventControllerTest : BaseControllerTest() {
     @Test
     fun `GET events filters by district`(): Unit =
         runBlocking {
-            val lido = insertVenue("Lido", "lido", district = "friedrichshain-kreuzberg")
+            val lido = insertVenue("Lido", "lido", district = "kreuzberg")
             val sameiden = insertVenue("SameHeaven", "sameheaven", district = "neukoelln")
             insertEvent(lido, "Kreuzberg Gig", "kreuzberg-gig", LocalDate.now())
             insertEvent(sameiden, "Neukölln Gig", "neukoelln-gig", LocalDate.now())
 
             webTestClient
                 .get()
-                .uri("/events?district=friedrichshain-kreuzberg")
+                .uri("/events?district=kreuzberg")
                 .exchange()
                 .expectStatus()
                 .isOk
@@ -102,7 +102,7 @@ class EventControllerTest : BaseControllerTest() {
                 .jsonPath("$.content[0].slug")
                 .isEqualTo("kreuzberg-gig")
                 .jsonPath("$.content[0].venue.district")
-                .isEqualTo("friedrichshain-kreuzberg")
+                .isEqualTo("kreuzberg")
         }
 
     @Test
@@ -363,7 +363,7 @@ class EventControllerTest : BaseControllerTest() {
     @Test
     fun `GET events calendar applies the same filters as the search endpoint`(): Unit =
         runBlocking {
-            val astra = insertVenue("Astra", "astra", district = "friedrichshain-kreuzberg")
+            val astra = insertVenue("Astra", "astra", district = "kreuzberg")
             val lido = insertVenue("Lido", "lido", district = "neukoelln")
             val techno = insertGenreTag("Techno", "techno")
 
@@ -377,7 +377,7 @@ class EventControllerTest : BaseControllerTest() {
             // Each filter narrows the range down to the one event that satisfies it.
             listOf(
                 "venue=astra",
-                "district=friedrichshain-kreuzberg",
+                "district=kreuzberg",
                 "genre=techno",
                 "q=techno",
                 "maxPrice=20"

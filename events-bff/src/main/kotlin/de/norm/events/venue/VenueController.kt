@@ -34,7 +34,7 @@ class VenueController(
         q: String?,
         @Parameter(
             description =
-                "District filter — only venues in the matching Berlin borough (e.g. friedrichshain-kreuzberg). " +
+                "District filter — only venues in the matching Berlin district, one of the 23 pre-2001 districts (e.g. kreuzberg). " +
                     "Omitted/blank returns all districts."
         )
         @RequestParam(required = false)
