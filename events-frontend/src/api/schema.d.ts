@@ -45,7 +45,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List promoters with pagination and optional name search */
+        /** List promoters with pagination and optional name search, sorted by name or by upcoming events */
         get: operations["list_1"];
         put?: never;
         post?: never;
@@ -436,9 +436,9 @@ export interface components {
             descriptionAltLanguage?: string | null;
         };
         /** @description A page of results with pagination metadata */
-        PageResponsePromoterSummaryResponse: {
+        PageResponsePromoterListItemResponse: {
             /** @description The items on this page */
-            content?: components["schemas"]["PromoterSummaryResponse"][];
+            content?: components["schemas"]["PromoterListItemResponse"][];
             /**
              * Format: int32
              * @description Zero-based index of this page
@@ -464,8 +464,8 @@ export interface components {
              */
             totalPages?: number;
         };
-        /** @description Compact promoter summary */
-        PromoterSummaryResponse: {
+        /** @description Promoter list row */
+        PromoterListItemResponse: {
             /**
              * Format: int64
              * @description Database primary key
@@ -484,37 +484,26 @@ export interface components {
             name?: string;
             /** @description URL of the promoter's website or social page */
             websiteUrl?: string | null;
-            /** @description URL of the promoter's logo image */
-            imageUrl?: string | null;
+            /** @description Short prose description of the promoter */
+            description?: string | null;
             /**
-             * @description Who to credit for `imageUrl`, worded as the archive publishes it. Present whenever `imageUrl` is, and it must be shown beside the image.
-             * @example Photographer Name, via Wikimedia Commons
+             * @description Language of `description`: `de` or `en`. Null when the language is unknown.
+             * @example en
              */
-            imageAttribution?: string | null;
+            descriptionLanguage?: string | null;
+            /** @description The same description in the other language, written by hand (#328). */
+            descriptionAlt?: string | null;
             /**
-             * @description SPDX identifier of the licence `imageUrl` is published under, or `PD` where no identifier applies. Example values: `CC0-1.0`, `CC-BY-4.0`, `CC-BY-SA-4.0`.
-             * @example CC-BY-SA-4.0
+             * @description Language of `descriptionAlt`: `de` or `en`. Null exactly when `descriptionAlt` is.
+             * @example de
              */
-            imageLicenceId?: string | null;
-            /**
-             * @description The image's description page, which the rendered credit links to
-             * @example https://commons.wikimedia.org/wiki/File:Example.jpg
-             */
-            imageSourceUrl?: string | null;
-            /** @description Alternative formats of the same image, best first, for a <picture> element. Empty when the image is not cached, in which case `imageUrl` is all there is. */
-            imageSources?: components["schemas"]["ImageSourceResponse"][];
+            descriptionAltLanguage?: string | null;
             /**
              * Format: int32
-             * @description Pixel width of the original image, for the `width` attribute. Null together with `intrinsicHeight` when the dimensions are unknown.
-             * @example 1200
+             * @description Events from today on that credit this promoter
+             * @example 12
              */
-            intrinsicWidth?: number | null;
-            /**
-             * Format: int32
-             * @description Pixel height of the original image, for the `height` attribute
-             * @example 630
-             */
-            intrinsicHeight?: number | null;
+            upcomingEventCount?: number;
         };
         /** @description Full promoter detail */
         PromoterDetailResponse: {
@@ -992,6 +981,58 @@ export interface components {
              */
             stage?: string | null;
         };
+        /** @description Compact promoter summary */
+        PromoterSummaryResponse: {
+            /**
+             * Format: int64
+             * @description Database primary key
+             * @example 3
+             */
+            id?: number;
+            /**
+             * @description URL-friendly identifier
+             * @example 36-concerts
+             */
+            slug?: string;
+            /**
+             * @description Display name of the promoter
+             * @example 36 Concerts
+             */
+            name?: string;
+            /** @description URL of the promoter's website or social page */
+            websiteUrl?: string | null;
+            /** @description URL of the promoter's logo image */
+            imageUrl?: string | null;
+            /**
+             * @description Who to credit for `imageUrl`, worded as the archive publishes it. Present whenever `imageUrl` is, and it must be shown beside the image.
+             * @example Photographer Name, via Wikimedia Commons
+             */
+            imageAttribution?: string | null;
+            /**
+             * @description SPDX identifier of the licence `imageUrl` is published under, or `PD` where no identifier applies. Example values: `CC0-1.0`, `CC-BY-4.0`, `CC-BY-SA-4.0`.
+             * @example CC-BY-SA-4.0
+             */
+            imageLicenceId?: string | null;
+            /**
+             * @description The image's description page, which the rendered credit links to
+             * @example https://commons.wikimedia.org/wiki/File:Example.jpg
+             */
+            imageSourceUrl?: string | null;
+            /** @description Alternative formats of the same image, best first, for a <picture> element. Empty when the image is not cached, in which case `imageUrl` is all there is. */
+            imageSources?: components["schemas"]["ImageSourceResponse"][];
+            /**
+             * Format: int32
+             * @description Pixel width of the original image, for the `width` attribute. Null together with `intrinsicHeight` when the dimensions are unknown.
+             * @example 1200
+             */
+            intrinsicWidth?: number | null;
+            /**
+             * Format: int32
+             * @description Pixel height of the original image, for the `height` attribute
+             * @example 630
+             */
+            intrinsicHeight?: number | null;
+        };
         /** @description A page of results with pagination metadata */
         PageResponseArtistSummaryResponse: {
             /** @description The items on this page */
@@ -1171,7 +1212,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PageResponsePromoterSummaryResponse"];
+                    "*/*": components["schemas"]["PageResponsePromoterListItemResponse"];
                 };
             };
         };

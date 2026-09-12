@@ -16,6 +16,7 @@
     "event": "this event",
     "artist": "this artist",
     "promoter": "this promoter",
-    "calendar": "the calendar"
+    "calendar": "the calendar",
+    "promoters": "promoters"
   }
 }

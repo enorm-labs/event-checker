@@ -10,6 +10,7 @@ import home from './home.json'
 import legal from './legal.json'
 import pageDescription from './pageDescription.json'
 import pageTitle from './pageTitle.json'
+import promoters from './promoters.json'
 import venues from './venues.json'
 
 /**
@@ -37,5 +38,6 @@ export default {
   legal,
   pageDescription,
   pageTitle,
+  promoters,
   venues,
 }

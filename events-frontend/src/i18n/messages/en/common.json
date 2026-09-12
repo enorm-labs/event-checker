@@ -4,6 +4,7 @@
     "label": "Main",
     "events": "Events",
     "venues": "Venues",
+    "promoters": "Promoters",
     "calendar": "Calendar",
     "about": "About",
     "beta": "beta",
@@ -27,7 +28,8 @@
   },
   "states": {
     "loading": "Cueing it up…",
-    "loadingVenues": "Rounding up the rooms…"
+    "loadingVenues": "Rounding up the rooms…",
+    "loadingPromoters": "Looking up who books the nights…"
   },
   "upcomingEvents": "Upcoming events",
   "pastEvents": "Past events",

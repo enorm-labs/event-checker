@@ -273,8 +273,9 @@ class CachedImageServingTest : BaseControllerTest() {
                 .isEqualTo("/api/images/$LOGO_HASH/768.jpg")
         }
 
+    // The list draws no image (#1349), so it hands out no URL either — the venue's or ours.
     @Test
-    fun `a promoter logo is served from our origin, in the list as well as the detail`(): Unit =
+    fun `the promoter list carries no image url at all`(): Unit =
         runBlocking {
             insertPromoter("Promo", "promo", imageUrl = LOGO_URL)
             insertCachedImage(LOGO_URL, LOGO_HASH, ALL_WIDTHS)
@@ -287,7 +288,7 @@ class CachedImageServingTest : BaseControllerTest() {
                 .isOk
                 .expectBody()
                 .jsonPath("$.content[0].imageUrl")
-                .isEqualTo("/api/images/$LOGO_HASH/192.jpg")
+                .doesNotExist()
         }
 
     @Test

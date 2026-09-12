@@ -24,6 +24,7 @@ const PATHS = [
   '',
   '/events',
   '/venues',
+  '/promoters',
   '/calendar',
   '/about',
   '/legal/imprint',
@@ -187,6 +188,25 @@ async function mockBff(page: Page): Promise<void> {
       ),
     ),
   )
+  await page.route(/\/api\/promoters(\?|$)/, (route) =>
+    json(
+      route,
+      page1(
+        [
+          {
+            slug: 'mock-promoter',
+            name: 'Mock Promoter',
+            websiteUrl: 'https://example.com/',
+            description: 'Books the mock nights.',
+            descriptionLanguage: 'en',
+            upcomingEventCount: 3,
+          },
+          { slug: 'quiet-promoter', name: 'Quiet Promoter', upcomingEventCount: 0 },
+        ],
+        24,
+      ),
+    ),
+  )
   await page.route(/\/api\/genres/, (route) =>
     json(route, [
       { slug: 'techno', name: 'Techno', family: 'electronic' },
@@ -199,6 +219,7 @@ const dataRoutes = [
   { name: 'home, with both feeds populated', path: '/en' },
   { name: 'events list, with results and the filter bar', path: '/en/events' },
   { name: 'venues list, with results', path: '/en/venues' },
+  { name: 'promoters list, with results', path: '/en/promoters' },
   { name: 'an event detail page', path: '/en/events/tonight-show' },
   // The calendar is the most complex widget on the site and the only one whose markup we do not
   // write: FullCalendar renders the grid, the toolbar and the event links. Third-party grid markup
@@ -218,7 +239,7 @@ for (const route of dataRoutes) {
     // The calendar renders its events as links rather than headings, hence the two shapes.
     await expect(
       page
-        .getByRole('heading', { name: /Tonight Show|Mock Venue/ })
+        .getByRole('heading', { name: /Tonight Show|Mock Venue|Mock Promoter/ })
         .or(page.getByRole('link', { name: /Tonight Show/ }))
         .first(),
     ).toBeVisible()
@@ -251,13 +272,22 @@ for (const route of dataRoutes) {
  * A regression here is a real outline defect, not a recommendation, and it is invisible on screen,
  * which is exactly the kind of thing that needs a test rather than a reviewer.
  */
-for (const path of ['/en/events', '/en/venues', '/de/events', '/de/venues']) {
+for (const path of [
+  '/en/events',
+  '/en/venues',
+  '/en/promoters',
+  '/de/events',
+  '/de/venues',
+  '/de/promoters',
+]) {
   test(`${path} has a heading outline with no skipped levels`, async ({ page }) => {
     await mockBff(page)
     await page.goto(path)
     // Wait on the cards by name, not by level: waiting on `level: 2` would make a regression
     // time out here instead of failing with the violation axe found, which is the useful message.
-    await expect(page.getByRole('heading', { name: /Tonight Show|Mock Venue/ }).first()).toBeVisible()
+    await expect(
+      page.getByRole('heading', { name: /Tonight Show|Mock Venue|Mock Promoter/ }).first(),
+    ).toBeVisible()
 
     const results = await new AxeBuilder({ page })
       .exclude('#__vue-devtools-container__')
