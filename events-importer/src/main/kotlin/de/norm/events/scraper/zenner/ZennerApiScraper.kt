@@ -3,6 +3,7 @@ package de.norm.events.scraper.zenner
 import com.fasterxml.jackson.annotation.JsonProperty
 import de.norm.events.event.EventStatus
 import de.norm.events.event.EventType
+import de.norm.events.scraper.BERLIN
 import de.norm.events.scraper.EventSource
 import de.norm.events.scraper.ScrapedArtist
 import de.norm.events.scraper.ScrapedEvent
@@ -24,12 +25,8 @@ import tools.jackson.databind.json.JsonMapper
 import tools.jackson.module.kotlin.kotlinModule
 import java.time.Clock
 import java.time.OffsetDateTime
-import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeParseException
-
-/** Time zone the venue publishes in — its UTC `eventDate` instants are converted to this wall clock. */
-internal val BERLIN: ZoneId = ZoneId.of("Europe/Berlin")
 
 /**
  * Pure parser for Zenner's programme, sourced from the Gatsby page-data artefact

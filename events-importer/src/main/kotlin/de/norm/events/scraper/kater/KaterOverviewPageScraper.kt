@@ -1,6 +1,7 @@
 package de.norm.events.scraper.kater
 
 import de.norm.events.event.EventType
+import de.norm.events.scraper.BERLIN
 import de.norm.events.scraper.EventSource
 import de.norm.events.scraper.ScrapedArtist
 import de.norm.events.scraper.ScrapedEvent
@@ -19,10 +20,6 @@ import org.jsoup.nodes.Element
 import java.time.Clock
 import java.time.LocalDate
 import java.time.MonthDay
-import java.time.ZoneId
-
-/** Time zone the venue programmes in — used to infer the year of its year-less dates. */
-private val BERLIN: ZoneId = ZoneId.of("Europe/Berlin")
 
 /**
  * Pure HTML parser for Kater Berlin's homepage programme.

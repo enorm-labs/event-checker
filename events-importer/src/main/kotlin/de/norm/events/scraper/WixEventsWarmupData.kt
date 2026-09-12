@@ -111,7 +111,7 @@ internal fun parseWixSchedule(config: JsonNode): Pair<LocalDate?, LocalTime?> {
 }
 
 /** Default zone for Wix schedules missing a usable `timeZoneId` — every scraped venue is in Berlin. */
-private val FALLBACK_ZONE: ZoneId = ZoneId.of("Europe/Berlin")
+private val FALLBACK_ZONE: ZoneId = BERLIN
 
 /**
  * Maps Wix's numeric event `status` to a domain [EventStatus] name.

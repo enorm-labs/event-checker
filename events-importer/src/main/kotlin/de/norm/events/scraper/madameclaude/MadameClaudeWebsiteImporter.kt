@@ -1,6 +1,7 @@
 package de.norm.events.scraper.madameclaude
 
 import de.norm.events.scraper.ApiClient
+import de.norm.events.scraper.BERLIN
 import de.norm.events.scraper.EventImporter
 import de.norm.events.scraper.EventSource
 import de.norm.events.scraper.ImportResult
@@ -9,7 +10,6 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Component
 import java.time.Clock
 import java.time.LocalDate
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 /**
@@ -79,9 +79,6 @@ class MadameClaudeWebsiteImporter(
     }
 
     private companion object {
-        /** Time zone whose civil date bounds the `after` filter — Madame Claude is in Berlin. */
-        val BERLIN: ZoneId = ZoneId.of("Europe/Berlin")
-
         /** Upper bound on events fetched in the single request; comfortably above the venue's ~two dozen upcoming shows. */
         const val PER_PAGE = 100
     }

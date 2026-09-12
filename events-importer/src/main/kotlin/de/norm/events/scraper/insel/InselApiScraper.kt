@@ -1,6 +1,7 @@
 package de.norm.events.scraper.insel
 
 import de.norm.events.event.EventType
+import de.norm.events.scraper.BERLIN
 import de.norm.events.scraper.EventSource
 import de.norm.events.scraper.ScrapedArtist
 import de.norm.events.scraper.ScrapedEvent
@@ -19,12 +20,8 @@ import tools.jackson.module.kotlin.kotlinModule
 import java.time.Clock
 import java.time.LocalTime
 import java.time.OffsetDateTime
-import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeParseException
-
-/** Time zone the venue publishes in — its offset-stamped `time` instants are converted to this wall clock. */
-internal val BERLIN: ZoneId = ZoneId.of("Europe/Berlin")
 
 /**
  * Pure parser for Kulturhaus Insel Berlin's programme, sourced from a Gatsby **static-query**
