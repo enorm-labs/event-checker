@@ -10,7 +10,7 @@ person decided about that promoter.
 | `slug`           | The row's slug after V023                                                                                                                                                                                                                                                                                   |
 | `kind`           | `promoter`, `media` (a magazine or station that presents), `venue` (a venue crediting itself), `sponsor`, `party` (a series with no company behind it), `artist` (an act credited as its own promoter), `junk` (a fragment a scraper put in the slot), or `unverified` (a single credit nothing else names) |
 | `website`        | The promoter's own site, opened and read. Empty where none was found, or none exists                                                                                                                                                                                                                        |
-| `name`           | The spelling that site uses. Where it differs from `stored_name`, `PromoterNormalizer` pins it and V023 renames the row                                                                                                                                                                                     |
+| `name`           | The spelling that site uses. Where it differs from `stored_name`, `PromoterNormalizer` pins it and a data migration (V023 onward) renames the row                                                                                                                                                           |
 | `description_de` | One to three sentences on the promoter, in German: since when, what it books, where in Berlin. Our own prose, from the site's about page                                                                                                                                                                    |
 | `description_en` | The same text in English, written by hand                                                                                                                                                                                                                                                                   |
 | `events`         | Events behind the row on staging when it was read, all dates                                                                                                                                                                                                                                                |
@@ -22,8 +22,8 @@ finds under a matching name, because a row in this table is a review (#1336). Th
 sets that column. So `GET /api/admin/promoters?reviewed=false` and
 `promoter-duplicates.py --unreviewed` list what an import minted since. Nothing else is written. German goes in as the
 description and English as the alternate, because German is the site's authoritative language
-(ADR-013). The `name` column reaches the database through V023 and
-the normalizer. A rename through the API changes the slug, and the next import would then mint
+(ADR-013). The `name` column reaches the database through the data migrations (V023, V025,
+V027, V029, V030) and the normalizer. A rename through the API changes the slug, and the next import would then mint
 the old row again.
 
 **What was checked, and how.** For every `promoter`, `media`, `venue` and `sponsor` row with a
