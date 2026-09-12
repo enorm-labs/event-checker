@@ -108,7 +108,21 @@ useful — a problem concentrated at one venue usually points at that importer. 
   in it gets title-cased and a new stylised one slips through until added.
 - `ARTISTS` / `PROMOTERS` — Artist/promoter names with leftover HTML entities (`&amp;`, `&#039;`), stray encoding (`Ã¤`, `â€™`), leading/trailing punctuation or whitespace, doubled
   spaces.
-- `PROMOTERS` — Promoter names that are actually venue names, generic labels (`Presents`, `Konzert`), or descriptors that should have been stripped/merged.
+- `PROMOTERS` — Promoter rows nobody has reviewed: `reviewed_at IS NULL` (#1336). Every row a person read is stamped, so this list is exactly what the
+  imports minted since, and each one is a name to check against the venue's credit, `docs/promoters/REVIEWED.tsv` and `PromoterNormalizer`.
+  `scripts/promoter-duplicates.py --unreviewed` prints the same rows with their events. Report the count and the slugs; do not guess at descriptors — a
+  reviewed row with an odd name was read and kept on purpose (`Frack & Spitzenhöschen` is a show name).
+- `PROMOTERS` — A promoter whose `slug` is not the slug of its own `name`: the next import resolves the credit by the name's slug, finds no row and mints a
+  second one beside it (V025, #1343). `SlugGenerator.slugify` lower-cases, strips accents and hyphenates; the SQL below ranks candidates and a name with
+  an accent it does not fold (`é`, `ø`) is a false positive to confirm against the class, not a finding.
+
+    ```sql
+    SELECT slug, name FROM promoter
+    WHERE slug <> regexp_replace(regexp_replace(replace(translate(lower(name), 'äöü', 'aou'), 'ß', 'ss'), '[^a-z0-9]+', '-', 'g'), '(^-|-$)', '', 'g');
+    ```
+
+- `PROMOTERS` — Coverage, as numbers rather than findings: rows with a `website_url`, rows with a `description`, rows with `reviewed_at`, out of the total.
+  A drop against the last audit means a merge or a re-mint lost something.
 - `—` — Suspiciously short (1–2 char) or suspiciously long name values in any of `artist`, `promoter`, `venue`, `genre_tag`.
 
 ### 4. Event type & genre correctness

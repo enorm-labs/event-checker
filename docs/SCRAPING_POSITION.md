@@ -289,6 +289,12 @@ The events stay. Nobody has to lose a listing to remove one thing they mind.
 
 A `robots.txt` rule that disallows the pages we read has the same effect and needs no message.
 
+**Promoters and artists have the same mailbox and no source to disable.** We read venues, not promoters. A
+promoter or an artist is on the site because a venue credited them. They can ask us to correct their page. They
+can ask us to remove the name, the website link, the logo, the description, or the whole page (#1351).
+The description texts are our own prose (#328), so removing one takes nothing from anybody else. Same seven days,
+no reason asked. The events stay listed under the venue.
+
 **The site publishes this route.** `/{locale}/legal/for-venues` carries it in both languages, German authoritative,
 and the footer links it from every page. `ForVenuesView.de.vue` is the page. It also states in short form what §2 of
 this document describes. A change to the importer therefore reaches a venue operator, and not only this file.

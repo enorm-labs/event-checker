@@ -96,16 +96,22 @@ Not every issue is worth chasing. Rank by three factors:
 
 Applied to the current catalogue:
 
-| Rank | Issue                             | Dimension    | Impact | Prevalence   | Fix path                                |
-| ---- | --------------------------------- | ------------ | ------ | ------------ | --------------------------------------- |
-| 1    | Missing headliner                 | Completeness | 🔴     | ~40%         | Deterministic — **Pillar 3, ready now** |
-| 2    | `eventType = OTHER`               | Validity     | 🟠     | high         | Measure → heuristic / AI (Pillar 4)     |
-| 3    | Non-artist title as artist        | Accuracy     | 🟠     | low          | Classifier (Pillar 4) + curation queue  |
-| 4    | Promoter/artist residual variants | Consistency  | 🟠     | low          | Curated map via curation queue          |
-| 5    | Missing price / time / promoter   | Completeness | 🟠🟢   | source-bound | Mostly _accept & document_ — low ROI    |
+| Rank | Issue                             | Dimension    | Impact | Prevalence   | Fix path                                               |
+| ---- | --------------------------------- | ------------ | ------ | ------------ | ------------------------------------------------------ |
+| 1    | Missing headliner                 | Completeness | 🔴     | ~40%         | Deterministic — **Pillar 3, ready now**                |
+| 2    | `eventType = OTHER`               | Validity     | 🟠     | high         | Measure → heuristic / AI (Pillar 4)                    |
+| 3    | Non-artist title as artist        | Accuracy     | 🟠     | low          | Classifier (Pillar 4) + curation queue                 |
+| 4    | Promoter/artist residual variants | Consistency  | 🟠     | low          | Promoters: done by review (#328); artists: curated map |
+| 5    | Missing price / time / promoter   | Completeness | 🟠🟢   | source-bound | Mostly _accept & document_ — low ROI                   |
 
 The lesson: deterministic-and-ready work goes first, as the headliner extraction did. Classifier-needed work waits
 for Pillar 4. A source-limited item is _accepted_, not chased.
+
+Row 4 is settled for promoters. A person read every row against the promoter's own site
+(`docs/promoters/REVIEWED.tsv`). `PromoterNormalizer.NAME_CORRECTIONS` pins the spellings. Data migrations merged the
+rows that existed (V023 onward). `promoter.reviewed_at` marks the rows a person read. So "a promoter minted since
+the review" is a query (`reviewed_at IS NULL`, or `scripts/promoter-duplicates.py --unreviewed`), not a hunt, and
+`/data-quality-audit` reports it as one. Artists still wait for the curated map.
 
 ## 3. Principles
 

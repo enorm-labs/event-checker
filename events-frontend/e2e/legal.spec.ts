@@ -39,7 +39,8 @@ test('reaches the venue opt-out route in one click from the footer, on any route
   const main = page.getByRole('main')
   await expect(main).toContainText('disable the source')
   await expect(main).toContainText('within seven days')
-  await expect(main.getByRole('link', { name: /@/ })).toBeVisible()
+  // Two mailto links: the venue steps and the promoter section, both the same address.
+  await expect(main.getByRole('link', { name: /@/ }).first()).toBeVisible()
 })
 
 test('scrolls to the top when opening a legal page from a scrolled position', async ({ page }) => {
@@ -64,7 +65,8 @@ test('the imprint carries the § 5 DDG essentials', async ({ page }) => {
   await expect(main).toContainText('Norman Lange')
   await expect(main).toContainText('§ 18 (2) MStV')
   await expect(main).toContainText('without warranty as to accuracy')
-  await expect(main.getByRole('link', { name: /@/ })).toBeVisible()
+  // Two mailto links: the venue steps and the promoter section, both the same address.
+  await expect(main.getByRole('link', { name: /@/ }).first()).toBeVisible()
 })
 
 test('the privacy notice states its legal basis, rights and supervisory authority', async ({

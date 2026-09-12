@@ -112,6 +112,20 @@ const localePath = useLocalePath()
     </section>
 
     <section>
+      <h2>For promoters and artists</h2>
+      <p>
+        We read venues, not promoters. A promoter or an artist is on this site because a venue
+        credited them. So there is no source for us to disable, but there is a page of their own,
+        and the same route applies to it as to a venue: write to
+        <a :href="`mailto:${CONTROLLER.email}`">{{ CONTROLLER.email }}</a>
+        and name yourself. We correct or remove the name, the website link, the logo or the
+        description, or take the page down altogether. The description texts are our own words,
+        not copied. We do not ask for a reason and we answer within seven days. The events
+        themselves stay listed under their venue.
+      </p>
+    </section>
+
+    <section>
       <h2>Rights in text and images</h2>
       <p>
         Descriptions, images and other material originating from venues, promoters and artists
