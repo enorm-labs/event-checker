@@ -2,6 +2,7 @@ package de.norm.events.scraper.heimathafen
 
 import de.norm.events.event.EventStatus
 import de.norm.events.event.EventType
+import de.norm.events.scraper.BERLIN
 import de.norm.events.scraper.EventSource
 import de.norm.events.scraper.ScrapedArtist
 import de.norm.events.scraper.ScrapedEvent
@@ -19,13 +20,9 @@ import java.math.BigDecimal
 import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import java.util.Locale
-
-/** Time zone the venue programmes in — used for the past-performance cut-off. */
-private val BERLIN: ZoneId = ZoneId.of("Europe/Berlin")
 
 /**
  * Pure parser for Heimathafen Neukölln's event data, sourced from its WordPress REST API

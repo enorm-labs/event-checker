@@ -1,17 +1,14 @@
 package de.norm.events.scraper.delphi
 
+import de.norm.events.scraper.BERLIN
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jsoup.nodes.Comment
 import org.jsoup.nodes.Document
 import java.math.BigDecimal
 import java.time.Instant
 import java.time.LocalDateTime
-import java.time.ZoneId
 
 private val logger = KotlinLogging.logger {}
-
-/** Berlin wall-clock zone, in which the venue's `event_Zeit` timestamps are to be read. */
-private val BERLIN: ZoneId = ZoneId.of("Europe/Berlin")
 
 /**
  * The price and free-entry facts for one performance, recovered from the programme page's

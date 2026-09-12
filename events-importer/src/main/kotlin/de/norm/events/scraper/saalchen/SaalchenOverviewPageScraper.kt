@@ -1,5 +1,6 @@
 package de.norm.events.scraper.saalchen
 
+import de.norm.events.scraper.BERLIN
 import de.norm.events.scraper.EventSource
 import de.norm.events.scraper.ScrapedEvent
 import de.norm.events.scraper.attrAt
@@ -241,9 +242,6 @@ private val LINE_BREAK_PATTERN = Regex("""<br\s*/?>|</p>\s*<p[^>]*>""", RegexOpt
 
 /** The AddToCalendar widget's timestamp format, always emitted in UTC. */
 private val ATC_TIMESTAMP_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-
-/** Berlin, the zone every scraped venue sits in. */
-private val BERLIN: ZoneId = ZoneId.of("Europe/Berlin")
 
 /** Matches the first time in a notice value: `"20:00"` (branch 1) or the bare-hour `"19 Uhr"` (branch 2). */
 private val NOTICE_TIME_PATTERN = Regex("""(\d{1,2}):(\d{2})|(\d{1,2})\s*Uhr""", RegexOption.IGNORE_CASE)

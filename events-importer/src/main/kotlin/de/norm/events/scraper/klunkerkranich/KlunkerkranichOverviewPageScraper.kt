@@ -1,6 +1,7 @@
 package de.norm.events.scraper.klunkerkranich
 
 import de.norm.events.event.EventType
+import de.norm.events.scraper.BERLIN
 import de.norm.events.scraper.EventSource
 import de.norm.events.scraper.ISO_DATE_LENGTH
 import de.norm.events.scraper.ScrapedArtist
@@ -22,14 +23,10 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.MonthDay
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatterBuilder
 import java.time.temporal.ChronoField
 import java.util.Locale
-
-/** Time zone the venue programmes in — used to infer the year of its year-less listing dates. */
-private val BERLIN: ZoneId = ZoneId.of("Europe/Berlin")
 
 /**
  * Pure HTML parser for Klunkerkranich's `/events/` programme listing.

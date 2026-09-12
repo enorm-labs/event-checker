@@ -5,6 +5,7 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.Month
 import java.time.MonthDay
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import kotlin.math.abs
@@ -33,6 +34,14 @@ import kotlin.math.abs
  * carrying this sentinel after the merge so it never reaches persistence.
  */
 val UNRESOLVED_EVENT_DATE: LocalDate = LocalDate.MIN
+
+/**
+ * The wall clock every venue in this project programmes in.
+ *
+ * A scraper needs it for two jobs: to read an epoch or offset-stamped instant as the local time the
+ * venue printed, and to give a [Clock] the zone whose "today" decides the year of a year-less date.
+ */
+val BERLIN: ZoneId = ZoneId.of("Europe/Berlin")
 
 /** European short date format (d/M/yy); 2-digit year resolves to 2000–2099. */
 private val SHORT_DATE_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("d/M/yy")
