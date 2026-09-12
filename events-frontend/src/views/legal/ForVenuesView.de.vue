@@ -115,6 +115,21 @@ const localePath = useLocalePath()
     </section>
 
     <section>
+      <h2>Für Veranstalter und Künstler*innen</h2>
+      <p>
+        Wir lesen Locations, keine Veranstalter. Ein Veranstalter oder eine Künstlerin steht hier,
+        weil eine Location sie genannt hat. Es gibt also keine Quelle, die wir abschalten könnten,
+        aber eine eigene Seite, und für die gilt dasselbe wie für eine Location: Schreibt an
+        <a :href="`mailto:${CONTROLLER.email}`">{{ CONTROLLER.email }}</a>
+        und nennt den Namen. Wir korrigieren oder entfernen den Namen, den Link zur Website, das
+        Logo oder die Beschreibung, oder wir nehmen die Seite ganz heraus. Die
+        Beschreibungstexte sind unsere eigenen Worte, nicht kopiert. Wir fragen nicht nach einem
+        Grund und antworten innerhalb von sieben Tagen. Die Veranstaltungen selbst bleiben bei
+        ihrer Location gelistet.
+      </p>
+    </section>
+
+    <section>
       <h2>Rechte an Texten und Bildern</h2>
       <p>
         Beschreibungen, Bilder und anderes Material von Locations, Veranstaltern und Künstler*innen
