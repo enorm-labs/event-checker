@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
 
 /**
  * Read service for promoters backing the promoter list and detail pages.
@@ -15,29 +16,25 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class PromoterService(
     private val promoterRepository: PromoterRepository,
+    private val promoterSearchRepository: PromoterSearchRepository,
     private val cachedImageGate: CachedImageGate
 ) {
     /**
-     * Lists promoters with pagination, optionally filtered by a case-insensitive name [query].
+     * Lists promoters with pagination, optionally filtered by a case-insensitive name [query],
+     * sorted by name or by how many events each still has to come (#1349).
      */
     @Transactional(readOnly = true)
     suspend fun list(
         query: String?,
         pageable: Pageable
-    ): PageResponse<PromoterSummaryResponse> {
+    ): PageResponse<PromoterListItemResponse> {
         val safePageable = pageable.sanitizeSort(SORTABLE_PROPERTIES, DEFAULT_SORT)
-        val (entities, total) =
-            if (query.isNullOrBlank()) {
-                promoterRepository.findAllBy(safePageable).toList() to promoterRepository.count()
-            } else {
-                promoterRepository.findByNameContainingIgnoreCase(query, safePageable).toList() to
-                    promoterRepository.countByNameContainingIgnoreCase(query)
-            }
-        val images = cachedImageGate.forUrls(entities.map { it.imageUrl })
+        val page = promoterSearchRepository.search(query, LocalDate.now(), safePageable)
+        val entities = promoterRepository.findByIdIn(page.rows.map { it.id }).toList().associateBy { it.id }
         return PageResponse.of(
-            entities.map { PromoterSummaryResponse.fromEntity(it, images.serve(it.imageUrl, CARD_WIDTH)) },
+            page.rows.mapNotNull { row -> entities[row.id]?.let { PromoterListItemResponse.fromEntity(it, row.upcomingEventCount) } },
             safePageable,
-            total
+            page.total
         )
     }
 
@@ -55,21 +52,15 @@ class PromoterService(
 
     companion object {
         /**
-         * What the site draws one of these at, in CSS pixels.
-         *
-         * `BaseDetailView` leads with the picture at the full width of a `max-w-3xl` column, 704 px
-         * after padding, and its `sizes` attribute states the same number. The list renders no image
-         * today, so [CARD_WIDTH] is the thumbnail width `EventService` already uses for the same
-         * kind of slot, ready for a card that arrives later.
-         *
-         * **CSS pixels, not file widths.** The device pixel ratio is the browser's to know, and it
-         * picks from the `srcset` this produces.
+         * What the site draws the detail picture at, in CSS pixels: `BaseDetailView` leads with it
+         * at the full width of a `max-w-3xl` column, 704 px after padding, and its `sizes`
+         * attribute states the same number. The device pixel ratio is the browser's to know, and
+         * it picks from the `srcset` this produces.
          */
-        private const val CARD_WIDTH = 96
         private const val DETAIL_WIDTH = 704
 
-        /** Entity properties a client may sort the promoter list by; anything else is ignored. */
-        private val SORTABLE_PROPERTIES = setOf("name", "slug")
+        /** Properties a client may sort the promoter list by; anything else is ignored. */
+        private val SORTABLE_PROPERTIES = PromoterSearchRepository.SORT_COLUMNS.keys
         private val DEFAULT_SORT = Sort.by("name")
     }
 }

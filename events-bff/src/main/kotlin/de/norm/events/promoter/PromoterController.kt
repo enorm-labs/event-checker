@@ -27,7 +27,7 @@ class PromoterController(
     private val cache: ResponseCache
 ) {
     @GetMapping
-    @Operation(summary = "List promoters with pagination and optional name search")
+    @Operation(summary = "List promoters with pagination and optional name search, sorted by name or by upcoming events")
     suspend fun list(
         @Parameter(description = "Case-insensitive substring filter on the promoter name. Omitted/blank returns all promoters.")
         @RequestParam(required = false)
@@ -36,7 +36,7 @@ class PromoterController(
         @PageableDefault(size = 20, sort = ["name"])
         pageable: Pageable,
         exchange: ServerWebExchange
-    ): PageResponse<PromoterSummaryResponse> {
+    ): PageResponse<PromoterListItemResponse> {
         LIST_PARAMS.rejectUnknownIn(exchange)
         return cache.get(PromoterListKey(q, pageable)) { promoterService.list(q, pageable) }
     }

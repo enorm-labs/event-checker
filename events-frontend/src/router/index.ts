@@ -94,6 +94,12 @@ const router = createRouter({
           component: () => import('../views/ArtistDetailView.vue'),
         },
         {
+          path: 'promoters',
+          name: 'promoters',
+          meta: { titleKey: 'pageTitle.promoters', descriptionKey: 'pageDescription.promoters' },
+          component: () => import('../views/PromotersView.vue'),
+        },
+        {
           path: 'promoters/:slug',
           name: 'promoter',
           component: () => import('../views/PromoterDetailView.vue'),

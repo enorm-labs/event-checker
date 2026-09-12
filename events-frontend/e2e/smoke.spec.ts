@@ -32,6 +32,13 @@ const staticRoutes = [
     heading: 'Calendar',
   },
   { path: '/venues', url: '/en/venues', name: 'venues', nav: 'Venues', heading: 'Venues' },
+  {
+    path: '/promoters',
+    url: '/en/promoters',
+    name: 'promoters',
+    nav: 'Promoters',
+    heading: 'Promoters',
+  },
   { path: '/about', url: '/en/about', name: 'about', nav: 'About', heading: 'About' },
 ] as const
 
@@ -87,7 +94,7 @@ test('header nav lists the sections in the intended order', async ({ page }) => 
   // Filtered to the section links rather than compared whole: the header also carries the brand,
   // the beta badge, the locale links and an icon-only GitHub button, and pinning those here would
   // make this test fail for reasons that have nothing to do with the section order.
-  const sections = ['Events', 'Calendar', 'Venues', 'About']
+  const sections = ['Events', 'Calendar', 'Venues', 'Promoters', 'About']
   const rendered = labels.map((label) => label.trim()).filter((label) => sections.includes(label))
 
   expect(rendered).toEqual(sections)

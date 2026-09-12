@@ -3,6 +3,7 @@ package de.norm.events.promoter
 import de.norm.events.BaseControllerTest
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
+import java.time.LocalDate
 
 class PromoterControllerTest : BaseControllerTest() {
     @Test
@@ -85,6 +86,101 @@ class PromoterControllerTest : BaseControllerTest() {
                 .isEqualTo("goodlive")
         }
 
+    // #1349: the count is events from today on; a promoter with only past events sits at 0, and a
+    // name filter still applies under the count sort.
+    @Test
+    fun `GET promoters sorts by upcoming events and counts only events from today on`(): Unit =
+        runBlocking {
+            val venue = insertVenue("Lido", "lido")
+            val busy = insertPromoter("Trinity Music", "trinity-music")
+            val spent = insertPromoter("Bygone Concerts", "bygone-concerts")
+            val quiet = insertPromoter("Quiet Agency", "quiet-agency")
+            val today = LocalDate.now()
+            linkPromoter(insertEvent(venue, "Tonight", "tonight", today), busy)
+            linkPromoter(insertEvent(venue, "Next week", "next-week", today.plusDays(7)), busy)
+            linkPromoter(insertEvent(venue, "Last year", "last-year", today.minusYears(1)), busy)
+            linkPromoter(insertEvent(venue, "Yesterday", "yesterday", today.minusDays(1)), spent)
+            linkPromoter(insertEvent(venue, "Tomorrow", "tomorrow", today.plusDays(1)), quiet)
+
+            webTestClient
+                .get()
+                .uri("/promoters?sort=upcomingEvents,desc")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody()
+                .jsonPath("$.content[0].slug")
+                .isEqualTo("trinity-music")
+                .jsonPath("$.content[0].upcomingEventCount")
+                .isEqualTo(2)
+                .jsonPath("$.content[1].slug")
+                .isEqualTo("quiet-agency")
+                .jsonPath("$.content[1].upcomingEventCount")
+                .isEqualTo(1)
+                .jsonPath("$.content[2].slug")
+                .isEqualTo("bygone-concerts")
+                .jsonPath("$.content[2].upcomingEventCount")
+                .isEqualTo(0)
+
+            webTestClient
+                .get()
+                .uri("/promoters?sort=upcomingEvents,desc&q=agency")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody()
+                .jsonPath("$.totalElements")
+                .isEqualTo(1)
+                .jsonPath("$.content[0].slug")
+                .isEqualTo("quiet-agency")
+        }
+
+    @Test
+    fun `GET promoters treats a wildcard in the query as a letter`(): Unit =
+        runBlocking {
+            insertPromoter("100% Live", "100-live")
+            insertPromoter("Goodlive", "goodlive")
+
+            webTestClient
+                .get()
+                .uri("/promoters?q={q}", "%")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody()
+                .jsonPath("$.totalElements")
+                .isEqualTo(1)
+                .jsonPath("$.content[0].slug")
+                .isEqualTo("100-live")
+        }
+
+    @Test
+    fun `GET promoters carries the description fields a card reads`(): Unit =
+        runBlocking {
+            insertPromoter(
+                "36 Concerts",
+                "36-concerts",
+                description = "The in-house agency of Lido, Astra and Bi Nuu.",
+                descriptionLanguage = "en",
+                descriptionAlt = "Die Hausagentur von Lido, Astra und Bi Nuu.",
+                descriptionAltLanguage = "de"
+            )
+
+            webTestClient
+                .get()
+                .uri("/promoters")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody()
+                .jsonPath("$.content[0].descriptionLanguage")
+                .isEqualTo("en")
+                .jsonPath("$.content[0].descriptionAlt")
+                .isEqualTo("Die Hausagentur von Lido, Astra und Bi Nuu.")
+                .jsonPath("$.content[0].upcomingEventCount")
+                .isEqualTo(0)
+        }
+
     @Test
     fun `GET promoter by slug returns detail`(): Unit =
         runBlocking {
@@ -116,23 +212,6 @@ class PromoterControllerTest : BaseControllerTest() {
                 .isEqualTo("Die Hausagentur von Lido, Astra und Bi Nuu.")
                 .jsonPath("$.descriptionAltLanguage")
                 .isEqualTo("de")
-        }
-
-    // The summary embedded in events and the list stays compact: no description there.
-    @Test
-    fun `GET promoters list carries no description`(): Unit =
-        runBlocking {
-            insertPromoter("36 Concerts", "36-concerts", description = "Text", descriptionLanguage = "en")
-
-            webTestClient
-                .get()
-                .uri("/promoters")
-                .exchange()
-                .expectStatus()
-                .isOk
-                .expectBody()
-                .jsonPath("$.content[0].description")
-                .doesNotExist()
         }
 
     @Test

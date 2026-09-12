@@ -4,6 +4,7 @@
     "label": "Hauptnavigation",
     "events": "Events",
     "venues": "Locations",
+    "promoters": "Veranstalter",
     "calendar": "Kalender",
     "about": "Über uns",
     "beta": "beta",
@@ -27,7 +28,8 @@
   },
   "states": {
     "loading": "Wird aufgelegt …",
-    "loadingVenues": "Wir trommeln die Läden zusammen …"
+    "loadingVenues": "Wir trommeln die Läden zusammen …",
+    "loadingPromoters": "Wir schauen nach, wer die Abende bucht …"
   },
   "upcomingEvents": "Kommende Events",
   "pastEvents": "Vergangene Events",

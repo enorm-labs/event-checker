@@ -11,7 +11,7 @@ import de.norm.events.image.ServedImage
 import io.swagger.v3.oas.annotations.media.Schema
 
 /**
- * Compact promoter representation embedded in event detail responses and returned by the promoter list.
+ * Compact promoter representation embedded in event detail responses.
  */
 @Schema(description = "Compact promoter summary")
 data class PromoterSummaryResponse(
@@ -124,6 +124,51 @@ data class PromoterDetailResponse(
                 descriptionLanguage = entity.descriptionLanguage,
                 descriptionAlt = entity.descriptionAlt,
                 descriptionAltLanguage = entity.descriptionAltLanguage
+            )
+    }
+}
+
+/**
+ * One row of the promoter list page (#1349): what a card shows, and how many of the promoter's
+ * events are still to come. No image: the list draws none. The description fields are the detail
+ * response's, so the card picks a language the same way the page does.
+ */
+@Schema(description = "Promoter list row")
+data class PromoterListItemResponse(
+    @Schema(description = "Database primary key", example = "3")
+    val id: Long,
+    @Schema(description = "URL-friendly identifier", example = "36-concerts")
+    val slug: String,
+    @Schema(description = "Display name of the promoter", example = "36 Concerts")
+    val name: String,
+    @Schema(description = "URL of the promoter's website or social page")
+    val websiteUrl: String?,
+    @Schema(description = "Short prose description of the promoter")
+    val description: String?,
+    @Schema(description = "Language of `description`: `de` or `en`. Null when the language is unknown.", example = "en")
+    val descriptionLanguage: String?,
+    @Schema(description = "The same description in the other language, written by hand (#328).")
+    val descriptionAlt: String?,
+    @Schema(description = "Language of `descriptionAlt`: `de` or `en`. Null exactly when `descriptionAlt` is.", example = "de")
+    val descriptionAltLanguage: String?,
+    @Schema(description = "Events from today on that credit this promoter", example = "12")
+    val upcomingEventCount: Int
+) {
+    companion object {
+        fun fromEntity(
+            entity: PromoterEntity,
+            upcomingEventCount: Int
+        ): PromoterListItemResponse =
+            PromoterListItemResponse(
+                id = requireNotNull(entity.id) { "Persisted promoter must have an ID" },
+                slug = entity.slug,
+                name = entity.name,
+                websiteUrl = entity.websiteUrl,
+                description = entity.description,
+                descriptionLanguage = entity.descriptionLanguage,
+                descriptionAlt = entity.descriptionAlt,
+                descriptionAltLanguage = entity.descriptionAltLanguage,
+                upcomingEventCount = upcomingEventCount
             )
     }
 }

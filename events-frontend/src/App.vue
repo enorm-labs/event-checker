@@ -104,31 +104,41 @@ const localePath = useLocalePath()
           <BaseBadge variant="outline">{{ t('common.nav.beta') }}</BaseBadge>
         </RouterLink>
         <!-- Order is deliberate: /events and /calendar are two views of the same thing (a list and
-             a month grid over the same events), so they sit next to each other; /venues is a
-             different entity and follows them; /about is meta and goes last. e2e/smoke.spec.ts
-             pins this order so it cannot drift back unnoticed. -->
-        <div class="order-last flex w-full items-center gap-4 sm:order-none sm:w-auto sm:gap-6">
+             a month grid over the same events), so they sit next to each other; /venues and
+             /promoters are the two other entities and follow them; /about is meta and goes last.
+             e2e/smoke.spec.ts pins this order so it cannot drift back unnoticed. -->
+        <!-- Five links wrap below `sm` once the German labels are in, so the row wraps too, and each
+             label stays whole rather than breaking "Über uns" across two lines. -->
+        <div
+          class="order-last flex w-full flex-wrap items-center gap-x-4 gap-y-1 sm:order-none sm:w-auto sm:flex-nowrap sm:gap-6"
+        >
           <RouterLink
             :to="localePath('/events')"
-            class="text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
+            class="whitespace-nowrap text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
           >
             {{ t('common.nav.events') }}
           </RouterLink>
           <RouterLink
             :to="localePath('/calendar')"
-            class="text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
+            class="whitespace-nowrap text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
           >
             {{ t('common.nav.calendar') }}
           </RouterLink>
           <RouterLink
             :to="localePath('/venues')"
-            class="text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
+            class="whitespace-nowrap text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
           >
             {{ t('common.nav.venues') }}
           </RouterLink>
           <RouterLink
+            :to="localePath('/promoters')"
+            class="whitespace-nowrap text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
+          >
+            {{ t('common.nav.promoters') }}
+          </RouterLink>
+          <RouterLink
             :to="localePath('/about')"
-            class="text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
+            class="whitespace-nowrap text-muted-foreground hover:text-foreground [&.router-link-exact-active]:text-foreground"
           >
             {{ t('common.nav.about') }}
           </RouterLink>
