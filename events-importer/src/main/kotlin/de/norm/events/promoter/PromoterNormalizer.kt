@@ -324,5 +324,9 @@ private val NAME_CORRECTIONS: Map<String, String> =
         // takes the descriptor and the de-shout then reads the two-letter initials as a word, so
         // the row was "Jb Freie" (#307). The entry restores the trading name, as "Loft Concerts" does.
         "jbfreie" to "JB Freie Musik",
-        "jmaudio" to "JM Audio Entertainment"
+        "jmaudio" to "JM Audio Entertainment",
+        // Lido credits "Atoc Live"; the company is ATOC Soundlab (#1343).
+        "atoc" to "ATOC Soundlab",
+        "atoclive" to "ATOC Soundlab",
+        "atocsoundlab" to "ATOC Soundlab"
     )

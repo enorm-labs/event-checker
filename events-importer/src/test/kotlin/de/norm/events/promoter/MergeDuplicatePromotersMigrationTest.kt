@@ -14,7 +14,7 @@ import java.sql.Connection
 import java.sql.DriverManager
 
 /**
- * Runs the promoter data migrations — V023, V025, V026, V027, V029 — against the rows each names, planted on a
+ * Runs the promoter data migrations — V023, V025, V026, V027, V029, V030 — against the rows each names, planted on a
  * database migrated to just before it.
  *
  * The migrations are keyed on slugs read from staging, and a misspelt one updates no row while
@@ -74,8 +74,11 @@ class MergeDuplicatePromotersMigrationTest {
             plantEvent(statement, "t1", "tip-berlin")
             plantPromoter(statement, "Stand In Front", "stand-in-front")
             plantEvent(statement, "s1", "stand-in-front")
+            // V030: the row Lido's "Atoc Live" credit minted.
+            plantPromoter(statement, "Atoc", "atoc")
+            plantEvent(statement, "a1", "atoc")
         }
-        flyway("29").migrate()
+        flyway("30").migrate()
     }
 
     @AfterAll
@@ -167,6 +170,13 @@ class MergeDuplicatePromotersMigrationTest {
         eventsOf("tipberlin") shouldContainExactlyInAnyOrder listOf("t1")
         promoters()["stand-in-front"] shouldBe "Stand in Front"
         eventsOf("stand-in-front") shouldContainExactlyInAnyOrder listOf("s1")
+    }
+
+    @Test
+    fun `V030 renames the Atoc row onto the slug of its company name`() {
+        promoters().containsKey("atoc") shouldBe false
+        promoters()["atoc-soundlab"] shouldBe "ATOC Soundlab"
+        eventsOf("atoc-soundlab") shouldContainExactlyInAnyOrder listOf("a1")
     }
 
     @Test

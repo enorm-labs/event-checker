@@ -318,4 +318,13 @@ class PromoterNormalizerTest {
             canonicalPromoterName("We Artists") shouldBe "We Artists"
         }
     }
+
+    @Test
+    fun `resolves Lido's Atoc Live credit to the company behind it`() {
+        assertSoftly {
+            canonicalPromoterName("Atoc Live") shouldBe "ATOC Soundlab"
+            canonicalPromoterName("Atoc") shouldBe "ATOC Soundlab"
+            canonicalPromoterName("ATOC Soundlab") shouldBe "ATOC Soundlab"
+        }
+    }
 }
